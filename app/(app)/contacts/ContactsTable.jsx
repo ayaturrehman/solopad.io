@@ -66,7 +66,7 @@ export default function ContactsTable({ contacts }) {
 
       {filtered.length === 0 ? (
         <div className="rounded-xl border border-dashed border-zinc-200 bg-white py-12 text-center">
-          <p className="text-sm text-zinc-400">No contacts match "{query}"</p>
+          <p className="text-sm text-zinc-400">No contacts match &quot;{query}&quot;</p>
         </div>
       ) : (
         <div className="overflow-hidden rounded-xl border border-zinc-200 bg-white">

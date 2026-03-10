@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { Download, File, Send, CreditCard, CheckCircle, Zap } from "lucide-react";
 import Badge from "@/components/ui/Badge";
@@ -195,7 +196,7 @@ export default function ClientPortal({ project, files, comments, invoices }) {
       </main>
 
       <footer className="py-8 text-center text-xs text-zinc-400">
-        Powered by <a href="/" className="font-medium text-zinc-500 hover:underline">PortalKit</a>
+        Powered by <Link href="/" className="font-medium text-zinc-500 hover:underline">PortalKit</Link>
       </footer>
     </div>
   );

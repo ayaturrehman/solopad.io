@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 import db from "@/lib/db";
+import { normalizeTask, serializeSubtasks } from "@/lib/tasks";
 
 export async function GET() {
   const session = await getSession();
@@ -15,7 +16,7 @@ export async function GET() {
     orderBy: { createdAt: "desc" },
   });
 
-  return NextResponse.json({ tasks });
+  return NextResponse.json({ tasks: tasks.map(normalizeTask) });
 }
 
 export async function POST(req) {
@@ -23,7 +24,7 @@ export async function POST(req) {
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const body = await req.json();
-  const { title, projectId, priority, dueDate, description, assigneeMemberId } = body;
+  const { title, projectId, priority, dueDate, description, assigneeMemberId, subtasks } = body;
 
   if (!title?.trim()) {
     return NextResponse.json({ error: "Title is required" }, { status: 400 });
@@ -47,6 +48,7 @@ export async function POST(req) {
       priority: priority || "medium",
       dueDate: dueDate ? new Date(dueDate) : null,
       description: description || null,
+      subtasks: serializeSubtasks(subtasks),
     },
     include: {
       project: { select: { id: true, title: true } },
@@ -54,5 +56,5 @@ export async function POST(req) {
     },
   });
 
-  return NextResponse.json({ task }, { status: 201 });
+  return NextResponse.json({ task: normalizeTask(task) }, { status: 201 });
 }

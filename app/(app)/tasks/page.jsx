@@ -3,6 +3,7 @@ export const dynamic = "force-dynamic";
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/session";
 import db from "@/lib/db";
+import { normalizeTask } from "@/lib/tasks";
 import TasksClient from "./TasksClient";
 
 export default async function TasksPage() {
@@ -11,10 +12,13 @@ export default async function TasksPage() {
 
   const userId = session.user.id;
 
-  const [tasks, projects] = await Promise.all([
+  const [tasks, projects, teamMembers] = await Promise.all([
     db.task.findMany({
       where: { userId },
-      include: { project: { select: { id: true, title: true } } },
+      include: {
+        project: { select: { id: true, title: true } },
+        assigneeMember: { select: { id: true, name: true, email: true, role: true } },
+      },
       orderBy: { createdAt: "desc" },
     }),
     db.project.findMany({
@@ -22,7 +26,12 @@ export default async function TasksPage() {
       select: { id: true, title: true },
       orderBy: { title: "asc" },
     }),
+    db.teamMember.findMany({
+      where: { userId },
+      select: { id: true, name: true, email: true, role: true, status: true },
+      orderBy: { createdAt: "desc" },
+    }),
   ]);
 
-  return <TasksClient tasks={tasks} projects={projects} />;
+  return <TasksClient tasks={tasks.map(normalizeTask)} projects={projects} teamMembers={teamMembers} />;
 }

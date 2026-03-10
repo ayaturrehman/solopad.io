@@ -30,7 +30,7 @@ export default async function EditInvoicePage({ params }) {
     }),
   ]);
 
-  if (!invoice || invoice.project.userId !== session.user.id) redirect("/invoices");
+  if (!invoice || invoice.project.userId !== session.user.id) redirect("/finance?tab=invoices");
 
   const lineItems = typeof invoice.lineItems === "string"
     ? JSON.parse(invoice.lineItems)

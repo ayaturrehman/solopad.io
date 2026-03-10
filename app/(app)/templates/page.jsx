@@ -19,7 +19,7 @@ export default async function TemplatesPage() {
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-zinc-900">Templates</h1>
         <p className="mt-1 text-sm text-zinc-500">
-          Start from a ready-made template or use one you have saved.
+          Start from a ready-made template or open the builder to create a reusable document experience.
         </p>
       </div>
       <TemplatesClient savedTemplates={templates} />

@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import db from "@/lib/db";
+import { isValidPlan } from "@/lib/plans";
 
 export async function POST(req) {
   try {
-    const { name, email, password } = await req.json();
+    const { name, email, password, plan } = await req.json();
 
     if (!name || !email || !password) {
       return NextResponse.json({ error: "All fields required" }, { status: 400 });
@@ -17,7 +18,7 @@ export async function POST(req) {
 
     const hashed = await bcrypt.hash(password, 10);
     const user = await db.user.create({
-      data: { name, email, password: hashed, role: "owner" },
+      data: { name, email, password: hashed, role: "owner", plan: isValidPlan(plan) ? plan : "free" },
     });
 
     return NextResponse.json({ id: user.id, email: user.email, name: user.name });

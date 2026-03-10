@@ -6,7 +6,7 @@ import db from "@/lib/db";
 import { redirect } from "next/navigation";
 import Badge from "@/components/ui/Badge";
 import { formatDate, formatCurrency, STATUS_LABELS, STATUS_COLORS } from "@/lib/utils";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, Plus } from "lucide-react";
 
 const STAGE_LABELS = {
   new: "New",
@@ -45,9 +45,20 @@ export default async function ProjectsPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-zinc-900">Projects</h1>
-        <p className="text-sm text-zinc-500">{projects.length} active project{projects.length !== 1 ? "s" : ""}</p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-zinc-900">Projects</h1>
+          <p className="text-sm text-zinc-500">{projects.length} active project{projects.length !== 1 ? "s" : ""}</p>
+        </div>
+        {projects.length > 0 && (
+          <Link
+            href="/projects/new"
+            className="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700"
+          >
+            <Plus className="h-4 w-4" />
+            New project
+          </Link>
+        )}
       </div>
 
       {/* Pipeline stage summary — like HoneyBook */}
@@ -86,9 +97,17 @@ export default async function ProjectsPage() {
 
       {projects.length === 0 ? (
         <div className="rounded-xl border border-dashed border-zinc-200 bg-white px-8 py-16 text-center">
-          <p className="text-sm font-medium text-zinc-400">No projects yet.</p>
-          <Link href="/projects/new" className="mt-3 inline-block text-sm text-zinc-900 underline underline-offset-2">
-            Create your first project
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-zinc-100">
+            <Plus className="h-5 w-5 text-zinc-400" />
+          </div>
+          <p className="text-lg font-semibold text-zinc-900">No projects yet</p>
+          <p className="mt-2 text-sm text-zinc-500">Create your first project to start tracking work, stages, and revenue.</p>
+          <Link
+            href="/projects/new"
+            className="mt-6 inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700"
+          >
+            <Plus className="h-4 w-4" />
+            Add first project
           </Link>
         </div>
       ) : (

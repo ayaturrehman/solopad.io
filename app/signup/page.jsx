@@ -4,19 +4,23 @@ export const dynamic = "force-dynamic";
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { Zap } from "lucide-react";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
+import { PLAN_ORDER, getPlan, isValidPlan } from "@/lib/plans";
 
 export default function SignupPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const selectedPlan = isValidPlan(searchParams.get("plan")) ? searchParams.get("plan") : "free";
+  const plan = getPlan(selectedPlan);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -26,7 +30,7 @@ export default function SignupPage() {
     const res = await fetch("/api/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password }),
+      body: JSON.stringify({ name, email, password, plan: selectedPlan }),
     });
 
     const data = await res.json();
@@ -53,10 +57,36 @@ export default function SignupPage() {
             <span className="font-semibold text-zinc-900">PortalKit</span>
           </Link>
           <h1 className="text-2xl font-bold text-zinc-900">Create your account</h1>
-          <p className="mt-1 text-sm text-zinc-500">Free to start — no credit card needed</p>
+          <p className="mt-1 text-sm text-zinc-500">{plan.name} plan selected · {plan.price}{plan.period}</p>
         </div>
 
         <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
+          <div className="mb-5 rounded-lg border border-zinc-200 bg-zinc-50 p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-semibold text-zinc-900">{plan.name}</p>
+                <p className="text-xs text-zinc-500">{plan.description}</p>
+              </div>
+              <span className="text-sm font-semibold text-zinc-900">{plan.price}{plan.period}</span>
+            </div>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {PLAN_ORDER.map((planId) => {
+                const item = getPlan(planId);
+                const active = selectedPlan === planId;
+                return (
+                  <Link
+                    key={planId}
+                    href={`/signup?plan=${planId}`}
+                    className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+                      active ? "bg-zinc-900 text-white" : "bg-white text-zinc-600 hover:bg-zinc-100"
+                    }`}
+                  >
+                    {item.name}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
           <form onSubmit={handleSubmit} className="space-y-4">
             <Input
               label="Your name"

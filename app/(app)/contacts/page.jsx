@@ -22,11 +22,22 @@ export default async function ContactsPage() {
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-zinc-900">Contacts</h1>
-        <p className="mt-1 text-sm text-zinc-500">
-          {contacts.length} contact{contacts.length !== 1 ? "s" : ""} · {leads.length} leads · {active.length} active
-        </p>
+      <div className="mb-8 flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-zinc-900">Contacts</h1>
+          <p className="mt-1 text-sm text-zinc-500">
+            {contacts.length} contact{contacts.length !== 1 ? "s" : ""} · {leads.length} leads · {active.length} active
+          </p>
+        </div>
+        {contacts.length > 0 && (
+          <Link
+            href="/contacts/new"
+            className="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700"
+          >
+            <Plus className="h-4 w-4" />
+            Add contact
+          </Link>
+        )}
       </div>
 
       {contacts.length === 0 ? (

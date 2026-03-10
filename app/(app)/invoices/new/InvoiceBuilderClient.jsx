@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
@@ -46,6 +46,33 @@ export default function InvoiceBuilderClient({ projects, services }) {
 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem("invoiceTemplate");
+      if (!raw) return;
+
+      const template = JSON.parse(raw);
+      sessionStorage.removeItem("invoiceTemplate");
+
+      if (Array.isArray(template.lineItems) && template.lineItems.length) {
+        setLineItems(
+          template.lineItems.map((item) => ({
+            description: item.description || "",
+            quantity: item.quantity ?? 1,
+            rate: item.rate ?? "",
+            amount: item.amount ?? (parseFloat(item.quantity || 1) * parseFloat(item.rate || 0)),
+          }))
+        );
+      }
+
+      if (template.notes) setNotes(template.notes);
+      if (template.currency) setCurrency(template.currency);
+      if (template.taxRate !== undefined) setTaxRate(template.taxRate);
+    } catch {
+      sessionStorage.removeItem("invoiceTemplate");
+    }
+  }, []);
 
   function updateLine(i, key, value) {
     setLineItems((prev) =>
@@ -180,7 +207,7 @@ export default function InvoiceBuilderClient({ projects, services }) {
     <div className="mx-auto max-w-5xl">
       {/* Top bar */}
       <div className="mb-6 flex items-center justify-between">
-        <Link href="/invoices" className="inline-flex items-center gap-2 text-sm text-zinc-500 hover:text-zinc-900">
+        <Link href="/finance?tab=invoices" className="inline-flex items-center gap-2 text-sm text-zinc-500 hover:text-zinc-900">
           <ArrowLeft className="h-4 w-4" /> All invoices
         </Link>
         <div className="flex items-center gap-2">

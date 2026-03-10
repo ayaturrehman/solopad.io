@@ -37,7 +37,7 @@ export default async function InvoiceDetailPage({ params }) {
     },
   });
 
-  if (!invoice || invoice.project.userId !== session.user.id) redirect("/invoices");
+  if (!invoice || invoice.project.userId !== session.user.id) redirect("/finance?tab=invoices");
 
   const lineItems = typeof invoice.lineItems === "string"
     ? JSON.parse(invoice.lineItems)
@@ -49,7 +49,7 @@ export default async function InvoiceDetailPage({ params }) {
   return (
     <div className="mx-auto max-w-4xl">
       <div className="mb-6 flex items-center justify-between">
-        <Link href="/invoices" className="inline-flex items-center gap-2 text-sm text-zinc-500 hover:text-zinc-900">
+        <Link href="/finance?tab=invoices" className="inline-flex items-center gap-2 text-sm text-zinc-500 hover:text-zinc-900">
           <ArrowLeft className="h-4 w-4" /> All invoices
         </Link>
         <InvoiceActions invoice={{ id: invoice.id, status: invoice.status, projectId: invoice.project.id }} />

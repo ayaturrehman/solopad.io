@@ -6,13 +6,14 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { formatCurrency } from "@/lib/utils";
 import AddExpenseForm from "./AddExpenseForm";
+import InvoicesClient from "../invoices/InvoicesClient";
 import {
-  TrendingUp, TrendingDown, DollarSign, Clock,
+  TrendingUp, TrendingDown, DollarSign, Clock, Plus,
 } from "lucide-react";
 
 const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-const TABS = ["overview", "payments", "expenses"];
+const TABS = ["overview", "invoices", "payments", "expenses"];
 
 export default async function FinancePage({ searchParams }) {
   const session = await getSession();
@@ -25,7 +26,7 @@ export default async function FinancePage({ searchParams }) {
   const now = new Date();
   const yearStart = new Date(now.getFullYear(), 0, 1);
 
-  const [invoices, expenses] = await Promise.all([
+  const [invoices, expenses, projects] = await Promise.all([
     db.invoice.findMany({
       where: { project: { userId }, createdAt: { gte: yearStart } },
       include: { project: { select: { title: true, clientName: true } } },
@@ -34,6 +35,11 @@ export default async function FinancePage({ searchParams }) {
     db.expense.findMany({
       where: { userId, date: { gte: yearStart } },
       orderBy: { date: "desc" },
+    }),
+    db.project.findMany({
+      where: { userId, archived: false },
+      select: { id: true, title: true },
+      orderBy: { title: "asc" },
     }),
   ]);
 
@@ -76,7 +82,7 @@ export default async function FinancePage({ searchParams }) {
                 : "text-zinc-500 hover:text-zinc-700"
             }`}
           >
-            {t}
+            {t === "payments" ? "Payments" : t}
           </Link>
         ))}
       </div>
@@ -135,6 +141,30 @@ export default async function FinancePage({ searchParams }) {
           <div className="grid gap-6 lg:grid-cols-2">
             <div className="rounded-xl border border-zinc-200 bg-white p-6">
               <div className="mb-4 flex items-center justify-between">
+                <h2 className="font-semibold text-zinc-900">Invoices</h2>
+                <Link href="/finance?tab=invoices" className="text-xs text-zinc-400 hover:text-zinc-700">Manage all</Link>
+              </div>
+              {invoices.length === 0 ? (
+                <p className="text-sm text-zinc-400">No invoices created yet.</p>
+              ) : (
+                <div className="space-y-2">
+                  {invoices.slice(0, 6).map((inv) => (
+                    <div key={inv.id} className="flex items-center justify-between rounded-lg bg-zinc-50 px-3 py-2.5">
+                      <div>
+                        <p className="text-sm font-medium text-zinc-800">
+                          {inv.invoiceNumber || `INV-${inv.id.slice(-6).toUpperCase()}`}
+                        </p>
+                        <p className="text-xs text-zinc-400">{inv.project?.clientName}</p>
+                      </div>
+                      <span className="text-sm font-semibold text-zinc-700">{formatCurrency(inv.total)}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="rounded-xl border border-zinc-200 bg-white p-6">
+              <div className="mb-4 flex items-center justify-between">
                 <h2 className="font-semibold text-zinc-900">Recent Payments</h2>
                 <Link href="/finance?tab=payments" className="text-xs text-zinc-400 hover:text-zinc-700">View all</Link>
               </div>
@@ -175,6 +205,26 @@ export default async function FinancePage({ searchParams }) {
             </div>
           </div>
         </>
+      )}
+
+      {tab === "invoices" && (
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="font-semibold text-zinc-900">Invoices</h2>
+              <p className="text-sm text-zinc-500">One place to create, send, track, and manage every invoice.</p>
+            </div>
+            <Link
+              href="/invoices/new"
+              className="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700"
+            >
+              <Plus className="h-4 w-4" />
+              New invoice
+            </Link>
+          </div>
+
+          <InvoicesClient invoices={invoices} projects={projects} />
+        </div>
       )}
 
       {/* Payments tab */}

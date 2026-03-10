@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Plus, Trash2, AlertCircle } from "lucide-react";
@@ -63,6 +63,24 @@ export default function ProposalBuilderClient({ projects }) {
   const [sections, setSections] = useState(DEFAULT_SECTIONS);
   const [pricing, setPricing] = useState(DEFAULT_PRICING);
   const [taxRate, setTaxRate] = useState(0);
+
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem("proposalTemplate");
+      if (!raw) return;
+
+      const template = JSON.parse(raw);
+      sessionStorage.removeItem("proposalTemplate");
+
+      if (template.title) setTitle(template.title);
+      if (template.intro) setIntro(template.intro);
+      if (template.currency) setCurrency(template.currency);
+      if (Array.isArray(template.sections) && template.sections.length) setSections(template.sections);
+      if (Array.isArray(template.pricing) && template.pricing.length) setPricing(template.pricing);
+    } catch {
+      sessionStorage.removeItem("proposalTemplate");
+    }
+  }, []);
 
   function handleProjectChange(id) {
     setProjectId(id);

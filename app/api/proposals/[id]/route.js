@@ -4,9 +4,11 @@ import { NextResponse } from "next/server";
 
 export async function GET(req, { params }) {
   const { id } = await params;
+  const session = await getSession();
+  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const proposal = await db.proposal.findUnique({
-    where: { id },
+  const proposal = await db.proposal.findFirst({
+    where: { id, userId: session.user.id },
     include: { project: { select: { id: true, title: true } } },
   });
 

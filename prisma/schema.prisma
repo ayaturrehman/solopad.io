@@ -200,6 +200,7 @@ model Task {
   assigneeMember   TeamMember? @relation(fields: [assigneeMemberId], references: [id], onDelete: SetNull)
   title       String
   description String?
+  subtasks    String?
   status      String    @default("todo")   // todo | in_progress | done
   priority    String    @default("medium") // low | medium | high
   dueDate     DateTime?

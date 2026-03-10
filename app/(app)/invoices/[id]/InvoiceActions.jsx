@@ -32,7 +32,7 @@ export default function InvoiceActions({ invoice }) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id: invoice.id }),
     });
-    router.push("/invoices");
+    router.push("/finance?tab=invoices");
   }
 
   const { status } = invoice;
