@@ -1,0 +1,36 @@
+import { NextResponse } from "next/server";
+import { getSession } from "@/lib/session";
+import db from "@/lib/db";
+
+export async function PATCH(req, { params }) {
+  const session = await getSession();
+  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const booking = await db.booking.findUnique({ where: { id: params.id } });
+  if (!booking || booking.userId !== session.user.id) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+
+  const body = await req.json();
+  const { status } = body;
+
+  const updated = await db.booking.update({
+    where: { id: params.id },
+    data: { ...(status !== undefined && { status }) },
+  });
+
+  return NextResponse.json({ booking: updated });
+}
+
+export async function DELETE(req, { params }) {
+  const session = await getSession();
+  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const booking = await db.booking.findUnique({ where: { id: params.id } });
+  if (!booking || booking.userId !== session.user.id) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+
+  await db.booking.delete({ where: { id: params.id } });
+  return NextResponse.json({ success: true });
+}

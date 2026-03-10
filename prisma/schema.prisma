@@ -1,0 +1,303 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String         @id @default(cuid())
+  email         String         @unique
+  name          String
+  password      String
+  plan          String         @default("free")
+  role          String         @default("owner")
+  companyName     String?
+  companyLogo     String?
+  timezone        String         @default("UTC")
+  paymentMethods    String         @default("card") // comma-separated: card,paypal,klarna
+  stripeAccountId   String?        // Stripe Connect account ID (acct_...)
+  stripeOnboarded   Boolean        @default(false)
+  createdAt         DateTime       @default(now())
+  projects      Project[]
+  contacts      Contact[]
+  services      Service[]
+  expenses      Expense[]
+  notifications Notification[]
+  templates     Template[]
+  tasks             Task[]
+  teamMembers       TeamMember[]
+  timeEntries       TimeEntry[]
+  bookings          Booking[]
+  availabilityRules AvailabilityRule[]
+  proposals     Proposal[]
+  contracts     Contract[]
+}
+
+model Contact {
+  id            String    @id @default(cuid())
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name          String
+  email         String?
+  phone         String?
+  company       String?
+  status        String    @default("lead")  // lead | active | archived
+  notes         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  projects      Project[]
+}
+
+model Project {
+  id           String    @id @default(cuid())
+  userId       String
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  contactId    String?
+  contact      Contact?  @relation(fields: [contactId], references: [id])
+  title        String
+  clientName   String
+  clientEmail  String?
+  description  String?
+  startDate    DateTime?
+  endDate      DateTime?
+  status       String    @default("in_progress")
+  stage        String    @default("kickoff")   // new|discovery|proposal|contract_signed|kickoff|onboarding|planning|delivery|complete
+  portalToken  String    @unique
+  archived     Boolean   @default(false)
+  viewCount    Int       @default(0)
+  lastViewedAt DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  files        File[]
+  comments     Comment[]
+  invoices     Invoice[]
+  tasks       Task[]
+  timeEntries TimeEntry[]
+  proposals   Proposal[]
+  contracts   Contract[]
+}
+
+model File {
+  id         String   @id @default(cuid())
+  projectId  String
+  project    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  name       String
+  path       String
+  sizeBytes  Int      @default(0)
+  mimeType   String?
+  label      String?
+  uploadedBy String   @default("freelancer")
+  createdAt  DateTime @default(now())
+}
+
+model Comment {
+  id         String   @id @default(cuid())
+  projectId  String
+  project    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  authorName String
+  authorType String
+  body       String
+  createdAt  DateTime @default(now())
+}
+
+model Invoice {
+  id                    String        @id @default(cuid())
+  projectId             String
+  project               Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  invoiceNumber         String?
+  lineItems             String        // JSON array
+  subtotal              Float         @default(0)
+  taxRate               Float         @default(0)
+  taxAmount             Float         @default(0)
+  discountType          String        @default("none") // none | percent | fixed
+  discountValue         Float         @default(0)
+  discountAmount        Float         @default(0)
+  total                 Float
+  currency              String        @default("USD")
+  dueDate               DateTime?
+  notes                 String?
+  status                String        @default("draft") // draft | sent | paid | overdue | cancelled
+  remindersEnabled      Boolean       @default(true)
+  stripeSessionId       String?
+  stripePaymentIntentId String?
+  createdAt             DateTime      @default(now())
+  sentAt                DateTime?
+  paidAt                DateTime?
+  paymentPlans          PaymentPlan[]
+}
+
+model PaymentPlan {
+  id        String    @id @default(cuid())
+  invoiceId String
+  invoice   Invoice   @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  label     String?
+  amount    Float
+  dueDate   DateTime?
+  status    String    @default("upcoming") // upcoming | paid | overdue
+  paidAt    DateTime?
+  createdAt DateTime  @default(now())
+}
+
+model Service {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name        String
+  description String?
+  defaultRate Float    @default(0)
+  unit        String   @default("flat") // flat | hour | day | word
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Expense {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  description String
+  amount      Float
+  category    String   @default("other") // software | travel | equipment | contractor | marketing | other
+  date        DateTime @default(now())
+  receipt     String?
+  createdAt   DateTime @default(now())
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String   // invoice_paid | portal_viewed | comment_received | invoice_overdue
+  title     String
+  body      String
+  read      Boolean  @default(false)
+  link      String?
+  createdAt DateTime @default(now())
+}
+
+model Template {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type        String   // invoice | proposal | contract | questionnaire
+  name        String
+  description String?
+  content     String   // JSON string — varies by type
+  isDefault   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Task {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  projectId   String?
+  project     Project?  @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  assigneeMemberId String?
+  assigneeMember   TeamMember? @relation(fields: [assigneeMemberId], references: [id], onDelete: SetNull)
+  title       String
+  description String?
+  status      String    @default("todo")   // todo | in_progress | done
+  priority    String    @default("medium") // low | medium | high
+  dueDate     DateTime?
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model TeamMember {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name        String
+  email       String
+  role        String    @default("collaborator")
+  permissions String    @default("assign_tasks")
+  status      String    @default("pending") // pending | active
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  tasks       Task[]
+
+  @@unique([userId, email])
+}
+
+model TimeEntry {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  projectId   String?
+  project     Project?  @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  description String?
+  startedAt   DateTime
+  endedAt     DateTime?
+  duration    Int       @default(0) // seconds
+  billable    Boolean   @default(true)
+  hourlyRate  Float     @default(0)
+  createdAt   DateTime  @default(now())
+}
+
+model Booking {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  clientName  String
+  clientEmail String
+  startAt     DateTime
+  endAt       DateTime
+  title       String
+  notes       String?
+  status      String    @default("confirmed") // confirmed | cancelled
+  createdAt   DateTime  @default(now())
+}
+
+model AvailabilityRule {
+  id        String @id @default(cuid())
+  userId    String
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dayOfWeek Int    // 0=Sun, 1=Mon, ..., 6=Sat
+  startTime String // "09:00"
+  endTime   String // "17:00"
+}
+
+model Proposal {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  projectId   String?
+  project     Project?  @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  title       String
+  clientName  String
+  clientEmail String?
+  intro       String?
+  sections    String    // JSON: [{ heading, body }]
+  pricing     String    // JSON: [{ description, amount }]
+  total       Float     @default(0)
+  currency    String    @default("USD")
+  validUntil  DateTime?
+  status      String    @default("draft") // draft | sent | accepted | declined
+  sentAt      DateTime?
+  acceptedAt  DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Contract {
+  id            String    @id @default(cuid())
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  projectId     String?
+  project       Project?  @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  title         String
+  clientName    String
+  clientEmail   String?
+  clauses       String    // JSON: [{ heading, body }]
+  status        String    @default("draft") // draft | sent | signed
+  sentAt        DateTime?
+  signedAt      DateTime?
+  signatureName String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
