@@ -4,9 +4,11 @@ import { NextResponse } from "next/server";
 
 export async function GET(req, { params }) {
   const { id } = await params;
+  const session = await getSession();
+  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const contract = await db.contract.findUnique({
-    where: { id },
+  const contract = await db.contract.findFirst({
+    where: { id, userId: session.user.id },
     include: { project: { select: { id: true, title: true } } },
   });
 

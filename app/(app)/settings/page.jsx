@@ -2,6 +2,7 @@
 
 export const dynamic = "force-dynamic";
 
+import { Suspense } from "react";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
@@ -56,7 +57,10 @@ const emptyInviteForm = {
 
 const PROFILE_TAB_SECTIONS = [
   { id: "profile-overview", label: "Profile" },
-  { id: "profile-roles", label: "Roles" },
+];
+
+const ROLES_TAB_SECTIONS = [
+  { id: "roles-overview", label: "Roles" },
 ];
 
 const SETTINGS_TAB_SECTIONS = [
@@ -92,7 +96,7 @@ function QuickSectionMenu({ title, sections }) {
   );
 }
 
-export default function SettingsPage() {
+function SettingsContent() {
   const { data: session, update } = useSession();
   const searchParams = useSearchParams();
 
@@ -267,7 +271,12 @@ export default function SettingsPage() {
   }
 
   const ownerPermissions = TEAM_ROLE_PRESETS[userRole] ?? TEAM_ROLE_PRESETS.owner;
-  const sections = activeTab === "profile" ? PROFILE_TAB_SECTIONS : SETTINGS_TAB_SECTIONS;
+  const sections =
+    activeTab === "profile"
+      ? PROFILE_TAB_SECTIONS
+      : activeTab === "roles"
+        ? ROLES_TAB_SECTIONS
+        : SETTINGS_TAB_SECTIONS;
 
   return (
     <div className="space-y-6">
@@ -279,6 +288,7 @@ export default function SettingsPage() {
       <div className="border-b border-zinc-200">
         {[
           { id: "profile", label: "Profile", description: "Personal info, role, and access overview." },
+          { id: "roles", label: "Roles", description: "Workspace roles and permission presets." },
           { id: "settings", label: "Settings", description: "Team, payments, billing, and workspace controls." },
         ].map((tab) => (
           <button
@@ -347,36 +357,39 @@ export default function SettingsPage() {
                 </Card>
               </section>
 
-              <section id="profile-roles">
-                <Card>
-                  <CardHeader>
-                    <div className="flex items-center gap-2">
-                      <ShieldCheck className="h-4 w-4 text-zinc-500" />
-                      <h2 className="font-semibold text-zinc-900">Roles & Permissions</h2>
-                    </div>
-                    <p className="mt-0.5 text-xs text-zinc-400">
-                      Solo and Pro plans can invite teammates and assign work from the tasks area.
-                    </p>
-                  </CardHeader>
-                  <CardBody className="space-y-4">
-                    <div className="grid gap-3 md:grid-cols-3">
-                      <div className="rounded-lg border border-zinc-200 p-4">
-                        <p className="text-sm font-medium text-zinc-900">Owner</p>
-                        <p className="mt-1 text-xs text-zinc-500">Full workspace control, invites teammates, and assigns tasks.</p>
-                      </div>
-                      <div className="rounded-lg border border-zinc-200 p-4">
-                        <p className="text-sm font-medium text-zinc-900">Collaborator</p>
-                        <p className="mt-1 text-xs text-zinc-500">Works on delivery and can receive assigned tasks.</p>
-                      </div>
-                      <div className="rounded-lg border border-zinc-200 p-4">
-                        <p className="text-sm font-medium text-zinc-900">Contractor</p>
-                        <p className="mt-1 text-xs text-zinc-500">Limited access for external helpers and short engagements.</p>
-                      </div>
-                    </div>
-                  </CardBody>
-                </Card>
-              </section>
             </>
+          )}
+
+          {activeTab === "roles" && (
+            <section id="roles-overview">
+              <Card>
+                <CardHeader>
+                  <div className="flex items-center gap-2">
+                    <ShieldCheck className="h-4 w-4 text-zinc-500" />
+                    <h2 className="font-semibold text-zinc-900">Roles & Permissions</h2>
+                  </div>
+                  <p className="mt-0.5 text-xs text-zinc-400">
+                    Solo and Pro plans can invite teammates and assign work from the tasks area.
+                  </p>
+                </CardHeader>
+                <CardBody className="space-y-4">
+                  <div className="grid gap-3 md:grid-cols-3">
+                    <div className="rounded-lg border border-zinc-200 p-4">
+                      <p className="text-sm font-medium text-zinc-900">Owner</p>
+                      <p className="mt-1 text-xs text-zinc-500">Full workspace control, invites teammates, and assigns tasks.</p>
+                    </div>
+                    <div className="rounded-lg border border-zinc-200 p-4">
+                      <p className="text-sm font-medium text-zinc-900">Collaborator</p>
+                      <p className="mt-1 text-xs text-zinc-500">Works on delivery and can receive assigned tasks.</p>
+                    </div>
+                    <div className="rounded-lg border border-zinc-200 p-4">
+                      <p className="text-sm font-medium text-zinc-900">Contractor</p>
+                      <p className="mt-1 text-xs text-zinc-500">Limited access for external helpers and short engagements.</p>
+                    </div>
+                  </div>
+                </CardBody>
+              </Card>
+            </section>
           )}
 
           {activeTab === "settings" && (
@@ -647,5 +660,13 @@ export default function SettingsPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function SettingsPage() {
+  return (
+    <Suspense>
+      <SettingsContent />
+    </Suspense>
   );
 }
