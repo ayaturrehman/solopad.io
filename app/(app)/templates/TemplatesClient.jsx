@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import {
   ReceiptText,
   FileText,
@@ -11,7 +10,6 @@ import {
   Trash2,
   BookmarkPlus,
   SquarePen,
-  Plus,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { TEMPLATE_GALLERY, createBuilderDocumentFromTemplate, isBuilderDocument, parseTemplateContent } from "@/lib/template-builder";
@@ -196,7 +194,6 @@ function TemplateCard({ template, isSaved, onPreview, onUse, onDelete, onSave, o
 }
 
 export default function TemplatesClient({ savedTemplates }) {
-  const router = useRouter();
   const [activeTab, setActiveTab] = useState("all");
   const [previewTemplate, setPreviewTemplate] = useState(null);
   const [myTemplates, setMyTemplates] = useState(savedTemplates);
@@ -305,39 +302,6 @@ export default function TemplatesClient({ savedTemplates }) {
           </button>
         </div>
       ) : null}
-
-      <div className="mb-8 flex flex-col gap-4 rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm lg:flex-row lg:items-center lg:justify-between">
-        <div>
-          <h2 className="text-lg font-semibold text-zinc-900">Build reusable documents, not just text snippets</h2>
-          <p className="mt-1 text-sm text-zinc-500">
-            Open the builder to customize pages, theme, structured blocks, signature sections, and questionnaire flows.
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <button
-            type="button"
-            onClick={() => router.push("/templates/builder?type=proposal")}
-            className="inline-flex items-center gap-2 rounded-xl bg-zinc-900 px-4 py-2 text-sm font-semibold text-white hover:bg-zinc-700"
-          >
-            <Plus className="h-4 w-4" />
-            New template
-          </button>
-          <button
-            type="button"
-            onClick={() => router.push("/templates/builder?type=contract")}
-            className="rounded-xl border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50"
-          >
-            New contract
-          </button>
-          <button
-            type="button"
-            onClick={() => router.push("/templates/builder?type=questionnaire")}
-            className="rounded-xl border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50"
-          >
-            New questionnaire
-          </button>
-        </div>
-      </div>
 
       <div className="mb-8 flex gap-1 rounded-xl border border-zinc-200 bg-zinc-50 p-1 w-fit">
         {TABS.map((tab) => (

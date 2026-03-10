@@ -7,7 +7,12 @@ export async function PATCH(req, { params }) {
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { id } = await params;
-  const data = await req.json();
+  const body = await req.json();
+
+  // Coerce date strings to Date objects for Prisma
+  const data = { ...body };
+  if (data.endDate !== undefined) data.endDate = data.endDate ? new Date(data.endDate) : null;
+  if (data.startDate !== undefined) data.startDate = data.startDate ? new Date(data.startDate) : null;
 
   const project = await db.project.updateMany({
     where: { id, userId: session.user.id },

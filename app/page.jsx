@@ -147,6 +147,27 @@ export default function LandingPage() {
             </div>
             <p className="pk-reveal pk-d2" style={{ fontSize:12, color:"#AAAAAA", marginBottom:32 }}>Free on 1 project · No credit card · Cancel anytime</p>
 
+            {/* Avatar social proof row */}
+            <div className="pk-reveal pk-d2" style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:10, marginBottom:28 }}>
+              <div style={{ display:"flex" }}>
+                {[
+                  "photo-1494790108377-be9c29b29330",
+                  "photo-1507003211169-0a1dd7228f2d",
+                  "photo-1438761681033-6461ffad8d80",
+                  "photo-1472099645785-5658abf4ff4e",
+                  "photo-1534528741775-53994a69daeb",
+                ].map((id, i) => (
+                  <img
+                    key={id}
+                    src={`https://images.unsplash.com/${id}?w=64&h=64&q=80&auto=format&fit=crop&crop=face`}
+                    alt="PortalKit user"
+                    style={{ width:36, height:36, borderRadius:"50%", border:"2.5px solid #fff", objectFit:"cover", marginLeft: i === 0 ? 0 : -10, boxShadow:"0 2px 6px rgba(0,0,0,.12)" }}
+                  />
+                ))}
+              </div>
+              <span style={{ fontSize:13, color:CMute, fontWeight:500 }}>Loved by <strong style={{ color:CDk }}>500+</strong> freelancers worldwide</span>
+            </div>
+
             {/* Trust pills */}
             <div className="pk-reveal pk-d3" style={{ display:"flex", gap:12, justifyContent:"center", flexWrap:"wrap", marginBottom:56 }}>
               {[{ e:"⚡", l:"10 min setup" }, { e:"🔒", l:"No client login" }, { e:"💳", l:"Stripe built in" }].map(({ e, l }) => (
@@ -495,6 +516,29 @@ export default function LandingPage() {
           </div>
         </section>
 
+        {/* ── Photo strip ──────────────────────────────── */}
+        <section style={{ background:"#FAFAF8", padding:"64px 0" }}>
+          <div style={{ maxWidth:"88%", margin:"0 auto" }}>
+            <div className="pk-reveal" style={{ display:"grid", gridTemplateColumns:"1.4fr 1fr 1fr", gap:16, borderRadius:24, overflow:"hidden" }}>
+              <img
+                src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=800&h=500&q=80&auto=format&fit=crop"
+                alt="Freelancer working"
+                style={{ width:"100%", height:280, objectFit:"cover", borderRadius:0, display:"block" }}
+              />
+              <img
+                src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=500&h=500&q=80&auto=format&fit=crop"
+                alt="Client collaboration"
+                style={{ width:"100%", height:280, objectFit:"cover", borderRadius:0, display:"block" }}
+              />
+              <img
+                src="https://images.unsplash.com/photo-1556761175-b413da4baf72?w=500&h=500&q=80&auto=format&fit=crop"
+                alt="Remote team"
+                style={{ width:"100%", height:280, objectFit:"cover", borderRadius:0, display:"block" }}
+              />
+            </div>
+          </div>
+        </section>
+
         {/* ── Pricing ──────────────────────────────────── */}
         <section id="pricing" style={{ background:"#FAFAF8", padding:"96px 0" }}>
           <div style={{ maxWidth:"88%", margin:"0 auto" }}>
@@ -546,9 +590,26 @@ export default function LandingPage() {
               <div style={{ position:"absolute", top:-70, right:-70, width:240, height:240, borderRadius:"50%", background:"rgba(255,255,255,.08)" }} />
               <div style={{ position:"absolute", bottom:-60, left:-60, width:200, height:200, borderRadius:"50%", background:"rgba(255,255,255,.05)" }} />
               <div style={{ position:"relative" }}>
-                <div style={{ display:"inline-flex", alignItems:"center", gap:8, background:"rgba(255,255,255,.15)", borderRadius:100, padding:"6px 16px", marginBottom:24 }}>
-                  <Users size={13} color="#fff" />
-                  <span style={{ fontSize:13, fontWeight:600, color:"#fff" }}>Join freelancers who work smarter</span>
+                <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:10, marginBottom:24 }}>
+                  <div style={{ display:"flex" }}>
+                    {[
+                      "photo-1573496359142-b8d87734a5a2",
+                      "photo-1552058544-f2b08422138a",
+                      "photo-1580489944761-15a19d654956",
+                      "photo-1542909168-82c3e7fdca5c",
+                    ].map((id, i) => (
+                      <img
+                        key={id}
+                        src={`https://images.unsplash.com/${id}?w=64&h=64&q=80&auto=format&fit=crop&crop=face`}
+                        alt="user"
+                        style={{ width:32, height:32, borderRadius:"50%", border:"2px solid rgba(255,255,255,.5)", objectFit:"cover", marginLeft: i === 0 ? 0 : -8 }}
+                      />
+                    ))}
+                  </div>
+                  <div style={{ display:"inline-flex", alignItems:"center", gap:8, background:"rgba(255,255,255,.15)", borderRadius:100, padding:"6px 16px" }}>
+                    <Users size={13} color="#fff" />
+                    <span style={{ fontSize:13, fontWeight:600, color:"#fff" }}>Join freelancers who work smarter</span>
+                  </div>
                 </div>
                 <h2 style={{ fontSize:"clamp(28px, 4vw, 52px)", fontWeight:900, color:"#fff", letterSpacing:"-1px", marginBottom:16, lineHeight:1.1 }}>
                   Ready to stop chasing?

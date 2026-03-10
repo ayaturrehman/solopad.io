@@ -24,6 +24,7 @@ export default function NewProjectClient({ contacts }) {
     clientEmail: "",
     description: "",
     startDate: new Date().toISOString().split("T")[0],
+    endDate: "",
     status: "in_progress",
     stage: "kickoff",
   });
@@ -217,6 +218,15 @@ export default function NewProjectClient({ contacts }) {
               value={form.startDate}
               onChange={(e) => set("startDate", e.target.value)}
             />
+            <Input
+              label="Deadline (end date)"
+              type="date"
+              value={form.endDate}
+              onChange={(e) => set("endDate", e.target.value)}
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-medium text-zinc-700">Stage</label>
               <select

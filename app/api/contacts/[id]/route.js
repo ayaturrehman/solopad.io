@@ -47,6 +47,8 @@ export async function PATCH(req, { params }) {
       phone: body.phone?.trim() ?? contact.phone,
       company: body.company?.trim() ?? contact.company,
       status: body.status ?? contact.status,
+      source: body.source?.trim() ?? contact.source,
+      value: body.value !== undefined ? (body.value ? parseFloat(body.value) : null) : contact.value,
       notes: body.notes?.trim() ?? contact.notes,
     },
   });

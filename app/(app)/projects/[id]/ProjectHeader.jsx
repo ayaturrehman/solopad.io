@@ -2,15 +2,30 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Copy, Check, ExternalLink, MoreHorizontal } from "lucide-react";
+import { Copy, Check, ExternalLink, MoreHorizontal, CalendarDays } from "lucide-react";
 import Badge from "@/components/ui/Badge";
-import { STATUS_LABELS, STATUS_COLORS } from "@/lib/utils";
+import { STATUS_LABELS, STATUS_COLORS, formatDate } from "@/lib/utils";
 
 export default function ProjectHeader({ project, portalUrl }) {
   const router = useRouter();
   const [copied, setCopied] = useState(false);
   const [status, setStatus] = useState(project.status);
   const [showMenu, setShowMenu] = useState(false);
+  const [endDate, setEndDate] = useState(
+    project.endDate ? new Date(project.endDate).toISOString().split("T")[0] : ""
+  );
+  const [editingDeadline, setEditingDeadline] = useState(false);
+
+  async function saveDeadline(value) {
+    setEndDate(value);
+    setEditingDeadline(false);
+    await fetch(`/api/projects/${project.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ endDate: value ? new Date(value).toISOString() : null }),
+    });
+    router.refresh();
+  }
 
   async function copyLink() {
     await navigator.clipboard.writeText(portalUrl);
@@ -55,6 +70,34 @@ export default function ProjectHeader({ project, portalUrl }) {
           {project.description && (
             <p className="mt-2 text-sm text-zinc-500">{project.description}</p>
           )}
+          <div className="mt-3 flex items-center gap-1.5 text-sm">
+            <CalendarDays className="h-3.5 w-3.5 text-zinc-400" />
+            {editingDeadline ? (
+              <input
+                type="date"
+                autoFocus
+                defaultValue={endDate}
+                onBlur={(e) => saveDeadline(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter") saveDeadline(e.target.value); if (e.key === "Escape") setEditingDeadline(false); }}
+                className="rounded border border-zinc-300 px-2 py-0.5 text-sm text-zinc-900 outline-none focus:border-zinc-500"
+              />
+            ) : endDate ? (
+              (() => {
+                const daysLeft = Math.ceil((new Date(endDate) - new Date()) / 86400000);
+                const cls = daysLeft < 0 ? "text-red-500 font-medium" : daysLeft <= 7 ? "text-amber-600 font-medium" : "text-zinc-600";
+                const label = daysLeft < 0 ? `${Math.abs(daysLeft)}d overdue` : daysLeft === 0 ? "Due today" : daysLeft <= 7 ? `${daysLeft}d left` : formatDate(endDate);
+                return (
+                  <button onClick={() => setEditingDeadline(true)} className={`${cls} hover:underline`}>
+                    {label}
+                  </button>
+                );
+              })()
+            ) : (
+              <button onClick={() => setEditingDeadline(true)} className="text-zinc-400 hover:text-zinc-700">
+                Set deadline
+              </button>
+            )}
+          </div>
         </div>
 
         <div className="relative">

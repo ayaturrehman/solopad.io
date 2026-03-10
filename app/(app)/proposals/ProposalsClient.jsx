@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
 import { FileText, Plus, ChevronRight } from "lucide-react";
 import { formatCurrency, formatDate, cn } from "@/lib/utils";
 
@@ -12,20 +11,7 @@ const STATUS_CONFIG = {
   declined: { label: "Declined", color: "bg-red-100 text-red-700" },
 };
 
-const TABS = ["all", "draft", "sent", "accepted", "declined"];
-
 export default function ProposalsClient({ proposals }) {
-  const [tab, setTab] = useState("all");
-
-  const counts = {
-    total: proposals.length,
-    draft: proposals.filter((p) => p.status === "draft").length,
-    sent: proposals.filter((p) => p.status === "sent").length,
-    accepted: proposals.filter((p) => p.status === "accepted").length,
-  };
-
-  const filtered = tab === "all" ? proposals : proposals.filter((p) => p.status === tab);
-
   return (
     <div>
       {/* Page header */}
@@ -43,41 +29,8 @@ export default function ProposalsClient({ proposals }) {
         </Link>
       </div>
 
-      {/* Stat pills */}
-      <div className="mb-6 flex flex-wrap gap-3">
-        {[
-          { label: "Total", value: counts.total },
-          { label: "Draft", value: counts.draft },
-          { label: "Sent", value: counts.sent },
-          { label: "Accepted", value: counts.accepted },
-        ].map((stat) => (
-          <div key={stat.label} className="flex items-center gap-2 rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-sm">
-            <span className="font-bold text-zinc-900">{stat.value}</span>
-            <span className="text-zinc-500">{stat.label}</span>
-          </div>
-        ))}
-      </div>
-
-      {/* Filter tabs */}
-      <div className="mb-4 flex gap-1 rounded-xl border border-zinc-200 bg-zinc-50 p-1 w-fit">
-        {TABS.map((t) => (
-          <button
-            key={t}
-            onClick={() => setTab(t)}
-            className={cn(
-              "rounded-lg px-3 py-1.5 text-sm font-medium capitalize transition-colors",
-              tab === t
-                ? "bg-white text-zinc-900 shadow-sm"
-                : "text-zinc-500 hover:text-zinc-700"
-            )}
-          >
-            {t === "all" ? "All" : STATUS_CONFIG[t]?.label ?? t}
-          </button>
-        ))}
-      </div>
-
       {/* Table / List */}
-      {filtered.length === 0 ? (
+      {proposals.length === 0 ? (
         <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-zinc-200 bg-white py-16 text-center">
           <FileText className="mb-3 h-10 w-10 text-zinc-300" />
           <p className="font-medium text-zinc-500">No proposals yet</p>
@@ -106,7 +59,7 @@ export default function ProposalsClient({ proposals }) {
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-50">
-              {filtered.map((proposal) => {
+              {proposals.map((proposal) => {
                 const sc = STATUS_CONFIG[proposal.status] ?? STATUS_CONFIG.draft;
                 const isExpired =
                   proposal.validUntil &&

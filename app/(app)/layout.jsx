@@ -8,7 +8,7 @@ export default function AppLayout({ children }) {
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
         <TopBar />
         <main className="flex-1 overflow-y-auto">
-          <div className="w-full px-4 py-6 lg:px-5">{children}</div>
+          <div className="w-full px-4 py-6 pb-24 md:pb-6 lg:px-5">{children}</div>
         </main>
       </div>
     </div>

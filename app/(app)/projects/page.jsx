@@ -119,6 +119,7 @@ export default async function ProjectsPage() {
                 <th className="hidden w-1/6 px-4 py-3 text-left text-xs font-semibold text-zinc-500 md:table-cell">Contact</th>
                 <th className="hidden w-1/6 px-4 py-3 text-left text-xs font-semibold text-zinc-500 lg:table-cell">Stage</th>
                 <th className="w-1/6 px-4 py-3 text-left text-xs font-semibold text-zinc-500">Status</th>
+                <th className="hidden w-1/6 px-4 py-3 text-left text-xs font-semibold text-zinc-500 sm:table-cell">Deadline</th>
                 <th className="hidden w-1/6 px-4 py-3 text-right text-xs font-semibold text-zinc-500 sm:table-cell">Revenue</th>
                 <th className="w-10 px-4 py-3" />
               </tr>
@@ -150,6 +151,24 @@ export default async function ProjectsPage() {
                       <Badge className={STATUS_COLORS[project.status]}>
                         {STATUS_LABELS[project.status]}
                       </Badge>
+                    </td>
+                    <td className="hidden px-4 py-3 text-left sm:table-cell">
+                      {project.endDate ? (
+                        <span className={(() => {
+                          const daysLeft = Math.ceil((new Date(project.endDate) - new Date()) / 86400000);
+                          return daysLeft < 0 ? "text-red-500 font-medium text-xs" : daysLeft <= 7 ? "text-amber-600 font-medium text-xs" : "text-zinc-500 text-xs";
+                        })()}>
+                          {(() => {
+                            const daysLeft = Math.ceil((new Date(project.endDate) - new Date()) / 86400000);
+                            if (daysLeft < 0) return `${Math.abs(daysLeft)}d overdue`;
+                            if (daysLeft === 0) return "Due today";
+                            if (daysLeft <= 7) return `${daysLeft}d left`;
+                            return formatDate(project.endDate);
+                          })()}
+                        </span>
+                      ) : (
+                        <span className="text-zinc-300 text-xs">—</span>
+                      )}
                     </td>
                     <td className="hidden px-4 py-3 text-right sm:table-cell">
                       <span className="text-sm font-medium text-green-700">{formatCurrency(revenue)}</span>

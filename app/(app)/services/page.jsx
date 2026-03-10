@@ -2,7 +2,6 @@ export const dynamic = "force-dynamic";
 
 import { getSession } from "@/lib/session";
 import { redirect } from "next/navigation";
-import { formatCurrency } from "@/lib/utils";
 import ServicesManager from "./ServicesManager";
 import db from "@/lib/db";
 
@@ -19,8 +18,8 @@ export default async function ServicesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-zinc-900">Services</h1>
-          <p className="text-sm text-zinc-500">Reusable service items for invoices and proposals</p>
+          <h1 className="text-xl font-bold text-zinc-900">Services</h1>
+          <p className="mt-0.5 text-sm text-zinc-500">Reusable service items for invoices and proposals</p>
         </div>
       </div>
       <ServicesManager initialServices={services} />

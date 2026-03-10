@@ -2,6 +2,9 @@
 
 @theme inline {
   --font-sans: var(--font-plus-jakarta-sans);
+
+  /* Base radius — "rounded" class uses this value throughout the app */
+  --radius: 10px;
 }
 
 html {
@@ -17,17 +20,16 @@ body {
   color: #111827;
 }
 
-/* Restore sensible border-radius defaults (Tailwind v4 preflight resets to 0) */
-input, textarea, select {
-  border-radius: 8px;
+/* Restore border-radius defaults — Tailwind v4 preflight resets everything to 0 */
+input, textarea, select, button {
+  border-radius: var(--radius);
 }
 
-button {
-  border-radius: 8px;
-}
-
-img {
-  border-radius: 6px;
+[role="menu"],
+[role="dialog"],
+[role="listbox"],
+[role="tooltip"] {
+  border-radius: var(--radius);
 }
 
 

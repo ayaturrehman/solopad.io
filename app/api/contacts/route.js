@@ -35,13 +35,12 @@ export async function POST(req) {
   const session = await getSession();
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { name, email, phone, company, status, notes } = await req.json();
+  const { name, email, phone, company, status, source, value, notes } = await req.json();
 
   if (!name?.trim()) {
     return NextResponse.json({ error: "Name is required" }, { status: 400 });
   }
 
-  // Sanitize inputs
   const contact = await db.contact.create({
     data: {
       userId: session.user.id,
@@ -50,6 +49,8 @@ export async function POST(req) {
       phone: phone?.trim() || null,
       company: company?.trim() || null,
       status: status || "lead",
+      source: source?.trim() || null,
+      value: value ? parseFloat(value) : null,
       notes: notes?.trim() || null,
     },
   });

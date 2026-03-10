@@ -7,7 +7,7 @@ export async function POST(req) {
   const session = await getSession();
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { title, clientName, clientEmail, description, startDate, status } = await req.json();
+  const { title, clientName, clientEmail, description, startDate, endDate, status } = await req.json();
 
   const project = await db.project.create({
     data: {
@@ -17,6 +17,7 @@ export async function POST(req) {
       clientEmail: clientEmail || null,
       description: description || null,
       startDate: startDate ? new Date(startDate) : null,
+      endDate: endDate ? new Date(endDate) : null,
       status: status || "in_progress",
       portalToken: nanoid(12),
     },

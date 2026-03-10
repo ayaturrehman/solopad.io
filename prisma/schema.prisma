@@ -34,6 +34,7 @@ model User {
   availabilityRules AvailabilityRule[]
   proposals     Proposal[]
   contracts     Contract[]
+  leads         Lead[]
 }
 
 model Contact {
@@ -45,6 +46,8 @@ model Contact {
   phone         String?
   company       String?
   status        String    @default("lead")  // lead | active | archived
+  source        String?   // referral, website, linkedin, cold-outreach, event, other
+  value         Float?    // estimated deal value (for leads)
   notes         String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -301,4 +304,20 @@ model Contract {
   signatureName String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+}
+
+model Lead {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name        String
+  email       String?
+  company     String?
+  phone       String?
+  source      String?   // referral, website, linkedin, cold-outreach, etc.
+  status      String    @default("new") // new | contacted | qualified | proposal | won | lost
+  value       Float?
+  notes       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
