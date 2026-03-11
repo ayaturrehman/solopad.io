@@ -4,7 +4,7 @@
   --font-sans: var(--font-plus-jakarta-sans);
 
   /* Base radius — "rounded" class uses this value throughout the app */
-  --radius: 10px;
+  --radius: 4px;
 }
 
 html {
@@ -16,7 +16,7 @@ html[data-theme="dark"] {
 }
 
 body {
-  background: #f9fafb;
+  background: #a6a6a6;
   color: #111827;
 }
 

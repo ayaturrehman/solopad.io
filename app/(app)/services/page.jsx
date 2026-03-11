@@ -15,14 +15,6 @@ export default async function ServicesPage() {
   });
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-bold text-zinc-900">Services</h1>
-          <p className="mt-0.5 text-sm text-zinc-500">Reusable service items for invoices and proposals</p>
-        </div>
-      </div>
-      <ServicesManager initialServices={services} />
-    </div>
+    <ServicesManager initialServices={services} />
   );
 }

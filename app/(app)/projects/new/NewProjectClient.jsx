@@ -96,7 +96,7 @@ export default function NewProjectClient({ contacts }) {
       </p>
 
       <form onSubmit={handleSubmit} className="space-y-5">
-        <div className="space-y-4 rounded-xl border border-zinc-200 bg-white p-6">
+        <div className="space-y-4 rounded border border-zinc-200 bg-white p-6">
           <Input
             label="Project name"
             placeholder="Website redesign"
@@ -137,7 +137,7 @@ export default function NewProjectClient({ contacts }) {
                       set("clientName", e.target.value);
                       setShowDropdown(true);
                     }}
-                    className="h-10 w-full rounded-lg border border-zinc-200 bg-white px-3 pr-8 text-sm placeholder:text-zinc-400 focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900 disabled:bg-zinc-50 disabled:text-zinc-400"
+                    className="h-10 w-full rounded border border-zinc-200 bg-white px-3 pr-8 text-sm placeholder:text-zinc-400 focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900 disabled:bg-zinc-50 disabled:text-zinc-400"
                   />
                   {contactSearch ? (
                     <button type="button" onClick={clearContact} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-700">
@@ -151,7 +151,7 @@ export default function NewProjectClient({ contacts }) {
                 {showDropdown && filteredContacts.length > 0 && (
                   <>
                     <div className="fixed inset-0 z-10" onClick={() => setShowDropdown(false)} />
-                    <div className="absolute z-20 mt-1 w-full overflow-hidden rounded-lg border border-zinc-200 bg-white shadow-lg">
+                    <div className="absolute z-20 mt-1 w-full overflow-hidden rounded border border-zinc-200 bg-white shadow-lg">
                       {filteredContacts.slice(0, 8).map((c) => (
                         <button
                           key={c.id}
@@ -204,7 +204,7 @@ export default function NewProjectClient({ contacts }) {
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-medium text-zinc-700">Description (optional)</label>
             <textarea
-              className="min-h-[72px] resize-none rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900"
+              className="min-h-[72px] resize-none rounded border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900"
               placeholder="What's this project about?"
               value={form.description}
               onChange={(e) => set("description", e.target.value)}
@@ -230,7 +230,7 @@ export default function NewProjectClient({ contacts }) {
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-medium text-zinc-700">Stage</label>
               <select
-                className="h-10 rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900 focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900"
+                className="h-10 rounded border border-zinc-200 bg-white px-3 text-sm text-zinc-900 focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900"
                 value={form.stage}
                 onChange={(e) => set("stage", e.target.value)}
               >
@@ -249,7 +249,7 @@ export default function NewProjectClient({ contacts }) {
         </div>
 
         {error && (
-          <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">{error}</p>
+          <p className="rounded bg-red-50 px-3 py-2 text-sm text-red-600">{error}</p>
         )}
 
         <div className="flex gap-3">

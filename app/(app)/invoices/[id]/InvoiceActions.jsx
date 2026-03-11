@@ -44,7 +44,7 @@ export default function InvoiceActions({ invoice }) {
       {canEdit && (
         <Link
           href={`/invoices/${invoice.id}/edit`}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 px-3 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50"
+          className="inline-flex items-center gap-1.5 rounded border border-zinc-200 px-3 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50"
         >
           <Pencil className="h-3.5 w-3.5" /> Edit
         </Link>
@@ -55,7 +55,7 @@ export default function InvoiceActions({ invoice }) {
         <button
           onClick={() => patch({ status: "sent" })}
           disabled={loading}
-          className="inline-flex items-center gap-1.5 rounded-lg bg-zinc-900 px-3 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50"
+          className="inline-flex items-center gap-1.5 rounded bg-zinc-900 px-3 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50"
         >
           <Send className="h-3.5 w-3.5" /> Send
         </button>
@@ -64,7 +64,7 @@ export default function InvoiceActions({ invoice }) {
       {/* More menu */}
       <button
         onClick={() => setOpen((v) => !v)}
-        className="flex h-9 w-9 items-center justify-center rounded-lg border border-zinc-200 text-zinc-500 hover:bg-zinc-50"
+        className="flex h-9 w-9 items-center justify-center rounded border border-zinc-200 text-zinc-500 hover:bg-zinc-50"
       >
         <MoreHorizontal className="h-4 w-4" />
       </button>
@@ -72,7 +72,7 @@ export default function InvoiceActions({ invoice }) {
       {open && (
         <>
           <div className="fixed inset-0 z-30" onClick={() => setOpen(false)} />
-          <div className="absolute right-0 top-10 z-40 w-52 overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-lg">
+          <div className="absolute right-0 top-10 z-40 w-52 overflow-hidden rounded border border-zinc-200 bg-white shadow-lg">
             {!canEdit && status !== "cancelled" && (
               <Link
                 href={`/invoices/${invoice.id}/edit`}

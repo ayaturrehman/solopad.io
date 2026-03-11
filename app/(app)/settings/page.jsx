@@ -77,7 +77,7 @@ function QuickSectionMenu({ title, sections }) {
   }
 
   return (
-    <aside className="rounded-2xl border border-zinc-200 bg-white p-4">
+    <aside className="rounded border border-zinc-200 bg-white p-4">
       <p className="text-xs font-medium uppercase tracking-[0.2em] text-zinc-400">{title}</p>
       <div className="mt-3 space-y-2">
         {sections.map((section) => (
@@ -85,7 +85,7 @@ function QuickSectionMenu({ title, sections }) {
             key={section.id}
             type="button"
             onClick={() => jumpTo(section.id)}
-            className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-zinc-900"
+            className="flex w-full items-center justify-between rounded px-3 py-2 text-left text-sm text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-zinc-900"
           >
             <span>{section.label}</span>
             <span className="text-zinc-300">#</span>
@@ -310,13 +310,13 @@ function SettingsContent() {
       </div>
 
       {stripeParam === "connected" && (
-        <div className="flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+        <div className="flex items-center gap-2 rounded border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
           <CheckCircle2 className="h-4 w-4 shrink-0" />
           Stripe account connected successfully. Clients can now pay invoices directly.
         </div>
       )}
       {stripeParam === "error" && (
-        <div className="flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div className="flex items-center gap-2 rounded border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
           <AlertCircle className="h-4 w-4 shrink-0" />
           Stripe connection failed. Please try again.
         </div>
@@ -340,11 +340,11 @@ function SettingsContent() {
                       <Input label="Your name" value={currentName} onChange={(e) => setName(e.target.value)} placeholder="Alex Johnson" />
                       <Input label="Email" value={session?.user?.email ?? ""} disabled />
                       <div className="grid gap-4 md:grid-cols-2">
-                        <div className="rounded-lg border border-zinc-200 bg-zinc-50 px-4 py-3">
+                        <div className="rounded border border-zinc-200 bg-zinc-50 px-4 py-3">
                           <p className="text-xs font-medium uppercase tracking-wide text-zinc-400">Role</p>
                           <p className="mt-1 text-sm font-medium capitalize text-zinc-900">{userRole}</p>
                         </div>
-                        <div className="rounded-lg border border-zinc-200 bg-zinc-50 px-4 py-3">
+                        <div className="rounded border border-zinc-200 bg-zinc-50 px-4 py-3">
                           <p className="text-xs font-medium uppercase tracking-wide text-zinc-400">Permissions</p>
                           <p className="mt-1 text-sm text-zinc-600">{ownerPermissions.join(", ").replaceAll("_", " ")}</p>
                         </div>
@@ -374,15 +374,15 @@ function SettingsContent() {
                 </CardHeader>
                 <CardBody className="space-y-4">
                   <div className="grid gap-3 md:grid-cols-3">
-                    <div className="rounded-lg border border-zinc-200 p-4">
+                    <div className="rounded border border-zinc-200 p-4">
                       <p className="text-sm font-medium text-zinc-900">Owner</p>
                       <p className="mt-1 text-xs text-zinc-500">Full workspace control, invites teammates, and assigns tasks.</p>
                     </div>
-                    <div className="rounded-lg border border-zinc-200 p-4">
+                    <div className="rounded border border-zinc-200 p-4">
                       <p className="text-sm font-medium text-zinc-900">Collaborator</p>
                       <p className="mt-1 text-xs text-zinc-500">Works on delivery and can receive assigned tasks.</p>
                     </div>
-                    <div className="rounded-lg border border-zinc-200 p-4">
+                    <div className="rounded border border-zinc-200 p-4">
                       <p className="text-sm font-medium text-zinc-900">Contractor</p>
                       <p className="mt-1 text-xs text-zinc-500">Limited access for external helpers and short engagements.</p>
                     </div>
@@ -407,12 +407,12 @@ function SettingsContent() {
                   </CardHeader>
                   <CardBody className="space-y-4">
                     {!teamEnabled && (
-                      <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
+                      <div className="rounded border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
                         Upgrade to the Solo plan to invite teammates and assign tasks.
                       </div>
                     )}
 
-                    <div className="rounded-xl border border-zinc-200">
+                    <div className="rounded border border-zinc-200">
                       <div className="border-b border-zinc-200 px-4 py-3">
                         <p className="text-sm font-medium text-zinc-900">Team members</p>
                       </div>
@@ -438,7 +438,7 @@ function SettingsContent() {
                       </div>
                     </div>
 
-                    <form onSubmit={inviteMember} className="space-y-4 rounded-xl border border-zinc-200 bg-zinc-50 p-4">
+                    <form onSubmit={inviteMember} className="space-y-4 rounded border border-zinc-200 bg-zinc-50 p-4">
                       <div className="flex items-center gap-2">
                         <UserPlus className="h-4 w-4 text-zinc-500" />
                         <p className="text-sm font-medium text-zinc-900">Invite teammate</p>
@@ -466,7 +466,7 @@ function SettingsContent() {
                           value={inviteForm.role}
                           disabled={!teamEnabled}
                           onChange={(e) => updateInviteRole(e.target.value)}
-                          className="h-10 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900 focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900 disabled:bg-zinc-100"
+                          className="h-10 w-full rounded border border-zinc-200 bg-white px-3 text-sm text-zinc-900 focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900 disabled:bg-zinc-100"
                         >
                           <option value="collaborator">Collaborator</option>
                           <option value="admin">Admin</option>
@@ -477,7 +477,7 @@ function SettingsContent() {
                         <p className="mb-2 text-sm font-medium text-zinc-700">Permissions</p>
                         <div className="grid gap-2 md:grid-cols-3">
                           {TEAM_PERMISSION_OPTIONS.map((permission) => (
-                            <label key={permission.id} className="flex items-center gap-2 rounded-lg border border-zinc-200 bg-white px-3 py-2">
+                            <label key={permission.id} className="flex items-center gap-2 rounded border border-zinc-200 bg-white px-3 py-2">
                               <input
                                 type="checkbox"
                                 checked={inviteForm.permissions.includes(permission.id)}
@@ -513,7 +513,7 @@ function SettingsContent() {
                   <CardBody>
                     {stripe.connected ? (
                       <div className="space-y-3">
-                        <div className="flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 px-3 py-2.5">
+                        <div className="flex items-center gap-2 rounded border border-green-200 bg-green-50 px-3 py-2.5">
                           <div className="h-2 w-2 rounded-full bg-green-500" />
                           <span className="text-sm font-medium text-green-700">
                             {stripe.onboarded ? "Connected and active" : "Connected - finish onboarding in Stripe"}
@@ -531,7 +531,7 @@ function SettingsContent() {
                         </p>
                         <a
                           href="/api/settings/stripe/connect"
-                          className="inline-flex items-center gap-2 rounded-lg bg-[#635BFF] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#4F46E5]"
+                          className="inline-flex items-center gap-2 rounded bg-[#635BFF] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#4F46E5]"
                         >
                           <Link2 className="h-4 w-4" /> Connect with Stripe
                         </a>
@@ -552,7 +552,7 @@ function SettingsContent() {
                   </CardHeader>
                   <CardBody className="space-y-3">
                     {!stripe.connected && (
-                      <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5 text-xs text-amber-700">
+                      <div className="flex items-start gap-2 rounded border border-amber-200 bg-amber-50 px-3 py-2.5 text-xs text-amber-700">
                         <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                         Connect your Stripe account above before enabling payment methods.
                       </div>
@@ -562,7 +562,7 @@ function SettingsContent() {
                       return (
                         <label
                           key={option.id}
-                          className={`flex cursor-pointer items-start gap-3 rounded-lg border p-3.5 transition-colors ${
+                          className={`flex cursor-pointer items-start gap-3 rounded border p-3.5 transition-colors ${
                             enabled ? "border-zinc-900 bg-zinc-50" : "border-zinc-200 bg-white"
                           } ${option.required ? "cursor-default" : ""}`}
                         >
@@ -611,7 +611,7 @@ function SettingsContent() {
                         const active = plan === planId;
 
                         return (
-                          <div key={planId} className={`rounded-lg border p-4 ${active ? "border-zinc-900 bg-zinc-50" : "border-zinc-200 bg-white"}`}>
+                          <div key={planId} className={`rounded border p-4 ${active ? "border-zinc-900 bg-zinc-50" : "border-zinc-200 bg-white"}`}>
                             <div className="flex items-start justify-between gap-3">
                               <div>
                                 <p className="text-sm font-medium text-zinc-900">{item.name}</p>

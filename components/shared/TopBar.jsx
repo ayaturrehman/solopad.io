@@ -1,46 +1,82 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Search, Plus, Bell, Settings, LogOut, ChevronDown, MoonStar, Sun } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
+import {
+  Search, Plus, Bell, Settings, LogOut, ChevronDown, MoonStar, Sun,
+} from "lucide-react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { signOut } from "next-auth/react";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 const PAGE_ACTIONS = {
-  "/dashboard":  null,
-  "/projects":   null,
-  "/contacts":   null,
-  "/invoices":   null,
-  "/pipeline":   null,
-  "/finance":    null,
-  "/services":   null,
-  "/calendar":   null,
-  "/settings":   null,
-  "/templates":  null,
-  "/tasks":        null,
+  "/dashboard": null,
+  "/projects": null,
+  "/contacts": null,
+  "/invoices": null,
+  "/pipeline": null,
+  "/finance": null,
+  "/services": null,
+  "/calendar": null,
+  "/settings": null,
+  "/templates": null,
+  "/tasks": null,
   "/time-tracker": null,
-  "/scheduler":    null,
+  "/scheduler": null,
+  "/contracts": null,
+  "/proposals": null,
+};
+
+const MODULE_SEARCH = {
+  "/contracts": "Search contracts...",
+  "/contacts": "Search contacts...",
+  "/finance": "Search...",
+  "/projects": "Search projects...",
+  "/proposals": "Search proposals...",
+  "/services": "Search services...",
+  "/templates": "Search templates...",
 };
 
 export default function TopBar() {
   const { data: session } = useSession();
   const pathname = usePathname();
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [unread, setUnread] = useState(0);
   const [notifications, setNotifications] = useState([]);
   const [showBell, setShowBell] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+  const [searchValue, setSearchValue] = useState(searchParams.get("q") || "");
   const [theme, setTheme] = useState(() => {
     if (typeof document === "undefined") return "light";
     return document.documentElement.getAttribute("data-theme") || "light";
   });
 
-  // Match the current base path
   const matchedKey = Object.keys(PAGE_ACTIONS).find((key) =>
     pathname === key || (key !== "/dashboard" && pathname.startsWith(key))
   );
   const action = matchedKey ? PAGE_ACTIONS[matchedKey] : null;
+
+  const searchModuleKey = useMemo(
+    () => Object.keys(MODULE_SEARCH).find((key) => pathname === key || pathname.startsWith(`${key}/`)) || null,
+    [pathname]
+  );
+  const financeTab = searchParams.get("tab");
+  const searchPlaceholder = useMemo(() => {
+    if (pathname === "/finance" && financeTab === "invoices") return "Search invoices...";
+    return searchModuleKey ? MODULE_SEARCH[searchModuleKey] : "Search...";
+  }, [financeTab, pathname, searchModuleKey]);
+
+  useEffect(() => {
+    const nextValue = searchParams.get("q") || "";
+    if (nextValue === searchValue) return undefined;
+
+    const timeout = setTimeout(() => {
+      setSearchValue(nextValue);
+    }, 0);
+
+    return () => clearTimeout(timeout);
+  }, [searchParams, searchValue]);
 
   useEffect(() => {
     fetch("/api/notifications")
@@ -52,11 +88,22 @@ export default function TopBar() {
       .catch(() => {});
   }, [pathname]);
 
-  function handleSearch(e) {
-    if (e.key === "Enter" && e.target.value.trim()) {
-      // Future: global search
-    }
-  }
+  useEffect(() => {
+    if (!searchModuleKey) return undefined;
+
+    const timeout = setTimeout(() => {
+      const params = new URLSearchParams(searchParams.toString());
+      const trimmed = searchValue.trim();
+
+      if (trimmed) params.set("q", trimmed);
+      else params.delete("q");
+
+      const next = params.toString();
+      router.replace(next ? `${pathname}?${next}` : pathname, { scroll: false });
+    }, 200);
+
+    return () => clearTimeout(timeout);
+  }, [pathname, router, searchModuleKey, searchParams, searchValue]);
 
   async function markAllRead() {
     await fetch("/api/notifications", { method: "PATCH" });
@@ -85,9 +132,10 @@ export default function TopBar() {
         <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-400" />
         <input
           type="text"
-          placeholder="Search…"
-          onKeyDown={handleSearch}
-          className="w-full rounded-lg border border-zinc-200 bg-zinc-50 py-1.5 pl-8 pr-3 text-sm text-zinc-700 placeholder-zinc-400 outline-none focus:border-zinc-400 focus:bg-white"
+          value={searchValue}
+          onChange={(e) => setSearchValue(e.target.value)}
+          placeholder={searchPlaceholder}
+          className="w-full rounded border border-zinc-200 bg-zinc-50 py-1.5 pl-8 pr-3 text-sm text-zinc-700 placeholder-zinc-400 outline-none focus:border-zinc-400 focus:bg-white"
         />
       </div>
 
@@ -95,7 +143,7 @@ export default function TopBar() {
         {action && (
           <Link
             href={action.href}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-zinc-700"
+            className="inline-flex items-center gap-1.5 rounded bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-zinc-700"
           >
             <Plus className="h-3.5 w-3.5" />
             {action.label}
@@ -105,7 +153,7 @@ export default function TopBar() {
         <div className="relative">
           <button
             onClick={() => setShowBell((v) => !v)}
-            className="relative inline-flex h-11 w-11 items-center justify-center rounded-xl text-zinc-500 transition-colors hover:bg-zinc-50 hover:text-zinc-900"
+            className="relative inline-flex h-11 w-11 items-center justify-center rounded text-zinc-500 transition-colors hover:bg-zinc-50 hover:text-zinc-900"
             aria-label="Notifications"
           >
             <Bell className="h-4 w-4" />
@@ -119,7 +167,7 @@ export default function TopBar() {
           {showBell && (
             <>
               <div className="fixed inset-0 z-30" onClick={() => setShowBell(false)} />
-              <div className="absolute right-0 top-11 z-40 w-80 rounded-xl border border-zinc-200 bg-white shadow-lg">
+              <div className="absolute right-0 top-11 z-40 w-80 rounded border border-zinc-200 bg-white shadow-lg">
                 <div className="flex items-center justify-between border-b border-zinc-100 px-4 py-2.5">
                   <span className="text-xs font-semibold text-zinc-900">Notifications</span>
                   {unread > 0 && (
@@ -151,7 +199,7 @@ export default function TopBar() {
         <div className="relative">
           <button
             onClick={() => setShowProfile((value) => !value)}
-            className="inline-flex items-center gap-2 rounded-xl bg-white px-2.5 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 hover:text-zinc-900"
+            className="inline-flex items-center gap-2 rounded bg-white px-2.5 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 hover:text-zinc-900"
           >
             <span className="flex h-7 w-7 items-center justify-center rounded-full bg-zinc-900 text-xs font-semibold text-white">
               {initials}
@@ -163,7 +211,7 @@ export default function TopBar() {
           {showProfile && (
             <>
               <div className="fixed inset-0 z-30" onClick={() => setShowProfile(false)} />
-              <div className="absolute right-0 top-12 z-40 w-60 overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-lg">
+              <div className="absolute right-0 top-12 z-40 w-60 overflow-hidden rounded border border-zinc-200 bg-white shadow-lg">
                 <div className="border-b border-zinc-100 px-4 py-3">
                   <p className="text-sm font-semibold text-zinc-900">{userName}</p>
                   <p className="text-xs text-zinc-500">{session?.user?.email || "Signed in"}</p>
@@ -176,7 +224,7 @@ export default function TopBar() {
                       type="button"
                       onClick={() => setAppTheme("light")}
                       className={cn(
-                        "inline-flex items-center justify-center gap-2 rounded-lg border px-3 py-2 text-xs font-medium transition-colors",
+                        "inline-flex items-center justify-center gap-2 rounded border px-3 py-2 text-xs font-medium transition-colors",
                         theme === "light"
                           ? "border-zinc-900 bg-zinc-900 text-white"
                           : "border-zinc-200 text-zinc-600 hover:bg-zinc-50"
@@ -189,7 +237,7 @@ export default function TopBar() {
                       type="button"
                       onClick={() => setAppTheme("dark")}
                       className={cn(
-                        "inline-flex items-center justify-center gap-2 rounded-lg border px-3 py-2 text-xs font-medium transition-colors",
+                        "inline-flex items-center justify-center gap-2 rounded border px-3 py-2 text-xs font-medium transition-colors",
                         theme === "dark"
                           ? "border-zinc-900 bg-zinc-900 text-white"
                           : "border-zinc-200 text-zinc-600 hover:bg-zinc-50"
@@ -205,14 +253,14 @@ export default function TopBar() {
                   <Link
                     href="/settings"
                     onClick={() => setShowProfile(false)}
-                    className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-zinc-600 transition-colors hover:bg-zinc-50 hover:text-zinc-900"
+                    className="flex items-center gap-2.5 rounded px-3 py-2 text-sm text-zinc-600 transition-colors hover:bg-zinc-50 hover:text-zinc-900"
                   >
                     <Settings className="h-4 w-4" />
                     Settings
                   </Link>
                   <button
                     onClick={() => signOut({ callbackUrl: "/login" })}
-                    className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-zinc-600 transition-colors hover:bg-zinc-50 hover:text-zinc-900"
+                    className="flex w-full items-center gap-2.5 rounded px-3 py-2 text-sm text-zinc-600 transition-colors hover:bg-zinc-50 hover:text-zinc-900"
                   >
                     <LogOut className="h-4 w-4" />
                     Sign out

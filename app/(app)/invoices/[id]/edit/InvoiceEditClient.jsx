@@ -189,14 +189,14 @@ export default function InvoiceEditClient({ invoice, projects, services }) {
           <button
             onClick={() => handleSave("draft")}
             disabled={saving}
-            className="rounded-lg border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 disabled:opacity-50"
+            className="rounded border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 disabled:opacity-50"
           >
             Save as draft
           </button>
           <button
             onClick={() => handleSave("sent")}
             disabled={saving}
-            className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50"
+            className="rounded bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50"
           >
             {saving ? "Saving…" : "Save & send"}
           </button>
@@ -208,9 +208,9 @@ export default function InvoiceEditClient({ invoice, projects, services }) {
         <div className="space-y-6 lg:col-span-2">
 
           {/* Header */}
-          <div className="rounded-xl border border-zinc-200 bg-white p-6">
+          <div className="rounded border border-zinc-200 bg-white p-6">
             <div className="flex items-start gap-4">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-zinc-900">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded bg-zinc-900">
                 <FileText className="h-6 w-6 text-white" />
               </div>
               <div>
@@ -221,7 +221,7 @@ export default function InvoiceEditClient({ invoice, projects, services }) {
           </div>
 
           {/* Project & invoice number */}
-          <div className="rounded-xl border border-zinc-200 bg-white p-6">
+          <div className="rounded border border-zinc-200 bg-white p-6">
             <SectionLabel icon={User}>Client & Project</SectionLabel>
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
@@ -230,7 +230,7 @@ export default function InvoiceEditClient({ invoice, projects, services }) {
                   <select
                     value={projectId}
                     onChange={(e) => setProjectId(e.target.value)}
-                    className="h-10 w-full appearance-none rounded-lg border border-zinc-200 bg-white pl-3 pr-8 text-sm outline-none focus:border-zinc-900"
+                    className="h-10 w-full appearance-none rounded border border-zinc-200 bg-white pl-3 pr-8 text-sm outline-none focus:border-zinc-900"
                   >
                     <option value="">— Select a project —</option>
                     {projects.map((p) => (
@@ -251,14 +251,14 @@ export default function InvoiceEditClient({ invoice, projects, services }) {
                   value={invoiceNumber}
                   onChange={(e) => setInvoiceNumber(e.target.value)}
                   placeholder="e.g. INV-2026-001"
-                  className="h-10 w-full rounded-lg border border-zinc-200 px-3 text-sm outline-none focus:border-zinc-900"
+                  className="h-10 w-full rounded border border-zinc-200 px-3 text-sm outline-none focus:border-zinc-900"
                 />
               </div>
             </div>
           </div>
 
           {/* Dates & currency */}
-          <div className="rounded-xl border border-zinc-200 bg-white p-6">
+          <div className="rounded border border-zinc-200 bg-white p-6">
             <SectionLabel icon={Calendar}>Dates & Currency</SectionLabel>
             <div className="grid gap-4 sm:grid-cols-2">
               {paymentType === "lump_sum" && (
@@ -268,7 +268,7 @@ export default function InvoiceEditClient({ invoice, projects, services }) {
                     type="date"
                     value={dueDate}
                     onChange={(e) => setDueDate(e.target.value)}
-                    className="h-10 w-full rounded-lg border border-zinc-200 px-3 text-sm outline-none focus:border-zinc-900"
+                    className="h-10 w-full rounded border border-zinc-200 px-3 text-sm outline-none focus:border-zinc-900"
                   />
                 </div>
               )}
@@ -278,7 +278,7 @@ export default function InvoiceEditClient({ invoice, projects, services }) {
                   <select
                     value={currency}
                     onChange={(e) => setCurrency(e.target.value)}
-                    className="h-10 w-full appearance-none rounded-lg border border-zinc-200 bg-white pl-3 pr-8 text-sm outline-none focus:border-zinc-900"
+                    className="h-10 w-full appearance-none rounded border border-zinc-200 bg-white pl-3 pr-8 text-sm outline-none focus:border-zinc-900"
                   >
                     {CURRENCIES.map((c) => <option key={c}>{c}</option>)}
                   </select>
@@ -289,18 +289,18 @@ export default function InvoiceEditClient({ invoice, projects, services }) {
           </div>
 
           {/* Line items */}
-          <div className="rounded-xl border border-zinc-200 bg-white p-6">
+          <div className="rounded border border-zinc-200 bg-white p-6">
             <div className="mb-4 flex items-center justify-between">
               <SectionLabel icon={Tag}>Line Items</SectionLabel>
               {services.length > 0 && (
                 <div className="relative group">
-                  <button className="inline-flex items-center gap-1.5 rounded-lg border border-dashed border-zinc-300 px-3 py-1.5 text-xs font-medium text-zinc-500 hover:border-zinc-400">
+                  <button className="inline-flex items-center gap-1.5 rounded border border-dashed border-zinc-300 px-3 py-1.5 text-xs font-medium text-zinc-500 hover:border-zinc-400">
                     <Sparkles className="h-3.5 w-3.5" /> Add from services
                   </button>
-                  <div className="absolute right-0 top-8 z-20 hidden w-56 rounded-xl border border-zinc-200 bg-white p-1.5 shadow-lg group-hover:block">
+                  <div className="absolute right-0 top-8 z-20 hidden w-56 rounded border border-zinc-200 bg-white p-1.5 shadow-lg group-hover:block">
                     {services.map((svc) => (
                       <button key={svc.id} onClick={() => applyService(svc)}
-                        className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left hover:bg-zinc-50">
+                        className="flex w-full items-center justify-between rounded px-3 py-2 text-left hover:bg-zinc-50">
                         <span className="text-sm text-zinc-800">{svc.name}</span>
                         <span className="text-xs text-zinc-400">{formatCurrency(svc.defaultRate)}</span>
                       </button>
@@ -323,12 +323,12 @@ export default function InvoiceEditClient({ invoice, projects, services }) {
                 <div key={i} className="grid grid-cols-12 items-center gap-2">
                   <input value={line.description} onChange={(e) => updateLine(i, "description", e.target.value)}
                     placeholder="Service or product description"
-                    className="col-span-5 h-10 rounded-lg border border-zinc-200 px-3 text-sm outline-none focus:border-zinc-900" />
+                    className="col-span-5 h-10 rounded border border-zinc-200 px-3 text-sm outline-none focus:border-zinc-900" />
                   <input type="number" min="0" step="0.01" value={line.quantity} onChange={(e) => updateLine(i, "quantity", e.target.value)}
-                    className="col-span-2 h-10 rounded-lg border border-zinc-200 px-3 text-right text-sm outline-none focus:border-zinc-900" />
+                    className="col-span-2 h-10 rounded border border-zinc-200 px-3 text-right text-sm outline-none focus:border-zinc-900" />
                   <input type="number" min="0" step="0.01" value={line.rate} onChange={(e) => updateLine(i, "rate", e.target.value)}
                     placeholder="0.00"
-                    className="col-span-2 h-10 rounded-lg border border-zinc-200 px-3 text-right text-sm outline-none focus:border-zinc-900" />
+                    className="col-span-2 h-10 rounded border border-zinc-200 px-3 text-right text-sm outline-none focus:border-zinc-900" />
                   <div className="col-span-2 text-right text-sm font-medium text-zinc-700">
                     {formatCurrency(parseFloat(line.amount) || 0, currency)}
                   </div>
@@ -345,21 +345,21 @@ export default function InvoiceEditClient({ invoice, projects, services }) {
           </div>
 
           {/* Payment Schedule */}
-          <div className="rounded-xl border border-zinc-200 bg-white p-6">
+          <div className="rounded border border-zinc-200 bg-white p-6">
             <SectionLabel icon={CreditCard}>Payment Schedule</SectionLabel>
             <div className="mb-5 flex gap-2">
               <button onClick={() => setPaymentType("lump_sum")}
-                className={`flex-1 rounded-lg border py-2.5 text-sm font-medium transition-colors ${paymentType === "lump_sum" ? "border-zinc-900 bg-zinc-900 text-white" : "border-zinc-200 text-zinc-500 hover:border-zinc-400"}`}>
+                className={`flex-1 rounded border py-2.5 text-sm font-medium transition-colors ${paymentType === "lump_sum" ? "border-zinc-900 bg-zinc-900 text-white" : "border-zinc-200 text-zinc-500 hover:border-zinc-400"}`}>
                 Lump sum
               </button>
               <button onClick={() => setPaymentType("installments")}
-                className={`flex-1 rounded-lg border py-2.5 text-sm font-medium transition-colors ${paymentType === "installments" ? "border-zinc-900 bg-zinc-900 text-white" : "border-zinc-200 text-zinc-500 hover:border-zinc-400"}`}>
+                className={`flex-1 rounded border py-2.5 text-sm font-medium transition-colors ${paymentType === "installments" ? "border-zinc-900 bg-zinc-900 text-white" : "border-zinc-200 text-zinc-500 hover:border-zinc-400"}`}>
                 Installments / Milestones
               </button>
             </div>
 
             {paymentType === "lump_sum" && (
-              <div className="rounded-lg bg-zinc-50 px-4 py-3 text-sm text-zinc-500">
+              <div className="rounded bg-zinc-50 px-4 py-3 text-sm text-zinc-500">
                 Full payment of <span className="font-semibold text-zinc-900">{formatCurrency(total, currency)}</span> due on{" "}
                 {dueDate ? (
                   <span className="font-semibold text-zinc-900">
@@ -393,16 +393,16 @@ export default function InvoiceEditClient({ invoice, projects, services }) {
                     <div key={i} className="grid grid-cols-12 items-center gap-2">
                       <input value={m.label} onChange={(e) => updateMilestone(i, "label", e.target.value)}
                         placeholder={i === 0 ? "e.g. Deposit" : i === milestones.length - 1 ? "e.g. Final payment" : `Milestone ${i + 1}`}
-                        className="col-span-5 h-10 rounded-lg border border-zinc-200 px-3 text-sm outline-none focus:border-zinc-900" />
+                        className="col-span-5 h-10 rounded border border-zinc-200 px-3 text-sm outline-none focus:border-zinc-900" />
                       <div className="relative col-span-3">
                         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] font-medium text-zinc-400">{currency}</span>
                         <input type="number" min="0" step="0.01" value={m.amount}
                           onChange={(e) => updateMilestone(i, "amount", e.target.value)}
                           placeholder="0.00"
-                          className="h-10 w-full rounded-lg border border-zinc-200 pl-10 pr-3 text-right text-sm outline-none focus:border-zinc-900" />
+                          className="h-10 w-full rounded border border-zinc-200 pl-10 pr-3 text-right text-sm outline-none focus:border-zinc-900" />
                       </div>
                       <input type="date" value={m.dueDate} onChange={(e) => updateMilestone(i, "dueDate", e.target.value)}
-                        className="col-span-3 h-10 rounded-lg border border-zinc-200 px-3 text-sm outline-none focus:border-zinc-900" />
+                        className="col-span-3 h-10 rounded border border-zinc-200 px-3 text-sm outline-none focus:border-zinc-900" />
                       <button type="button" onClick={() => removeMilestone(i)} disabled={milestones.length === 1}
                         className="col-span-1 flex items-center justify-center text-zinc-300 hover:text-red-400 disabled:opacity-0">
                         <Trash2 className="h-4 w-4" />
@@ -415,7 +415,7 @@ export default function InvoiceEditClient({ invoice, projects, services }) {
                   <Plus className="h-4 w-4" /> Add milestone
                 </button>
 
-                <div className={`rounded-lg px-4 py-3 text-sm ${Math.abs(milestoneDiff) < 0.01 ? "bg-green-50 text-green-700" : "bg-amber-50 text-amber-700"}`}>
+                <div className={`rounded px-4 py-3 text-sm ${Math.abs(milestoneDiff) < 0.01 ? "bg-green-50 text-green-700" : "bg-amber-50 text-amber-700"}`}>
                   <span className="font-semibold">{formatCurrency(milestonesTotal, currency)}</span> planned · invoice total{" "}
                   <span className="font-semibold">{formatCurrency(total, currency)}</span>
                   {Math.abs(milestoneDiff) >= 0.01 ? (
@@ -429,17 +429,17 @@ export default function InvoiceEditClient({ invoice, projects, services }) {
           </div>
 
           {/* Notes */}
-          <div className="rounded-xl border border-zinc-200 bg-white p-6">
+          <div className="rounded border border-zinc-200 bg-white p-6">
             <SectionLabel icon={AlignLeft}>Notes & Terms</SectionLabel>
             <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={4}
               placeholder="Payment terms, bank details, or any notes for the client…"
-              className="w-full resize-none rounded-lg border border-zinc-200 px-3 py-2.5 text-sm outline-none focus:border-zinc-900" />
+              className="w-full resize-none rounded border border-zinc-200 px-3 py-2.5 text-sm outline-none focus:border-zinc-900" />
           </div>
         </div>
 
         {/* ── Right: summary ── */}
         <div className="space-y-5">
-          <div className="rounded-xl border border-zinc-200 bg-white p-5">
+          <div className="rounded border border-zinc-200 bg-white p-5">
             <SectionLabel icon={DollarSign}>Summary</SectionLabel>
             <div className="mb-4 space-y-3">
               <div>
@@ -447,7 +447,7 @@ export default function InvoiceEditClient({ invoice, projects, services }) {
                 <div className="relative">
                   <input type="number" min="0" max="100" step="0.01" value={taxRate}
                     onChange={(e) => setTaxRate(e.target.value)}
-                    className="h-10 w-full rounded-lg border border-zinc-200 pl-3 pr-8 text-sm outline-none focus:border-zinc-900" placeholder="0" />
+                    className="h-10 w-full rounded border border-zinc-200 pl-3 pr-8 text-sm outline-none focus:border-zinc-900" placeholder="0" />
                   <Percent className="pointer-events-none absolute right-3 top-3 h-4 w-4 text-zinc-300" />
                 </div>
               </div>
@@ -456,7 +456,7 @@ export default function InvoiceEditClient({ invoice, projects, services }) {
                 <div className="flex gap-2">
                   <div className="relative">
                     <select value={discountType} onChange={(e) => { setDiscountType(e.target.value); setDiscountValue(""); }}
-                      className="h-10 appearance-none rounded-lg border border-zinc-200 bg-white pl-3 pr-7 text-sm outline-none focus:border-zinc-900">
+                      className="h-10 appearance-none rounded border border-zinc-200 bg-white pl-3 pr-7 text-sm outline-none focus:border-zinc-900">
                       <option value="none">None</option>
                       <option value="percent">%</option>
                       <option value="fixed">Fixed $</option>
@@ -466,13 +466,13 @@ export default function InvoiceEditClient({ invoice, projects, services }) {
                   {discountType !== "none" && (
                     <input type="number" min="0" step="0.01" value={discountValue}
                       onChange={(e) => setDiscountValue(e.target.value)} placeholder="0"
-                      className="h-10 flex-1 rounded-lg border border-zinc-200 px-3 text-sm outline-none focus:border-zinc-900" />
+                      className="h-10 flex-1 rounded border border-zinc-200 px-3 text-sm outline-none focus:border-zinc-900" />
                   )}
                 </div>
               </div>
             </div>
 
-            <div className="space-y-2 rounded-lg bg-zinc-50 p-4 text-sm">
+            <div className="space-y-2 rounded bg-zinc-50 p-4 text-sm">
               <div className="flex justify-between text-zinc-500"><span>Subtotal</span><span>{formatCurrency(subtotal, currency)}</span></div>
               {taxAmt > 0 && <div className="flex justify-between text-zinc-500"><span>Tax ({taxRate}%)</span><span>+{formatCurrency(taxAmt, currency)}</span></div>}
               {discAmt > 0 && <div className="flex justify-between text-zinc-500"><span>Discount</span><span className="text-red-500">-{formatCurrency(discAmt, currency)}</span></div>}
@@ -482,7 +482,7 @@ export default function InvoiceEditClient({ invoice, projects, services }) {
             </div>
           </div>
 
-          <div className="rounded-xl border border-zinc-200 bg-white p-5">
+          <div className="rounded border border-zinc-200 bg-white p-5">
             <SectionLabel icon={Bell}>Settings</SectionLabel>
             <label className="flex cursor-pointer items-start gap-3">
               <input type="checkbox" checked={remindersEnabled} onChange={(e) => setRemindersEnabled(e.target.checked)}
@@ -496,11 +496,11 @@ export default function InvoiceEditClient({ invoice, projects, services }) {
 
           <div className="space-y-2">
             <button onClick={() => handleSave("sent")} disabled={saving}
-              className="w-full rounded-xl bg-zinc-900 py-3 text-sm font-semibold text-white hover:bg-zinc-700 disabled:opacity-50">
+              className="w-full rounded bg-zinc-900 py-3 text-sm font-semibold text-white hover:bg-zinc-700 disabled:opacity-50">
               {saving ? "Saving…" : "Save & send"}
             </button>
             <button onClick={() => handleSave("draft")} disabled={saving}
-              className="w-full rounded-xl border border-zinc-200 py-3 text-sm font-medium text-zinc-600 hover:bg-zinc-50 disabled:opacity-50">
+              className="w-full rounded border border-zinc-200 py-3 text-sm font-medium text-zinc-600 hover:bg-zinc-50 disabled:opacity-50">
               Save as draft
             </button>
             {error && <p className="text-center text-xs text-red-500">{error}</p>}

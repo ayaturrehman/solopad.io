@@ -36,10 +36,11 @@ export default async function PortalPage({ params }) {
     });
   }
 
-  const [files, comments, invoices] = await Promise.all([
-    db.file.findMany({ where: { projectId: project.id }, orderBy: { createdAt: "desc" } }),
+  const [files, comments, invoices, notes] = await Promise.all([
+    db.file.findMany({ where: { projectId: project.id, visibleToClient: true }, orderBy: { createdAt: "desc" } }),
     db.comment.findMany({ where: { projectId: project.id }, orderBy: { createdAt: "asc" } }),
     db.invoice.findMany({ where: { projectId: project.id }, orderBy: { createdAt: "desc" } }),
+    db.note.findMany({ where: { projectId: project.id, visibleToClient: true }, orderBy: { createdAt: "desc" } }),
   ]);
 
   const parsedInvoices = invoices.map((inv) => ({
@@ -53,6 +54,7 @@ export default async function PortalPage({ params }) {
       files={files}
       comments={comments}
       invoices={parsedInvoices}
+      notes={notes}
     />
   );
 }

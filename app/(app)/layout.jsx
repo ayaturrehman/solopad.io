@@ -1,9 +1,19 @@
+"use client";
+
+import { usePathname } from "next/navigation";
 import Navbar from "@/components/shared/Navbar";
 import TopBar from "@/components/shared/TopBar";
 
 export default function AppLayout({ children }) {
+  const pathname = usePathname();
+  const isBuilder = pathname?.startsWith("/templates/builder");
+
+  if (isBuilder) {
+    return <>{children}</>;
+  }
+
   return (
-    <div className="flex h-screen overflow-hidden bg-zinc-50">
+    <div className="flex h-screen overflow-hidden bg-zinc-100">
       <Navbar />
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
         <TopBar />

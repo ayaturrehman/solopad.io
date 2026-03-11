@@ -87,29 +87,31 @@ export default async function FinancePage({ searchParams }) {
         ))}
       </div>
 
-      {/* KPI cards — always visible */}
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        {[
-          { label: "Revenue", value: formatCurrency(totalRevenue), icon: TrendingUp, color: "text-green-600", bg: "bg-green-50" },
-          { label: "Expenses", value: formatCurrency(totalExpenses), icon: TrendingDown, color: "text-red-500", bg: "bg-red-50" },
-          { label: "Net Income", value: formatCurrency(netIncome), icon: DollarSign, color: "text-zinc-900", bg: "bg-zinc-100" },
-          { label: "Outstanding", value: formatCurrency(outstanding), icon: Clock, color: "text-amber-600", bg: "bg-amber-50" },
-        ].map(({ label, value, icon: Icon, color, bg }) => (
-          <div key={label} className="rounded-xl border border-zinc-200 bg-white p-5">
-            <div className={`mb-3 inline-flex rounded-lg p-2 ${bg}`}>
-              <Icon className={`h-4 w-4 ${color}`} />
-            </div>
-            <p className={`text-2xl font-bold ${color}`}>{value}</p>
-            <p className="text-xs text-zinc-500">{label}</p>
-          </div>
-        ))}
-      </div>
-
       {/* Overview tab */}
       {tab === "overview" && (
         <>
+          {/* KPI strip */}
+          <div className="overflow-hidden rounded border border-zinc-200 bg-white">
+            <div className="grid divide-y divide-zinc-200 sm:grid-cols-2 sm:divide-x sm:divide-y-0 xl:grid-cols-4">
+              {[
+                { label: "Revenue", value: formatCurrency(totalRevenue), icon: TrendingUp, color: "text-green-600", bg: "bg-green-50" },
+                { label: "Expenses", value: formatCurrency(totalExpenses), icon: TrendingDown, color: "text-rose-500", bg: "bg-rose-50" },
+                { label: "Net Income", value: formatCurrency(netIncome), icon: DollarSign, color: "text-zinc-900", bg: "bg-zinc-100" },
+                { label: "Outstanding", value: formatCurrency(outstanding), icon: Clock, color: "text-amber-600", bg: "bg-amber-50" },
+              ].map(({ label, value, icon: Icon, color, bg }) => (
+                <div key={label} className="px-6 py-6">
+                  <div className={`mb-4 inline-flex rounded-lg p-3 ${bg}`}>
+                    <Icon className={`h-5 w-5 ${color}`} />
+                  </div>
+                  <p className={`text-2xl font-bold ${color}`}>{value}</p>
+                  <p className="mt-1 text-sm text-zinc-500">{label}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
           {/* Cashflow chart */}
-          <div className="rounded-xl border border-zinc-200 bg-white p-6">
+          <div className="rounded border border-zinc-200 bg-white p-6">
             <h2 className="mb-5 font-semibold text-zinc-900">Monthly Cashflow</h2>
             <div className="flex items-end gap-2" style={{ height: 160 }}>
               {MONTH_NAMES.map((month, i) => (
@@ -139,7 +141,7 @@ export default async function FinancePage({ searchParams }) {
 
           {/* Recent paid + expenses side by side */}
           <div className="grid gap-6 lg:grid-cols-2">
-            <div className="rounded-xl border border-zinc-200 bg-white p-6">
+            <div className="rounded border border-zinc-200 bg-white p-6">
               <div className="mb-4 flex items-center justify-between">
                 <h2 className="font-semibold text-zinc-900">Invoices</h2>
                 <Link href="/finance?tab=invoices" className="text-xs text-zinc-400 hover:text-zinc-700">Manage all</Link>
@@ -149,7 +151,7 @@ export default async function FinancePage({ searchParams }) {
               ) : (
                 <div className="space-y-2">
                   {invoices.slice(0, 6).map((inv) => (
-                    <div key={inv.id} className="flex items-center justify-between rounded-lg bg-zinc-50 px-3 py-2.5">
+                    <div key={inv.id} className="flex items-center justify-between rounded bg-zinc-50 px-3 py-2.5">
                       <div>
                         <p className="text-sm font-medium text-zinc-800">
                           {inv.invoiceNumber || `INV-${inv.id.slice(-6).toUpperCase()}`}
@@ -163,7 +165,7 @@ export default async function FinancePage({ searchParams }) {
               )}
             </div>
 
-            <div className="rounded-xl border border-zinc-200 bg-white p-6">
+            <div className="rounded border border-zinc-200 bg-white p-6">
               <div className="mb-4 flex items-center justify-between">
                 <h2 className="font-semibold text-zinc-900">Recent Payments</h2>
                 <Link href="/finance?tab=payments" className="text-xs text-zinc-400 hover:text-zinc-700">View all</Link>
@@ -173,7 +175,7 @@ export default async function FinancePage({ searchParams }) {
               ) : (
                 <div className="space-y-2">
                   {paid.slice(0, 6).map((inv) => (
-                    <div key={inv.id} className="flex items-center justify-between rounded-lg bg-zinc-50 px-3 py-2.5">
+                    <div key={inv.id} className="flex items-center justify-between rounded bg-zinc-50 px-3 py-2.5">
                       <div>
                         <p className="text-sm font-medium text-zinc-800">
                           {inv.invoiceNumber || `INV-${inv.id.slice(-6).toUpperCase()}`}
@@ -187,13 +189,13 @@ export default async function FinancePage({ searchParams }) {
               )}
             </div>
 
-            <div className="rounded-xl border border-zinc-200 bg-white p-6">
+            <div className="rounded border border-zinc-200 bg-white p-6">
               <div className="mb-4 flex items-center justify-between">
                 <h2 className="font-semibold text-zinc-900">Expenses</h2>
                 <Link href="/finance?tab=expenses" className="text-xs text-zinc-400 hover:text-zinc-700">View all</Link>
               </div>
               {expenses.slice(0, 6).map((exp) => (
-                <div key={exp.id} className="flex items-center justify-between rounded-lg bg-zinc-50 px-3 py-2.5 mb-2">
+                <div key={exp.id} className="flex items-center justify-between rounded bg-zinc-50 px-3 py-2.5 mb-2">
                   <div>
                     <p className="text-sm font-medium text-zinc-800">{exp.description}</p>
                     <p className="text-xs capitalize text-zinc-400">{exp.category}</p>
@@ -208,28 +210,12 @@ export default async function FinancePage({ searchParams }) {
       )}
 
       {tab === "invoices" && (
-        <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="font-semibold text-zinc-900">Invoices</h2>
-              <p className="text-sm text-zinc-500">One place to create, send, track, and manage every invoice.</p>
-            </div>
-            <Link
-              href="/invoices/new"
-              className="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700"
-            >
-              <Plus className="h-4 w-4" />
-              New invoice
-            </Link>
-          </div>
-
-          <InvoicesClient invoices={invoices} projects={projects} />
-        </div>
+        <InvoicesClient invoices={invoices} projects={projects} />
       )}
 
       {/* Payments tab */}
       {tab === "payments" && (
-        <div className="rounded-xl border border-zinc-200 bg-white">
+        <div className="rounded border border-zinc-200 bg-white">
           <div className="border-b border-zinc-100 px-6 py-4">
             <h2 className="font-semibold text-zinc-900">All Payments — {now.getFullYear()}</h2>
           </div>
@@ -281,7 +267,7 @@ export default async function FinancePage({ searchParams }) {
             </div>
           )}
 
-          <div className="overflow-hidden rounded-xl border border-zinc-200 bg-white">
+          <div className="overflow-hidden rounded border border-zinc-200 bg-white">
             {expenses.length === 0 ? (
               <p className="px-6 py-10 text-sm text-zinc-400">No expenses recorded yet.</p>
             ) : (

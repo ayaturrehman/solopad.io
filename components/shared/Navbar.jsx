@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import {
   LayoutDashboard, Zap, Briefcase, Users,
-  DollarSign, Package, CalendarDays, GitMerge,
+  DollarSign, Package, CalendarDays,
   LayoutTemplate, CheckSquare, Clock, CalendarCheck,
   FileText, FileSignature, Menu, X, ChevronRight
 } from "lucide-react";
@@ -16,7 +16,6 @@ const navGroups = [
     label: "Overview",
     items: [
       { href: "/dashboard",    label: "Dashboard",    icon: LayoutDashboard },
-      { href: "/pipeline",     label: "Pipeline",     icon: GitMerge },
       { href: "/calendar",     label: "Calendar",     icon: CalendarDays },
     ],
   },
@@ -90,7 +89,7 @@ export default function Navbar() {
                     key={href}
                     href={href}
                     className={cn(
-                      "flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] font-medium transition-colors",
+                      "flex items-center gap-2.5 rounded px-3 py-2 text-[13px] font-medium transition-colors",
                       isActive(href)
                         ? "bg-[#243247] text-[#dbeafe] shadow-sm"
                         : "text-slate-300 hover:bg-white/8 hover:text-white"
@@ -118,7 +117,7 @@ export default function Navbar() {
                 key={href}
                 href={href}
                 className={cn(
-                  "flex flex-col items-center gap-0.5 px-2 py-2 rounded-xl min-w-0 flex-1 transition-colors",
+                  "flex flex-col items-center gap-0.5 px-2 py-2 rounded min-w-0 flex-1 transition-colors",
                   active ? "text-[#17202d]" : "text-zinc-400"
                 )}
               >
@@ -132,7 +131,7 @@ export default function Navbar() {
           {/* More button opens full drawer */}
           <button
             onClick={() => setDrawerOpen(true)}
-            className="flex flex-col items-center gap-0.5 px-2 py-2 rounded-xl flex-1 text-zinc-400"
+            className="flex flex-col items-center gap-0.5 px-2 py-2 rounded flex-1 text-zinc-400"
           >
             <Menu className="h-5 w-5" />
             <span className="text-[10px] font-medium">More</span>
@@ -160,7 +159,7 @@ export default function Navbar() {
               </div>
               <button
                 onClick={() => setDrawerOpen(false)}
-                className="rounded-lg p-1.5 text-slate-400 hover:bg-white/10"
+                className="rounded p-1.5 text-slate-400 hover:bg-white/10"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -182,7 +181,7 @@ export default function Navbar() {
                           href={href}
                           onClick={() => setDrawerOpen(false)}
                           className={cn(
-                            "flex items-center justify-between rounded-xl px-3 py-3 text-sm font-medium transition-colors",
+                            "flex items-center justify-between rounded px-3 py-3 text-sm font-medium transition-colors",
                             active
                               ? "bg-[#243247] text-[#dbeafe]"
                               : "text-slate-300 hover:bg-white/8 hover:text-white"

@@ -265,7 +265,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
                   key={subtask.id}
                   type="button"
                   onClick={() => toggleSubtask(task, subtask.id)}
-                  className="flex w-full items-center gap-3 rounded-lg border border-zinc-200 bg-white px-3 py-2 text-left hover:border-zinc-300"
+                  className="flex w-full items-center gap-3 rounded border border-zinc-200 bg-white px-3 py-2 text-left hover:border-zinc-300"
                 >
                   <span
                     className={cn(
@@ -291,7 +291,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
     return (
       <div className="space-y-4 bg-zinc-50 px-4 py-4">
         <input
-          className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm focus:border-zinc-500 focus:outline-none"
+          className="w-full rounded border border-zinc-300 px-3 py-2 text-sm focus:border-zinc-500 focus:outline-none"
           value={editData.title}
           onChange={(e) => setEditData((data) => ({ ...data, title: e.target.value }))}
           placeholder="Task title"
@@ -299,7 +299,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
 
         <div className="grid gap-3 md:grid-cols-4">
           <select
-            className="rounded-lg border border-zinc-200 px-3 py-2 text-sm text-zinc-600 focus:outline-none"
+            className="rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-600 focus:outline-none"
             value={editData.projectId}
             onChange={(e) => setEditData((data) => ({ ...data, projectId: e.target.value }))}
           >
@@ -309,7 +309,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
             ))}
           </select>
           <select
-            className="rounded-lg border border-zinc-200 px-3 py-2 text-sm text-zinc-600 focus:outline-none"
+            className="rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-600 focus:outline-none"
             value={editData.assigneeMemberId}
             onChange={(e) => setEditData((data) => ({ ...data, assigneeMemberId: e.target.value }))}
           >
@@ -321,7 +321,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
             ))}
           </select>
           <select
-            className="rounded-lg border border-zinc-200 px-3 py-2 text-sm text-zinc-600 focus:outline-none"
+            className="rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-600 focus:outline-none"
             value={editData.priority}
             onChange={(e) => setEditData((data) => ({ ...data, priority: e.target.value }))}
           >
@@ -331,7 +331,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
           </select>
           <input
             type="date"
-            className="rounded-lg border border-zinc-200 px-3 py-2 text-sm text-zinc-600 focus:outline-none"
+            className="rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-600 focus:outline-none"
             value={editData.dueDate}
             onChange={(e) => setEditData((data) => ({ ...data, dueDate: e.target.value }))}
           />
@@ -342,7 +342,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
           value={editData.description}
           onChange={(e) => setEditData((data) => ({ ...data, description: e.target.value }))}
           placeholder="Add notes for this task"
-          className="w-full rounded-lg border border-zinc-200 px-3 py-2 text-sm text-zinc-800 focus:border-zinc-400 focus:outline-none"
+          className="w-full rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-800 focus:border-zinc-400 focus:outline-none"
         />
 
         <div className="space-y-2">
@@ -358,12 +358,12 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
                 value={subtask.title}
                 onChange={(e) => updateEditSubtask(subtask.id, e.target.value)}
                 placeholder="Subtask title"
-                className="flex-1 rounded-lg border border-zinc-200 px-3 py-2 text-sm focus:border-zinc-400 focus:outline-none"
+                className="flex-1 rounded border border-zinc-200 px-3 py-2 text-sm focus:border-zinc-400 focus:outline-none"
               />
               <button
                 type="button"
                 onClick={() => removeEditSubtask(subtask.id)}
-                className="rounded-lg border border-zinc-200 px-3 py-2 text-xs text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900"
+                className="rounded border border-zinc-200 px-3 py-2 text-xs text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900"
               >
                 Remove
               </button>
@@ -375,14 +375,14 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
           <button
             type="button"
             onClick={() => setEditingId(null)}
-            className="rounded-lg px-3 py-2 text-sm text-zinc-500 hover:text-zinc-900"
+            className="rounded px-3 py-2 text-sm text-zinc-500 hover:text-zinc-900"
           >
             Cancel
           </button>
           <button
             type="button"
             onClick={() => saveEdit(taskId)}
-            className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700"
+            className="rounded bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700"
           >
             Save task
           </button>
@@ -404,7 +404,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
             type="button"
             onClick={() => toggleDone(task)}
             className={cn(
-              "mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border-2 transition-colors",
+              "mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded border-2 transition-colors",
               isDone ? "border-zinc-900 bg-zinc-900 text-white" : "border-zinc-300 bg-white text-transparent hover:border-zinc-500"
             )}
             aria-label={isDone ? "Mark task as incomplete" : "Mark task as complete"}
@@ -471,7 +471,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
                     <MoreHorizontal className="h-4 w-4" />
                   </button>
                   {openMenu === task.id && (
-                    <div className="absolute right-0 z-10 mt-1 w-32 rounded-lg border border-zinc-200 bg-white shadow-md">
+                    <div className="absolute right-0 z-10 mt-1 w-32 rounded border border-zinc-200 bg-white shadow-md">
                       <button
                         type="button"
                         onClick={() => startEdit(task)}
@@ -514,7 +514,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
           <button
             type="button"
             onClick={() => setShowForm((value) => !value)}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-zinc-700"
+            className="inline-flex items-center gap-1.5 rounded bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-zinc-700"
           >
             <Plus className="h-3.5 w-3.5" />
             Add task
@@ -539,7 +539,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
         </div>
 
         {showForm && (
-          <div className="mb-5 rounded-xl border border-zinc-200 bg-white p-4 shadow-sm">
+          <div className="mb-5 rounded border border-zinc-200 bg-white p-4 shadow-sm">
             <form onSubmit={handleAddTask} className="flex flex-col gap-3">
               <input
                 type="text"
@@ -547,14 +547,14 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
                 placeholder="Task title"
                 value={formData.title}
                 onChange={(e) => setFormData((data) => ({ ...data, title: e.target.value }))}
-                className="w-full rounded-lg border border-zinc-200 px-3 py-2 text-sm text-zinc-800 focus:border-zinc-400 focus:outline-none"
+                className="w-full rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-800 focus:border-zinc-400 focus:outline-none"
               />
 
               <div className="grid gap-3 md:grid-cols-4">
                 <select
                   value={formData.projectId}
                   onChange={(e) => setFormData((data) => ({ ...data, projectId: e.target.value }))}
-                  className="rounded-lg border border-zinc-200 px-3 py-2 text-sm text-zinc-600 focus:outline-none"
+                  className="rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-600 focus:outline-none"
                 >
                   <option value="">No project</option>
                   {projects.map((project) => (
@@ -564,7 +564,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
                 <select
                   value={formData.assigneeMemberId}
                   onChange={(e) => setFormData((data) => ({ ...data, assigneeMemberId: e.target.value }))}
-                  className="rounded-lg border border-zinc-200 px-3 py-2 text-sm text-zinc-600 focus:outline-none"
+                  className="rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-600 focus:outline-none"
                 >
                   <option value="">Me</option>
                   {teamMembers.map((member) => (
@@ -576,7 +576,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
                 <select
                   value={formData.priority}
                   onChange={(e) => setFormData((data) => ({ ...data, priority: e.target.value }))}
-                  className="rounded-lg border border-zinc-200 px-3 py-2 text-sm text-zinc-600 focus:outline-none"
+                  className="rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-600 focus:outline-none"
                 >
                   <option value="low">Low priority</option>
                   <option value="medium">Medium priority</option>
@@ -586,7 +586,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
                   type="date"
                   value={formData.dueDate}
                   onChange={(e) => setFormData((data) => ({ ...data, dueDate: e.target.value }))}
-                  className="rounded-lg border border-zinc-200 px-3 py-2 text-sm text-zinc-600 focus:outline-none"
+                  className="rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-600 focus:outline-none"
                 />
               </div>
 
@@ -595,7 +595,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
                 value={formData.description}
                 onChange={(e) => setFormData((data) => ({ ...data, description: e.target.value }))}
                 placeholder="Add notes for this task"
-                className="w-full rounded-lg border border-zinc-200 px-3 py-2 text-sm text-zinc-800 focus:border-zinc-400 focus:outline-none"
+                className="w-full rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-800 focus:border-zinc-400 focus:outline-none"
               />
 
               <div className="space-y-2">
@@ -611,12 +611,12 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
                       value={subtask.title}
                       onChange={(e) => updateFormSubtask(subtask.id, e.target.value)}
                       placeholder="Subtask title"
-                      className="flex-1 rounded-lg border border-zinc-200 px-3 py-2 text-sm focus:border-zinc-400 focus:outline-none"
+                      className="flex-1 rounded border border-zinc-200 px-3 py-2 text-sm focus:border-zinc-400 focus:outline-none"
                     />
                     <button
                       type="button"
                       onClick={() => removeFormSubtask(subtask.id)}
-                      className="rounded-lg border border-zinc-200 px-3 py-2 text-xs text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900"
+                      className="rounded border border-zinc-200 px-3 py-2 text-xs text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900"
                     >
                       Remove
                     </button>
@@ -631,14 +631,14 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
                     setShowForm(false);
                     resetTaskForm();
                   }}
-                  className="rounded-lg px-3 py-1.5 text-xs text-zinc-500 hover:text-zinc-800"
+                  className="rounded px-3 py-1.5 text-xs text-zinc-500 hover:text-zinc-800"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="rounded-lg bg-zinc-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-zinc-700 disabled:opacity-50"
+                  className="rounded bg-zinc-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-zinc-700 disabled:opacity-50"
                 >
                   {submitting ? "Adding..." : "Add task"}
                 </button>
@@ -654,7 +654,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
               type="button"
               onClick={() => setFilter(tab.key)}
               className={cn(
-                "rounded-lg px-3 py-1.5 text-xs font-medium transition-colors",
+                "rounded px-3 py-1.5 text-xs font-medium transition-colors",
                 filter === tab.key ? "bg-zinc-900 text-white" : "text-zinc-500 hover:bg-zinc-100 hover:text-zinc-800"
               )}
             >
@@ -663,7 +663,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
           ))}
         </div>
 
-        <div className="rounded-xl border border-zinc-200 bg-white shadow-sm">
+        <div className="rounded border border-zinc-200 bg-white shadow-sm">
           {active.length === 0 && done.length === 0 && (
             <p className="px-6 py-12 text-center text-sm text-zinc-400">
               No tasks yet. Add your first task above.

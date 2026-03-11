@@ -7,8 +7,53 @@ import {
   ChevronUp, ChevronDown, Copy, GripVertical, Settings, Layers,
   Type, Image as ImageIcon, Minus, Square, AlignLeft, AlignCenter,
   AlignRight, Bold, Italic, List, Link2, Star, Check, X, Grip,
-  Zap, FileText, CornerDownRight,
+  Zap, FileText, CornerDownRight, PenLine, Paperclip, Play,
+  LayoutTemplate, Text, Lightbulb, Video, Minus as MinusIcon,
+  RectangleHorizontal, MousePointerClick, Columns2, Table2,
+  CreditCard, Receipt, Milestone, PenSquare, ClipboardList,
+  Hash, Mail, Phone, Calendar, ChevronDown as ChevronDownField,
+  CheckSquare, SlidersHorizontal, Upload, AlignJustify,
 } from "lucide-react";
+
+// Icon map for block types (replaces emoji in BLOCK_DEFS)
+const BLOCK_ICON_MAP = {
+  cover:         LayoutTemplate,
+  richText:      Text,
+  callout:       Lightbulb,
+  image:         ImageIcon,
+  video:         Video,
+  divider:       Minus,
+  spacer:        RectangleHorizontal,
+  button:        MousePointerClick,
+  columns:       Columns2,
+  table:         Table2,
+  pricing:       CreditCard,
+  lineItems:     Receipt,
+  timeline:      Milestone,
+  signature:     PenSquare,
+  form:          ClipboardList,
+};
+
+// Icon map for form field types
+const FIELD_ICON_MAP = {
+  text:      Type,
+  textarea:  AlignJustify,
+  email:     Mail,
+  phone:     Phone,
+  number:    Hash,
+  date:      Calendar,
+  dropdown:  ChevronDownField,
+  radio:     CheckSquare,
+  checkbox:  CheckSquare,
+  rating:    Star,
+  scale:     SlidersHorizontal,
+  file:      Upload,
+};
+
+function BlockTypeIcon({ type, size = 14, color }) {
+  const Icon = BLOCK_ICON_MAP[type] || FileText;
+  return <Icon size={size} color={color} />;
+}
 import { nanoid } from "nanoid";
 import {
   BLOCK_CATEGORIES, BLOCK_DEFS, FORM_FIELD_TYPES, FORM_FIELD_DEFAULTS,
@@ -163,7 +208,7 @@ function LeftSidebar({ leftTab, setLeftTab, doc, setDoc, activePage, setActivePa
                           onMouseEnter={e => { e.currentTarget.style.borderColor = themeObj.accent; e.currentTarget.style.boxShadow = `0 2px 8px ${themeObj.accent}22`; }}
                           onMouseLeave={e => { e.currentTarget.style.borderColor = "#E5E7EB"; e.currentTarget.style.boxShadow = "none"; }}
                         >
-                          <span style={{ fontSize: 18 }}>{def.icon}</span>
+                          <BlockTypeIcon type={type} size={16} color="#6B7280" />
                           <span style={{ fontSize: 10, fontWeight: 600, color: "#374151", textAlign: "center", lineHeight: 1.3 }}>{def.label}</span>
                         </button>
                       );
@@ -291,42 +336,79 @@ function Canvas({ doc, setDoc, activePage, selectedId, setSelectedId, preview, v
       style={{ flex: 1, overflowY: "auto", background: "#F3F4F6", padding: "32px 24px", display: "flex", justifyContent: "center" }}
       onClick={() => setSelectedId(null)}
     >
-      <div style={{ width: canvasWidth, maxWidth: canvasMaxWidth, minHeight: 600, display: "flex", flexDirection: "column", gap: 0 }}>
+      <div style={{ width: canvasWidth, maxWidth: canvasMaxWidth, minHeight: 600, display: "flex", flexDirection: "column", gap: preview ? 24 : 0 }}>
+        {preview ? doc.pages.map((previewPage, pageIndex) => (
+          <div key={previewPage.id} style={{ background: "#fff", border: "1px solid #E5E7EB", borderRadius: 18, overflow: "hidden", boxShadow: "0 1px 3px rgba(0,0,0,.04)" }}>
+            {doc.pages.length > 1 && (
+              <div style={{ padding: "12px 20px", borderBottom: "1px solid #F3F4F6", background: "#FAFAFA" }}>
+                <p style={{ fontSize: 10, fontWeight: 700, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 4 }}>Page {pageIndex + 1}</p>
+                <p style={{ fontSize: 14, fontWeight: 600, color: "#111827" }}>{previewPage.title}</p>
+              </div>
+            )}
+            <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+              {previewPage.blocks.length === 0 ? (
+                <div style={{ padding: "48px 32px", textAlign: "center", color: "#9CA3AF", fontSize: 13 }}>This page is empty</div>
+              ) : (
+                previewPage.blocks.map((block) => (
+                  <BlockRenderer key={block.id} block={block} themeObj={themeObj} preview onUpdate={() => {}} />
+                ))
+              )}
+            </div>
+          </div>
+        )) : (
+        <>
         {page?.blocks.length === 0 && (
           <div style={{ border: "2px dashed #D1D5DB", borderRadius: 16, padding: "60px 32px", textAlign: "center", background: "#fff" }}>
-            <div style={{ fontSize: 32, marginBottom: 12 }}>📄</div>
+            <div style={{ display: "flex", justifyContent: "center", marginBottom: 12 }}><FileText size={32} color="#D1D5DB" /></div>
             <p style={{ fontSize: 15, fontWeight: 600, color: "#374151", marginBottom: 6 }}>This page is empty</p>
             <p style={{ fontSize: 13, color: "#9CA3AF" }}>Add blocks from the left sidebar to get started</p>
           </div>
         )}
-        {page?.blocks.map((block, idx) => (
-          <BlockWrapper
-            key={block.id}
-            block={block}
-            idx={idx}
-            total={page.blocks.length}
-            selected={selectedId === block.id}
-            preview={preview}
-            themeObj={themeObj}
-            dragId={dragId}
-            dragOverId={dragOverId}
-            onSelect={e => { e.stopPropagation(); setSelectedId(block.id); }}
-            onMoveUp={() => moveBlock(block.id, "up")}
-            onMoveDown={() => moveBlock(block.id, "down")}
-            onDuplicate={() => duplicateBlock(block.id)}
-            onDelete={() => deleteBlock(block.id)}
-            onDragStart={() => setDragId(block.id)}
-            onDragOver={() => setDragOverId(block.id)}
-            onDrop={() => handleDrop(block.id)}
-            onDragEnd={() => { setDragId(null); setDragOverId(null); }}
-          />
-        ))}
+        {page?.blocks.map((block, idx) => {
+          function onUpdate(updater) {
+            setDoc(d => {
+              const pages = d.pages.map((p, i) =>
+                i === activePage ? {
+                  ...p, blocks: p.blocks.map(b =>
+                    b.id === block.id ? { ...b, data: typeof updater === "function" ? updater(b.data) : { ...b.data, ...updater } } : b
+                  )
+                } : p
+              );
+              return { ...d, pages };
+            });
+          }
+          return (
+            <BlockWrapper
+              key={block.id}
+              block={block}
+              idx={idx}
+              total={page.blocks.length}
+              selected={selectedId === block.id}
+              preview={preview}
+              themeObj={themeObj}
+              dragId={dragId}
+              dragOverId={dragOverId}
+              onUpdate={onUpdate}
+              onSelect={e => { e.stopPropagation(); setSelectedId(block.id); }}
+              onMoveUp={() => moveBlock(block.id, "up")}
+              onMoveDown={() => moveBlock(block.id, "down")}
+              onDuplicate={() => duplicateBlock(block.id)}
+              onDelete={() => deleteBlock(block.id)}
+              onDragStart={() => setDragId(block.id)}
+              onDragOver={() => setDragOverId(block.id)}
+              onDrop={() => handleDrop(block.id)}
+              onDragEnd={() => { setDragId(null); setDragOverId(null); }}
+            />
+          );
+        })}
+        </>
+        )}
       </div>
     </div>
   );
 }
 
-function BlockWrapper({ block, idx, total, selected, preview, themeObj, dragId, dragOverId, onSelect, onMoveUp, onMoveDown, onDuplicate, onDelete, onDragStart, onDragOver, onDrop, onDragEnd }) {
+function BlockWrapper({ block, idx, total, selected, preview, themeObj, dragId, dragOverId, onUpdate, onSelect, onMoveUp, onMoveDown, onDuplicate, onDelete, onDragStart, onDragOver, onDrop, onDragEnd }) {
   const isDragging = dragId === block.id;
   const isDragOver = dragOverId === block.id && dragId !== block.id;
 
@@ -372,7 +454,7 @@ function BlockWrapper({ block, idx, total, selected, preview, themeObj, dragId, 
         </div>
       )}
 
-      <BlockRenderer block={block} themeObj={themeObj} preview={preview} />
+      <BlockRenderer block={block} themeObj={themeObj} preview={preview} onUpdate={onUpdate} />
     </div>
   );
 }
@@ -387,13 +469,13 @@ function ActionBtn({ icon, title, onClick, color }) {
 
 // ─── Block Renderer ───────────────────────────────────────────────────────────
 
-function BlockRenderer({ block, themeObj, preview }) {
+function BlockRenderer({ block, themeObj, preview, onUpdate }) {
   const { type, data } = block;
 
   switch (type) {
-    case "cover": return <CoverBlock data={data} themeObj={themeObj} />;
-    case "richText": return <RichTextBlock data={data} />;
-    case "callout": return <CalloutBlock data={data} />;
+    case "cover": return <CoverBlock data={data} themeObj={themeObj} onUpdate={onUpdate} editable={!preview} />;
+    case "richText": return <RichTextBlock data={data} onUpdate={onUpdate} editable={!preview} />;
+    case "callout": return <CalloutBlock data={data} onUpdate={onUpdate} editable={!preview} />;
     case "image": return <ImageBlock data={data} />;
     case "video": return <VideoBlock data={data} />;
     case "divider": return <DividerBlock data={data} />;
@@ -410,36 +492,74 @@ function BlockRenderer({ block, themeObj, preview }) {
   }
 }
 
-function CoverBlock({ data, themeObj }) {
+const inlineEditableStyle = { outline: "none", background: "transparent", border: "none", width: "100%", cursor: "text" };
+
+function CoverBlock({ data, themeObj, onUpdate, editable }) {
   return (
     <div style={{ background: data.background || themeObj.accent, minHeight: data.minHeight || 280, display: "flex", flexDirection: "column", alignItems: data.align === "left" ? "flex-start" : data.align === "right" ? "flex-end" : "center", justifyContent: "center", padding: "48px 48px", textAlign: data.align || "center" }}>
       {data.logoText && <div style={{ fontSize: 13, fontWeight: 800, color: "rgba(255,255,255,.6)", letterSpacing: 2, textTransform: "uppercase", marginBottom: 24 }}>{data.logoText}</div>}
-      <h1 style={{ fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 900, color: data.textColor || "#fff", lineHeight: 1.1, letterSpacing: "-1px", marginBottom: 16 }}>{data.title}</h1>
-      {data.subtitle && <p style={{ fontSize: 17, color: `${data.textColor || "#fff"}cc`, lineHeight: 1.6, maxWidth: 480 }}>{data.subtitle}</p>}
+      <h1
+        contentEditable={editable}
+        suppressContentEditableWarning
+        onBlur={editable ? e => onUpdate({ title: e.currentTarget.textContent }) : undefined}
+        onClick={e => editable && e.stopPropagation()}
+        style={{ ...inlineEditableStyle, fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 900, color: data.textColor || "#fff", lineHeight: 1.1, letterSpacing: "-1px", marginBottom: 16 }}
+      >
+        {data.title}
+      </h1>
+      <p
+        contentEditable={editable}
+        suppressContentEditableWarning
+        onBlur={editable ? e => onUpdate({ subtitle: e.currentTarget.textContent }) : undefined}
+        onClick={e => editable && e.stopPropagation()}
+        style={{ ...inlineEditableStyle, fontSize: 17, color: `${data.textColor || "#fff"}cc`, lineHeight: 1.6, maxWidth: 480 }}
+      >
+        {data.subtitle || (editable ? "Add subtitle…" : "")}
+      </p>
       {data.showDate && <p style={{ fontSize: 12, color: `${data.textColor || "#fff"}88`, marginTop: 28, fontWeight: 600, letterSpacing: 1 }}>{new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}</p>}
     </div>
   );
 }
 
-function RichTextBlock({ data }) {
+function RichTextBlock({ data, onUpdate, editable }) {
   const textAlign = data.align || "left";
   const paddingMap = { sm: "16px 32px", md: "24px 48px", lg: "40px 48px" };
   return (
     <div
-      style={{ padding: paddingMap[data.padding] || "24px 48px", textAlign, lineHeight: 1.7 }}
-      dangerouslySetInnerHTML={{ __html: data.html || "" }}
+      contentEditable={editable}
+      suppressContentEditableWarning
+      onInput={editable ? e => onUpdate({ html: e.currentTarget.innerHTML }) : undefined}
+      onClick={e => editable && e.stopPropagation()}
+      style={{ padding: paddingMap[data.padding] || "24px 48px", textAlign, lineHeight: 1.7, outline: "none", minHeight: editable ? 60 : undefined, cursor: editable ? "text" : "default" }}
+      dangerouslySetInnerHTML={{ __html: data.html || (editable ? "<p>Click to edit text…</p>" : "") }}
     />
   );
 }
 
-function CalloutBlock({ data }) {
+function CalloutBlock({ data, onUpdate, editable }) {
   return (
     <div style={{ margin: "0 48px", padding: "20px 24px", background: data.background || "#FFFBEB", borderLeft: `4px solid ${data.borderColor || "#D97706"}`, borderRadius: 10 }}>
       <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
-        {data.icon && <span style={{ fontSize: 20, flexShrink: 0 }}>{data.icon}</span>}
-        <div>
-          {data.title && <p style={{ fontSize: 14, fontWeight: 700, color: data.textColor || "#111827", marginBottom: 4 }}>{data.title}</p>}
-          <p style={{ fontSize: 14, color: data.textColor || "#374151", lineHeight: 1.65 }}>{data.text}</p>
+        <Lightbulb size={18} color={data.borderColor || "#D97706"} style={{ flexShrink: 0, marginTop: 2 }} />
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <p
+            contentEditable={editable}
+            suppressContentEditableWarning
+            onBlur={editable ? e => onUpdate({ title: e.currentTarget.textContent }) : undefined}
+            onClick={e => editable && e.stopPropagation()}
+            style={{ fontSize: 14, fontWeight: 700, color: data.textColor || "#111827", marginBottom: 4, outline: "none", cursor: editable ? "text" : "default" }}
+          >
+            {data.title || (editable ? "Callout title…" : "")}
+          </p>
+          <p
+            contentEditable={editable}
+            suppressContentEditableWarning
+            onBlur={editable ? e => onUpdate({ text: e.currentTarget.textContent }) : undefined}
+            onClick={e => editable && e.stopPropagation()}
+            style={{ fontSize: 14, color: data.textColor || "#374151", lineHeight: 1.65, outline: "none", cursor: editable ? "text" : "default" }}
+          >
+            {data.text || (editable ? "Add callout text…" : "")}
+          </p>
         </div>
       </div>
     </div>
@@ -475,7 +595,7 @@ function VideoBlock({ data }) {
   if (!embedUrl) {
     return (
       <div style={{ margin: "16px 48px", background: "#F9FAFB", border: "2px dashed #E5E7EB", borderRadius: 12, padding: "40px 32px", textAlign: "center" }}>
-        <span style={{ fontSize: 28 }}>▶️</span>
+        <div style={{ display: "flex", justifyContent: "center", marginBottom: 8 }}><Play size={28} color="#D1D5DB" /></div>
         <p style={{ fontSize: 13, color: "#9CA3AF", marginTop: 8 }}>Paste a YouTube or Vimeo URL in the properties panel</p>
       </div>
     );
@@ -679,8 +799,9 @@ function SignatureBlock({ data, themeObj }) {
               {field.label}{field.required && <span style={{ color: "#EF4444" }}> *</span>}
             </label>
             {field.type === "signature" ? (
-              <div style={{ height: 64, border: `1.5px dashed ${themeObj.accent}`, borderRadius: 10, background: themeObj.accentLight, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <span style={{ fontSize: 12, color: themeObj.accent }}>✍️ Sign here</span>
+              <div style={{ height: 64, border: `1.5px dashed ${themeObj.accent}`, borderRadius: 10, background: themeObj.accentLight, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
+                <PenLine size={14} color={themeObj.accent} />
+                <span style={{ fontSize: 12, color: themeObj.accent }}>Sign here</span>
               </div>
             ) : (
               <div style={{ height: 40, border: "1px solid #E5E7EB", borderRadius: 8, background: "#fff" }} />
@@ -731,8 +852,9 @@ function FormBlock({ data, themeObj }) {
                 {[1, 2, 3, 4, 5].map(n => <Star key={n} size={22} color="#E5E7EB" fill="#E5E7EB" />)}
               </div>
             ) : field.type === "file" ? (
-              <div style={{ height: 40, border: "1px dashed #D1D5DB", borderRadius: 8, background: "#F9FAFB", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <span style={{ fontSize: 13, color: "#9CA3AF" }}>📎 Choose file…</span>
+              <div style={{ height: 40, border: "1px dashed #D1D5DB", borderRadius: 8, background: "#F9FAFB", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
+                <Paperclip size={13} color="#9CA3AF" />
+                <span style={{ fontSize: 13, color: "#9CA3AF" }}>Choose file…</span>
               </div>
             ) : (
               <div style={{ height: 40, border: "1px solid #E5E7EB", borderRadius: 8, background: "#F9FAFB", padding: "0 12px", display: "flex", alignItems: "center" }}>
@@ -783,7 +905,7 @@ function RightSidebar({ doc, setDoc, selectedId, activePage, themeObj }) {
   return (
     <aside style={{ width: 280, background: "#FAFAFA", borderLeft: "1px solid #E5E7EB", overflowY: "auto", flexShrink: 0 }}>
       <div style={{ padding: "12px 14px", borderBottom: "1px solid #E5E7EB", display: "flex", alignItems: "center", gap: 8 }}>
-        <span style={{ fontSize: 16 }}>{BLOCK_DEFS[block.type]?.icon}</span>
+        <BlockTypeIcon type={block.type} size={14} color="#6B7280" />
         <p style={{ fontSize: 12, fontWeight: 700, color: "#374151" }}>{BLOCK_DEFS[block.type]?.label}</p>
       </div>
       <div style={{ padding: 14, display: "flex", flexDirection: "column", gap: 14 }}>
@@ -1350,7 +1472,7 @@ function FormProps({ data, updateData, themeObj }) {
               onMouseEnter={e => { e.currentTarget.style.borderColor = themeObj.accent; e.currentTarget.style.color = themeObj.accent; }}
               onMouseLeave={e => { e.currentTarget.style.borderColor = "#E5E7EB"; e.currentTarget.style.color = "#374151"; }}
             >
-              <span style={{ fontSize: 12 }}>{ft.icon}</span> {ft.label}
+              {(() => { const FI = FIELD_ICON_MAP[ft.type]; return FI ? <FI size={12} /> : null; })()} {ft.label}
             </button>
           ))}
         </div>
@@ -1367,7 +1489,7 @@ function FormProps({ data, updateData, themeObj }) {
               onClick={() => setExpandedField(expandedField === field.id ? null : field.id)}
               style={{ display: "flex", alignItems: "center", gap: 8, padding: "9px 10px", cursor: "pointer", background: "#F9FAFB" }}
             >
-              <span style={{ fontSize: 12 }}>{FORM_FIELD_TYPES.find(t => t.type === field.type)?.icon || "?"}</span>
+              {(() => { const FI = FIELD_ICON_MAP[field.type]; return FI ? <FI size={12} /> : <Hash size={12} />; })()}
               <span style={{ flex: 1, fontSize: 12, fontWeight: 600, color: "#374151", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{field.label}</span>
               {field.required && <span style={{ fontSize: 9, fontWeight: 700, color: "#EF4444", background: "#FEE2E2", borderRadius: 4, padding: "1px 4px" }}>REQ</span>}
               <div style={{ display: "flex", gap: 2 }}>
@@ -1424,7 +1546,7 @@ function FormProps({ data, updateData, themeObj }) {
 export default function TemplateBuilderClient({ savedTemplates = [] }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const templateId = searchParams.get("id");
+  const templateId = searchParams.get("templateId") || searchParams.get("id");
   const initialType = searchParams.get("type") || "proposal";
 
   const [doc, setDoc] = useState(() => createDefaultDocument(initialType));
@@ -1438,6 +1560,7 @@ export default function TemplateBuilderClient({ savedTemplates = [] }) {
   const [viewMode, setViewMode] = useState("desktop");
   const [saving, setSaving] = useState(false);
   const [savedTemplateId, setSavedTemplateId] = useState(templateId || null);
+  const [saveState, setSaveState] = useState({ type: "", message: "" });
 
   const themeObj = TEMPLATE_THEMES[theme] || TEMPLATE_THEMES.coral;
 
@@ -1456,26 +1579,54 @@ export default function TemplateBuilderClient({ savedTemplates = [] }) {
   }, [templateId]);
 
   async function handleSave() {
+    if (!templateName.trim()) {
+      setSaveState({ type: "error", message: "Template name is required." });
+      return;
+    }
+
     setSaving(true);
+    setSaveState({ type: "", message: "" });
     const content = JSON.stringify({ ...doc, theme });
+
     try {
       if (savedTemplateId) {
-        await fetch(`/api/templates/${savedTemplateId}`, {
+        const res = await fetch(`/api/templates/${savedTemplateId}`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name: templateName, type: docType, content }),
+          body: JSON.stringify({ name: templateName.trim(), type: docType, content }),
         });
+        const data = await res.json();
+        if (!res.ok) {
+          setSaveState({ type: "error", message: data?.error || `Save failed (${res.status})` });
+          return;
+        }
+        setSaveState({ type: "success", message: "Template saved." });
       } else {
         const res = await fetch("/api/templates", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name: templateName, type: docType, content }),
+          body: JSON.stringify({ name: templateName.trim(), type: docType, content }),
         });
         const data = await res.json();
-        if (data?.template?.id) setSavedTemplateId(data.template.id);
+        if (!res.ok) {
+          setSaveState({ type: "error", message: data?.error || `Save failed (${res.status})` });
+          return;
+        }
+        if (data?.id || data?.template?.id) {
+          const newId = data?.template?.id || data?.id;
+          setSavedTemplateId(newId);
+          router.replace(`/templates/builder?templateId=${newId}`, { scroll: false });
+        }
+        setSaveState({ type: "success", message: "Template saved." });
       }
-    } catch (e) { console.error(e); }
-    setSaving(false);
+    } catch (e) {
+      console.error("handleSave error:", e);
+      setSaveState({ type: "error", message: "Network error — could not save." });
+    } finally {
+      setSaving(false);
+      // auto-clear success after 3s
+      setTimeout(() => setSaveState(s => s.type === "success" ? { type: "", message: "" } : s), 3000);
+    }
   }
 
   return (
@@ -1489,6 +1640,28 @@ export default function TemplateBuilderClient({ savedTemplates = [] }) {
         saving={saving} onSave={handleSave}
         router={router}
       />
+
+      {saveState.message && (
+        <div
+          style={{
+            position: "fixed",
+            bottom: 24,
+            right: 24,
+            zIndex: 9999,
+            padding: "10px 18px",
+            borderRadius: 10,
+            background: saveState.type === "error" ? "#FEF2F2" : "#F0FDF4",
+            color: saveState.type === "error" ? "#B91C1C" : "#166534",
+            border: `1px solid ${saveState.type === "error" ? "#FECACA" : "#BBF7D0"}`,
+            fontSize: 13,
+            fontWeight: 600,
+            boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+            pointerEvents: "none",
+          }}
+        >
+          {saveState.message}
+        </div>
+      )}
 
       <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
         {!preview && (
@@ -1504,17 +1677,19 @@ export default function TemplateBuilderClient({ savedTemplates = [] }) {
         {/* Page tabs + canvas */}
         <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
           {/* Page tabs */}
-          <div style={{ background: "#fff", borderBottom: "1px solid #E5E7EB", padding: "0 16px", display: "flex", gap: 4, overflowX: "auto", flexShrink: 0 }}>
-            {doc.pages.map((page, idx) => (
-              <button
-                key={page.id}
-                onClick={() => { setActivePage(idx); setSelectedId(null); }}
-                style={{ padding: "10px 16px", border: "none", background: "none", borderBottom: activePage === idx ? `2px solid ${themeObj.accent}` : "2px solid transparent", color: activePage === idx ? themeObj.accent : "#6B7280", fontSize: 13, fontWeight: activePage === idx ? 700 : 500, cursor: "pointer", whiteSpace: "nowrap", flexShrink: 0 }}
-              >
-                {page.title}
-              </button>
-            ))}
-          </div>
+          {!preview && (
+            <div style={{ background: "#fff", borderBottom: "1px solid #E5E7EB", padding: "0 16px", display: "flex", gap: 4, overflowX: "auto", flexShrink: 0 }}>
+              {doc.pages.map((page, idx) => (
+                <button
+                  key={page.id}
+                  onClick={() => { setActivePage(idx); setSelectedId(null); }}
+                  style={{ padding: "10px 16px", border: "none", background: "none", borderBottom: activePage === idx ? `2px solid ${themeObj.accent}` : "2px solid transparent", color: activePage === idx ? themeObj.accent : "#6B7280", fontSize: 13, fontWeight: activePage === idx ? 700 : 500, cursor: "pointer", whiteSpace: "nowrap", flexShrink: 0 }}
+                >
+                  {page.title}
+                </button>
+              ))}
+            </div>
+          )}
 
           <Canvas
             doc={doc} setDoc={setDoc}

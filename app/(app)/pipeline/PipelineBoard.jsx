@@ -59,7 +59,7 @@ export default function PipelineBoard({ projects: initialProjects, stages }) {
             <div
               key={stage.key}
               className={cn(
-                "flex w-56 flex-col rounded-xl border border-zinc-200 bg-zinc-50 transition-colors",
+                "flex w-56 flex-col rounded border border-zinc-200 bg-zinc-50 transition-colors",
                 dragOver === stage.key && "border-zinc-900 bg-zinc-100"
               )}
               onDragOver={(e) => onDragOver(e, stage.key)}
@@ -90,7 +90,7 @@ export default function PipelineBoard({ projects: initialProjects, stages }) {
                       draggable
                       onDragStart={(e) => onDragStart(e, project.id)}
                       className={cn(
-                        "cursor-grab rounded-lg border border-zinc-200 bg-white p-3 shadow-sm active:cursor-grabbing",
+                        "cursor-grab rounded border border-zinc-200 bg-white p-3 shadow-sm active:cursor-grabbing",
                         dragging === project.id && "opacity-50"
                       )}
                     >
@@ -127,7 +127,7 @@ export default function PipelineBoard({ projects: initialProjects, stages }) {
                 })}
 
                 {cols.length === 0 && (
-                  <div className="rounded-lg border border-dashed border-zinc-200 py-6 text-center">
+                  <div className="rounded border border-dashed border-zinc-200 py-6 text-center">
                     <p className="text-[10px] text-zinc-300">Drop here</p>
                   </div>
                 )}

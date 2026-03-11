@@ -56,7 +56,7 @@ export default async function InvoiceDetailPage({ params }) {
       </div>
 
       {/* Invoice document */}
-      <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
+      <div className="overflow-hidden rounded border border-zinc-200 bg-white shadow-sm">
         {/* Top stripe by status */}
         <div className={`h-1.5 w-full ${invoice.status === "paid" ? "bg-green-400" : invoice.status === "overdue" ? "bg-red-400" : invoice.status === "sent" ? "bg-blue-400" : "bg-zinc-200"}`} />
 
@@ -64,7 +64,7 @@ export default async function InvoiceDetailPage({ params }) {
           {/* Header row */}
           <div className="mb-10 flex items-start justify-between gap-6">
             <div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-zinc-900">
+              <div className="flex h-12 w-12 items-center justify-center rounded bg-zinc-900">
                 <FileText className="h-6 w-6 text-white" />
               </div>
               <h1 className="mt-4 text-3xl font-bold text-zinc-900">Invoice</h1>
@@ -123,7 +123,7 @@ export default async function InvoiceDetailPage({ params }) {
           </div>
 
           {/* Line items table */}
-          <div className="mb-8 overflow-hidden rounded-xl border border-zinc-100">
+          <div className="mb-8 overflow-hidden rounded border border-zinc-100">
             <table className="w-full">
               <thead className="bg-zinc-50">
                 <tr>
@@ -185,7 +185,7 @@ export default async function InvoiceDetailPage({ params }) {
 
           {/* Payment Plan Milestones */}
           {invoice.paymentPlans && invoice.paymentPlans.length > 0 && (
-            <div className="mt-8 rounded-xl border border-zinc-100 overflow-hidden">
+            <div className="mt-8 rounded border border-zinc-100 overflow-hidden">
               <div className="flex items-center gap-2 bg-zinc-50 px-4 py-3 border-b border-zinc-100">
                 <CreditCard className="h-4 w-4 text-zinc-400" />
                 <span className="text-xs font-semibold uppercase tracking-wider text-zinc-500">Payment Schedule</span>
@@ -257,7 +257,7 @@ export default async function InvoiceDetailPage({ params }) {
 
           {/* Notes */}
           {invoice.notes && (
-            <div className="mt-8 rounded-xl bg-zinc-50 p-5">
+            <div className="mt-8 rounded bg-zinc-50 p-5">
               <p className="mb-1 text-[10px] font-semibold uppercase tracking-widest text-zinc-400">Notes</p>
               <p className="whitespace-pre-wrap text-sm text-zinc-600">{invoice.notes}</p>
             </div>

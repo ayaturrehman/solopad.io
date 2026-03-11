@@ -30,7 +30,7 @@ export default function InvoiceSection({ projectId, invoices }) {
       </CardHeader>
       <CardBody className="space-y-4">
         {parsedInvoices.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-zinc-200 py-8 text-center">
+          <div className="rounded border border-dashed border-zinc-200 py-8 text-center">
             <ReceiptText className="mx-auto mb-2 h-8 w-8 text-zinc-300" />
             <p className="text-sm text-zinc-400">No invoices yet</p>
             <Link
@@ -79,7 +79,7 @@ function InvoiceCard({ invoice, onRefresh }) {
   const isPaid = invoice.status === "paid";
 
   return (
-    <div className="space-y-3 rounded-lg border border-zinc-100 p-4">
+    <div className="space-y-3 rounded border border-zinc-100 p-4">
       <div className="flex items-center justify-between">
         <div>
           <Link

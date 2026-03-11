@@ -47,16 +47,16 @@ export default function CalendarView({ events }) {
   const todayStr = today.toISOString().split("T")[0];
 
   return (
-    <div className="rounded-xl border border-zinc-200 bg-white p-6">
+    <div className="rounded border border-zinc-200 bg-white p-6">
       {/* Header */}
       <div className="mb-5 flex items-center justify-between">
-        <button onClick={prevMonth} className="rounded-lg border border-zinc-200 p-1.5 hover:bg-zinc-50">
+        <button onClick={prevMonth} className="rounded border border-zinc-200 p-1.5 hover:bg-zinc-50">
           <ChevronLeft className="h-4 w-4 text-zinc-600" />
         </button>
         <h2 className="font-semibold text-zinc-900">
           {MONTH_NAMES[month]} {year}
         </h2>
-        <button onClick={nextMonth} className="rounded-lg border border-zinc-200 p-1.5 hover:bg-zinc-50">
+        <button onClick={nextMonth} className="rounded border border-zinc-200 p-1.5 hover:bg-zinc-50">
           <ChevronRight className="h-4 w-4 text-zinc-600" />
         </button>
       </div>
@@ -80,7 +80,7 @@ export default function CalendarView({ events }) {
             <div
               key={dateStr}
               className={cn(
-                "min-h-[70px] rounded-lg border p-1.5 text-xs",
+                "min-h-[70px] rounded border p-1.5 text-xs",
                 isToday ? "border-zinc-900 bg-zinc-50" : "border-zinc-100"
               )}
             >

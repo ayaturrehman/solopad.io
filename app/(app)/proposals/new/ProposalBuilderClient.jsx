@@ -27,7 +27,7 @@ function Input({ className, ...props }) {
   return (
     <input
       className={cn(
-        "w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 placeholder-zinc-400 outline-none focus:border-zinc-400 focus:ring-1 focus:ring-zinc-200",
+        "w-full rounded border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 placeholder-zinc-400 outline-none focus:border-zinc-400 focus:ring-1 focus:ring-zinc-200",
         className
       )}
       {...props}
@@ -39,7 +39,7 @@ function Textarea({ className, ...props }) {
   return (
     <textarea
       className={cn(
-        "w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 placeholder-zinc-400 outline-none focus:border-zinc-400 focus:ring-1 focus:ring-zinc-200 resize-none",
+        "w-full rounded border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 placeholder-zinc-400 outline-none focus:border-zinc-400 focus:ring-1 focus:ring-zinc-200 resize-none",
         className
       )}
       {...props}
@@ -164,7 +164,7 @@ export default function ProposalBuilderClient({ projects }) {
         {/* Left: Form */}
         <div className="space-y-5">
           {/* Details */}
-          <div className="rounded-2xl border border-zinc-200 bg-white p-6">
+          <div className="rounded border border-zinc-200 bg-white p-6">
             <h2 className="mb-4 text-sm font-semibold text-zinc-900">Details</h2>
             <div className="grid gap-4">
               <div>
@@ -180,7 +180,7 @@ export default function ProposalBuilderClient({ projects }) {
                 <select
                   value={projectId}
                   onChange={(e) => handleProjectChange(e.target.value)}
-                  className="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 outline-none focus:border-zinc-400"
+                  className="w-full rounded border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 outline-none focus:border-zinc-400"
                 >
                   <option value="">No project</option>
                   {projects.map((p) => (
@@ -221,7 +221,7 @@ export default function ProposalBuilderClient({ projects }) {
                   <select
                     value={currency}
                     onChange={(e) => setCurrency(e.target.value)}
-                    className="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 outline-none focus:border-zinc-400"
+                    className="w-full rounded border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 outline-none focus:border-zinc-400"
                   >
                     {CURRENCIES.map((c) => (
                       <option key={c} value={c}>{c}</option>
@@ -233,7 +233,7 @@ export default function ProposalBuilderClient({ projects }) {
           </div>
 
           {/* Introduction */}
-          <div className="rounded-2xl border border-zinc-200 bg-white p-6">
+          <div className="rounded border border-zinc-200 bg-white p-6">
             <h2 className="mb-4 text-sm font-semibold text-zinc-900">Introduction</h2>
             <Textarea
               rows={4}
@@ -244,20 +244,20 @@ export default function ProposalBuilderClient({ projects }) {
           </div>
 
           {/* Sections */}
-          <div className="rounded-2xl border border-zinc-200 bg-white p-6">
+          <div className="rounded border border-zinc-200 bg-white p-6">
             <div className="mb-4 flex items-center justify-between">
               <h2 className="text-sm font-semibold text-zinc-900">Scope & Deliverables</h2>
               <button
                 type="button"
                 onClick={addSection}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 px-2.5 py-1.5 text-xs font-medium text-zinc-600 hover:bg-zinc-50"
+                className="inline-flex items-center gap-1.5 rounded border border-zinc-200 px-2.5 py-1.5 text-xs font-medium text-zinc-600 hover:bg-zinc-50"
               >
                 <Plus className="h-3.5 w-3.5" /> Add section
               </button>
             </div>
             <div className="space-y-4">
               {sections.map((section, i) => (
-                <div key={i} className="rounded-xl border border-zinc-100 p-4">
+                <div key={i} className="rounded border border-zinc-100 p-4">
                   <div className="mb-3 flex items-center gap-3">
                     <Input
                       value={section.heading}
@@ -269,7 +269,7 @@ export default function ProposalBuilderClient({ projects }) {
                       <button
                         type="button"
                         onClick={() => removeSection(i)}
-                        className="rounded-lg p-1.5 text-zinc-400 hover:bg-red-50 hover:text-red-500"
+                        className="rounded p-1.5 text-zinc-400 hover:bg-red-50 hover:text-red-500"
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
@@ -287,13 +287,13 @@ export default function ProposalBuilderClient({ projects }) {
           </div>
 
           {/* Pricing */}
-          <div className="rounded-2xl border border-zinc-200 bg-white p-6">
+          <div className="rounded border border-zinc-200 bg-white p-6">
             <div className="mb-4 flex items-center justify-between">
               <h2 className="text-sm font-semibold text-zinc-900">Pricing</h2>
               <button
                 type="button"
                 onClick={addPricingRow}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 px-2.5 py-1.5 text-xs font-medium text-zinc-600 hover:bg-zinc-50"
+                className="inline-flex items-center gap-1.5 rounded border border-zinc-200 px-2.5 py-1.5 text-xs font-medium text-zinc-600 hover:bg-zinc-50"
               >
                 <Plus className="h-3.5 w-3.5" /> Add item
               </button>
@@ -323,7 +323,7 @@ export default function ProposalBuilderClient({ projects }) {
                     <button
                       type="button"
                       onClick={() => removePricingRow(i)}
-                      className="rounded-lg p-1.5 text-zinc-400 hover:bg-red-50 hover:text-red-500"
+                      className="rounded p-1.5 text-zinc-400 hover:bg-red-50 hover:text-red-500"
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
@@ -367,7 +367,7 @@ export default function ProposalBuilderClient({ projects }) {
 
         {/* Right: Summary + actions */}
         <div className="space-y-4">
-          <div className="rounded-2xl border border-zinc-200 bg-white p-5">
+          <div className="rounded border border-zinc-200 bg-white p-5">
             <h3 className="mb-4 text-sm font-semibold text-zinc-900">Summary</h3>
             <div className="space-y-3 text-sm">
               <div>
@@ -395,7 +395,7 @@ export default function ProposalBuilderClient({ projects }) {
           </div>
 
           {error && (
-            <div className="flex items-center gap-2 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">
+            <div className="flex items-center gap-2 rounded bg-red-50 px-4 py-3 text-sm text-red-600">
               <AlertCircle className="h-4 w-4 shrink-0" />
               {error}
             </div>
@@ -406,7 +406,7 @@ export default function ProposalBuilderClient({ projects }) {
               type="button"
               disabled={saving}
               onClick={() => handleSave("draft")}
-              className="w-full rounded-lg border border-zinc-200 bg-white py-2.5 text-sm font-semibold text-zinc-700 hover:bg-zinc-50 disabled:opacity-50"
+              className="w-full rounded border border-zinc-200 bg-white py-2.5 text-sm font-semibold text-zinc-700 hover:bg-zinc-50 disabled:opacity-50"
             >
               {saving ? "Saving…" : "Save as draft"}
             </button>
@@ -414,7 +414,7 @@ export default function ProposalBuilderClient({ projects }) {
               type="button"
               disabled={saving}
               onClick={() => handleSave("sent")}
-              className="w-full rounded-lg bg-zinc-900 py-2.5 text-sm font-semibold text-white hover:bg-zinc-700 disabled:opacity-50"
+              className="w-full rounded bg-zinc-900 py-2.5 text-sm font-semibold text-white hover:bg-zinc-700 disabled:opacity-50"
             >
               {saving ? "Saving…" : "Save & Send"}
             </button>

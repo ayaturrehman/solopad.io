@@ -165,7 +165,7 @@ export default function TimeTrackerClient({ entries: initialEntries, projects })
         <h1 className="mb-6 text-xl font-semibold text-zinc-900">Time Tracker</h1>
 
         {/* Active Timer Card */}
-        <div className="mb-6 rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
+        <div className="mb-6 rounded border border-zinc-200 bg-white p-6">
           <div className="flex flex-col gap-4">
             <div className="flex items-center gap-3">
               <input
@@ -174,13 +174,13 @@ export default function TimeTrackerClient({ entries: initialEntries, projects })
                 value={timerDesc}
                 onChange={(e) => setTimerDesc(e.target.value)}
                 disabled={running}
-                className="flex-1 rounded-lg border border-zinc-200 px-3 py-2 text-sm text-zinc-800 placeholder-zinc-400 focus:border-zinc-400 focus:outline-none disabled:bg-zinc-50"
+                className="flex-1 rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-800 placeholder-zinc-400 focus:border-zinc-400 focus:outline-none disabled:bg-zinc-50"
               />
               <select
                 value={timerProject}
                 onChange={(e) => setTimerProject(e.target.value)}
                 disabled={running}
-                className="rounded-lg border border-zinc-200 px-2 py-2 text-sm text-zinc-600 focus:outline-none disabled:bg-zinc-50"
+                className="rounded border border-zinc-200 px-2 py-2 text-sm text-zinc-600 focus:outline-none disabled:bg-zinc-50"
               >
                 <option value="">No project</option>
                 {projects.map((p) => (
@@ -191,7 +191,7 @@ export default function TimeTrackerClient({ entries: initialEntries, projects })
                 onClick={() => setTimerBillable((v) => !v)}
                 disabled={running}
                 className={cn(
-                  "flex items-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-medium transition-colors",
+                  "flex items-center gap-1.5 rounded border px-3 py-2 text-xs font-medium transition-colors",
                   timerBillable
                     ? "border-green-200 bg-green-50 text-green-700"
                     : "border-zinc-200 text-zinc-400"
@@ -209,7 +209,7 @@ export default function TimeTrackerClient({ entries: initialEntries, projects })
               {running ? (
                 <button
                   onClick={stopTimer}
-                  className="inline-flex items-center gap-2 rounded-lg bg-red-500 px-6 py-2.5 text-sm font-semibold text-white hover:bg-red-600"
+                  className="inline-flex items-center gap-2 rounded bg-red-500 px-6 py-2.5 text-sm font-semibold text-white hover:bg-red-600"
                 >
                   <Square className="h-4 w-4" />
                   Stop
@@ -217,7 +217,7 @@ export default function TimeTrackerClient({ entries: initialEntries, projects })
               ) : (
                 <button
                   onClick={startTimer}
-                  className="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-6 py-2.5 text-sm font-semibold text-white hover:bg-zinc-700"
+                  className="inline-flex items-center gap-2 rounded bg-zinc-900 px-6 py-2.5 text-sm font-semibold text-white hover:bg-zinc-700"
                 >
                   <Play className="h-4 w-4" />
                   Start Timer
@@ -258,7 +258,7 @@ export default function TimeTrackerClient({ entries: initialEntries, projects })
 
         {/* Manual form */}
         {showManual && (
-          <div className="mb-5 rounded-xl border border-zinc-200 bg-white p-4 shadow-sm">
+          <div className="mb-5 rounded border border-zinc-200 bg-white p-4">
             <form onSubmit={submitManual} className="flex flex-col gap-3">
               <div className="flex flex-wrap gap-2">
                 <input
@@ -266,12 +266,12 @@ export default function TimeTrackerClient({ entries: initialEntries, projects })
                   placeholder="Description"
                   value={manualForm.description}
                   onChange={(e) => setManualForm((d) => ({ ...d, description: e.target.value }))}
-                  className="flex-1 min-w-40 rounded-lg border border-zinc-200 px-3 py-1.5 text-sm focus:outline-none focus:border-zinc-400"
+                  className="flex-1 min-w-40 rounded border border-zinc-200 px-3 py-1.5 text-sm focus:outline-none focus:border-zinc-400"
                 />
                 <select
                   value={manualForm.projectId}
                   onChange={(e) => setManualForm((d) => ({ ...d, projectId: e.target.value }))}
-                  className="rounded-lg border border-zinc-200 px-2 py-1.5 text-xs focus:outline-none"
+                  className="rounded border border-zinc-200 px-2 py-1.5 text-xs focus:outline-none"
                 >
                   <option value="">No project</option>
                   {projects.map((p) => (
@@ -284,20 +284,20 @@ export default function TimeTrackerClient({ entries: initialEntries, projects })
                   type="date"
                   value={manualForm.date}
                   onChange={(e) => setManualForm((d) => ({ ...d, date: e.target.value }))}
-                  className="rounded-lg border border-zinc-200 px-2 py-1.5 text-xs focus:outline-none"
+                  className="rounded border border-zinc-200 px-2 py-1.5 text-xs focus:outline-none"
                 />
                 <input
                   type="time"
                   value={manualForm.startTime}
                   onChange={(e) => setManualForm((d) => ({ ...d, startTime: e.target.value }))}
-                  className="rounded-lg border border-zinc-200 px-2 py-1.5 text-xs focus:outline-none"
+                  className="rounded border border-zinc-200 px-2 py-1.5 text-xs focus:outline-none"
                 />
                 <span className="flex items-center text-xs text-zinc-400">to</span>
                 <input
                   type="time"
                   value={manualForm.endTime}
                   onChange={(e) => setManualForm((d) => ({ ...d, endTime: e.target.value }))}
-                  className="rounded-lg border border-zinc-200 px-2 py-1.5 text-xs focus:outline-none"
+                  className="rounded border border-zinc-200 px-2 py-1.5 text-xs focus:outline-none"
                 />
                 <input
                   type="number"
@@ -306,13 +306,13 @@ export default function TimeTrackerClient({ entries: initialEntries, projects })
                   placeholder="Rate/hr"
                   value={manualForm.hourlyRate}
                   onChange={(e) => setManualForm((d) => ({ ...d, hourlyRate: e.target.value }))}
-                  className="w-24 rounded-lg border border-zinc-200 px-2 py-1.5 text-xs focus:outline-none"
+                  className="w-24 rounded border border-zinc-200 px-2 py-1.5 text-xs focus:outline-none"
                 />
                 <button
                   type="button"
                   onClick={() => setManualForm((d) => ({ ...d, billable: !d.billable }))}
                   className={cn(
-                    "flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium",
+                    "flex items-center gap-1.5 rounded border px-3 py-1.5 text-xs font-medium",
                     manualForm.billable
                       ? "border-green-200 bg-green-50 text-green-700"
                       : "border-zinc-200 text-zinc-400"
@@ -326,13 +326,13 @@ export default function TimeTrackerClient({ entries: initialEntries, projects })
                 <button
                   type="button"
                   onClick={() => setShowManual(false)}
-                  className="rounded-lg px-3 py-1.5 text-xs text-zinc-500 hover:text-zinc-800"
+                  className="rounded px-3 py-1.5 text-xs text-zinc-500 hover:text-zinc-800"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="rounded-lg bg-zinc-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-zinc-700"
+                  className="rounded bg-zinc-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-zinc-700"
                 >
                   Log time
                 </button>
@@ -343,13 +343,13 @@ export default function TimeTrackerClient({ entries: initialEntries, projects })
 
         {/* Entries table */}
         {Object.keys(groups).length === 0 ? (
-          <div className="rounded-xl border border-zinc-200 bg-white p-12 text-center text-sm text-zinc-400 shadow-sm">
+          <div className="rounded border border-zinc-200 bg-white p-12 text-center text-sm text-zinc-400">
             No time entries yet. Start a timer or log time manually.
           </div>
         ) : (
           <div className="flex flex-col gap-4">
             {Object.entries(groups).map(([dateLabel, dayEntries]) => (
-              <div key={dateLabel} className="rounded-xl border border-zinc-200 bg-white shadow-sm">
+              <div key={dateLabel} className="rounded border border-zinc-200 bg-white">
                 <div className="flex items-center justify-between border-b border-zinc-100 px-4 py-2.5">
                   <span className="text-xs font-semibold text-zinc-700">{dateLabel}</span>
                   <span className="text-xs text-zinc-400">

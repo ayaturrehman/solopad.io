@@ -112,7 +112,7 @@ export default function BookingForm({ userId, userName, rules, existingBookings 
   if (submitted) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-zinc-50 px-4">
-        <div className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm text-center">
+        <div className="w-full max-w-sm rounded border border-zinc-200 bg-white p-8 shadow-sm text-center">
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
             <Check className="h-6 w-6 text-green-600" />
           </div>
@@ -133,7 +133,7 @@ export default function BookingForm({ userId, userName, rules, existingBookings 
           <p className="mt-1 text-sm text-zinc-500">Select a time that works for you</p>
         </div>
 
-        <div className="rounded-2xl border border-zinc-200 bg-white shadow-sm p-6">
+        <div className="rounded border border-zinc-200 bg-white shadow-sm p-6">
           {/* Duration selector */}
           <div className="mb-6">
             <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-400">Duration</p>
@@ -143,7 +143,7 @@ export default function BookingForm({ userId, userName, rules, existingBookings 
                   key={d}
                   onClick={() => { setDuration(d); setSelectedSlot(null); }}
                   className={cn(
-                    "rounded-lg border px-4 py-2 text-sm font-medium transition-colors",
+                    "rounded border px-4 py-2 text-sm font-medium transition-colors",
                     duration === d
                       ? "border-zinc-900 bg-zinc-900 text-white"
                       : "border-zinc-200 text-zinc-600 hover:border-zinc-400"
@@ -164,13 +164,13 @@ export default function BookingForm({ userId, userName, rules, existingBookings 
               <div className="flex gap-1">
                 <button
                   onClick={() => { setWeekOffset((v) => v - 1); setSelectedDate(null); setSelectedSlot(null); }}
-                  className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700"
+                  className="rounded p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700"
                 >
                   <ChevronLeft className="h-4 w-4" />
                 </button>
                 <button
                   onClick={() => { setWeekOffset((v) => v + 1); setSelectedDate(null); setSelectedSlot(null); }}
-                  className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700"
+                  className="rounded p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700"
                 >
                   <ChevronRight className="h-4 w-4" />
                 </button>
@@ -188,7 +188,7 @@ export default function BookingForm({ userId, userName, rules, existingBookings 
                     disabled={!avail}
                     onClick={() => { setSelectedDate(day); setSelectedSlot(null); }}
                     className={cn(
-                      "flex flex-col items-center rounded-xl py-2 text-xs transition-colors",
+                      "flex flex-col items-center rounded py-2 text-xs transition-colors",
                       isSelected
                         ? "bg-zinc-900 text-white"
                         : avail
@@ -229,7 +229,7 @@ export default function BookingForm({ userId, userName, rules, existingBookings 
                         key={slot.start.toISOString()}
                         onClick={() => setSelectedSlot(slot)}
                         className={cn(
-                          "rounded-lg border py-2 text-sm font-medium transition-colors",
+                          "rounded border py-2 text-sm font-medium transition-colors",
                           isSelected
                             ? "border-zinc-900 bg-zinc-900 text-white"
                             : "border-zinc-200 text-zinc-700 hover:border-zinc-400"
@@ -251,7 +251,7 @@ export default function BookingForm({ userId, userName, rules, existingBookings 
                 Your details
               </p>
               {error && (
-                <div className="mb-3 rounded-lg bg-red-50 px-3 py-2 text-xs text-red-700">
+                <div className="mb-3 rounded bg-red-50 px-3 py-2 text-xs text-red-700">
                   {error}
                 </div>
               )}
@@ -262,7 +262,7 @@ export default function BookingForm({ userId, userName, rules, existingBookings 
                   placeholder="Your name"
                   value={form.clientName}
                   onChange={(e) => setForm((d) => ({ ...d, clientName: e.target.value }))}
-                  className="rounded-lg border border-zinc-200 px-3 py-2 text-sm focus:border-zinc-400 focus:outline-none"
+                  className="rounded border border-zinc-200 px-3 py-2 text-sm focus:border-zinc-400 focus:outline-none"
                 />
                 <input
                   type="email"
@@ -270,19 +270,19 @@ export default function BookingForm({ userId, userName, rules, existingBookings 
                   placeholder="Your email"
                   value={form.clientEmail}
                   onChange={(e) => setForm((d) => ({ ...d, clientEmail: e.target.value }))}
-                  className="rounded-lg border border-zinc-200 px-3 py-2 text-sm focus:border-zinc-400 focus:outline-none"
+                  className="rounded border border-zinc-200 px-3 py-2 text-sm focus:border-zinc-400 focus:outline-none"
                 />
                 <textarea
                   placeholder="Notes (optional)"
                   value={form.notes}
                   onChange={(e) => setForm((d) => ({ ...d, notes: e.target.value }))}
                   rows={3}
-                  className="rounded-lg border border-zinc-200 px-3 py-2 text-sm resize-none focus:border-zinc-400 focus:outline-none"
+                  className="rounded border border-zinc-200 px-3 py-2 text-sm resize-none focus:border-zinc-400 focus:outline-none"
                 />
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-zinc-700 disabled:opacity-50"
+                  className="rounded bg-zinc-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-zinc-700 disabled:opacity-50"
                 >
                   {submitting ? "Booking…" : "Confirm booking"}
                 </button>

@@ -53,7 +53,7 @@ export default async function ContactDetailPage({ params }) {
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Left: Contact info & edit */}
         <div className="space-y-5 lg:col-span-1">
-          <div className="rounded-xl border border-zinc-200 bg-white p-6">
+          <div className="rounded border border-zinc-200 bg-white p-6">
             <div className="mb-4 flex items-start justify-between">
               <div>
                 <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-zinc-900 text-lg font-bold text-white">
@@ -87,7 +87,7 @@ export default async function ContactDetailPage({ params }) {
             </div>
 
             {contact.notes && (
-              <div className="mt-4 rounded-lg bg-zinc-50 p-3 text-sm text-zinc-600">
+              <div className="mt-4 rounded bg-zinc-50 p-3 text-sm text-zinc-600">
                 {contact.notes}
               </div>
             )}
@@ -95,12 +95,12 @@ export default async function ContactDetailPage({ params }) {
 
           {/* Stats */}
           <div className="grid grid-cols-2 gap-3">
-            <div className="rounded-xl border border-zinc-200 bg-white p-4 text-center">
+            <div className="rounded border border-zinc-200 bg-white p-4 text-center">
               <FolderOpen className="mx-auto mb-1 h-4 w-4 text-zinc-400" />
               <p className="text-2xl font-bold text-zinc-900">{contact.projects.length}</p>
               <p className="text-xs text-zinc-500">Projects</p>
             </div>
-            <div className="rounded-xl border border-zinc-200 bg-white p-4 text-center">
+            <div className="rounded border border-zinc-200 bg-white p-4 text-center">
               <DollarSign className="mx-auto mb-1 h-4 w-4 text-zinc-400" />
               <p className="text-2xl font-bold text-zinc-900">{formatCurrency(totalRevenue)}</p>
               <p className="text-xs text-zinc-500">Revenue</p>
@@ -117,14 +117,14 @@ export default async function ContactDetailPage({ params }) {
             <h2 className="font-semibold text-zinc-900">Projects</h2>
             <Link
               href={`/projects/new?contactId=${contact.id}&clientName=${encodeURIComponent(contact.name)}&clientEmail=${encodeURIComponent(contact.email || "")}`}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 px-3 py-1.5 text-xs font-medium text-zinc-700 hover:bg-zinc-50"
+              className="inline-flex items-center gap-1.5 rounded border border-zinc-200 px-3 py-1.5 text-xs font-medium text-zinc-700 hover:bg-zinc-50"
             >
               New project
             </Link>
           </div>
 
           {contact.projects.length === 0 ? (
-            <div className="rounded-xl border border-dashed border-zinc-200 bg-white px-6 py-12 text-center">
+            <div className="rounded border border-dashed border-zinc-200 bg-white px-6 py-12 text-center">
               <p className="text-sm text-zinc-400">No projects yet for this contact.</p>
             </div>
           ) : (
@@ -132,7 +132,7 @@ export default async function ContactDetailPage({ params }) {
               {contact.projects.map((project) => {
                 const unpaid = project.invoices.filter((i) => i.status !== "paid" && i.status !== "cancelled").reduce((s, i) => s + i.total, 0);
                 return (
-                  <div key={project.id} className="rounded-xl border border-zinc-200 bg-white p-5">
+                  <div key={project.id} className="rounded border border-zinc-200 bg-white p-5">
                     <div className="flex items-start justify-between gap-4">
                       <div>
                         <div className="flex items-center gap-2">

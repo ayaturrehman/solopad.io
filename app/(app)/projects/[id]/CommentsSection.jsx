@@ -6,7 +6,15 @@ import { Send } from "lucide-react";
 import { Card, CardHeader, CardBody } from "@/components/ui/Card";
 import { formatDate } from "@/lib/utils";
 
-export default function CommentsSection({ projectId, comments, isFreelancer, authorName }) {
+export default function CommentsSection({
+  projectId,
+  comments,
+  isFreelancer,
+  authorName,
+  title = "Comments",
+  emptyMessage = "No comments yet.",
+  placeholder = "Add a comment...",
+}) {
   const router = useRouter();
   const [body, setBody] = useState("");
   const [sending, setSending] = useState(false);
@@ -35,11 +43,11 @@ export default function CommentsSection({ projectId, comments, isFreelancer, aut
   return (
     <Card>
       <CardHeader>
-        <h2 className="font-semibold text-zinc-900">Comments</h2>
+        <h2 className="font-semibold text-zinc-900">{title}</h2>
       </CardHeader>
       <CardBody className="space-y-4">
         {comments.length === 0 && (
-          <p className="text-center text-sm text-zinc-400">No comments yet.</p>
+          <p className="text-center text-sm text-zinc-400">{emptyMessage}</p>
         )}
         <div className="max-h-80 space-y-3 overflow-y-auto">
           {comments.map((c) => (
@@ -60,7 +68,7 @@ export default function CommentsSection({ projectId, comments, isFreelancer, aut
                   <span className="text-xs text-zinc-400">{formatDate(c.createdAt)}</span>
                 </div>
                 <div
-                  className={`rounded-lg px-3 py-2 text-sm ${
+                  className={`rounded px-3 py-2 text-sm ${
                     c.authorType === "freelancer" ? "bg-zinc-900 text-white" : "bg-zinc-100 text-zinc-900"
                   }`}
                 >
@@ -73,15 +81,15 @@ export default function CommentsSection({ projectId, comments, isFreelancer, aut
 
         <form onSubmit={sendComment} className="flex gap-2 border-t border-zinc-100 pt-2">
           <input
-            className="h-10 flex-1 rounded-lg border border-zinc-200 px-3 text-sm placeholder:text-zinc-400 focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900"
-            placeholder="Add a comment..."
+            className="h-10 flex-1 rounded border border-zinc-200 px-3 text-sm placeholder:text-zinc-400 focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900"
+            placeholder={placeholder}
             value={body}
             onChange={(e) => setBody(e.target.value)}
           />
           <button
             type="submit"
             disabled={sending || !body.trim()}
-            className="flex h-10 w-10 items-center justify-center rounded-lg bg-zinc-900 text-white hover:bg-zinc-700 disabled:opacity-40"
+            className="flex h-10 w-10 items-center justify-center rounded bg-zinc-900 text-white hover:bg-zinc-700 disabled:opacity-40"
           >
             <Send className="h-4 w-4" />
           </button>

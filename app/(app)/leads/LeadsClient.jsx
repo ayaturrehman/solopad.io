@@ -21,7 +21,7 @@ function Modal({ open, onClose, children }) {
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4" onClick={onClose}>
-      <div className="w-full max-w-md rounded-2xl bg-white shadow-xl" onClick={(e) => e.stopPropagation()}>
+      <div className="w-full max-w-md rounded bg-white shadow-xl" onClick={(e) => e.stopPropagation()}>
         {children}
       </div>
     </div>
@@ -81,7 +81,7 @@ export default function LeadsClient({ leads: initial }) {
       </div>
 
       {leads.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-zinc-200 bg-white py-16 text-center">
+        <div className="flex flex-col items-center justify-center rounded border border-dashed border-zinc-200 bg-white py-16 text-center">
           <Users className="mb-3 h-10 w-10 text-zinc-300" />
           <p className="font-medium text-zinc-500">No leads yet</p>
           <p className="mt-1 text-sm text-zinc-400">Add your first prospect to start tracking</p>
@@ -90,7 +90,7 @@ export default function LeadsClient({ leads: initial }) {
           </button>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white">
+        <div className="overflow-hidden rounded border border-zinc-200 bg-white">
           <table className="w-full">
             <thead className="border-b border-zinc-100 bg-zinc-50">
               <tr>

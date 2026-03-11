@@ -54,7 +54,7 @@ export default function ProjectHeader({ project, portalUrl }) {
   }
 
   return (
-    <div className="rounded-xl border border-zinc-200 bg-white p-6">
+    <div className="rounded border border-zinc-200 bg-white p-6">
       <div className="flex items-start justify-between gap-4">
         <div>
           <div className="flex flex-wrap items-center gap-3">
@@ -103,12 +103,12 @@ export default function ProjectHeader({ project, portalUrl }) {
         <div className="relative">
           <button
             onClick={() => setShowMenu((v) => !v)}
-            className="rounded-lg border border-zinc-200 p-2 hover:bg-zinc-50"
+            className="rounded border border-zinc-200 p-2 hover:bg-zinc-50"
           >
             <MoreHorizontal className="h-4 w-4 text-zinc-500" />
           </button>
           {showMenu && (
-            <div className="absolute right-0 top-10 z-10 w-44 rounded-lg border border-zinc-200 bg-white py-1 shadow-md">
+            <div className="absolute right-0 top-10 z-10 w-44 rounded border border-zinc-200 bg-white py-1 shadow-md">
               {["not_started", "in_progress", "in_review", "complete"].map((s) => (
                 <button
                   key={s}
@@ -130,7 +130,7 @@ export default function ProjectHeader({ project, portalUrl }) {
         </div>
       </div>
 
-      <div className="mt-5 flex items-center gap-3 rounded-lg bg-zinc-50 px-4 py-3">
+      <div className="mt-5 flex items-center gap-3 rounded bg-zinc-50 px-4 py-3">
         <span className="flex-1 truncate font-mono text-sm text-zinc-500">{portalUrl}</span>
         <button
           onClick={copyLink}

@@ -130,18 +130,18 @@ export default function SchedulerClient({ bookings: initialBookings, availabilit
         {tab === "bookings" && (
           <div className="flex flex-col gap-5">
             {/* Booking link card */}
-            <div className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm">
+            <div className="rounded border border-zinc-200 bg-white p-4">
               <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-400">
                 Your booking link
               </p>
               <div className="flex items-center gap-2">
-                <code className="flex-1 truncate rounded-lg bg-zinc-50 px-3 py-2 text-xs text-zinc-700 border border-zinc-200">
+                <code className="flex-1 truncate rounded bg-zinc-50 px-3 py-2 text-xs text-zinc-700 border border-zinc-200">
                   {bookingPageUrl}
                 </code>
                 <button
                   onClick={copyLink}
                   className={cn(
-                    "flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-medium transition-colors",
+                    "flex items-center gap-1.5 rounded px-3 py-2 text-xs font-medium transition-colors",
                     copied
                       ? "bg-green-50 text-green-700 border border-green-200"
                       : "bg-zinc-900 text-white hover:bg-zinc-700"
@@ -154,7 +154,7 @@ export default function SchedulerClient({ bookings: initialBookings, availabilit
             </div>
 
             {/* Upcoming bookings */}
-            <div className="rounded-xl border border-zinc-200 bg-white shadow-sm">
+            <div className="rounded border border-zinc-200 bg-white">
               <div className="border-b border-zinc-100 px-4 py-3">
                 <p className="text-sm font-semibold text-zinc-900">
                   Upcoming ({upcoming.length})
@@ -182,7 +182,7 @@ export default function SchedulerClient({ bookings: initialBookings, availabilit
                       </span>
                       <button
                         onClick={() => cancelBooking(b.id)}
-                        className="rounded-lg border border-zinc-200 px-2 py-1 text-xs text-zinc-500 hover:border-red-200 hover:text-red-600"
+                        className="rounded border border-zinc-200 px-2 py-1 text-xs text-zinc-500 hover:border-red-200 hover:text-red-600"
                       >
                         Cancel
                       </button>
@@ -194,7 +194,7 @@ export default function SchedulerClient({ bookings: initialBookings, availabilit
 
             {/* Past bookings */}
             {past.length > 0 && (
-              <div className="rounded-xl border border-zinc-200 bg-white shadow-sm">
+              <div className="rounded border border-zinc-200 bg-white">
                 <button
                   onClick={() => setShowPast((v) => !v)}
                   className="flex w-full items-center justify-between px-4 py-3 text-sm font-semibold text-zinc-500 hover:text-zinc-800"
@@ -233,7 +233,7 @@ export default function SchedulerClient({ bookings: initialBookings, availabilit
 
         {tab === "availability" && (
           <div className="flex flex-col gap-5">
-            <div className="rounded-xl border border-zinc-200 bg-white shadow-sm">
+            <div className="rounded border border-zinc-200 bg-white">
               <div className="border-b border-zinc-100 px-4 py-3">
                 <p className="text-sm font-semibold text-zinc-900">Weekly availability</p>
                 <p className="text-xs text-zinc-400 mt-0.5">Set when clients can book time with you</p>
@@ -270,7 +270,7 @@ export default function SchedulerClient({ bookings: initialBookings, availabilit
                         <select
                           value={rule.startTime}
                           onChange={(e) => updateDay(rule.dayOfWeek, "startTime", e.target.value)}
-                          className="rounded-lg border border-zinc-200 px-2 py-1 text-xs text-zinc-700 focus:outline-none"
+                          className="rounded border border-zinc-200 px-2 py-1 text-xs text-zinc-700 focus:outline-none"
                         >
                           {TIME_OPTIONS.map((t) => (
                             <option key={t} value={t}>{t}</option>
@@ -280,7 +280,7 @@ export default function SchedulerClient({ bookings: initialBookings, availabilit
                         <select
                           value={rule.endTime}
                           onChange={(e) => updateDay(rule.dayOfWeek, "endTime", e.target.value)}
-                          className="rounded-lg border border-zinc-200 px-2 py-1 text-xs text-zinc-700 focus:outline-none"
+                          className="rounded border border-zinc-200 px-2 py-1 text-xs text-zinc-700 focus:outline-none"
                         >
                           {TIME_OPTIONS.map((t) => (
                             <option key={t} value={t}>{t}</option>
@@ -298,7 +298,7 @@ export default function SchedulerClient({ bookings: initialBookings, availabilit
                   onClick={saveAvailability}
                   disabled={saving}
                   className={cn(
-                    "rounded-lg px-4 py-2 text-xs font-semibold text-white transition-colors disabled:opacity-50",
+                    "rounded px-4 py-2 text-xs font-semibold text-white transition-colors disabled:opacity-50",
                     savedOk ? "bg-green-600 hover:bg-green-700" : "bg-zinc-900 hover:bg-zinc-700"
                   )}
                 >

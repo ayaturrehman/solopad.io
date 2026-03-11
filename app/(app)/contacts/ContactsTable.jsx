@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Search, Mail, Phone, Building2 } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { Search, Mail, Phone, Building2, ChevronDown, Plus, Star } from "lucide-react";
 import { cn, formatCurrency } from "@/lib/utils";
 
 const STATUS_CONFIG = {
@@ -30,15 +31,25 @@ function relativeDate(dateStr) {
 }
 
 export default function ContactsTable({ contacts }) {
-  const [query, setQuery] = useState("");
   const [tab, setTab] = useState("all");
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [filterSearch, setFilterSearch] = useState("");
+  const searchParams = useSearchParams();
+  const query = (searchParams.get("q") || "").trim().toLowerCase();
+
+  const filterOptions = useMemo(
+    () => TABS.filter((option) =>
+      option.label.toLowerCase().includes(filterSearch.trim().toLowerCase())
+    ),
+    [filterSearch]
+  );
 
   const byTab = tab === "all" ? contacts : contacts.filter((c) => c.status === tab);
-  const filtered = query.trim()
+  const filtered = query
     ? byTab.filter((c) =>
         [c.name, c.email, c.company, c.phone]
           .filter(Boolean)
-          .some((v) => v.toLowerCase().includes(query.toLowerCase()))
+          .some((v) => v.toLowerCase().includes(query))
       )
     : byTab;
 
@@ -48,57 +59,114 @@ export default function ContactsTable({ contacts }) {
     active: contacts.filter((c) => c.status === "active").length,
     archived: contacts.filter((c) => c.status === "archived").length,
   };
-
+  const activeTab = TABS.find((item) => item.key === tab) || TABS[0];
   const isLeadView = tab === "lead";
+
+  function getHeaderLabel() {
+    if (tab === "all") return "Contacts";
+    if (tab === "lead") return "Leads";
+    if (tab === "active") return "Clients";
+    return "Archived Contacts";
+  }
 
   return (
     <div className="space-y-4">
-      {/* Tabs */}
-      <div className="flex gap-1 rounded-xl border border-zinc-200 bg-zinc-50 p-1 w-fit">
-        {TABS.map((t) => (
-          <button
-            key={t.key}
-            onClick={() => setTab(t.key)}
-            className={cn(
-              "rounded-lg px-3 py-1.5 text-sm font-medium transition-colors",
-              tab === t.key ? "bg-white text-zinc-900 shadow-sm" : "text-zinc-500 hover:text-zinc-700"
-            )}
-          >
-            {t.label}
-            <span className={cn("ml-1.5 text-xs", tab === t.key ? "text-zinc-400" : "text-zinc-400")}>
-              {counts[t.key]}
-            </span>
-          </button>
-        ))}
-      </div>
+      <div className="mb-6">
+        <div className="flex items-center justify-between">
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setFilterOpen((current) => !current)}
+              className="inline-flex items-center justify-between gap-2 rounded-lg bg-zinc-100 px-2 py-1 text-left text-sm text-zinc-900 transition-colors hover:bg-zinc-200"
+            >
+              <span className="text-lg font-bold tracking-tight">{getHeaderLabel()}</span>
+              <ChevronDown
+                className={cn(
+                  "h-5 w-5 text-blue-600 transition-transform",
+                  filterOpen ? "rotate-180" : ""
+                )}
+              />
+            </button>
 
-      {/* Search */}
-      <div className="flex items-center gap-3">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-400" />
-          <input
-            type="text"
-            placeholder={`Search ${tab === "lead" ? "leads" : "contacts"}…`}
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            className="w-full rounded border border-zinc-200 bg-white py-2 pl-8 pr-3 text-sm text-zinc-700 placeholder-zinc-400 outline-none focus:border-zinc-400"
-          />
+            {filterOpen && (
+              <div className="absolute left-0 top-[calc(100%+8px)] z-20 w-[15rem] max-w-[calc(100vw-2rem)] rounded-xl border border-zinc-200 bg-white p-2 shadow-xl">
+                <div className="relative mb-3">
+                  <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+                  <input
+                    type="text"
+                    value={filterSearch}
+                    onChange={(e) => setFilterSearch(e.target.value)}
+                    placeholder="Search filters"
+                    className="h-11 w-full rounded-xl border border-blue-500 pl-11 pr-4 text-sm text-zinc-900 outline-none ring-0 placeholder:text-zinc-400 focus:border-blue-500"
+                  />
+                </div>
+
+                <div className="max-h-72 overflow-y-auto py-1">
+                  {filterOptions.map((option) => (
+                    <button
+                      key={option.key}
+                      type="button"
+                      onClick={() => {
+                        setTab(option.key);
+                        setFilterOpen(false);
+                        setFilterSearch("");
+                      }}
+                      className={cn(
+                        "flex w-full items-center justify-between rounded-xl px-4 py-2.5 text-left text-sm transition-colors",
+                        tab === option.key
+                          ? "bg-zinc-50 text-zinc-900"
+                          : "text-zinc-700 hover:bg-zinc-50"
+                      )}
+                    >
+                      <span>{option.label}</span>
+                      <span className="flex items-center gap-3">
+                        <Star className="h-4 w-4 text-zinc-300" />
+                        {tab === option.key && <span className="h-2.5 w-2.5 rounded-full bg-blue-600" />}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {contacts.length > 0 && (
+            <Link
+              href="/contacts/new"
+              className="inline-flex items-center gap-1.5 rounded bg-zinc-900 px-3 py-2 text-sm font-semibold text-white hover:bg-zinc-700"
+            >
+              <Plus className="h-4 w-4" />
+              Add contact
+            </Link>
+          )}
         </div>
-        {query && (
-          <button onClick={() => setQuery("")} className="text-xs text-zinc-400 hover:text-zinc-700">
-            Clear
-          </button>
-        )}
       </div>
 
       {filtered.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-zinc-200 bg-white py-12 text-center">
-          <p className="text-sm text-zinc-400">
-            {query ? `No results for "${query}"` : `No ${tab === "all" ? "contacts" : STATUS_CONFIG[tab]?.label.toLowerCase() + "s"} yet`}
-          </p>
-        </div>
+        contacts.length === 0 ? (
+          <div className="rounded border border-dashed border-zinc-200 bg-white px-6 py-16 text-center">
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-zinc-100">
+              <Plus className="h-5 w-5 text-zinc-400" />
+            </div>
+            <h3 className="mb-2 font-semibold text-zinc-900">No contacts yet</h3>
+            <p className="mb-6 text-sm text-zinc-500">Add your first client or lead to keep track of your relationships.</p>
+            <Link
+              href="/contacts/new"
+              className="inline-flex items-center gap-2 rounded bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700"
+            >
+              <Plus className="h-4 w-4" />
+              Add first contact
+            </Link>
+          </div>
+        ) : (
+          <div className="rounded border border-dashed border-zinc-200 bg-white py-12 text-center">
+            <p className="text-sm text-zinc-400">
+              {query ? `No results for "${searchParams.get("q")}"` : `No ${activeTab.label.toLowerCase()} yet`}
+            </p>
+          </div>
+        )
       ) : (
-        <div className="overflow-hidden rounded-xl border border-zinc-200 bg-white">
+        <div className="overflow-hidden rounded border border-zinc-200 bg-white">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-zinc-100 bg-zinc-50">

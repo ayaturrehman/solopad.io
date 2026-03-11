@@ -108,18 +108,11 @@ export default async function DashboardPage() {
     <div className="space-y-5">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-2xl font-semibold tracking-tight text-zinc-900">{greeting}, {firstName}</p>
+          <p className="text-2xl tracking-tight text-zinc-900">{greeting}, {firstName}</p>
           <p className="mt-1 text-sm text-zinc-400">
             {now.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}
           </p>
         </div>
-        <Link
-          href="/projects/new"
-          className="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2 text-sm font-semibold text-white hover:bg-zinc-700"
-        >
-          <Plus className="h-4 w-4" />
-          New project
-        </Link>
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
@@ -133,16 +126,16 @@ export default async function DashboardPage() {
             note: nextProjectDeadline ? `Next due ${formatDate(nextProjectDeadline.endDate)}` : `${openInvoices.length} unpaid invoices`,
           },
         ].map((item) => (
-          <div key={item.label} className="border border-zinc-200 bg-white px-4 py-4">
+          <div key={item.label} className="rounded border border-zinc-200 bg-white px-4 py-4">
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-400">{item.label}</p>
-            <p className="mt-2 text-3xl font-bold tracking-tight text-zinc-900">{item.value}</p>
+            <p className="mt-2 text-3xl tracking-tight text-zinc-900">{item.value}</p>
             <p className="mt-1 text-xs text-zinc-400">{item.note}</p>
           </div>
         ))}
       </div>
 
       <div className="grid gap-4 xl:grid-cols-[220px_minmax(0,1.2fr)_minmax(0,0.9fr)_minmax(0,0.9fr)]">
-        <div className="border border-zinc-200 bg-white p-4">
+        <div className="rounded border border-zinc-200 bg-white p-4">
           <div className="mb-4 flex items-center justify-between">
             <p className="text-sm font-semibold text-zinc-900">Create new</p>
           </div>
@@ -163,7 +156,7 @@ export default async function DashboardPage() {
           </div>
         </div>
 
-        <div className="border border-zinc-200 bg-white p-4">
+        <div className="rounded border border-zinc-200 bg-white p-4">
           <div className="mb-4 flex items-center justify-between">
             <div>
               <p className="text-sm font-semibold text-zinc-900">Projects</p>
@@ -203,7 +196,7 @@ export default async function DashboardPage() {
           )}
         </div>
 
-        <div className="border border-zinc-200 bg-white p-4">
+        <div className="rounded border border-zinc-200 bg-white p-4">
           <div className="mb-4 flex items-center justify-between">
             <div>
               <p className="text-sm font-semibold text-zinc-900">Tasks</p>
@@ -239,7 +232,7 @@ export default async function DashboardPage() {
           )}
         </div>
 
-        <div className="border border-zinc-200 bg-white p-4">
+        <div className="rounded border border-zinc-200 bg-white p-4">
           <div className="mb-4 flex items-center justify-between">
             <div>
               <p className="text-sm font-semibold text-zinc-900">Leads</p>
@@ -268,7 +261,7 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      <div className="border border-zinc-200 bg-white p-4">
+      <div className="rounded border border-zinc-200 bg-white p-4">
         <div className="mb-4 flex items-center justify-between">
           <div>
             <p className="text-sm font-semibold text-zinc-900">Documents</p>

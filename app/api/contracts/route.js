@@ -20,23 +20,39 @@ export async function POST(req) {
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const body = await req.json();
-  const { title, projectId, clientName, clientEmail, clauses, status } = body;
+  const { title, projectId, clientName, clientEmail, clauses, status, signatureName } = body;
 
-  if (!title || !clientName) {
+  let project = null;
+  if (projectId) {
+    project = await db.project.findFirst({
+      where: { id: projectId, userId: session.user.id },
+      select: { id: true, clientName: true, clientEmail: true },
+    });
+    if (!project) {
+      return NextResponse.json({ error: "Invalid project." }, { status: 400 });
+    }
+  }
+
+  const resolvedClientName = clientName?.trim() || project?.clientName || "";
+  const resolvedClientEmail = clientEmail?.trim() || project?.clientEmail || null;
+
+  if (!title?.trim() || !resolvedClientName) {
     return NextResponse.json({ error: "Title and client name are required" }, { status: 400 });
   }
 
   const contract = await db.contract.create({
     data: {
       userId: session.user.id,
-      projectId: projectId || null,
-      title,
-      clientName,
-      clientEmail: clientEmail || null,
+      projectId: project?.id || null,
+      title: title.trim(),
+      clientName: resolvedClientName,
+      clientEmail: resolvedClientEmail,
       clauses: typeof clauses === "string" ? clauses : JSON.stringify(clauses || []),
       status: status || "draft",
+      signatureName: signatureName?.trim() || null,
       sentAt: status === "sent" ? new Date() : null,
     },
+    include: { project: { select: { id: true, title: true } } },
   });
 
   return NextResponse.json({ contract }, { status: 201 });

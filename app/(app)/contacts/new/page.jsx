@@ -58,7 +58,7 @@ export default function NewContactPage() {
       <p className="mb-8 text-sm text-zinc-500">Add a client or lead to your contact list.</p>
 
       <form onSubmit={handleSubmit} className="space-y-5">
-        <div className="space-y-4 rounded-xl border border-zinc-200 bg-white p-6">
+        <div className="space-y-4 rounded border border-zinc-200 bg-white p-6">
           <Input
             label="Full name"
             placeholder="Jane Smith"
@@ -91,7 +91,7 @@ export default function NewContactPage() {
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-medium text-zinc-700">Status</label>
             <select
-              className="h-10 rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900 focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900"
+              className="h-10 rounded border border-zinc-200 bg-white px-3 text-sm text-zinc-900 focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900"
               value={form.status}
               onChange={(e) => set("status", e.target.value)}
             >
@@ -103,7 +103,7 @@ export default function NewContactPage() {
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-medium text-zinc-700">Notes (optional)</label>
             <textarea
-              className="min-h-[80px] resize-none rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900"
+              className="min-h-[80px] resize-none rounded border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900"
               placeholder="Any notes about this contact..."
               value={form.notes}
               onChange={(e) => set("notes", e.target.value)}
@@ -112,7 +112,7 @@ export default function NewContactPage() {
         </div>
 
         {error && (
-          <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">{error}</p>
+          <p className="rounded bg-red-50 px-3 py-2 text-sm text-red-600">{error}</p>
         )}
 
         <div className="flex gap-3">

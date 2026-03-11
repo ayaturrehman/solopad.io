@@ -31,8 +31,21 @@ export async function PATCH(req, { params }) {
   const { title, projectId, clientName, clientEmail, clauses, status, signatureName } = body;
 
   const updateData = {};
+  if (projectId !== undefined) {
+    if (projectId) {
+      const project = await db.project.findFirst({
+        where: { id: projectId, userId: session.user.id },
+        select: { id: true },
+      });
+      if (!project) {
+        return NextResponse.json({ error: "Invalid project." }, { status: 400 });
+      }
+      updateData.projectId = project.id;
+    } else {
+      updateData.projectId = null;
+    }
+  }
   if (title !== undefined) updateData.title = title;
-  if (projectId !== undefined) updateData.projectId = projectId || null;
   if (clientName !== undefined) updateData.clientName = clientName;
   if (clientEmail !== undefined) updateData.clientEmail = clientEmail || null;
   if (clauses !== undefined) updateData.clauses = typeof clauses === "string" ? clauses : JSON.stringify(clauses);
