@@ -4,9 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma generate && next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test:regression": "node --test tests/regression/**/*.test.mjs"
   },
   "dependencies": {
     "@prisma/client": "^6.19.2",
