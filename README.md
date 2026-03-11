@@ -1,36 +1,94 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Solopad
+
+**The all-in-one workspace for solo freelancers.**
+
+Manage clients, projects, proposals, contracts, invoices, tasks, and time tracking — all in one place. Share a client portal with a single link.
+
+🌐 [solopad.io](https://solopad.io)
+
+---
+
+## Features
+
+- **Client Portal** — Share a one-link portal with clients for files, comments, and invoices
+- **Projects** — Track projects with deadlines, status, and file uploads
+- **Proposals & Contracts** — Create, send, and manage proposals and contracts
+- **Invoices** — Build and send invoices with Stripe payment support
+- **Tasks** — Manage tasks with priorities, subtasks, and due dates
+- **Contacts** — CRM for leads and clients
+- **Time Tracker** — Log time entries per project
+- **Scheduler** — Booking page with availability rules
+- **Finance** — Track expenses, recurring costs, and revenue
+- **Templates** — Reusable proposal and contract templates
+- **Multi-tenancy** — Business accounts with team members
+
+---
+
+## Tech Stack
+
+- **Framework** — Next.js 16 (App Router)
+- **Styling** — Tailwind CSS v4
+- **Database** — SQLite (dev) / PostgreSQL (prod) via Prisma
+- **Auth** — NextAuth.js v4 (credentials)
+- **Payments** — Stripe Checkout
+- **Email** — Resend
+- **File Storage** — Local filesystem (dev) / S3/R2 (prod)
+
+---
 
 ## Getting Started
 
-First, run the development server:
+### 1. Install dependencies
+
+```bash
+npm install
+```
+
+### 2. Set up environment variables
+
+```bash
+cp .env.example .env.local
+```
+
+Fill in:
+
+```env
+DATABASE_URL="file:./dev.db"
+NEXTAUTH_SECRET="your-secret"
+NEXTAUTH_URL="http://localhost:3000"
+STRIPE_SECRET_KEY="sk_test_..."
+STRIPE_WEBHOOK_SECRET="whsec_..."
+RESEND_API_KEY="re_..."
+```
+
+### 3. Set up the database
+
+```bash
+npx prisma db push
+```
+
+### 4. Run the dev server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Database
 
-## Learn More
+```bash
+npx prisma studio          # Browse database
+npx prisma db push         # Apply schema changes
+npx prisma migrate dev     # Create a migration
+```
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Deployment
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Deploy to [Vercel](https://vercel.com) with a PostgreSQL database (Supabase, Neon, or Railway recommended).
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Set all environment variables in the Vercel dashboard and update `DATABASE_URL` to your production Postgres connection string.
