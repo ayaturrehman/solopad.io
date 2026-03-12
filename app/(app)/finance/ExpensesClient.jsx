@@ -30,6 +30,7 @@ export default function ExpensesClient({
   customCategories,
   hasExtendedExpenseModels,
   recurringFrequencyLabels,
+  currency = "USD",
 }) {
   const searchParams = useSearchParams();
   const [filter, setFilter] = useState("all");
@@ -206,7 +207,7 @@ export default function ExpensesClient({
                   <td className="px-6 py-3 text-zinc-500">{item.frequency || "—"}</td>
                   <td className="px-6 py-3 text-right font-semibold text-zinc-900">
                     {item.kind === "one_time" ? "-" : ""}
-                    {formatCurrency(item.amount)}
+                    {formatCurrency(item.amount, currency)}
                   </td>
                   <td className="px-6 py-3 text-right">
                     <AddExpenseForm

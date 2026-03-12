@@ -38,7 +38,7 @@ function getProjectFilterLabel(filterKey) {
   return STATUS_LABELS[filterKey];
 }
 
-export default function ProjectsClient({ projects }) {
+export default function ProjectsClient({ projects, currency = "USD" }) {
   const [view, setView] = useState(() => {
     if (typeof window === "undefined") return "list";
     const saved = localStorage.getItem(STORAGE_KEY);
@@ -226,7 +226,7 @@ export default function ProjectsClient({ projects }) {
           </Link>
         </div>
       ) : view === "pipeline" ? (
-        <PipelineBoard projects={filteredProjects} stages={STAGES} />
+        <PipelineBoard projects={filteredProjects} stages={STAGES} currency={currency} />
       ) : (
         <div className="overflow-hidden rounded border border-zinc-200 bg-white">
           <table className="w-full table-fixed">
@@ -288,9 +288,9 @@ export default function ProjectsClient({ projects }) {
                       )}
                     </td>
                     <td className="hidden px-4 py-3 text-right sm:table-cell">
-                      <span className="text-sm font-medium text-green-700">{formatCurrency(revenue)}</span>
+                      <span className="text-sm font-medium text-green-700">{formatCurrency(revenue, currency)}</span>
                       {unpaid > 0 && (
-                        <p className="text-[11px] text-red-500">{formatCurrency(unpaid)} due</p>
+                        <p className="text-[11px] text-red-500">{formatCurrency(unpaid, currency)} due</p>
                       )}
                     </td>
                     <td className="px-4 py-3 text-right">

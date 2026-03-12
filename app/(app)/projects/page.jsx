@@ -9,6 +9,9 @@ export default async function ProjectsPage() {
   const session = await getSession();
   if (!session?.user) redirect("/login");
 
+  const userRecord = await db.user.findUnique({ where: { id: session.user.id }, select: { currency: true } });
+  const currency = userRecord?.currency || "USD";
+
   const projects = await db.project.findMany({
     where: { userId: session.user.id, archived: false },
     include: {
@@ -19,5 +22,5 @@ export default async function ProjectsPage() {
     orderBy: { updatedAt: "desc" },
   });
 
-  return <Suspense fallback={null}><ProjectsClient projects={projects} /></Suspense>;
+  return <Suspense fallback={null}><ProjectsClient projects={projects} currency={currency} /></Suspense>;
 }

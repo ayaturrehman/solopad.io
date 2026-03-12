@@ -29,6 +29,9 @@ export default async function FinancePage({ searchParams }) {
 
   const userId = session.user.id;
   const now = new Date();
+
+  const user = await db.user.findUnique({ where: { id: userId }, select: { currency: true } });
+  const currency = user?.currency || "USD";
   const yearStart = new Date(now.getFullYear(), 0, 1);
   const hasExtendedExpenseModels = supportsExtendedExpenseModels();
 
@@ -129,10 +132,10 @@ export default async function FinancePage({ searchParams }) {
           <div className="overflow-hidden rounded border border-zinc-200 bg-white">
             <div className="grid sm:grid-cols-2 xl:grid-cols-4">
               {[
-                { label: "Revenue", value: formatCurrency(totalRevenue), color: "text-green-600" },
-                { label: "Expenses", value: formatCurrency(totalExpenses), color: "text-rose-500" },
-                { label: "Net Income", value: formatCurrency(netIncome), color: "text-zinc-900" },
-                { label: "Outstanding", value: formatCurrency(outstanding), color: "text-amber-600" },
+                { label: "Revenue", value: formatCurrency(totalRevenue, currency), color: "text-green-600" },
+                { label: "Expenses", value: formatCurrency(totalExpenses, currency), color: "text-rose-500" },
+                { label: "Net Income", value: formatCurrency(netIncome, currency), color: "text-zinc-900" },
+                { label: "Outstanding", value: formatCurrency(outstanding, currency), color: "text-amber-600" },
               ].map(({ label, value, color }, index) => (
                 <div
                   key={label}
@@ -161,6 +164,7 @@ export default async function FinancePage({ searchParams }) {
               monthlyRevenue={monthlyRevenue}
               monthlyExpenses={monthlyExpenses}
               maxBar={maxBar}
+              currency={currency}
             />
           </div>
 
@@ -183,7 +187,7 @@ export default async function FinancePage({ searchParams }) {
                         </p>
                         <p className="text-xs text-zinc-400">{inv.project?.clientName}</p>
                       </div>
-                      <span className="text-sm font-semibold text-zinc-700">{formatCurrency(inv.total)}</span>
+                      <span className="text-sm font-semibold text-zinc-700">{formatCurrency(inv.total, currency)}</span>
                     </div>
                   ))}
                 </div>
@@ -207,7 +211,7 @@ export default async function FinancePage({ searchParams }) {
                         </p>
                         <p className="text-xs text-zinc-400">{inv.project?.clientName}</p>
                       </div>
-                      <span className="text-sm font-semibold text-green-700">{formatCurrency(inv.total)}</span>
+                      <span className="text-sm font-semibold text-green-700">{formatCurrency(inv.total, currency)}</span>
                     </div>
                   ))}
                 </div>
@@ -225,7 +229,7 @@ export default async function FinancePage({ searchParams }) {
                     <p className="text-sm font-medium text-zinc-800">{exp.description}</p>
                     <p className="text-xs capitalize text-zinc-400">{exp.category}</p>
                   </div>
-                  <span className="text-sm font-semibold text-red-600">-{formatCurrency(exp.amount)}</span>
+                  <span className="text-sm font-semibold text-red-600">-{formatCurrency(exp.amount, currency)}</span>
                 </div>
               ))}
               {expenses.length === 0 && <p className="text-sm text-zinc-400">No expenses recorded yet.</p>}
@@ -235,7 +239,7 @@ export default async function FinancePage({ searchParams }) {
       )}
 
       {tab === "invoices" && (
-        <Suspense fallback={null}><InvoicesClient invoices={invoices} projects={projects} /></Suspense>
+        <Suspense fallback={null}><InvoicesClient invoices={invoices} projects={projects} currency={currency} /></Suspense>
       )}
 
       {/* Payments tab */}
@@ -264,7 +268,7 @@ export default async function FinancePage({ searchParams }) {
                     </td>
                     <td className="px-6 py-3 text-zinc-500">{inv.project?.clientName || "—"}</td>
                     <td className="px-6 py-3 text-zinc-400">{new Date(inv.updatedAt).toLocaleDateString()}</td>
-                    <td className="px-6 py-3 text-right font-semibold text-green-700">{formatCurrency(inv.total)}</td>
+                    <td className="px-6 py-3 text-right font-semibold text-green-700">{formatCurrency(inv.total, currency)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -283,7 +287,8 @@ export default async function FinancePage({ searchParams }) {
           defaultCategories={DEFAULT_EXPENSE_CATEGORIES}
           customCategories={customExpenseCategoriesWithUsage}
           hasExtendedExpenseModels={hasExtendedExpenseModels}
-            recurringFrequencyLabels={RECURRING_FREQUENCIES}
+          recurringFrequencyLabels={RECURRING_FREQUENCIES}
+          currency={currency}
           /></Suspense>
       )}
     </div>

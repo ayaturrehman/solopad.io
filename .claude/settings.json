@@ -21,7 +21,12 @@
       "Bash(ls /Users/ayaturrehman/Documents/syslom/Project/freelancer/freelance-managment-app/prisma.config*)",
       "Bash(git add prisma.config.ts)",
       "Bash(git add app/api/invoices/bulk-send/route.js app/api/webhooks/stripe/route.js)",
-      "Bash(git add app/api/invoices/checkout/route.js app/api/settings/stripe/disconnect/route.js app/api/settings/stripe/callback/route.js)"
+      "Bash(git add app/api/invoices/checkout/route.js app/api/settings/stripe/disconnect/route.js app/api/settings/stripe/callback/route.js)",
+      "Bash(npx prisma migrate diff --from-empty --to-schema-datamodel prisma/schema.prisma --script)",
+      "Bash(git reset HEAD .claude/settings.json .vscode/mcp.json)",
+      "Bash(npx --prefix /Users/ayaturrehman/Documents/syslom/Project/freelancer/freelance-managment-app prisma generate)",
+      "Bash(.env:*)",
+      "Bash(git reset HEAD .agents/skills/neon-postgres/SKILL.md .claude/settings.json .vscode/mcp.json skills-lock.json tests/regression/multi-tenancy.static.test.mjs)"
     ],
     "additionalDirectories": [
       "/Users/ayaturrehman/Documents/syslom/Project/freelancer/freelance-managment-app/app/(app)/proposals/[id]",

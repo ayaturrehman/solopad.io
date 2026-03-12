@@ -8,6 +8,7 @@ export default function MonthlyCashflowChart({
   monthlyRevenue,
   monthlyExpenses,
   maxBar,
+  currency = "USD",
 }) {
   const [hoveredMonth, setHoveredMonth] = useState(null);
 
@@ -17,8 +18,8 @@ export default function MonthlyCashflowChart({
         {hoveredMonth !== null ? (
           <div className="pointer-events-none absolute left-1/2 top-0 z-10 -translate-x-1/2 rounded border border-zinc-200 bg-white px-3 py-1.5 text-xs text-zinc-600 shadow-sm">
             <p className="font-medium text-zinc-900">{months[hoveredMonth]}</p>
-            <p>Revenue: {formatCurrency(monthlyRevenue[hoveredMonth])}</p>
-            <p>Expenses: {formatCurrency(monthlyExpenses[hoveredMonth])}</p>
+            <p>Revenue: {formatCurrency(monthlyRevenue[hoveredMonth], currency)}</p>
+            <p>Expenses: {formatCurrency(monthlyExpenses[hoveredMonth], currency)}</p>
           </div>
         ) : null}
 

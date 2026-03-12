@@ -12,7 +12,7 @@ const STATUS_BADGE = {
   complete: "bg-green-100 text-green-700",
 };
 
-export default function PipelineBoard({ projects: initialProjects, stages }) {
+export default function PipelineBoard({ projects: initialProjects, stages, currency = "USD" }) {
   const [projects, setProjects] = useState(initialProjects);
   const [dragging, setDragging] = useState(null);
   const [dragOver, setDragOver] = useState(null);
@@ -109,12 +109,12 @@ export default function PipelineBoard({ projects: initialProjects, stages }) {
                         </span>
                         {revenue > 0 && (
                           <span className="rounded-full bg-green-100 px-1.5 py-0.5 text-[10px] font-medium text-green-700">
-                            {formatCurrency(revenue)}
+                            {formatCurrency(revenue, currency)}
                           </span>
                         )}
                         {unpaid > 0 && (
                           <span className="rounded-full bg-red-100 px-1.5 py-0.5 text-[10px] font-medium text-red-600">
-                            {formatCurrency(unpaid)} due
+                            {formatCurrency(unpaid, currency)} due
                           </span>
                         )}
                       </div>

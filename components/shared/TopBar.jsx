@@ -214,6 +214,14 @@ export default function TopBar() {
           )}
         </div>
 
+        <Link
+          href="/settings"
+          className="inline-flex h-11 w-11 items-center justify-center rounded text-zinc-500 transition-colors hover:bg-zinc-50 hover:text-zinc-900"
+          aria-label="Settings"
+        >
+          <Settings className="h-4 w-4" />
+        </Link>
+
         <div className="relative">
           <button
             onClick={() => setShowProfile((value) => !value)}
@@ -268,14 +276,6 @@ export default function TopBar() {
                 </div>
 
                 <div className="p-2">
-                  <Link
-                    href="/settings"
-                    onClick={() => setShowProfile(false)}
-                    className="flex items-center gap-2.5 rounded px-3 py-1.5 text-sm text-zinc-600 transition-colors hover:bg-zinc-50 hover:text-zinc-900"
-                  >
-                    <Settings className="h-4 w-4" />
-                    Settings
-                  </Link>
                   <button
                     onClick={() => signOut({ callbackUrl: "/login" })}
                     className="flex w-full items-center gap-2.5 rounded px-3 py-1.5 text-sm text-zinc-600 transition-colors hover:bg-zinc-50 hover:text-zinc-900"

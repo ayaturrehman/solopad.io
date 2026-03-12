@@ -30,6 +30,7 @@ const modulePages = [
 
 const sessionTenantRoutes = [
   "app/api/contacts/route.js",
+  "app/api/contacts/import/route.js",
   "app/api/contacts/[id]/route.js",
   "app/api/projects/route.js",
   "app/api/projects/[id]/route.js",
@@ -65,6 +66,7 @@ const publicTenantRoutes = [
 
 const createRoutes = [
   "app/api/contacts/route.js",
+  "app/api/contacts/import/route.js",
   "app/api/projects/route.js",
   "app/api/proposals/route.js",
   "app/api/contracts/route.js",
@@ -173,6 +175,12 @@ test("dashboard queries stay bounded for performance", () => {
   const source = read("app/(app)/dashboard/page.jsx");
   const takeCount = (source.match(/take:\s*\d+/g) || []).length;
   assert.ok(takeCount >= 4, "dashboard should keep key queries bounded with take");
+});
+
+test("contacts page uses tenant-aware scoping", () => {
+  const source = read("app/(app)/contacts/page.jsx");
+  assert.match(source, /getTenantFilter/);
+  assert.match(source, /where:\s*filter/);
 });
 
 test("task page keeps modal-based create flow and date filters", () => {

@@ -15,33 +15,39 @@ export default function Modal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4"
+      className="fixed inset-0 z-50 overflow-y-auto bg-black/30 p-4"
       onClick={onClose}
     >
       <div
         className={cn(
-          "w-full max-w-lg rounded border border-zinc-200 bg-white shadow-xl",
-          className
+          "my-6 flex min-h-[calc(100vh-3rem)] w-full items-center justify-center",
         )}
-        onClick={(event) => event.stopPropagation()}
       >
-        <div className="flex items-start justify-between border-b border-zinc-100 px-5 py-4">
-          <div>
-            {title && <h2 className="text-lg font-semibold text-zinc-900">{title}</h2>}
-            {description && <p className="mt-1 text-sm text-zinc-500">{description}</p>}
+        <div
+          className={cn(
+            "flex max-h-[calc(100vh-3rem)] w-full max-w-lg flex-col overflow-hidden rounded border border-zinc-200 bg-white shadow-xl",
+            className
+          )}
+          onClick={(event) => event.stopPropagation()}
+        >
+          <div className="flex items-start justify-between border-b border-zinc-100 px-5 py-4">
+            <div>
+              {title && <h2 className="text-lg font-semibold text-zinc-900">{title}</h2>}
+              {description && <p className="mt-1 text-sm text-zinc-500">{description}</p>}
+            </div>
+            <button
+              type="button"
+              onClick={onClose}
+              className="inline-flex h-8 w-8 items-center justify-center rounded text-zinc-400 transition-colors hover:bg-zinc-50 hover:text-zinc-700"
+              aria-label="Close modal"
+            >
+              <X className="h-4 w-4" />
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="inline-flex h-8 w-8 items-center justify-center rounded text-zinc-400 transition-colors hover:bg-zinc-50 hover:text-zinc-700"
-            aria-label="Close modal"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        </div>
 
-        <div className="px-5 py-4">
-          {children}
+          <div className="overflow-y-auto px-5 py-4">
+            {children}
+          </div>
         </div>
       </div>
     </div>

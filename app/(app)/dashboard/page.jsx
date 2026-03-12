@@ -21,6 +21,9 @@ export default async function DashboardPage() {
   const userId = session.user.id;
   const now = new Date();
 
+  const user = await db.user.findUnique({ where: { id: userId }, select: { currency: true } });
+  const currency = user?.currency || "USD";
+
   const [projects, tasks, proposals, contracts, contacts, invoices] = await Promise.all([
     db.project.findMany({
       where: { userId, archived: false },
@@ -112,7 +115,7 @@ export default async function DashboardPage() {
           { label: "Proposals out", value: sentProposals, note: `${unsignedContracts} awaiting signature` },
           {
             label: "Outstanding",
-            value: formatCurrency(outstanding),
+            value: formatCurrency(outstanding, currency),
             note: nextProjectDeadline ? `Next due ${formatDate(nextProjectDeadline.endDate)}` : `${openInvoices.length} unpaid invoices`,
           },
         ].map((item) => (
