@@ -401,6 +401,7 @@ model TeamMember {
   role        String    @default("collaborator")
   permissions String    @default("assign_tasks")
   status      String    @default("pending")
+  inviteToken String?   @unique
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   tasks       Task[]

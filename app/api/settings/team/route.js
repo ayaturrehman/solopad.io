@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
+import { nanoid } from "nanoid";
 import { getSession } from "@/lib/session";
 import db from "@/lib/db";
 import { canManageTeam, getDefaultPermissionsForRole, parsePermissions, serializePermissions } from "@/lib/team";
@@ -10,8 +11,11 @@ export async function GET() {
   const session = await getSession();
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+  const user = await db.user.findUnique({ where: { id: session.user.id }, select: { businessId: true } });
+  const where = user?.businessId ? { businessId: user.businessId } : { userId: session.user.id };
+
   const members = await db.teamMember.findMany({
-    where: { userId: session.user.id },
+    where,
     orderBy: { createdAt: "desc" },
   });
 
@@ -47,18 +51,24 @@ export async function POST(req) {
     return NextResponse.json({ error: "Invite email is not configured. Add RESEND_API_KEY and try again." }, { status: 500 });
   }
 
+  const dbUser = await db.user.findUnique({ where: { id: session.user.id }, select: { businessId: true } });
+  const inviteToken = nanoid(32);
+
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
   const permissionLabels = permissions.map((permission) => permission.replaceAll("_", " "));
   const fromEmail = process.env.RESEND_FROM_EMAIL || process.env.FROM_EMAIL || "noreply@solopad.app";
+  const joinLink = `${appUrl}/join?token=${inviteToken}`;
 
   try {
     const member = await db.teamMember.create({
       data: {
         userId: session.user.id,
+        businessId: dbUser?.businessId ?? null,
         name,
         email,
         role,
         permissions: serializePermissions(permissions),
+        inviteToken,
       },
     });
 
@@ -71,10 +81,10 @@ export async function POST(req) {
         <p><strong>${session.user.name}</strong> invited you to collaborate in Solopad.</p>
         <p>Your access has been prepared with the <strong>${role}</strong> role.</p>
         <p>Permissions: ${permissionLabels.length ? permissionLabels.join(", ") : "view assigned tasks"}</p>
-        <p>You can reply directly to this email to coordinate access and next steps.</p>
+        <p>Click the link below to set up your account and get started:</p>
         <p>
-          <a href="${appUrl}/settings" style="display:inline-block;padding:10px 20px;background:#18181b;color:#fff;border-radius:8px;text-decoration:none;font-weight:600;">
-            Open Solopad
+          <a href="${joinLink}" style="display:inline-block;padding:10px 20px;background:#18181b;color:#fff;border-radius:8px;text-decoration:none;font-weight:600;">
+            Accept Invite
           </a>
         </p>
         <p style="color:#71717a;font-size:12px;">Powered by Solopad</p>
