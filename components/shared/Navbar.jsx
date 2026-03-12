@@ -3,8 +3,9 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import BrandLogo from "@/components/shared/BrandLogo";
 import {
-  LayoutDashboard, Zap, Briefcase, Users,
+  LayoutDashboard, Briefcase, Users,
   DollarSign, Package, CalendarDays,
   LayoutTemplate, CheckSquare, Clock, CalendarCheck,
   FileText, FileSignature, Menu, X, ChevronRight
@@ -69,10 +70,7 @@ export default function Navbar() {
       <aside className="hidden md:flex relative h-screen w-52 flex-col border-r border-[#2b3444] bg-[#17202d] px-2 py-4 text-white">
         {/* Logo */}
         <Link href="/dashboard" className="mb-5 flex items-center gap-2 px-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded-md bg-white/10">
-            <Zap className="h-3.5 w-3.5 text-white" />
-          </div>
-          <span className="text-base font-semibold tracking-tight text-white">Solopad</span>
+          <BrandLogo dark markClassName="h-7 w-7" textClassName="text-base text-white" />
         </Link>
 
         {/* Nav groups */}
@@ -151,11 +149,8 @@ export default function Navbar() {
           <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 rounded-t-2xl bg-[#17202d] text-white max-h-[80vh] flex flex-col">
             {/* Handle + header */}
             <div className="flex items-center justify-between px-5 pt-4 pb-3 border-b border-white/10">
-              <div className="flex items-center gap-2">
-                <div className="flex h-6 w-6 items-center justify-center rounded-md bg-white/10">
-                  <Zap className="h-3 w-3 text-white" />
-                </div>
-                <span className="text-sm font-semibold text-white">Solopad</span>
+            <div className="flex items-center gap-2">
+                <BrandLogo dark markClassName="h-6 w-6" textClassName="text-sm text-white" />
               </div>
               <button
                 onClick={() => setDrawerOpen(false)}

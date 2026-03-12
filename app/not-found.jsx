@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Zap, ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
+import BrandLogo, { BrandMark } from "@/components/shared/BrandLogo";
 
 export default function NotFound() {
   return (
@@ -7,10 +8,7 @@ export default function NotFound() {
       {/* Top bar */}
       <header className="flex h-14 items-center border-b border-zinc-200 bg-white px-6">
         <Link href="/dashboard" className="flex items-center gap-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded-md bg-zinc-900">
-            <Zap className="h-3.5 w-3.5 text-white" />
-          </div>
-          <span className="text-sm font-semibold tracking-tight text-zinc-900">Solopad</span>
+          <BrandLogo dark markClassName="h-7 w-7" textClassName="text-sm text-zinc-900" />
         </Link>
       </header>
 
@@ -24,7 +22,7 @@ export default function NotFound() {
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="flex flex-col items-center gap-2">
               <div className="flex h-14 w-14 items-center justify-center rounded-full border border-zinc-200 bg-white shadow-sm">
-                <Zap className="h-6 w-6 text-zinc-400" />
+                <BrandMark dark className="h-8 w-8" />
               </div>
             </div>
           </div>

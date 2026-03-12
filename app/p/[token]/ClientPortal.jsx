@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
+import BrandLogo from "@/components/shared/BrandLogo";
 import {
-  Download, FileText, Send, CheckCircle, Zap,
+  Download, FileText, Send, CheckCircle,
   MessageSquare, Calendar, User, Clock, ChevronDown, ChevronUp,
 } from "lucide-react";
 import { formatCurrency, formatDate, formatBytes } from "@/lib/utils";
@@ -250,12 +251,7 @@ export default function ClientPortal({ project, files, comments: initialComments
       {/* Header */}
       <header className="sticky top-0 z-30 border-b border-zinc-200 bg-white">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
-          <div className="flex items-center gap-2">
-            <div className="flex h-7 w-7 items-center justify-center rounded bg-zinc-900">
-              <Zap className="h-4 w-4 text-white" />
-            </div>
-            <span className="text-sm font-bold text-zinc-900">Solopad</span>
-          </div>
+          <BrandLogo dark className="gap-0" markClassName="h-5 w-5" textClassName="text-base font-black text-zinc-900" />
           <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
             project.status === "complete"    ? "bg-green-100 text-green-700" :
             project.status === "in_review"   ? "bg-blue-100 text-blue-700" :

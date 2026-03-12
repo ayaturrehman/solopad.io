@@ -6,7 +6,7 @@ import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
-import { Zap } from "lucide-react";
+import BrandLogo from "@/components/shared/BrandLogo";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 
@@ -96,10 +96,7 @@ function JoinContent() {
         <div className="w-full max-w-sm text-center">
           <div className="mb-6 flex justify-center">
             <Link href="/" className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded bg-zinc-900">
-                <Zap className="h-4 w-4 text-white" />
-              </div>
-              <span className="font-semibold text-zinc-900">Solopad</span>
+              <BrandLogo dark markClassName="h-8 w-8" textClassName="text-zinc-900" />
             </Link>
           </div>
           <div className="rounded border border-red-200 bg-red-50 p-6">
@@ -124,10 +121,7 @@ function JoinContent() {
       <div className="w-full max-w-sm">
         <div className="mb-8 flex flex-col items-center">
           <Link href="/" className="mb-6 flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded bg-zinc-900">
-              <Zap className="h-4 w-4 text-white" />
-            </div>
-            <span className="font-semibold text-zinc-900">Solopad</span>
+            <BrandLogo dark markClassName="h-8 w-8" textClassName="text-zinc-900" />
           </Link>
           <h1 className="text-2xl font-bold text-zinc-900">Accept your invite</h1>
           {businessName && (

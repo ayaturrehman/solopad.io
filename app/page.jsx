@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import BrandLogo from "@/components/shared/BrandLogo";
 import {
   Zap, ArrowRight, Check, FileText,
   CreditCard, Clock, Users, Menu, X,
@@ -153,12 +154,7 @@ export default function LandingPage() {
         {/* ── Nav ─────────────────────────────────────── */}
         <header style={{ background:"#fff", borderBottom:"1px solid #EBEBEB", position:"sticky", top:0, zIndex:50 }}>
           <div className="pk-shell pk-nav-inner">
-            <div style={{ display:"flex", alignItems:"center", gap:9 }}>
-              <div style={{ background:C, borderRadius:9, width:33, height:33, display:"flex", alignItems:"center", justifyContent:"center" }}>
-                <Zap size={16} color="#fff" />
-              </div>
-              <span style={{ fontWeight:900, fontSize:18, color:CDk, letterSpacing:"-0.3px" }}>Solopad</span>
-            </div>
+            <BrandLogo className="gap-0" markClassName="h-[42px] w-[42px]" textClassName="text-[24px] font-black text-[#111111]" />
             <nav className="pk-nav-links">
               <a href="#features"      className="nav-link">Features</a>
               <a href="#how-it-works"  className="nav-link">How it works</a>
@@ -166,7 +162,7 @@ export default function LandingPage() {
             </nav>
             <div className="pk-nav-actions">
               <Link href={authHref} className="nav-link">Log in</Link>
-              <Link href="/signup" className="btn-primary" style={{ fontSize:14, padding:"10px 20px" }}>
+              <Link href="/signup" className="btn-primary" style={{ fontSize:13, padding:"8px 16px" }}>
                 Get started free <ArrowRight size={14} />
               </Link>
               <button
@@ -709,10 +705,7 @@ export default function LandingPage() {
         <footer style={{ borderTop:"1px solid #EBEBEB", background:"#fff", padding:"32px 0" }}>
           <div className="pk-shell pk-footer-inner">
             <div style={{ display:"flex", alignItems:"center", gap:9 }}>
-              <div style={{ background:C, borderRadius:8, width:28, height:28, display:"flex", alignItems:"center", justifyContent:"center" }}>
-                <Zap size={13} color="#fff" />
-              </div>
-              <span style={{ fontWeight:900, color:CDk, fontSize:15 }}>Solopad</span>
+              <BrandLogo markClassName="h-7 w-7" textClassName="text-[15px] font-black text-[#111111]" />
               <span style={{ fontSize:13, color:"#CCCCCC" }}>— Built for freelancers who want to get paid.</span>
             </div>
             <div className="pk-footer-links">

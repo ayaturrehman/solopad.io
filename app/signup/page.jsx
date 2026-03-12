@@ -7,7 +7,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
-import { Zap } from "lucide-react";
+import BrandLogo from "@/components/shared/BrandLogo";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import { PLAN_ORDER, getPlan, isValidPlan } from "@/lib/plans";
@@ -52,10 +52,7 @@ function SignupContent() {
       <div className="w-full max-w-sm">
         <div className="mb-8 flex flex-col items-center">
           <Link href="/" className="mb-6 flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded bg-zinc-900">
-              <Zap className="h-4 w-4 text-white" />
-            </div>
-            <span className="font-semibold text-zinc-900">Solopad</span>
+            <BrandLogo dark markClassName="h-8 w-8" textClassName="text-zinc-900" />
           </Link>
           <h1 className="text-2xl font-bold text-zinc-900">Create your account</h1>
           <p className="mt-1 text-sm text-zinc-500">{plan.name} plan selected · {plan.price}{plan.period}</p>
