@@ -20,6 +20,7 @@ model Business {
   ownerId     String                       // userId of the account owner
   logoUrl     String?
   timezone    String   @default("UTC")
+  currency    String   @default("USD")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 

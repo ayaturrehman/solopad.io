@@ -9,8 +9,11 @@ export default async function ProjectsPage() {
   const session = await getSession();
   if (!session?.user) redirect("/login");
 
-  const userRecord = await db.user.findUnique({ where: { id: session.user.id }, select: { currency: true } });
-  const currency = userRecord?.currency || "USD";
+  const userRecord = await db.user.findUnique({ where: { id: session.user.id }, select: { businessId: true } });
+  const business = userRecord?.businessId
+    ? await db.business.findUnique({ where: { id: userRecord.businessId }, select: { currency: true } })
+    : null;
+  const currency = business?.currency || "USD";
 
   const projects = await db.project.findMany({
     where: { userId: session.user.id, archived: false },

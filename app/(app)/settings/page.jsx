@@ -101,9 +101,15 @@ function SettingsContent() {
   const [companyName, setCompanyName] = useState("");
   const [companyLogo, setCompanyLogo] = useState("");
   const [timezone, setTimezone] = useState("UTC");
-  const [currency, setCurrency] = useState("USD");
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+
+  const [bizName, setBizName] = useState("");
+  const [bizLogo, setBizLogo] = useState("");
+  const [bizTimezone, setBizTimezone] = useState("UTC");
+  const [currency, setCurrency] = useState("USD");
+  const [savingBiz, setSavingBiz] = useState(false);
+  const [savedBiz, setSavedBiz] = useState(false);
 
   const [methods, setMethods] = useState(["card"]);
   const [savingPayments, setSavingPayments] = useState(false);
@@ -134,7 +140,16 @@ function SettingsContent() {
         setCompanyName(data.user.companyName ?? "");
         setCompanyLogo(data.user.companyLogo ?? "");
         setTimezone(data.user.timezone ?? "UTC");
-        setCurrency(data.user.currency ?? "USD");
+      });
+
+    fetch("/api/settings/business")
+      .then((response) => response.json())
+      .then((data) => {
+        if (!data.business) return;
+        setBizName(data.business.name ?? "");
+        setBizLogo(data.business.logoUrl ?? "");
+        setBizTimezone(data.business.timezone ?? "UTC");
+        setCurrency(data.business.currency ?? "USD");
       });
 
     fetch("/api/settings/payments")
@@ -180,7 +195,6 @@ function SettingsContent() {
         companyName,
         companyLogo,
         timezone,
-        currency,
       }),
     });
 
@@ -204,6 +218,27 @@ function SettingsContent() {
     setSaved(true);
     setSaving(false);
     setTimeout(() => setSaved(false), 2000);
+  }
+
+  async function saveBusiness(e) {
+    e.preventDefault();
+    setSavingBiz(true);
+
+    const response = await fetch("/api/settings/business", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: bizName,
+        logoUrl: bizLogo,
+        timezone: bizTimezone,
+        currency,
+      }),
+    });
+
+    setSavingBiz(false);
+    if (!response.ok) return;
+    setSavedBiz(true);
+    setTimeout(() => setSavedBiz(false), 2000);
   }
 
   function toggleMethod(id) {
@@ -378,18 +413,18 @@ function SettingsContent() {
                     <h2 className="font-semibold text-zinc-900">Business Details</h2>
                   </CardHeader>
                   <CardBody>
-                    <form onSubmit={saveProfile} className="space-y-4">
+                    <form onSubmit={saveBusiness} className="space-y-4">
                       <div className="grid gap-4 md:grid-cols-2">
                         <Input
                           label="Business name"
-                          value={companyName}
-                          onChange={(e) => setCompanyName(e.target.value)}
+                          value={bizName}
+                          onChange={(e) => setBizName(e.target.value)}
                           placeholder="Solopad Studio"
                         />
                         <Input
                           label="Timezone"
-                          value={timezone}
-                          onChange={(e) => setTimezone(e.target.value)}
+                          value={bizTimezone}
+                          onChange={(e) => setBizTimezone(e.target.value)}
                           placeholder="Europe/London"
                         />
                       </div>
@@ -464,12 +499,12 @@ function SettingsContent() {
                       </div>
                       <Input
                         label="Logo URL"
-                        value={companyLogo}
-                        onChange={(e) => setCompanyLogo(e.target.value)}
+                        value={bizLogo}
+                        onChange={(e) => setBizLogo(e.target.value)}
                         placeholder="https://example.com/logo.png"
                       />
-                      <Button type="submit" loading={saving} size="sm">
-                        {saved ? <><Check className="h-4 w-4" /> Saved</> : "Save business details"}
+                      <Button type="submit" loading={savingBiz} size="sm">
+                        {savedBiz ? <><Check className="h-4 w-4" /> Saved</> : "Save business details"}
                       </Button>
                     </form>
                   </CardBody>

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import db from "@/lib/db";
 import { getSession } from "@/lib/session";
-import { getTenantData, getTenantFilter } from "@/lib/tenant";
+import { getTenantData, getTenantFilter, resolveTenantUser } from "@/lib/tenant";
 import { getContactEmailKey, normalizeContactInput } from "@/lib/contacts";
 
 const MAX_IMPORT_ROWS = 500;
@@ -44,13 +44,7 @@ export async function POST(req) {
 
     const tenantData = await getTenantData(session);
     const filter = await getTenantFilter(session);
-    const ownerUser = await db.user.findFirst({
-      where: filter?.businessId
-        ? { businessId: filter.businessId }
-        : { id: session.user.id },
-      orderBy: [{ role: "asc" }, { createdAt: "asc" }],
-      select: { id: true },
-    });
+    const ownerUser = await resolveTenantUser(session);
 
     if (!ownerUser) {
       return NextResponse.json(

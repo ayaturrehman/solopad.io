@@ -8,33 +8,39 @@ export async function GET() {
 
   const user = await db.user.findUnique({
     where: { id: session.user.id },
-    select: {
-      name: true,
-      email: true,
-      role: true,
-      companyName: true,
-      companyLogo: true,
-      timezone: true,
-    },
+    select: { businessId: true },
   });
 
-  return NextResponse.json({ user });
+  if (!user?.businessId) return NextResponse.json({ business: null });
+
+  const business = await db.business.findUnique({
+    where: { id: user.businessId },
+    select: { name: true, logoUrl: true, timezone: true, currency: true },
+  });
+
+  return NextResponse.json({ business });
 }
 
 export async function PATCH(req) {
   const session = await getSession();
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { name, role, companyName, companyLogo, timezone } = await req.json();
+  const { name, logoUrl, timezone, currency } = await req.json();
 
-  await db.user.update({
+  const user = await db.user.findUnique({
     where: { id: session.user.id },
+    select: { businessId: true },
+  });
+
+  if (!user?.businessId) return NextResponse.json({ error: "No business found" }, { status: 404 });
+
+  await db.business.update({
+    where: { id: user.businessId },
     data: {
       ...(name !== undefined && { name: name?.trim() || "" }),
-      ...(role !== undefined && { role }),
-      ...(companyName !== undefined && { companyName: companyName?.trim() || null }),
-      ...(companyLogo !== undefined && { companyLogo: companyLogo?.trim() || null }),
+      ...(logoUrl !== undefined && { logoUrl: logoUrl?.trim() || null }),
       ...(timezone !== undefined && { timezone: timezone?.trim() || "UTC" }),
+      ...(currency !== undefined && { currency }),
     },
   });
 

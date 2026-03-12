@@ -21,8 +21,11 @@ export default async function DashboardPage() {
   const userId = session.user.id;
   const now = new Date();
 
-  const user = await db.user.findUnique({ where: { id: userId }, select: { currency: true } });
-  const currency = user?.currency || "USD";
+  const user = await db.user.findUnique({ where: { id: userId }, select: { businessId: true } });
+  const business = user?.businessId
+    ? await db.business.findUnique({ where: { id: user.businessId }, select: { currency: true } })
+    : null;
+  const currency = business?.currency || "USD";
 
   const [projects, tasks, proposals, contracts, contacts, invoices] = await Promise.all([
     db.project.findMany({
