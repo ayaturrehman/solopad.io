@@ -17,8 +17,20 @@ export async function POST(req) {
     }
 
     const hashed = await bcrypt.hash(password, 10);
-    const user = await db.user.create({
-      data: { name, email, password: hashed, role: "owner", plan: isValidPlan(plan) ? plan : "free" },
+
+    const user = await db.$transaction(async (tx) => {
+      const newUser = await tx.user.create({
+        data: { name, email, password: hashed, role: "owner", plan: isValidPlan(plan) ? plan : "free" },
+      });
+
+      const business = await tx.business.create({
+        data: { name: `${name}'s Business`, ownerId: newUser.id },
+      });
+
+      return tx.user.update({
+        where: { id: newUser.id },
+        data: { businessId: business.id },
+      });
     });
 
     return NextResponse.json({ id: user.id, email: user.email, name: user.name });
