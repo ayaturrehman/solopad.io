@@ -20,7 +20,7 @@ function Input({ className, ...props }) {
   return (
     <input
       className={cn(
-        "w-full rounded border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 placeholder-zinc-400 outline-none focus:border-zinc-400 focus:ring-1 focus:ring-zinc-200",
+        "w-full rounded border border-zinc-200 bg-white px-3 py-1.5 text-sm text-zinc-900 placeholder-zinc-400 outline-none focus:border-zinc-400 focus:ring-1 focus:ring-zinc-200",
         className
       )}
       {...props}
@@ -32,7 +32,7 @@ function Textarea({ className, ...props }) {
   return (
     <textarea
       className={cn(
-        "w-full rounded border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 placeholder-zinc-400 outline-none focus:border-zinc-400 focus:ring-1 focus:ring-zinc-200 resize-none",
+        "w-full rounded border border-zinc-200 bg-white px-3 py-1.5 text-sm text-zinc-900 placeholder-zinc-400 outline-none focus:border-zinc-400 focus:ring-1 focus:ring-zinc-200 resize-none",
         className
       )}
       {...props}
@@ -166,7 +166,7 @@ export default function ContractBuilderClient({ projects }) {
                 <select
                   value={projectId}
                   onChange={(e) => handleProjectChange(e.target.value)}
-                  className="w-full rounded border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 outline-none focus:border-zinc-400"
+                  className="w-full rounded border border-zinc-200 bg-white px-3 py-1.5 text-sm text-zinc-900 outline-none focus:border-zinc-400"
                 >
                   <option value="">Select project</option>
                   {projects.map((project) => (
@@ -276,7 +276,7 @@ export default function ContractBuilderClient({ projects }) {
                 type="button"
                 onClick={() => handleSave("draft")}
                 disabled={saving}
-                className="w-full rounded bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50"
+                className="w-full rounded bg-zinc-900 px-3 py-1.5.5 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50"
               >
                 {saving ? "Saving..." : "Save draft"}
               </button>
@@ -284,13 +284,13 @@ export default function ContractBuilderClient({ projects }) {
                 type="button"
                 onClick={() => handleSave("sent")}
                 disabled={saving}
-                className="w-full rounded border border-zinc-200 px-4 py-2.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50 disabled:opacity-50"
+                className="w-full rounded border border-zinc-200 px-3 py-1.5.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50 disabled:opacity-50"
               >
                 Save as sent
               </button>
             </div>
             {error && (
-              <div className="mt-4 flex items-start gap-2 rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+              <div className="mt-4 flex items-start gap-2 rounded border border-red-200 bg-red-50 px-3 py-1.5 text-sm text-red-700">
                 <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
                 <span>{error}</span>
               </div>

@@ -1,4 +1,5 @@
 import { getSession } from "@/lib/session";
+import { getTenantFilter, getTenantData } from "@/lib/tenant";
 import db from "@/lib/db";
 import { NextResponse } from "next/server";
 
@@ -6,8 +7,10 @@ export async function GET() {
   const session = await getSession();
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+  const filter = await getTenantFilter(session);
+
   const contracts = await db.contract.findMany({
-    where: { userId: session.user.id },
+    where: filter,
     include: { project: { select: { id: true, title: true } } },
     orderBy: { createdAt: "desc" },
   });
@@ -22,10 +25,12 @@ export async function POST(req) {
   const body = await req.json();
   const { title, projectId, clientName, clientEmail, clauses, status, signatureName } = body;
 
+  const filter = await getTenantFilter(session);
+
   let project = null;
   if (projectId) {
     project = await db.project.findFirst({
-      where: { id: projectId, userId: session.user.id },
+      where: { id: projectId, ...filter },
       select: { id: true, clientName: true, clientEmail: true },
     });
     if (!project) {
@@ -40,9 +45,11 @@ export async function POST(req) {
     return NextResponse.json({ error: "Title and client name are required" }, { status: 400 });
   }
 
+  const tenantData = await getTenantData(session);
+
   const contract = await db.contract.create({
     data: {
-      userId: session.user.id,
+      ...tenantData,
       projectId: project?.id || null,
       title: title.trim(),
       clientName: resolvedClientName,

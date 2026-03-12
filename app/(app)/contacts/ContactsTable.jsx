@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Search, Mail, Phone, Building2, ChevronDown, Plus, Star } from "lucide-react";
+import { Search, Mail, Phone, Building2, ChevronDown, Plus } from "lucide-react";
 import { cn, formatCurrency } from "@/lib/utils";
 
 const STATUS_CONFIG = {
@@ -119,10 +119,7 @@ export default function ContactsTable({ contacts }) {
                       )}
                     >
                       <span>{option.label}</span>
-                      <span className="flex items-center gap-3">
-                        <Star className="h-4 w-4 text-zinc-300" />
-                        {tab === option.key && <span className="h-2.5 w-2.5 rounded-full bg-blue-600" />}
-                      </span>
+                      {tab === option.key && <span className="h-2.5 w-2.5 rounded-full bg-blue-600" />}
                     </button>
                   ))}
                 </div>
@@ -133,7 +130,7 @@ export default function ContactsTable({ contacts }) {
           {contacts.length > 0 && (
             <Link
               href="/contacts/new"
-              className="inline-flex items-center gap-1.5 rounded bg-zinc-900 px-3 py-2 text-sm font-semibold text-white hover:bg-zinc-700"
+              className="inline-flex items-center gap-1.5 rounded bg-zinc-900 px-3 py-1.5 text-sm font-semibold text-white hover:bg-zinc-700"
             >
               <Plus className="h-4 w-4" />
               Add contact
@@ -152,7 +149,7 @@ export default function ContactsTable({ contacts }) {
             <p className="mb-6 text-sm text-zinc-500">Add your first client or lead to keep track of your relationships.</p>
             <Link
               href="/contacts/new"
-              className="inline-flex items-center gap-2 rounded bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700"
+              className="inline-flex items-center gap-2 rounded bg-zinc-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-zinc-700"
             >
               <Plus className="h-4 w-4" />
               Add first contact

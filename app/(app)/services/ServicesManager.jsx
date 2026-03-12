@@ -42,11 +42,11 @@ function ServiceForm({ initial = {}, onSave, onCancel, loading }) {
         <button
           onClick={() => onSave(form)}
           disabled={loading || !form.name.trim()}
-          className="flex items-center gap-1.5 rounded bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50"
+          className="flex items-center gap-1.5 rounded bg-zinc-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50"
         >
           <Check className="h-3.5 w-3.5" /> {loading ? "Saving…" : "Save"}
         </button>
-        <button onClick={onCancel} className="flex items-center gap-1.5 rounded border border-zinc-200 px-4 py-2 text-sm text-zinc-600 hover:bg-zinc-50">
+        <button onClick={onCancel} className="flex items-center gap-1.5 rounded border border-zinc-200 px-3 py-1.5 text-sm text-zinc-600 hover:bg-zinc-50">
           <X className="h-3.5 w-3.5" /> Cancel
         </button>
       </div>
@@ -120,7 +120,7 @@ export default function ServicesManager({ initialServices }) {
           <button
             type="button"
             onClick={() => setShowAdd(true)}
-            className="inline-flex h-11 items-center justify-center gap-2 rounded bg-zinc-900 px-4 text-sm font-medium text-white hover:bg-zinc-700"
+            className="inline-flex items-center justify-center gap-2 rounded bg-zinc-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-zinc-700"
           >
             <Plus className="h-4 w-4" />
             New service

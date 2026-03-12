@@ -1,4 +1,3 @@
-export const dynamic = "force-dynamic";
 
 import { getSession } from "@/lib/session";
 import db from "@/lib/db";
@@ -193,11 +192,11 @@ export default async function InvoiceDetailPage({ params }) {
               <table className="w-full text-sm">
                 <thead className="bg-zinc-50 border-b border-zinc-100">
                   <tr>
-                    <th className="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-400">#</th>
-                    <th className="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Milestone</th>
-                    <th className="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Due Date</th>
-                    <th className="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Status</th>
-                    <th className="px-4 py-2.5 text-right text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Amount</th>
+                    <th className="px-3 py-1.5.5 text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-400">#</th>
+                    <th className="px-3 py-1.5.5 text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Milestone</th>
+                    <th className="px-3 py-1.5.5 text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Due Date</th>
+                    <th className="px-3 py-1.5.5 text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Status</th>
+                    <th className="px-3 py-1.5.5 text-right text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Amount</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-zinc-50">

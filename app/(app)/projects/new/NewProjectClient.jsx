@@ -157,7 +157,7 @@ export default function NewProjectClient({ contacts }) {
                           key={c.id}
                           type="button"
                           onClick={() => selectContact(c)}
-                          className="flex w-full items-center gap-3 px-3 py-2.5 text-left hover:bg-zinc-50"
+                          className="flex w-full items-center gap-3 px-3 py-1.5.5 text-left hover:bg-zinc-50"
                         >
                           <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-zinc-100 text-xs font-semibold text-zinc-600">
                             {c.name[0].toUpperCase()}
@@ -170,7 +170,7 @@ export default function NewProjectClient({ contacts }) {
                           </div>
                         </button>
                       ))}
-                      <div className="border-t border-zinc-100 px-3 py-2">
+                      <div className="border-t border-zinc-100 px-3 py-1.5">
                         <Link href="/contacts/new" className="text-xs text-zinc-500 hover:text-zinc-900">
                           + Add new contact
                         </Link>
@@ -204,7 +204,7 @@ export default function NewProjectClient({ contacts }) {
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-medium text-zinc-700">Description (optional)</label>
             <textarea
-              className="min-h-[72px] resize-none rounded border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900"
+              className="min-h-[72px] resize-none rounded border border-zinc-200 bg-white px-3 py-1.5 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900"
               placeholder="What's this project about?"
               value={form.description}
               onChange={(e) => set("description", e.target.value)}
@@ -249,7 +249,7 @@ export default function NewProjectClient({ contacts }) {
         </div>
 
         {error && (
-          <p className="rounded bg-red-50 px-3 py-2 text-sm text-red-600">{error}</p>
+          <p className="rounded bg-red-50 px-3 py-1.5 text-sm text-red-600">{error}</p>
         )}
 
         <div className="flex gap-3">

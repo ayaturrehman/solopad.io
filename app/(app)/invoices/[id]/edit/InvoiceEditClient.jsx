@@ -189,14 +189,14 @@ export default function InvoiceEditClient({ invoice, projects, services }) {
           <button
             onClick={() => handleSave("draft")}
             disabled={saving}
-            className="rounded border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 disabled:opacity-50"
+            className="rounded border border-zinc-200 px-3 py-1.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50 disabled:opacity-50"
           >
             Save as draft
           </button>
           <button
             onClick={() => handleSave("sent")}
             disabled={saving}
-            className="rounded bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50"
+            className="rounded bg-zinc-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50"
           >
             {saving ? "Saving…" : "Save & send"}
           </button>
@@ -300,7 +300,7 @@ export default function InvoiceEditClient({ invoice, projects, services }) {
                   <div className="absolute right-0 top-8 z-20 hidden w-56 rounded border border-zinc-200 bg-white p-1.5 shadow-lg group-hover:block">
                     {services.map((svc) => (
                       <button key={svc.id} onClick={() => applyService(svc)}
-                        className="flex w-full items-center justify-between rounded px-3 py-2 text-left hover:bg-zinc-50">
+                        className="flex w-full items-center justify-between rounded px-3 py-1.5 text-left hover:bg-zinc-50">
                         <span className="text-sm text-zinc-800">{svc.name}</span>
                         <span className="text-xs text-zinc-400">{formatCurrency(svc.defaultRate)}</span>
                       </button>
@@ -433,7 +433,7 @@ export default function InvoiceEditClient({ invoice, projects, services }) {
             <SectionLabel icon={AlignLeft}>Notes & Terms</SectionLabel>
             <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={4}
               placeholder="Payment terms, bank details, or any notes for the client…"
-              className="w-full resize-none rounded border border-zinc-200 px-3 py-2.5 text-sm outline-none focus:border-zinc-900" />
+              className="w-full resize-none rounded border border-zinc-200 px-3 py-1.5.5 text-sm outline-none focus:border-zinc-900" />
           </div>
         </div>
 

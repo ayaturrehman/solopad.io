@@ -113,7 +113,7 @@ export default function ProjectHeader({ project, portalUrl }) {
                 <button
                   key={s}
                   onClick={() => changeStatus(s)}
-                  className="w-full px-3 py-2 text-left text-sm text-zinc-700 hover:bg-zinc-50"
+                  className="w-full px-3 py-1.5 text-left text-sm text-zinc-700 hover:bg-zinc-50"
                 >
                   Mark as {STATUS_LABELS[s]}
                 </button>
@@ -121,7 +121,7 @@ export default function ProjectHeader({ project, portalUrl }) {
               <hr className="my-1 border-zinc-100" />
               <button
                 onClick={archiveProject}
-                className="w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50"
+                className="w-full px-3 py-1.5 text-left text-sm text-red-600 hover:bg-red-50"
               >
                 Archive project
               </button>

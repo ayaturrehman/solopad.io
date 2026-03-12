@@ -5,7 +5,7 @@ import "./globals.css";
 const plusJakartaSans = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-plus-jakarta-sans" });
 
 export const metadata = {
-  title: "PortalKit — The One-Link Client Portal for Freelancers",
+  title: "Solopad — The One-Link Client Portal for Freelancers",
   description: "Send clients one link. They see everything. You stop chasing.",
 };
 
@@ -18,7 +18,7 @@ export default function RootLayout({ children }) {
             __html: `
               (() => {
                 try {
-                  const stored = localStorage.getItem("portalkit-theme");
+                  const stored = localStorage.getItem("solopad-theme");
                   const theme = stored === "dark" || stored === "light"
                     ? stored
                     : (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");

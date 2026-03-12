@@ -1,4 +1,3 @@
-export const dynamic = "force-dynamic";
 
 import Link from "next/link";
 import { ArrowLeft, Mail, Phone, Building2, FolderOpen, DollarSign } from "lucide-react";

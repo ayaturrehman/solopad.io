@@ -1,13 +1,16 @@
 import { NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
+import { getTenantFilter, getTenantData } from "@/lib/tenant";
 import db from "@/lib/db";
 
 export async function GET() {
   const session = await getSession();
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+  const filter = await getTenantFilter(session);
+
   const services = await db.service.findMany({
-    where: { userId: session.user.id },
+    where: filter,
     orderBy: { name: "asc" },
   });
 
@@ -24,9 +27,11 @@ export async function POST(req) {
     return NextResponse.json({ error: "Service name is required" }, { status: 400 });
   }
 
+  const tenantData = await getTenantData(session);
+
   const service = await db.service.create({
     data: {
-      userId: session.user.id,
+      ...tenantData,
       name: name.trim(),
       description: description?.trim() || null,
       defaultRate: parseFloat(defaultRate) || 0,

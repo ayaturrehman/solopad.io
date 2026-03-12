@@ -44,7 +44,7 @@ export default function InvoiceActions({ invoice }) {
       {canEdit && (
         <Link
           href={`/invoices/${invoice.id}/edit`}
-          className="inline-flex items-center gap-1.5 rounded border border-zinc-200 px-3 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50"
+          className="inline-flex items-center gap-1.5 rounded border border-zinc-200 px-3 py-1.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50"
         >
           <Pencil className="h-3.5 w-3.5" /> Edit
         </Link>
@@ -55,7 +55,7 @@ export default function InvoiceActions({ invoice }) {
         <button
           onClick={() => patch({ status: "sent" })}
           disabled={loading}
-          className="inline-flex items-center gap-1.5 rounded bg-zinc-900 px-3 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50"
+          className="inline-flex items-center gap-1.5 rounded bg-zinc-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50"
         >
           <Send className="h-3.5 w-3.5" /> Send
         </button>
@@ -76,7 +76,7 @@ export default function InvoiceActions({ invoice }) {
             {!canEdit && status !== "cancelled" && (
               <Link
                 href={`/invoices/${invoice.id}/edit`}
-                className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm text-zinc-600 hover:bg-zinc-50"
+                className="flex w-full items-center gap-2.5 px-3 py-1.5.5 text-sm text-zinc-600 hover:bg-zinc-50"
                 onClick={() => setOpen(false)}
               >
                 <Pencil className="h-4 w-4" /> Edit invoice
@@ -87,14 +87,14 @@ export default function InvoiceActions({ invoice }) {
                 navigator.clipboard.writeText(window.location.href);
                 setOpen(false);
               }}
-              className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm text-zinc-600 hover:bg-zinc-50"
+              className="flex w-full items-center gap-2.5 px-3 py-1.5.5 text-sm text-zinc-600 hover:bg-zinc-50"
             >
               <LinkIcon className="h-4 w-4" /> Copy link
             </button>
             {status !== "cancelled" && (
               <button
                 onClick={() => patch({ status: "cancelled" })}
-                className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm text-zinc-600 hover:bg-zinc-50"
+                className="flex w-full items-center gap-2.5 px-3 py-1.5.5 text-sm text-zinc-600 hover:bg-zinc-50"
               >
                 <XCircle className="h-4 w-4" /> Cancel invoice
               </button>
@@ -102,7 +102,7 @@ export default function InvoiceActions({ invoice }) {
             <div className="border-t border-zinc-100" />
             <button
               onClick={del}
-              className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50"
+              className="flex w-full items-center gap-2.5 px-3 py-1.5.5 text-sm text-red-600 hover:bg-red-50"
             >
               <Trash2 className="h-4 w-4" /> Delete invoice
             </button>

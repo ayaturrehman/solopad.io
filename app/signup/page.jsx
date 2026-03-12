@@ -55,7 +55,7 @@ function SignupContent() {
             <div className="flex h-8 w-8 items-center justify-center rounded bg-zinc-900">
               <Zap className="h-4 w-4 text-white" />
             </div>
-            <span className="font-semibold text-zinc-900">PortalKit</span>
+            <span className="font-semibold text-zinc-900">Solopad</span>
           </Link>
           <h1 className="text-2xl font-bold text-zinc-900">Create your account</h1>
           <p className="mt-1 text-sm text-zinc-500">{plan.name} plan selected · {plan.price}{plan.period}</p>
@@ -115,7 +115,7 @@ function SignupContent() {
               required
             />
             {error && (
-              <p className="rounded bg-red-50 px-3 py-2 text-sm text-red-600">{error}</p>
+              <p className="rounded bg-red-50 px-3 py-1.5 text-sm text-red-600">{error}</p>
             )}
             <Button type="submit" loading={loading} className="w-full">
               Create account

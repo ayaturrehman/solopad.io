@@ -72,7 +72,7 @@ export default function Navbar() {
           <div className="flex h-7 w-7 items-center justify-center rounded-md bg-white/10">
             <Zap className="h-3.5 w-3.5 text-white" />
           </div>
-          <span className="text-base font-semibold tracking-tight text-white">PortalKit</span>
+          <span className="text-base font-semibold tracking-tight text-white">Solopad</span>
         </Link>
 
         {/* Nav groups */}
@@ -89,7 +89,7 @@ export default function Navbar() {
                     key={href}
                     href={href}
                     className={cn(
-                      "flex items-center gap-2.5 rounded px-3 py-2 text-[13px] font-medium transition-colors",
+                      "flex items-center gap-2.5 rounded px-3 py-1.5 text-[13px] font-medium transition-colors",
                       isActive(href)
                         ? "bg-[#243247] text-[#dbeafe] shadow-sm"
                         : "text-slate-300 hover:bg-white/8 hover:text-white"
@@ -155,7 +155,7 @@ export default function Navbar() {
                 <div className="flex h-6 w-6 items-center justify-center rounded-md bg-white/10">
                   <Zap className="h-3 w-3 text-white" />
                 </div>
-                <span className="text-sm font-semibold text-white">PortalKit</span>
+                <span className="text-sm font-semibold text-white">Solopad</span>
               </div>
               <button
                 onClick={() => setDrawerOpen(false)}

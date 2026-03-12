@@ -1,6 +1,12 @@
 import { NextResponse } from "next/server";
 import db from "@/lib/db";
 
+// Public booking endpoint — userId comes from the URL/booking page (not from session)
+// The userId here is the FREELANCER's userId whose calendar the client is booking.
+// This is intentional: clients don't have accounts, they book via /book/[userId].
+// Security: we only READ availability/bookings for that userId, never write to
+// the caller's account. The booking is created FOR that freelancer, not by them.
+
 export async function POST(req) {
   const body = await req.json();
   const { clientName, clientEmail, startAt, endAt, title, notes, userId } = body;
@@ -8,6 +14,10 @@ export async function POST(req) {
   if (!clientName || !clientEmail || !startAt || !endAt || !title || !userId) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
   }
+
+  // Verify the target userId exists (prevent booking for non-existent users)
+  const freelancer = await db.user.findUnique({ where: { id: userId }, select: { id: true } });
+  if (!freelancer) return NextResponse.json({ error: "Freelancer not found" }, { status: 404 });
 
   const start = new Date(startAt);
   const end = new Date(endAt);

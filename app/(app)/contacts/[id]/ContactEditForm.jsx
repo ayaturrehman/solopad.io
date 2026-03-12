@@ -63,7 +63,7 @@ export default function ContactEditForm({ contact }) {
         </button>
         <button
           onClick={handleDelete}
-          className="rounded border border-red-100 px-3 py-2 text-sm font-medium text-red-500 hover:bg-red-50"
+          className="rounded border border-red-100 px-3 py-1.5 text-sm font-medium text-red-500 hover:bg-red-50"
         >
           Delete
         </button>
@@ -77,23 +77,23 @@ export default function ContactEditForm({ contact }) {
       <div className="space-y-3">
         <div>
           <label className="mb-1 block text-xs font-medium text-zinc-700">Name *</label>
-          <input value={form.name} onChange={set("name")} className="w-full rounded border border-zinc-200 px-3 py-2 text-sm outline-none focus:border-zinc-400" />
+          <input value={form.name} onChange={set("name")} className="w-full rounded border border-zinc-200 px-3 py-1.5 text-sm outline-none focus:border-zinc-400" />
         </div>
         <div>
           <label className="mb-1 block text-xs font-medium text-zinc-700">Company</label>
-          <input value={form.company} onChange={set("company")} className="w-full rounded border border-zinc-200 px-3 py-2 text-sm outline-none focus:border-zinc-400" />
+          <input value={form.company} onChange={set("company")} className="w-full rounded border border-zinc-200 px-3 py-1.5 text-sm outline-none focus:border-zinc-400" />
         </div>
         <div>
           <label className="mb-1 block text-xs font-medium text-zinc-700">Email</label>
-          <input type="email" value={form.email} onChange={set("email")} className="w-full rounded border border-zinc-200 px-3 py-2 text-sm outline-none focus:border-zinc-400" />
+          <input type="email" value={form.email} onChange={set("email")} className="w-full rounded border border-zinc-200 px-3 py-1.5 text-sm outline-none focus:border-zinc-400" />
         </div>
         <div>
           <label className="mb-1 block text-xs font-medium text-zinc-700">Phone</label>
-          <input type="tel" value={form.phone} onChange={set("phone")} className="w-full rounded border border-zinc-200 px-3 py-2 text-sm outline-none focus:border-zinc-400" />
+          <input type="tel" value={form.phone} onChange={set("phone")} className="w-full rounded border border-zinc-200 px-3 py-1.5 text-sm outline-none focus:border-zinc-400" />
         </div>
         <div>
           <label className="mb-1 block text-xs font-medium text-zinc-700">Status</label>
-          <select value={form.status} onChange={set("status")} className="w-full rounded border border-zinc-200 px-3 py-2 text-sm outline-none focus:border-zinc-400">
+          <select value={form.status} onChange={set("status")} className="w-full rounded border border-zinc-200 px-3 py-1.5 text-sm outline-none focus:border-zinc-400">
             {STATUS_OPTIONS.map((o) => (
               <option key={o.value} value={o.value}>{o.label}</option>
             ))}
@@ -101,14 +101,14 @@ export default function ContactEditForm({ contact }) {
         </div>
         <div>
           <label className="mb-1 block text-xs font-medium text-zinc-700">Notes</label>
-          <textarea value={form.notes} onChange={set("notes")} rows={3} className="w-full resize-none rounded border border-zinc-200 px-3 py-2 text-sm outline-none focus:border-zinc-400" />
+          <textarea value={form.notes} onChange={set("notes")} rows={3} className="w-full resize-none rounded border border-zinc-200 px-3 py-1.5 text-sm outline-none focus:border-zinc-400" />
         </div>
         {error && <p className="text-xs text-red-500">{error}</p>}
         <div className="flex gap-2 pt-1">
           <button onClick={handleSave} disabled={loading} className="flex-1 rounded bg-zinc-900 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50">
             {loading ? "Saving…" : "Save changes"}
           </button>
-          <button onClick={() => setOpen(false)} className="rounded border border-zinc-200 px-4 py-2 text-sm text-zinc-600 hover:bg-zinc-50">
+          <button onClick={() => setOpen(false)} className="rounded border border-zinc-200 px-3 py-1.5 text-sm text-zinc-600 hover:bg-zinc-50">
             Cancel
           </button>
         </div>

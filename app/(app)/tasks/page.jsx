@@ -1,5 +1,5 @@
-export const dynamic = "force-dynamic";
 
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/session";
 import db from "@/lib/db";
@@ -33,5 +33,5 @@ export default async function TasksPage() {
     }),
   ]);
 
-  return <TasksClient tasks={tasks.map(normalizeTask)} projects={projects} teamMembers={teamMembers} />;
+  return <Suspense fallback={null}><TasksClient tasks={tasks.map(normalizeTask)} projects={projects} teamMembers={teamMembers} /></Suspense>;
 }

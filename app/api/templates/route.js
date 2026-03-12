@@ -1,4 +1,5 @@
 import { getSession } from "@/lib/session";
+import { getTenantFilter, getTenantData } from "@/lib/tenant";
 import db from "@/lib/db";
 import { NextResponse } from "next/server";
 
@@ -6,8 +7,10 @@ export async function GET() {
   const session = await getSession();
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+  const filter = await getTenantFilter(session);
+
   const templates = await db.template.findMany({
-    where: { userId: session.user.id },
+    where: filter,
     orderBy: { createdAt: "desc" },
   });
 
@@ -25,9 +28,11 @@ export async function POST(req) {
     return NextResponse.json({ error: "type, name, and content are required" }, { status: 400 });
   }
 
+  const tenantData = await getTenantData(session);
+
   const template = await db.template.create({
     data: {
-      userId: session.user.id,
+      ...tenantData,
       type,
       name,
       description: description || null,

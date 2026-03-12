@@ -1,6 +1,5 @@
 "use client";
 
-export const dynamic = "force-dynamic";
 
 import { Suspense } from "react";
 import { useEffect, useState } from "react";
@@ -57,13 +56,11 @@ const emptyInviteForm = {
 
 const PROFILE_TAB_SECTIONS = [
   { id: "profile-overview", label: "Profile" },
-];
-
-const ROLES_TAB_SECTIONS = [
-  { id: "roles-overview", label: "Roles" },
+  { id: "profile-business", label: "Business Details" },
 ];
 
 const SETTINGS_TAB_SECTIONS = [
+  { id: "settings-roles", label: "Roles" },
   { id: "settings-team", label: "Team" },
   { id: "settings-stripe", label: "Stripe" },
   { id: "settings-payments", label: "Payments" },
@@ -85,7 +82,7 @@ function QuickSectionMenu({ title, sections }) {
             key={section.id}
             type="button"
             onClick={() => jumpTo(section.id)}
-            className="flex w-full items-center justify-between rounded px-3 py-2 text-left text-sm text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-zinc-900"
+            className="flex w-full items-center justify-between rounded px-3 py-1.5 text-left text-sm text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-zinc-900"
           >
             <span>{section.label}</span>
             <span className="text-zinc-300">#</span>
@@ -101,6 +98,9 @@ function SettingsContent() {
   const searchParams = useSearchParams();
 
   const [name, setName] = useState("");
+  const [companyName, setCompanyName] = useState("");
+  const [companyLogo, setCompanyLogo] = useState("");
+  const [timezone, setTimezone] = useState("UTC");
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
@@ -125,6 +125,16 @@ function SettingsContent() {
   const teamEnabled = canManageTeam(plan);
 
   useEffect(() => {
+    fetch("/api/settings/profile")
+      .then((response) => response.json())
+      .then((data) => {
+        if (!data.user) return;
+        setName(data.user.name ?? "");
+        setCompanyName(data.user.companyName ?? "");
+        setCompanyLogo(data.user.companyLogo ?? "");
+        setTimezone(data.user.timezone ?? "UTC");
+      });
+
     fetch("/api/settings/payments")
       .then((response) => response.json())
       .then((data) => {
@@ -153,7 +163,7 @@ function SettingsContent() {
   };
   const currentName = name || session?.user?.name || "";
 
-  async function saveName(e) {
+  async function saveProfile(e) {
     e.preventDefault();
     const trimmedName = currentName.trim();
     if (!trimmedName) return;
@@ -163,7 +173,12 @@ function SettingsContent() {
     const response = await fetch("/api/settings/profile", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: trimmedName }),
+      body: JSON.stringify({
+        name: trimmedName,
+        companyName,
+        companyLogo,
+        timezone,
+      }),
     });
 
     if (!response.ok) {
@@ -176,6 +191,9 @@ function SettingsContent() {
       user: {
         ...session?.user,
         name: trimmedName,
+        companyName,
+        companyLogo,
+        timezone,
       },
     });
 
@@ -271,12 +289,7 @@ function SettingsContent() {
   }
 
   const ownerPermissions = TEAM_ROLE_PRESETS[userRole] ?? TEAM_ROLE_PRESETS.owner;
-  const sections =
-    activeTab === "profile"
-      ? PROFILE_TAB_SECTIONS
-      : activeTab === "roles"
-        ? ROLES_TAB_SECTIONS
-        : SETTINGS_TAB_SECTIONS;
+  const sections = activeTab === "profile" ? PROFILE_TAB_SECTIONS : SETTINGS_TAB_SECTIONS;
 
   return (
     <div className="space-y-6">
@@ -288,7 +301,6 @@ function SettingsContent() {
       <div className="border-b border-zinc-200">
         {[
           { id: "profile", label: "Profile", description: "Personal info, role, and access overview." },
-          { id: "roles", label: "Roles", description: "Workspace roles and permission presets." },
           { id: "settings", label: "Settings", description: "Team, payments, billing, and workspace controls." },
         ].map((tab) => (
           <button
@@ -296,13 +308,13 @@ function SettingsContent() {
             type="button"
             onClick={() => setActiveTab(tab.id)}
             className={`relative mr-8 inline-flex h-12 items-center text-sm font-medium transition-colors ${
-              activeTab === tab.id ? "text-zinc-900" : "text-zinc-400 hover:text-zinc-700"
+              activeTab === tab.id ? "text-blue-600" : "text-zinc-400 hover:text-zinc-700"
             }`}
           >
             <span>{tab.label}</span>
             <span
               className={`absolute inset-x-0 bottom-0 h-0.5 rounded-full transition-opacity ${
-                activeTab === tab.id ? "bg-zinc-900 opacity-100" : "bg-transparent opacity-0"
+                activeTab === tab.id ? "bg-blue-600 opacity-100" : "bg-transparent opacity-0"
               }`}
             />
           </button>
@@ -336,7 +348,7 @@ function SettingsContent() {
                     <h2 className="font-semibold text-zinc-900">Profile</h2>
                   </CardHeader>
                   <CardBody>
-                    <form onSubmit={saveName} className="space-y-4">
+                    <form onSubmit={saveProfile} className="space-y-4">
                       <Input label="Your name" value={currentName} onChange={(e) => setName(e.target.value)} placeholder="Alex Johnson" />
                       <Input label="Email" value={session?.user?.email ?? ""} disabled />
                       <div className="grid gap-4 md:grid-cols-2">
@@ -357,43 +369,76 @@ function SettingsContent() {
                 </Card>
               </section>
 
-            </>
-          )}
+              <section id="profile-business">
+                <Card>
+                  <CardHeader>
+                    <h2 className="font-semibold text-zinc-900">Business Details</h2>
+                  </CardHeader>
+                  <CardBody>
+                    <form onSubmit={saveProfile} className="space-y-4">
+                      <div className="grid gap-4 md:grid-cols-2">
+                        <Input
+                          label="Business name"
+                          value={companyName}
+                          onChange={(e) => setCompanyName(e.target.value)}
+                          placeholder="Solopad Studio"
+                        />
+                        <Input
+                          label="Timezone"
+                          value={timezone}
+                          onChange={(e) => setTimezone(e.target.value)}
+                          placeholder="Europe/London"
+                        />
+                      </div>
+                      <Input
+                        label="Logo URL"
+                        value={companyLogo}
+                        onChange={(e) => setCompanyLogo(e.target.value)}
+                        placeholder="https://example.com/logo.png"
+                      />
+                      <Button type="submit" loading={saving} size="sm">
+                        {saved ? <><Check className="h-4 w-4" /> Saved</> : "Save business details"}
+                      </Button>
+                    </form>
+                  </CardBody>
+                </Card>
+              </section>
 
-          {activeTab === "roles" && (
-            <section id="roles-overview">
-              <Card>
-                <CardHeader>
-                  <div className="flex items-center gap-2">
-                    <ShieldCheck className="h-4 w-4 text-zinc-500" />
-                    <h2 className="font-semibold text-zinc-900">Roles & Permissions</h2>
-                  </div>
-                  <p className="mt-0.5 text-xs text-zinc-400">
-                    Solo and Pro plans can invite teammates and assign work from the tasks area.
-                  </p>
-                </CardHeader>
-                <CardBody className="space-y-4">
-                  <div className="grid gap-3 md:grid-cols-3">
-                    <div className="rounded border border-zinc-200 p-4">
-                      <p className="text-sm font-medium text-zinc-900">Owner</p>
-                      <p className="mt-1 text-xs text-zinc-500">Full workspace control, invites teammates, and assigns tasks.</p>
-                    </div>
-                    <div className="rounded border border-zinc-200 p-4">
-                      <p className="text-sm font-medium text-zinc-900">Collaborator</p>
-                      <p className="mt-1 text-xs text-zinc-500">Works on delivery and can receive assigned tasks.</p>
-                    </div>
-                    <div className="rounded border border-zinc-200 p-4">
-                      <p className="text-sm font-medium text-zinc-900">Contractor</p>
-                      <p className="mt-1 text-xs text-zinc-500">Limited access for external helpers and short engagements.</p>
-                    </div>
-                  </div>
-                </CardBody>
-              </Card>
-            </section>
+            </>
           )}
 
           {activeTab === "settings" && (
             <>
+              <section id="settings-roles">
+                <Card>
+                  <CardHeader>
+                    <div className="flex items-center gap-2">
+                      <ShieldCheck className="h-4 w-4 text-zinc-500" />
+                      <h2 className="font-semibold text-zinc-900">Roles & Permissions</h2>
+                    </div>
+                    <p className="mt-0.5 text-xs text-zinc-400">
+                      Solo and Pro plans can invite teammates and assign work from the tasks area.
+                    </p>
+                  </CardHeader>
+                  <CardBody className="space-y-4">
+                    <div className="grid gap-3 md:grid-cols-3">
+                      <div className="rounded border border-zinc-200 p-4">
+                        <p className="text-sm font-medium text-zinc-900">Owner</p>
+                        <p className="mt-1 text-xs text-zinc-500">Full workspace control, invites teammates, and assigns tasks.</p>
+                      </div>
+                      <div className="rounded border border-zinc-200 p-4">
+                        <p className="text-sm font-medium text-zinc-900">Collaborator</p>
+                        <p className="mt-1 text-xs text-zinc-500">Works on delivery and can receive assigned tasks.</p>
+                      </div>
+                      <div className="rounded border border-zinc-200 p-4">
+                        <p className="text-sm font-medium text-zinc-900">Contractor</p>
+                        <p className="mt-1 text-xs text-zinc-500">Limited access for external helpers and short engagements.</p>
+                      </div>
+                    </div>
+                  </CardBody>
+                </Card>
+              </section>
+
               <section id="settings-team">
                 <Card>
                   <CardHeader>
@@ -477,7 +522,7 @@ function SettingsContent() {
                         <p className="mb-2 text-sm font-medium text-zinc-700">Permissions</p>
                         <div className="grid gap-2 md:grid-cols-3">
                           {TEAM_PERMISSION_OPTIONS.map((permission) => (
-                            <label key={permission.id} className="flex items-center gap-2 rounded border border-zinc-200 bg-white px-3 py-2">
+                            <label key={permission.id} className="flex items-center gap-2 rounded border border-zinc-200 bg-white px-3 py-1.5">
                               <input
                                 type="checkbox"
                                 checked={inviteForm.permissions.includes(permission.id)}
@@ -513,7 +558,7 @@ function SettingsContent() {
                   <CardBody>
                     {stripe.connected ? (
                       <div className="space-y-3">
-                        <div className="flex items-center gap-2 rounded border border-green-200 bg-green-50 px-3 py-2.5">
+                        <div className="flex items-center gap-2 rounded border border-green-200 bg-green-50 px-3 py-1.5.5">
                           <div className="h-2 w-2 rounded-full bg-green-500" />
                           <span className="text-sm font-medium text-green-700">
                             {stripe.onboarded ? "Connected and active" : "Connected - finish onboarding in Stripe"}
@@ -531,7 +576,7 @@ function SettingsContent() {
                         </p>
                         <a
                           href="/api/settings/stripe/connect"
-                          className="inline-flex items-center gap-2 rounded bg-[#635BFF] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#4F46E5]"
+                          className="inline-flex items-center gap-2 rounded bg-[#635BFF] px-3 py-1.5.5 text-sm font-semibold text-white hover:bg-[#4F46E5]"
                         >
                           <Link2 className="h-4 w-4" /> Connect with Stripe
                         </a>
@@ -552,7 +597,7 @@ function SettingsContent() {
                   </CardHeader>
                   <CardBody className="space-y-3">
                     {!stripe.connected && (
-                      <div className="flex items-start gap-2 rounded border border-amber-200 bg-amber-50 px-3 py-2.5 text-xs text-amber-700">
+                      <div className="flex items-start gap-2 rounded border border-amber-200 bg-amber-50 px-3 py-1.5.5 text-xs text-amber-700">
                         <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                         Connect your Stripe account above before enabling payment methods.
                       </div>

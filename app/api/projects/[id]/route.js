@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
+import { getTenantFilter } from "@/lib/tenant";
 import db from "@/lib/db";
 
 export async function PATCH(req, { params }) {
@@ -14,8 +15,10 @@ export async function PATCH(req, { params }) {
   if (data.endDate !== undefined) data.endDate = data.endDate ? new Date(data.endDate) : null;
   if (data.startDate !== undefined) data.startDate = data.startDate ? new Date(data.startDate) : null;
 
+  const filter = await getTenantFilter(session);
+
   const project = await db.project.updateMany({
-    where: { id, userId: session.user.id },
+    where: { id, ...filter },
     data,
   });
 
@@ -28,8 +31,10 @@ export async function DELETE(req, { params }) {
 
   const { id } = await params;
 
+  const filter = await getTenantFilter(session);
+
   await db.project.deleteMany({
-    where: { id, userId: session.user.id },
+    where: { id, ...filter },
   });
 
   return NextResponse.json({ success: true });

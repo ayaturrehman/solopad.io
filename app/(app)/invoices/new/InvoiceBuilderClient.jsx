@@ -215,14 +215,14 @@ export default function InvoiceBuilderClient({ projects, services }) {
           <button
             onClick={() => handleSubmit("draft")}
             disabled={saving}
-            className="rounded border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 disabled:opacity-50"
+            className="rounded border border-zinc-200 px-3 py-1.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50 disabled:opacity-50"
           >
             Save as draft
           </button>
           <button
             onClick={() => handleSubmit("sent")}
             disabled={saving}
-            className="rounded bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50"
+            className="rounded bg-zinc-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50"
           >
             {saving ? "Creating…" : "Create & send"}
           </button>
@@ -338,7 +338,7 @@ export default function InvoiceBuilderClient({ projects, services }) {
                       <button
                         key={svc.id}
                         onClick={() => applyService(svc)}
-                        className="flex w-full items-center justify-between rounded px-3 py-2 text-left hover:bg-zinc-50"
+                        className="flex w-full items-center justify-between rounded px-3 py-1.5 text-left hover:bg-zinc-50"
                       >
                         <span className="text-sm text-zinc-800">{svc.name}</span>
                         <span className="text-xs text-zinc-400">{formatCurrency(svc.defaultRate)}</span>
@@ -549,7 +549,7 @@ export default function InvoiceBuilderClient({ projects, services }) {
               onChange={(e) => setNotes(e.target.value)}
               rows={4}
               placeholder="Payment terms, bank details, thank-you note, or any additional information for the client…"
-              className="w-full resize-none rounded border border-zinc-200 px-3 py-2.5 text-sm outline-none focus:border-zinc-900"
+              className="w-full resize-none rounded border border-zinc-200 px-3 py-1.5.5 text-sm outline-none focus:border-zinc-900"
             />
           </div>
         </div>

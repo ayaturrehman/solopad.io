@@ -1,5 +1,5 @@
-export const dynamic = "force-dynamic";
 
+import { Suspense } from "react";
 import { getSession } from "@/lib/session";
 import db from "@/lib/db";
 import { redirect } from "next/navigation";
@@ -15,5 +15,5 @@ export default async function ContractsPage() {
     orderBy: { createdAt: "desc" },
   });
 
-  return <ContractsClient contracts={contracts} />;
+  return <Suspense fallback={null}><ContractsClient contracts={contracts} /></Suspense>;
 }

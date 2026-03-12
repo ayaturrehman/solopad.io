@@ -1,5 +1,5 @@
-export const dynamic = "force-dynamic";
 
+import { Suspense } from "react";
 import { getSession } from "@/lib/session";
 import { redirect } from "next/navigation";
 import ServicesManager from "./ServicesManager";
@@ -15,6 +15,6 @@ export default async function ServicesPage() {
   });
 
   return (
-    <ServicesManager initialServices={services} />
+    <Suspense fallback={null}><ServicesManager initialServices={services} /></Suspense>
   );
 }

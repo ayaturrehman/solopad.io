@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
+import { getTenantFilter } from "@/lib/tenant";
 import db from "@/lib/db";
 
 export async function GET(req) {
@@ -17,14 +18,16 @@ export async function GET(req) {
     ? new Date(year, parseInt(month), 0, 23, 59, 59)
     : new Date(year, 11, 31, 23, 59, 59);
 
+  const filter = await getTenantFilter(session);
+
   const [expenses, paidInvoices, unpaidInvoices] = await Promise.all([
     db.expense.findMany({
-      where: { userId: session.user.id, date: { gte: startDate, lte: endDate } },
+      where: { ...filter, date: { gte: startDate, lte: endDate } },
       orderBy: { date: "desc" },
     }),
     db.invoice.findMany({
       where: {
-        project: { userId: session.user.id },
+        project: filter,
         status: "paid",
         paidAt: { gte: startDate, lte: endDate },
       },
@@ -32,7 +35,7 @@ export async function GET(req) {
     }),
     db.invoice.findMany({
       where: {
-        project: { userId: session.user.id },
+        project: filter,
         status: { not: "paid" },
       },
       include: { project: { select: { title: true, clientName: true } } },

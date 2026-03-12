@@ -67,7 +67,7 @@ export default function PipelineBoard({ projects: initialProjects, stages }) {
               onDragLeave={() => setDragOver(null)}
             >
               {/* Column header */}
-              <div className="flex items-center justify-between rounded-t-xl border-b border-zinc-200 bg-white px-3 py-2.5">
+              <div className="flex items-center justify-between rounded-t-xl border-b border-zinc-200 bg-white px-3 py-1.5.5">
                 <span className="text-xs font-semibold text-zinc-700">{stage.label}</span>
                 <span className="rounded-full bg-zinc-100 px-1.5 py-0.5 text-[10px] font-semibold text-zinc-500">
                   {cols.length}

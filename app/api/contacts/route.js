@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
+import { getTenantFilter, getTenantData } from "@/lib/tenant";
 import db from "@/lib/db";
 
 export async function GET(req) {
@@ -10,8 +11,10 @@ export async function GET(req) {
   const search = searchParams.get("search") || "";
   const status = searchParams.get("status") || "";
 
+  const filter = await getTenantFilter(session);
+
   const where = {
-    userId: session.user.id,
+    ...filter,
     ...(search && {
       OR: [
         { name: { contains: search } },
@@ -41,9 +44,11 @@ export async function POST(req) {
     return NextResponse.json({ error: "Name is required" }, { status: 400 });
   }
 
+  const tenantData = await getTenantData(session);
+
   const contact = await db.contact.create({
     data: {
-      userId: session.user.id,
+      ...tenantData,
       name: name.trim(),
       email: email?.trim() || null,
       phone: phone?.trim() || null,

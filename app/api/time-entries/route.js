@@ -1,13 +1,16 @@
 import { NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
+import { getTenantFilter, getTenantData } from "@/lib/tenant";
 import db from "@/lib/db";
 
 export async function GET() {
   const session = await getSession();
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+  const filter = await getTenantFilter(session);
+
   const entries = await db.timeEntry.findMany({
-    where: { userId: session.user.id },
+    where: filter,
     include: { project: { select: { id: true, title: true } } },
     orderBy: { startedAt: "desc" },
     take: 100,
@@ -33,9 +36,11 @@ export async function POST(req) {
     if (duration < 0) duration = 0;
   }
 
+  const tenantData = await getTenantData(session);
+
   const entry = await db.timeEntry.create({
     data: {
-      userId: session.user.id,
+      ...tenantData,
       description: description || null,
       projectId: projectId || null,
       startedAt: new Date(startedAt),

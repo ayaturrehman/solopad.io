@@ -1,5 +1,4 @@
-export const dynamic = "force-dynamic";
-
+import { Suspense } from "react";
 import { getSession } from "@/lib/session";
 import db from "@/lib/db";
 import { redirect } from "next/navigation";
@@ -15,6 +14,6 @@ export default async function TemplatesPage() {
   });
 
   return (
-    <TemplatesClient savedTemplates={templates} />
+    <Suspense fallback={null}><TemplatesClient savedTemplates={templates} /></Suspense>
   );
 }

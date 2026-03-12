@@ -27,7 +27,7 @@ function Input({ className, ...props }) {
   return (
     <input
       className={cn(
-        "w-full rounded border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 placeholder-zinc-400 outline-none focus:border-zinc-400 focus:ring-1 focus:ring-zinc-200",
+        "w-full rounded border border-zinc-200 bg-white px-3 py-1.5 text-sm text-zinc-900 placeholder-zinc-400 outline-none focus:border-zinc-400 focus:ring-1 focus:ring-zinc-200",
         className
       )}
       {...props}
@@ -39,7 +39,7 @@ function Textarea({ className, ...props }) {
   return (
     <textarea
       className={cn(
-        "w-full rounded border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 placeholder-zinc-400 outline-none focus:border-zinc-400 focus:ring-1 focus:ring-zinc-200 resize-none",
+        "w-full rounded border border-zinc-200 bg-white px-3 py-1.5 text-sm text-zinc-900 placeholder-zinc-400 outline-none focus:border-zinc-400 focus:ring-1 focus:ring-zinc-200 resize-none",
         className
       )}
       {...props}
@@ -180,7 +180,7 @@ export default function ProposalBuilderClient({ projects }) {
                 <select
                   value={projectId}
                   onChange={(e) => handleProjectChange(e.target.value)}
-                  className="w-full rounded border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 outline-none focus:border-zinc-400"
+                  className="w-full rounded border border-zinc-200 bg-white px-3 py-1.5 text-sm text-zinc-900 outline-none focus:border-zinc-400"
                 >
                   <option value="">No project</option>
                   {projects.map((p) => (
@@ -221,7 +221,7 @@ export default function ProposalBuilderClient({ projects }) {
                   <select
                     value={currency}
                     onChange={(e) => setCurrency(e.target.value)}
-                    className="w-full rounded border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 outline-none focus:border-zinc-400"
+                    className="w-full rounded border border-zinc-200 bg-white px-3 py-1.5 text-sm text-zinc-900 outline-none focus:border-zinc-400"
                   >
                     {CURRENCIES.map((c) => (
                       <option key={c} value={c}>{c}</option>

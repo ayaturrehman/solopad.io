@@ -160,8 +160,8 @@ export default function TimeTrackerClient({ entries: initialEntries, projects })
   const groups = groupByDate(completedEntries);
 
   return (
-    <div className="min-h-screen bg-zinc-50">
-      <div className="w-full py-2">
+    <div className="min-h-screen">
+      <div className="w-full">
         <h1 className="mb-6 text-xl font-semibold text-zinc-900">Time Tracker</h1>
 
         {/* Active Timer Card */}
@@ -174,7 +174,7 @@ export default function TimeTrackerClient({ entries: initialEntries, projects })
                 value={timerDesc}
                 onChange={(e) => setTimerDesc(e.target.value)}
                 disabled={running}
-                className="flex-1 rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-800 placeholder-zinc-400 focus:border-zinc-400 focus:outline-none disabled:bg-zinc-50"
+                className="flex-1 rounded border border-zinc-200 px-3 py-1.5 text-sm text-zinc-800 placeholder-zinc-400 focus:border-zinc-400 focus:outline-none disabled:bg-zinc-50"
               />
               <select
                 value={timerProject}
@@ -191,7 +191,7 @@ export default function TimeTrackerClient({ entries: initialEntries, projects })
                 onClick={() => setTimerBillable((v) => !v)}
                 disabled={running}
                 className={cn(
-                  "flex items-center gap-1.5 rounded border px-3 py-2 text-xs font-medium transition-colors",
+                  "flex items-center gap-1.5 rounded border px-3 py-1.5 text-xs font-medium transition-colors",
                   timerBillable
                     ? "border-green-200 bg-green-50 text-green-700"
                     : "border-zinc-200 text-zinc-400"
@@ -350,7 +350,7 @@ export default function TimeTrackerClient({ entries: initialEntries, projects })
           <div className="flex flex-col gap-4">
             {Object.entries(groups).map(([dateLabel, dayEntries]) => (
               <div key={dateLabel} className="rounded border border-zinc-200 bg-white">
-                <div className="flex items-center justify-between border-b border-zinc-100 px-4 py-2.5">
+                <div className="flex items-center justify-between border-b border-zinc-100 px-4 py-3">
                   <span className="text-xs font-semibold text-zinc-700">{dateLabel}</span>
                   <span className="text-xs text-zinc-400">
                     {formatDurationShort(dayEntries.reduce((a, e) => a + e.duration, 0))}

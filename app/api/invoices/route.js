@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
+import { getTenantFilter } from "@/lib/tenant";
 import db from "@/lib/db";
 
 export async function POST(req) {
@@ -22,8 +23,9 @@ export async function POST(req) {
   if (!projectId) return NextResponse.json({ error: "projectId is required" }, { status: 400 });
 
   try {
+    const filter = await getTenantFilter(session);
     const project = await db.project.findFirst({
-      where: { id: projectId, userId: session.user.id },
+      where: { id: projectId, ...filter },
     });
     if (!project) return NextResponse.json({ error: "Project not found" }, { status: 404 });
 
@@ -85,12 +87,14 @@ export async function PATCH(req) {
   const { id, ...data } = await req.json();
   if (!id) return NextResponse.json({ error: "Missing id" }, { status: 400 });
 
+  const filter = await getTenantFilter(session);
+
   // Verify ownership
   const invoice = await db.invoice.findFirst({
-    where: { id },
+    where: { id, project: filter },
     include: { project: { select: { userId: true } } },
   });
-  if (!invoice || invoice.project.userId !== session.user.id)
+  if (!invoice)
     return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   const updated = await db.invoice.update({
@@ -114,11 +118,13 @@ export async function DELETE(req) {
   const { id } = await req.json();
   if (!id) return NextResponse.json({ error: "Missing id" }, { status: 400 });
 
+  const filter = await getTenantFilter(session);
+
   const invoice = await db.invoice.findFirst({
-    where: { id },
+    where: { id, project: filter },
     include: { project: { select: { userId: true } } },
   });
-  if (!invoice || invoice.project.userId !== session.user.id)
+  if (!invoice)
     return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   await db.invoice.delete({ where: { id } });

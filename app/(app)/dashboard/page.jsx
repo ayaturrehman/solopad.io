@@ -1,4 +1,3 @@
-export const dynamic = "force-dynamic";
 
 import Link from "next/link";
 import { ChevronRight, Plus, CheckSquare, Briefcase, UserPlus, FileText, FileSignature, Clock3 } from "lucide-react";
@@ -22,7 +21,7 @@ export default async function DashboardPage() {
   const userId = session.user.id;
   const now = new Date();
 
-  const [projects, tasks, proposals, contracts, leads, invoices] = await Promise.all([
+  const [projects, tasks, proposals, contracts, contacts, invoices] = await Promise.all([
     db.project.findMany({
       where: { userId, archived: false },
       orderBy: { updatedAt: "desc" },
@@ -45,7 +44,7 @@ export default async function DashboardPage() {
       orderBy: { createdAt: "desc" },
       take: 4,
     }),
-    db.lead.findMany({
+    db.contact.findMany({
       where: { userId },
       orderBy: { createdAt: "desc" },
       take: 5,
@@ -84,15 +83,6 @@ export default async function DashboardPage() {
     draft: "bg-zinc-100 text-zinc-600",
     sent: "bg-blue-100 text-blue-700",
     signed: "bg-green-100 text-green-700",
-  };
-
-  const leadStatus = {
-    new: "bg-zinc-100 text-zinc-600",
-    contacted: "bg-blue-100 text-blue-700",
-    qualified: "bg-violet-100 text-violet-700",
-    proposal: "bg-amber-100 text-amber-700",
-    won: "bg-green-100 text-green-700",
-    lost: "bg-red-100 text-red-600",
   };
 
   const quickActions = [
@@ -144,7 +134,7 @@ export default async function DashboardPage() {
               <Link
                 key={label}
                 href={href}
-                className="flex items-center justify-between border border-zinc-200 px-3 py-2.5 text-sm text-zinc-700 hover:bg-zinc-50"
+                className="flex items-center justify-between rounded border border-zinc-200 px-4 py-3 text-sm text-zinc-700 transition-colors hover:bg-zinc-50"
               >
                 <span className="inline-flex items-center gap-2">
                   <Icon className="h-4 w-4 text-zinc-400" />
@@ -235,25 +225,26 @@ export default async function DashboardPage() {
         <div className="rounded border border-zinc-200 bg-white p-4">
           <div className="mb-4 flex items-center justify-between">
             <div>
-              <p className="text-sm font-semibold text-zinc-900">Leads</p>
-              <p className="mt-1 text-xs text-zinc-400">Latest inquiries in the pipeline</p>
+              <p className="text-sm font-semibold text-zinc-900">Contacts</p>
+              <p className="mt-1 text-xs text-zinc-400">Recently added contacts</p>
             </div>
-            <Link href="/leads" className="text-xs text-zinc-400 hover:text-zinc-700">
+            <Link href="/contacts" className="text-xs text-zinc-400 hover:text-zinc-700">
               View all
             </Link>
           </div>
 
-          {leads.length === 0 ? (
-            <p className="py-10 text-center text-sm text-zinc-400">No leads tracked yet.</p>
+          {contacts.length === 0 ? (
+            <p className="py-10 text-center text-sm text-zinc-400">No contacts yet.</p>
           ) : (
             <div className="divide-y divide-zinc-100">
-              {leads.map((lead) => (
-                <div key={lead.id} className="flex items-center justify-between gap-3 py-3">
+              {contacts.map((contact) => (
+                <div key={contact.id} className="flex items-center justify-between gap-3 py-3">
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-medium text-zinc-900">{lead.name}</p>
-                    <p className="mt-0.5 text-xs text-zinc-400">{lead.company || lead.email || "-"}</p>
+                    <Link href={`/contacts/${contact.id}`} className="block truncate text-sm font-medium text-zinc-900 hover:underline">
+                      {contact.name}
+                    </Link>
+                    <p className="mt-0.5 text-xs text-zinc-400">{contact.company || contact.email || "-"}</p>
                   </div>
-                  <StatusBadge className={leadStatus[lead.status] || leadStatus.new}>{lead.status}</StatusBadge>
                 </div>
               ))}
             </div>
@@ -277,7 +268,7 @@ export default async function DashboardPage() {
             ) : (
               <div className="space-y-2">
                 {proposals.map((proposal) => (
-                  <div key={proposal.id} className="flex items-center justify-between gap-2 border border-zinc-100 px-3 py-2">
+                  <div key={proposal.id} className="flex items-center justify-between gap-2 border border-zinc-100 px-3 py-1.5">
                     <div className="min-w-0">
                       <p className="truncate text-sm font-medium text-zinc-900">{proposal.title}</p>
                       <p className="mt-0.5 text-xs text-zinc-400">{proposal.clientName}</p>
@@ -296,7 +287,7 @@ export default async function DashboardPage() {
             ) : (
               <div className="space-y-2">
                 {contracts.map((contract) => (
-                  <div key={contract.id} className="flex items-center justify-between gap-2 border border-zinc-100 px-3 py-2">
+                  <div key={contract.id} className="flex items-center justify-between gap-2 border border-zinc-100 px-3 py-1.5">
                     <div className="min-w-0">
                       <p className="truncate text-sm font-medium text-zinc-900">{contract.title}</p>
                       <p className="mt-0.5 text-xs text-zinc-400">{contract.clientName}</p>

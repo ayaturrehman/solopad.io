@@ -1,4 +1,5 @@
 import { getSession } from "@/lib/session";
+import { getTenantFilter } from "@/lib/tenant";
 import db from "@/lib/db";
 import { NextResponse } from "next/server";
 
@@ -7,11 +8,9 @@ export async function GET(req, { params }) {
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const { id } = await params;
 
-  const template = await db.template.findUnique({ where: { id } });
+  const filter = await getTenantFilter(session);
+  const template = await db.template.findFirst({ where: { id, ...filter } });
   if (!template) return NextResponse.json({ error: "Not found" }, { status: 404 });
-  if (template.userId !== session.user.id) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
 
   return NextResponse.json({ template });
 }
@@ -21,11 +20,9 @@ export async function PATCH(req, { params }) {
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const { id } = await params;
 
-  const template = await db.template.findUnique({ where: { id } });
+  const filter = await getTenantFilter(session);
+  const template = await db.template.findFirst({ where: { id, ...filter } });
   if (!template) return NextResponse.json({ error: "Not found" }, { status: 404 });
-  if (template.userId !== session.user.id) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
 
   const body = await req.json();
   const { type, name, description, content } = body;
@@ -52,11 +49,9 @@ export async function DELETE(req, { params }) {
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const { id } = await params;
 
-  const template = await db.template.findUnique({ where: { id } });
+  const filter = await getTenantFilter(session);
+  const template = await db.template.findFirst({ where: { id, ...filter } });
   if (!template) return NextResponse.json({ error: "Not found" }, { status: 404 });
-  if (template.userId !== session.user.id) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
 
   await db.template.delete({ where: { id } });
   return NextResponse.json({ ok: true });

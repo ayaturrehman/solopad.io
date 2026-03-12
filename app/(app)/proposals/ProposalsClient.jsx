@@ -109,12 +109,9 @@ export default function ProposalsClient({ proposals }) {
                         )}
                       >
                         <span>{getFilterLabel(filterKey)}</span>
-                        <span className="flex items-center gap-3">
-                          <Star className="h-4 w-4 text-zinc-300" />
-                          {statusFilter === filterKey && (
-                            <span className="h-2.5 w-2.5 rounded-full bg-blue-600" />
-                          )}
-                        </span>
+                        {statusFilter === filterKey && (
+                          <span className="h-2.5 w-2.5 rounded-full bg-blue-600" />
+                        )}
                       </button>
                     ))}
                   </div>
@@ -124,7 +121,7 @@ export default function ProposalsClient({ proposals }) {
           </div>
           <Link
             href="/proposals/new"
-            className="inline-flex items-center gap-1.5 rounded bg-zinc-900 px-3 py-2 text-sm font-semibold text-white hover:bg-zinc-700"
+            className="inline-flex items-center gap-1.5 rounded bg-zinc-900 px-3 py-1.5 text-sm font-semibold text-white hover:bg-zinc-700"
           >
             <Plus className="h-4 w-4" />
             New proposal
@@ -144,7 +141,7 @@ export default function ProposalsClient({ proposals }) {
           </p>
           <Link
             href="/proposals/new"
-            className="mt-4 inline-flex items-center gap-1.5 rounded bg-zinc-900 px-3 py-2 text-sm font-semibold text-white hover:bg-zinc-700"
+            className="mt-4 inline-flex items-center gap-1.5 rounded bg-zinc-900 px-3 py-1.5 text-sm font-semibold text-white hover:bg-zinc-700"
           >
             <Plus className="h-4 w-4" />
             New proposal

@@ -1,19 +1,17 @@
 import { NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
+import { getTenantFilter } from "@/lib/tenant";
 import db from "@/lib/db";
-
-function owned(session, contact) {
-  return contact?.userId === session.user.id;
-}
 
 export async function GET(req, { params }) {
   const session = await getSession();
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { id } = await params;
+  const filter = await getTenantFilter(session);
 
   const contact = await db.contact.findFirst({
-    where: { id, userId: session.user.id },
+    where: { id, ...filter },
     include: {
       projects: {
         include: { invoices: true },
@@ -34,8 +32,9 @@ export async function PATCH(req, { params }) {
   const { id } = await params;
   const body = await req.json();
 
-  const contact = await db.contact.findFirst({ where: { id } });
-  if (!contact || !owned(session, contact)) {
+  const filter = await getTenantFilter(session);
+  const contact = await db.contact.findFirst({ where: { id, ...filter } });
+  if (!contact) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
@@ -62,8 +61,9 @@ export async function DELETE(req, { params }) {
 
   const { id } = await params;
 
-  const contact = await db.contact.findFirst({ where: { id } });
-  if (!contact || !owned(session, contact)) {
+  const filter = await getTenantFilter(session);
+  const contact = await db.contact.findFirst({ where: { id, ...filter } });
+  if (!contact) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 

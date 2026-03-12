@@ -79,7 +79,7 @@ export default function MessagesSection({ projectId, initialComments }) {
                 <p className="mb-1 text-xs text-zinc-400">
                   {c.authorType === "freelancer" ? "You" : c.authorName} · {formatDate(c.createdAt)}
                 </p>
-                <div className={`rounded px-3 py-2 text-sm ${
+                <div className={`rounded px-3 py-1.5 text-sm ${
                   c.authorType === "freelancer" ? "bg-zinc-900 text-white" : "bg-zinc-100 text-zinc-900"
                 }`}>
                   {c.body}

@@ -1,5 +1,5 @@
-export const dynamic = "force-dynamic";
 
+import { Suspense } from "react";
 import { getSession } from "@/lib/session";
 import db from "@/lib/db";
 import { redirect } from "next/navigation";
@@ -16,6 +16,6 @@ export default async function ContactsPage() {
   });
 
   return (
-    <ContactsTable contacts={contacts} />
+    <Suspense fallback={null}><ContactsTable contacts={contacts} /></Suspense>
   );
 }

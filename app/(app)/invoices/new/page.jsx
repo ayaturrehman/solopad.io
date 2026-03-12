@@ -1,5 +1,5 @@
-export const dynamic = "force-dynamic";
 
+import { Suspense } from "react";
 import { getSession } from "@/lib/session";
 import db from "@/lib/db";
 import { redirect } from "next/navigation";
@@ -22,5 +22,5 @@ export default async function NewInvoicePage({ searchParams }) {
     }),
   ]);
 
-  return <InvoiceBuilderClient projects={projects} services={services} />;
+  return <Suspense fallback={null}><InvoiceBuilderClient projects={projects} services={services} /></Suspense>;
 }

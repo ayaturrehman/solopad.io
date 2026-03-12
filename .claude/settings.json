@@ -1,0 +1,34 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls /Users/ayaturrehman/Documents/syslom/Project/freelancer/freelance-managment-app/app/\\\\\\(app\\\\\\)/projects/[id]/)",
+      "Bash(npx prisma migrate dev --name add_notes)",
+      "Bash(npm install @tiptap/react @tiptap/pm @tiptap/starter-kit @tiptap/extension-underline @tiptap/extension-text-align @tiptap/extension-color @tiptap/extension-text-style @tiptap/extension-highlight @tiptap/extension-task-list @tiptap/extension-task-item @tiptap/extension-link @tiptap/extension-image)",
+      "Bash(git add -A -- ':!prisma/dev.db' ':!.claude/' ':!uploads/')",
+      "Bash(git add .)",
+      "Bash(git reset prisma/dev.db)",
+      "Bash(git reset -- .claude/)",
+      "Bash(grep -rl 'export const dynamic = \"\"force-dynamic\"\"' /Users/ayaturrehman/Documents/syslom/Project/freelancer/freelance-managment-app/app/\\\\\\(app\\\\\\))",
+      "Bash(xargs sed -i '' '/^export const dynamic = \"\"force-dynamic\"\";$/d')",
+      "Bash(npx prisma db push --force-reset)",
+      "Bash(npx prisma db push --accept-data-loss)",
+      "Bash(git remote add origin https://github.com/ayaturrehman/solopad.io.git)",
+      "Bash(git branch -M main)",
+      "Bash(git push -u origin main)",
+      "Bash(git add README.md)",
+      "Bash(git add package.json)",
+      "Bash(git add prisma/schema.prisma)",
+      "Bash(ls /Users/ayaturrehman/Documents/syslom/Project/freelancer/freelance-managment-app/prisma.config*)",
+      "Bash(git add prisma.config.ts)",
+      "Bash(git add app/api/invoices/bulk-send/route.js app/api/webhooks/stripe/route.js)",
+      "Bash(git add app/api/invoices/checkout/route.js app/api/settings/stripe/disconnect/route.js app/api/settings/stripe/callback/route.js)"
+    ],
+    "additionalDirectories": [
+      "/Users/ayaturrehman/Documents/syslom/Project/freelancer/freelance-managment-app/app/(app)/proposals/[id]",
+      "/Users/ayaturrehman/Documents/syslom/Project/freelancer/freelance-managment-app/app/api/notes",
+      "/Users/ayaturrehman/Documents/syslom/Project/freelancer/freelance-managment-app/app/api/files/[projectId]/[filename]",
+      "/templates",
+      "/Users/ayaturrehman/Documents/syslom/Project/freelancer/freelance-managment-app/app/p/[token]"
+    ]
+  }
+}

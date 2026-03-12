@@ -99,7 +99,7 @@ export default function LandingPage() {
               <div style={{ background:C, borderRadius:9, width:33, height:33, display:"flex", alignItems:"center", justifyContent:"center" }}>
                 <Zap size={16} color="#fff" />
               </div>
-              <span style={{ fontWeight:900, fontSize:18, color:CDk, letterSpacing:"-0.3px" }}>PortalKit</span>
+              <span style={{ fontWeight:900, fontSize:18, color:CDk, letterSpacing:"-0.3px" }}>Solopad</span>
             </div>
             <nav style={{ display:"flex", gap:32 }}>
               <a href="#features"      className="nav-link">Features</a>
@@ -160,7 +160,7 @@ export default function LandingPage() {
                   <img
                     key={id}
                     src={`https://images.unsplash.com/${id}?w=64&h=64&q=80&auto=format&fit=crop&crop=face`}
-                    alt="PortalKit user"
+                    alt="Solopad user"
                     style={{ width:36, height:36, borderRadius:"50%", border:"2.5px solid #fff", objectFit:"cover", marginLeft: i === 0 ? 0 : -10, boxShadow:"0 2px 6px rgba(0,0,0,.12)" }}
                   />
                 ))}
@@ -186,7 +186,7 @@ export default function LandingPage() {
                     {["#FF6058","#FFC130","#27C840"].map(bg => <div key={bg} style={{ width:11, height:11, borderRadius:"50%", background:bg }} />)}
                   </div>
                   <div style={{ flex:1, background:"#fff", border:"1px solid #E2E2E2", borderRadius:7, padding:"5px 12px", display:"flex", alignItems:"center", gap:6, maxWidth:320, margin:"0 auto", fontSize:12, color:"#AAAAAA" }}>
-                    🔒 portalkit.app/p/acme-co
+                    🔒 solopad.app/p/acme-co
                   </div>
                 </div>
                 {/* Portal content */}
@@ -258,7 +258,7 @@ export default function LandingPage() {
                       <div style={{ width:17, height:17, borderRadius:"50%", background:C, display:"flex", alignItems:"center", justifyContent:"center" }}>
                         <Check size={10} color="#fff" strokeWidth={3} />
                       </div>
-                      <span style={{ fontSize:11, fontWeight:700, color:C }}>PortalKit solves this</span>
+                      <span style={{ fontSize:11, fontWeight:700, color:C }}>Solopad solves this</span>
                     </div>
                     <p style={{ fontSize:14, color:CMute, lineHeight:1.65 }}>{f}</p>
                   </div>
@@ -473,7 +473,7 @@ export default function LandingPage() {
                 Writer&apos;s block?<br />AI drafts it.<br /><span style={{ color:C }}>You just send it.</span>
               </h2>
               <p style={{ fontSize:16, color:"rgba(255,255,255,.55)", lineHeight:1.72, marginBottom:28 }}>
-                Stop staring at a blank page. Tell PortalKit AI what you need — a proposal, a contract clause, a project update — and get a polished draft in seconds. Edit, send, done.
+                Stop staring at a blank page. Tell Solopad AI what you need — a proposal, a contract clause, a project update — and get a polished draft in seconds. Edit, send, done.
               </p>
               <div style={{ display:"flex", flexDirection:"column", gap:13, marginBottom:32 }}>
                 {["Proposals, contracts & updates — all AI-drafted", "Trained on freelance best practices, not generic fluff", "Edit freely — it's your voice, AI just starts it"].map(b => (
@@ -637,13 +637,13 @@ export default function LandingPage() {
               <div style={{ background:C, borderRadius:8, width:28, height:28, display:"flex", alignItems:"center", justifyContent:"center" }}>
                 <Zap size={13} color="#fff" />
               </div>
-              <span style={{ fontWeight:900, color:CDk, fontSize:15 }}>PortalKit</span>
+              <span style={{ fontWeight:900, color:CDk, fontSize:15 }}>Solopad</span>
               <span style={{ fontSize:13, color:"#CCCCCC" }}>— Built for freelancers who want to get paid.</span>
             </div>
             <div style={{ display:"flex", gap:24, fontSize:13, color:"#AAAAAA" }}>
               <Link href={authHref} style={{ color:"#AAAAAA", textDecoration:"none" }}>Log in</Link>
               <Link href="/signup" style={{ color:"#AAAAAA", textDecoration:"none" }}>Sign up</Link>
-              <span>© 2026 PortalKit</span>
+              <span>© 2026 Solopad</span>
             </div>
           </div>
         </footer>

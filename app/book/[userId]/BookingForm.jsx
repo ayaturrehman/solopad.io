@@ -143,7 +143,7 @@ export default function BookingForm({ userId, userName, rules, existingBookings 
                   key={d}
                   onClick={() => { setDuration(d); setSelectedSlot(null); }}
                   className={cn(
-                    "rounded border px-4 py-2 text-sm font-medium transition-colors",
+                    "rounded border px-3 py-1.5 text-sm font-medium transition-colors",
                     duration === d
                       ? "border-zinc-900 bg-zinc-900 text-white"
                       : "border-zinc-200 text-zinc-600 hover:border-zinc-400"
@@ -251,7 +251,7 @@ export default function BookingForm({ userId, userName, rules, existingBookings 
                 Your details
               </p>
               {error && (
-                <div className="mb-3 rounded bg-red-50 px-3 py-2 text-xs text-red-700">
+                <div className="mb-3 rounded bg-red-50 px-3 py-1.5 text-xs text-red-700">
                   {error}
                 </div>
               )}
@@ -262,7 +262,7 @@ export default function BookingForm({ userId, userName, rules, existingBookings 
                   placeholder="Your name"
                   value={form.clientName}
                   onChange={(e) => setForm((d) => ({ ...d, clientName: e.target.value }))}
-                  className="rounded border border-zinc-200 px-3 py-2 text-sm focus:border-zinc-400 focus:outline-none"
+                  className="rounded border border-zinc-200 px-3 py-1.5 text-sm focus:border-zinc-400 focus:outline-none"
                 />
                 <input
                   type="email"
@@ -270,19 +270,19 @@ export default function BookingForm({ userId, userName, rules, existingBookings 
                   placeholder="Your email"
                   value={form.clientEmail}
                   onChange={(e) => setForm((d) => ({ ...d, clientEmail: e.target.value }))}
-                  className="rounded border border-zinc-200 px-3 py-2 text-sm focus:border-zinc-400 focus:outline-none"
+                  className="rounded border border-zinc-200 px-3 py-1.5 text-sm focus:border-zinc-400 focus:outline-none"
                 />
                 <textarea
                   placeholder="Notes (optional)"
                   value={form.notes}
                   onChange={(e) => setForm((d) => ({ ...d, notes: e.target.value }))}
                   rows={3}
-                  className="rounded border border-zinc-200 px-3 py-2 text-sm resize-none focus:border-zinc-400 focus:outline-none"
+                  className="rounded border border-zinc-200 px-3 py-1.5 text-sm resize-none focus:border-zinc-400 focus:outline-none"
                 />
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="rounded bg-zinc-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-zinc-700 disabled:opacity-50"
+                  className="rounded bg-zinc-900 px-3 py-1.5.5 text-sm font-semibold text-white hover:bg-zinc-700 disabled:opacity-50"
                 >
                   {submitting ? "Booking…" : "Confirm booking"}
                 </button>

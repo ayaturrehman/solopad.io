@@ -136,7 +136,7 @@ function TemplateCard({ template, isSaved, onPreview, onDelete, onSave, onCustom
   const pages = template.pages || 1;
 
   return (
-    <div className="group flex flex-col rounded-2xl border border-zinc-200 bg-white overflow-hidden transition-all hover:shadow-lg hover:-translate-y-0.5 duration-200">
+    <div className="group flex flex-col rounded border border-zinc-200 bg-white overflow-hidden transition-all hover:shadow-lg hover:-translate-y-0.5 duration-200">
       {/* Thumbnail */}
       <div className="relative p-4 pb-3 bg-zinc-50 border-b border-zinc-100">
         <DocThumbnail template={template} />
@@ -145,7 +145,7 @@ function TemplateCard({ template, isSaved, onPreview, onDelete, onSave, onCustom
           onClick={() => onPreview(template)}
           className="absolute inset-4 bottom-3 flex items-center justify-center rounded-xl bg-black/0 opacity-0 transition-all group-hover:bg-black/30 group-hover:opacity-100"
         >
-          <span className="flex items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-semibold text-zinc-900 shadow-md">
+          <span className="flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-zinc-900 shadow-md">
             <Eye className="h-3.5 w-3.5" />
             Preview
           </span>
@@ -280,7 +280,7 @@ function PreviewBlock({ block, accentColor }) {
           <thead className="border-b border-zinc-100 bg-zinc-50">
             <tr>
               {(data.headers || []).map((h, i) => (
-                <th key={i} className="px-4 py-2.5 text-left font-semibold uppercase tracking-wider text-zinc-400">{h}</th>
+                <th key={i} className="px-3 py-1.5.5 text-left font-semibold uppercase tracking-wider text-zinc-400">{h}</th>
               ))}
             </tr>
           </thead>
@@ -288,7 +288,7 @@ function PreviewBlock({ block, accentColor }) {
             {(data.rows || []).map((row, ri) => (
               <tr key={ri} className="bg-white">
                 {row.map((cell, ci) => (
-                  <td key={ci} className="px-4 py-2.5 text-zinc-700">{cell}</td>
+                  <td key={ci} className="px-3 py-1.5.5 text-zinc-700">{cell}</td>
                 ))}
               </tr>
             ))}
@@ -344,31 +344,31 @@ function PreviewBlock({ block, accentColor }) {
 
     return (
       <div className="my-3 overflow-hidden rounded-xl border border-zinc-200">
-        {data.title && <p className="border-b border-zinc-100 px-4 py-2.5 text-xs font-semibold text-zinc-700">{data.title}</p>}
+        {data.title && <p className="border-b border-zinc-100 px-3 py-1.5.5 text-xs font-semibold text-zinc-700">{data.title}</p>}
         <table className="w-full text-xs">
           <thead className="border-b border-zinc-100 bg-zinc-50">
             <tr>
-              <th className="px-4 py-2 text-left font-semibold text-zinc-400">Description</th>
-              <th className="px-4 py-2 text-center font-semibold text-zinc-400">Qty</th>
-              <th className="px-4 py-2 text-right font-semibold text-zinc-400">Rate</th>
-              <th className="px-4 py-2 text-right font-semibold text-zinc-400">Total</th>
+              <th className="px-3 py-1.5 text-left font-semibold text-zinc-400">Description</th>
+              <th className="px-3 py-1.5 text-center font-semibold text-zinc-400">Qty</th>
+              <th className="px-3 py-1.5 text-right font-semibold text-zinc-400">Rate</th>
+              <th className="px-3 py-1.5 text-right font-semibold text-zinc-400">Total</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-zinc-50 bg-white">
             {items.map((item) => (
               <tr key={item.id}>
-                <td className="px-4 py-2.5 text-zinc-700">{item.description}</td>
-                <td className="px-4 py-2.5 text-center text-zinc-500">{item.qty}</td>
-                <td className="px-4 py-2.5 text-right text-zinc-500">{sym}{item.rate?.toLocaleString()}</td>
-                <td className="px-4 py-2.5 text-right font-medium text-zinc-900">{sym}{item.total?.toLocaleString()}</td>
+                <td className="px-3 py-1.5.5 text-zinc-700">{item.description}</td>
+                <td className="px-3 py-1.5.5 text-center text-zinc-500">{item.qty}</td>
+                <td className="px-3 py-1.5.5 text-right text-zinc-500">{sym}{item.rate?.toLocaleString()}</td>
+                <td className="px-3 py-1.5.5 text-right font-medium text-zinc-900">{sym}{item.total?.toLocaleString()}</td>
               </tr>
             ))}
           </tbody>
           <tfoot className="border-t border-zinc-200 bg-zinc-50">
             {data.taxRate > 0 && (
               <tr>
-                <td colSpan={3} className="px-4 py-2 text-right text-zinc-500">Subtotal</td>
-                <td className="px-4 py-2 text-right text-zinc-700">{sym}{subtotal.toLocaleString()}</td>
+                <td colSpan={3} className="px-3 py-1.5 text-right text-zinc-500">Subtotal</td>
+                <td className="px-3 py-1.5 text-right text-zinc-700">{sym}{subtotal.toLocaleString()}</td>
               </tr>
             )}
             {data.taxRate > 0 && (
@@ -551,7 +551,7 @@ function PreviewModal({ template, onClose, onUse, onCustomize }) {
 
                 <div className="space-y-8">
                   {pages.map((page, index) => (
-                    <div key={page.id} className="overflow-hidden rounded-2xl border border-zinc-100 bg-white shadow-sm">
+                    <div key={page.id} className="overflow-hidden rounded border border-zinc-100 bg-white shadow-sm">
                       {pages.length > 1 && (
                         <div className="border-b border-zinc-100 bg-zinc-50 px-5 py-3">
                           <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-zinc-400">Page {index + 1}</p>
@@ -787,12 +787,9 @@ export default function TemplatesClient({ savedTemplates }) {
                     )}
                   >
                     <span>{tab.id === "all" ? "All" : tab.label}</span>
-                    <span className="flex items-center gap-3">
-                      <Star className="h-4 w-4 text-zinc-300" />
-                      {activeTab === tab.id && (
-                        <span className="h-2.5 w-2.5 rounded-full bg-blue-600" />
-                      )}
-                    </span>
+                    {activeTab === tab.id && (
+                      <span className="h-2.5 w-2.5 rounded-full bg-blue-600" />
+                    )}
                   </button>
                 ))}
               </div>
@@ -803,20 +800,20 @@ export default function TemplatesClient({ savedTemplates }) {
         <div className="flex flex-wrap gap-2">
           <Link
             href="/templates/builder?type=proposal"
-            className="inline-flex items-center gap-2 rounded bg-zinc-900 px-4 py-2 text-sm font-semibold text-white hover:bg-zinc-700"
+            className="inline-flex items-center gap-2 rounded bg-zinc-900 px-3 py-1.5 text-sm font-semibold text-white hover:bg-zinc-700"
           >
             <Plus className="h-4 w-4" />
             New proposal
           </Link>
           <Link
             href="/contracts/new"
-            className="rounded border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50"
+            className="rounded border border-zinc-200 px-3 py-1.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50"
           >
             New contract
           </Link>
           <Link
             href="/templates/builder?type=questionnaire"
-            className="rounded border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50"
+            className="rounded border border-zinc-200 px-3 py-1.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50"
           >
             New questionnaire
           </Link>
@@ -826,7 +823,7 @@ export default function TemplatesClient({ savedTemplates }) {
       {/* Gallery */}
       <section className="mb-12">
         {galleryItems.length === 0 ? (
-          <div className="flex items-center justify-center rounded-2xl border border-dashed border-zinc-200 bg-zinc-50 py-16 text-center">
+          <div className="flex items-center justify-center rounded border border-dashed border-zinc-200 bg-zinc-50 py-16 text-center">
             <div>
               <FileText className="mx-auto h-8 w-8 text-zinc-300 mb-3" />
               <p className="text-sm font-medium text-zinc-500">No templates in this category yet.</p>
@@ -857,7 +854,7 @@ export default function TemplatesClient({ savedTemplates }) {
         </div>
 
         {myItems.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-zinc-200 bg-zinc-50 py-14 text-center">
+          <div className="flex flex-col items-center justify-center rounded border border-dashed border-zinc-200 bg-zinc-50 py-14 text-center">
             <BookmarkPlus className="h-8 w-8 text-zinc-300 mb-3" />
             <p className="text-sm font-semibold text-zinc-500">No saved templates yet</p>
             <p className="mt-1 text-xs text-zinc-400 max-w-xs">

@@ -34,6 +34,7 @@ const MODULE_SEARCH = {
   "/projects": "Search projects...",
   "/proposals": "Search proposals...",
   "/services": "Search services...",
+  "/tasks": "Search tasks...",
   "/templates": "Search templates...",
 };
 
@@ -64,6 +65,7 @@ export default function TopBar() {
   const financeTab = searchParams.get("tab");
   const searchPlaceholder = useMemo(() => {
     if (pathname === "/finance" && financeTab === "invoices") return "Search invoices...";
+    if (pathname === "/finance" && financeTab === "expenses") return "Search expenses...";
     return searchModuleKey ? MODULE_SEARCH[searchModuleKey] : "Search...";
   }, [financeTab, pathname, searchModuleKey]);
 
@@ -78,6 +80,7 @@ export default function TopBar() {
     return () => clearTimeout(timeout);
   }, [searchParams, searchValue]);
 
+  // Fetch once on mount only — re-fetched when bell is opened
   useEffect(() => {
     fetch("/api/notifications")
       .then((r) => r.json())
@@ -86,24 +89,28 @@ export default function TopBar() {
         if (d.notifications) setNotifications(d.notifications);
       })
       .catch(() => {});
-  }, [pathname]);
+  }, []);
 
   useEffect(() => {
     if (!searchModuleKey) return undefined;
 
     const timeout = setTimeout(() => {
-      const params = new URLSearchParams(searchParams.toString());
       const trimmed = searchValue.trim();
+      const currentQ = searchParams.get("q") || "";
+      // Only push if the value actually changed to avoid re-triggering this effect
+      if (trimmed === currentQ) return;
 
+      const params = new URLSearchParams(searchParams.toString());
       if (trimmed) params.set("q", trimmed);
       else params.delete("q");
 
       const next = params.toString();
       router.replace(next ? `${pathname}?${next}` : pathname, { scroll: false });
-    }, 200);
+    }, 300);
 
     return () => clearTimeout(timeout);
-  }, [pathname, router, searchModuleKey, searchParams, searchValue]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname, searchModuleKey, searchValue]);
 
   async function markAllRead() {
     await fetch("/api/notifications", { method: "PATCH" });
@@ -113,7 +120,7 @@ export default function TopBar() {
 
   function setAppTheme(nextTheme) {
     document.documentElement.setAttribute("data-theme", nextTheme);
-    localStorage.setItem("portalkit-theme", nextTheme);
+    localStorage.setItem("solopad-theme", nextTheme);
     setTheme(nextTheme);
     setShowProfile(false);
   }
@@ -152,7 +159,18 @@ export default function TopBar() {
 
         <div className="relative">
           <button
-            onClick={() => setShowBell((v) => !v)}
+            onClick={() => {
+              if (!showBell) {
+                fetch("/api/notifications")
+                  .then((r) => r.json())
+                  .then((d) => {
+                    if (d.unreadCount != null) setUnread(d.unreadCount);
+                    if (d.notifications) setNotifications(d.notifications);
+                  })
+                  .catch(() => {});
+              }
+              setShowBell((v) => !v);
+            }}
             className="relative inline-flex h-11 w-11 items-center justify-center rounded text-zinc-500 transition-colors hover:bg-zinc-50 hover:text-zinc-900"
             aria-label="Notifications"
           >
@@ -168,7 +186,7 @@ export default function TopBar() {
             <>
               <div className="fixed inset-0 z-30" onClick={() => setShowBell(false)} />
               <div className="absolute right-0 top-11 z-40 w-80 rounded border border-zinc-200 bg-white shadow-lg">
-                <div className="flex items-center justify-between border-b border-zinc-100 px-4 py-2.5">
+                <div className="flex items-center justify-between border-b border-zinc-100 px-3 py-1.5.5">
                   <span className="text-xs font-semibold text-zinc-900">Notifications</span>
                   {unread > 0 && (
                     <button onClick={markAllRead} className="text-[10px] text-zinc-400 hover:text-zinc-700">
@@ -183,7 +201,7 @@ export default function TopBar() {
                     notifications.map((n) => (
                       <div
                         key={n.id}
-                        className={cn("border-b border-zinc-50 px-4 py-2.5 last:border-0", !n.read && "bg-blue-50")}
+                        className={cn("border-b border-zinc-50 px-3 py-1.5.5 last:border-0", !n.read && "bg-blue-50")}
                       >
                         <p className="text-xs font-medium text-zinc-800">{n.title}</p>
                         <p className="mt-0.5 text-[11px] text-zinc-500">{n.body}</p>
@@ -224,7 +242,7 @@ export default function TopBar() {
                       type="button"
                       onClick={() => setAppTheme("light")}
                       className={cn(
-                        "inline-flex items-center justify-center gap-2 rounded border px-3 py-2 text-xs font-medium transition-colors",
+                        "inline-flex items-center justify-center gap-2 rounded border px-3 py-1.5 text-xs font-medium transition-colors",
                         theme === "light"
                           ? "border-zinc-900 bg-zinc-900 text-white"
                           : "border-zinc-200 text-zinc-600 hover:bg-zinc-50"
@@ -237,7 +255,7 @@ export default function TopBar() {
                       type="button"
                       onClick={() => setAppTheme("dark")}
                       className={cn(
-                        "inline-flex items-center justify-center gap-2 rounded border px-3 py-2 text-xs font-medium transition-colors",
+                        "inline-flex items-center justify-center gap-2 rounded border px-3 py-1.5 text-xs font-medium transition-colors",
                         theme === "dark"
                           ? "border-zinc-900 bg-zinc-900 text-white"
                           : "border-zinc-200 text-zinc-600 hover:bg-zinc-50"
@@ -253,14 +271,14 @@ export default function TopBar() {
                   <Link
                     href="/settings"
                     onClick={() => setShowProfile(false)}
-                    className="flex items-center gap-2.5 rounded px-3 py-2 text-sm text-zinc-600 transition-colors hover:bg-zinc-50 hover:text-zinc-900"
+                    className="flex items-center gap-2.5 rounded px-3 py-1.5 text-sm text-zinc-600 transition-colors hover:bg-zinc-50 hover:text-zinc-900"
                   >
                     <Settings className="h-4 w-4" />
                     Settings
                   </Link>
                   <button
                     onClick={() => signOut({ callbackUrl: "/login" })}
-                    className="flex w-full items-center gap-2.5 rounded px-3 py-2 text-sm text-zinc-600 transition-colors hover:bg-zinc-50 hover:text-zinc-900"
+                    className="flex w-full items-center gap-2.5 rounded px-3 py-1.5 text-sm text-zinc-600 transition-colors hover:bg-zinc-50 hover:text-zinc-900"
                   >
                     <LogOut className="h-4 w-4" />
                     Sign out

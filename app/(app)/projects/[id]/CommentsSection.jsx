@@ -68,7 +68,7 @@ export default function CommentsSection({
                   <span className="text-xs text-zinc-400">{formatDate(c.createdAt)}</span>
                 </div>
                 <div
-                  className={`rounded px-3 py-2 text-sm ${
+                  className={`rounded px-3 py-1.5 text-sm ${
                     c.authorType === "freelancer" ? "bg-zinc-900 text-white" : "bg-zinc-100 text-zinc-900"
                   }`}
                 >

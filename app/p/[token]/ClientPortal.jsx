@@ -151,7 +151,7 @@ function InvoiceCard({ invoice }) {
             </tfoot>
           </table>
           {invoice.notes && (
-            <p className="mt-3 rounded bg-zinc-50 px-3 py-2 text-xs text-zinc-500">{invoice.notes}</p>
+            <p className="mt-3 rounded bg-zinc-50 px-3 py-1.5 text-xs text-zinc-500">{invoice.notes}</p>
           )}
         </div>
       )}
@@ -192,7 +192,7 @@ export default function ClientPortal({ project, files, comments: initialComments
 
   // SSE — connect once on mount, receive new messages instantly
   useEffect(() => {
-    const es = new EventSource(`/api/comments/stream?projectId=${project.id}`);
+    const es = new EventSource(`/api/comments/stream?projectId=${project.id}&token=${project.portalToken}`);
     es.onmessage = (e) => {
       try {
         const comment = JSON.parse(e.data);
@@ -239,7 +239,7 @@ export default function ClientPortal({ project, files, comments: initialComments
     await fetch("/api/comments", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ projectId: project.id, authorName: clientName, authorType: "client", body: optimistic.body }),
+      body: JSON.stringify({ projectId: project.id, authorName: clientName, authorType: "client", body: optimistic.body, token: project.portalToken }),
     });
     setSending(false);
     // SSE will push the real comment back and replace the optimistic entry
@@ -254,7 +254,7 @@ export default function ClientPortal({ project, files, comments: initialComments
             <div className="flex h-7 w-7 items-center justify-center rounded bg-zinc-900">
               <Zap className="h-4 w-4 text-white" />
             </div>
-            <span className="text-sm font-bold text-zinc-900">PortalKit</span>
+            <span className="text-sm font-bold text-zinc-900">Solopad</span>
           </div>
           <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
             project.status === "complete"    ? "bg-green-100 text-green-700" :
@@ -521,7 +521,7 @@ export default function ClientPortal({ project, files, comments: initialComments
                     </div>
                     <div className={`flex max-w-[75%] flex-col ${c.authorType === "client" ? "items-end" : "items-start"}`}>
                       <p className="mb-1 text-xs text-zinc-400">{c.authorName} · {formatDate(c.createdAt)}</p>
-                      <div className={`rounded px-3 py-2 text-sm ${c.authorType === "freelancer" ? "bg-zinc-100 text-zinc-900" : "bg-blue-600 text-white"}`}>
+                      <div className={`rounded px-3 py-1.5 text-sm ${c.authorType === "freelancer" ? "bg-zinc-100 text-zinc-900" : "bg-blue-600 text-white"}`}>
                         {c.body}
                       </div>
                     </div>
@@ -562,7 +562,7 @@ export default function ClientPortal({ project, files, comments: initialComments
       </main>
 
       <footer className="py-10 text-center text-xs text-zinc-400">
-        Powered by <Link href="/" className="font-medium text-zinc-600 hover:underline">PortalKit</Link>
+        Powered by <Link href="/" className="font-medium text-zinc-600 hover:underline">Solopad</Link>
       </footer>
 
       <style>{`

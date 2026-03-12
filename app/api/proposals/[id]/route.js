@@ -1,4 +1,5 @@
 import { getSession } from "@/lib/session";
+import { getTenantFilter } from "@/lib/tenant";
 import db from "@/lib/db";
 import { NextResponse } from "next/server";
 
@@ -7,8 +8,10 @@ export async function GET(req, { params }) {
   const session = await getSession();
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+  const filter = await getTenantFilter(session);
+
   const proposal = await db.proposal.findFirst({
-    where: { id, userId: session.user.id },
+    where: { id, ...filter },
     include: { project: { select: { id: true, title: true } } },
   });
 
@@ -22,8 +25,9 @@ export async function PATCH(req, { params }) {
   const session = await getSession();
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const proposal = await db.proposal.findUnique({ where: { id } });
-  if (!proposal || proposal.userId !== session.user.id) {
+  const filter = await getTenantFilter(session);
+  const proposal = await db.proposal.findFirst({ where: { id, ...filter } });
+  if (!proposal) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
@@ -59,8 +63,9 @@ export async function DELETE(req, { params }) {
   const session = await getSession();
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const proposal = await db.proposal.findUnique({ where: { id } });
-  if (!proposal || proposal.userId !== session.user.id) {
+  const filter = await getTenantFilter(session);
+  const proposal = await db.proposal.findFirst({ where: { id, ...filter } });
+  if (!proposal) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 

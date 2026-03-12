@@ -1,6 +1,12 @@
 import { NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
+import { getTenantFilter } from "@/lib/tenant";
 import db from "@/lib/db";
+
+async function getOwnedService(id, session) {
+  const filter = await getTenantFilter(session);
+  return db.service.findFirst({ where: { id, ...filter } });
+}
 
 export async function PATCH(req, { params }) {
   const session = await getSession();
@@ -9,10 +15,8 @@ export async function PATCH(req, { params }) {
   const { id } = await params;
   const body = await req.json();
 
-  const service = await db.service.findFirst({ where: { id } });
-  if (!service || service.userId !== session.user.id) {
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
-  }
+  const service = await getOwnedService(id, session);
+  if (!service) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   const updated = await db.service.update({
     where: { id },
@@ -33,10 +37,8 @@ export async function DELETE(req, { params }) {
 
   const { id } = await params;
 
-  const service = await db.service.findFirst({ where: { id } });
-  if (!service || service.userId !== session.user.id) {
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
-  }
+  const service = await getOwnedService(id, session);
+  if (!service) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   await db.service.delete({ where: { id } });
 

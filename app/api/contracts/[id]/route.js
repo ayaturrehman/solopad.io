@@ -1,4 +1,5 @@
 import { getSession } from "@/lib/session";
+import { getTenantFilter } from "@/lib/tenant";
 import db from "@/lib/db";
 import { NextResponse } from "next/server";
 
@@ -7,8 +8,10 @@ export async function GET(req, { params }) {
   const session = await getSession();
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+  const filter = await getTenantFilter(session);
+
   const contract = await db.contract.findFirst({
-    where: { id, userId: session.user.id },
+    where: { id, ...filter },
     include: { project: { select: { id: true, title: true } } },
   });
 
@@ -22,8 +25,9 @@ export async function PATCH(req, { params }) {
   const session = await getSession();
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const contract = await db.contract.findUnique({ where: { id } });
-  if (!contract || contract.userId !== session.user.id) {
+  const filter = await getTenantFilter(session);
+  const contract = await db.contract.findFirst({ where: { id, ...filter } });
+  if (!contract) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
@@ -34,7 +38,7 @@ export async function PATCH(req, { params }) {
   if (projectId !== undefined) {
     if (projectId) {
       const project = await db.project.findFirst({
-        where: { id: projectId, userId: session.user.id },
+        where: { id: projectId, ...filter },
         select: { id: true },
       });
       if (!project) {
@@ -65,8 +69,9 @@ export async function DELETE(req, { params }) {
   const session = await getSession();
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const contract = await db.contract.findUnique({ where: { id } });
-  if (!contract || contract.userId !== session.user.id) {
+  const filter = await getTenantFilter(session);
+  const contract = await db.contract.findFirst({ where: { id, ...filter } });
+  if (!contract) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 

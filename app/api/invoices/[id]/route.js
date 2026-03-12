@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
+import { getTenantFilter } from "@/lib/tenant";
 import db from "@/lib/db";
 
 // PATCH /api/invoices/[id]
@@ -16,12 +17,14 @@ export async function PATCH(req, { params }) {
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
 
+  const filter = await getTenantFilter(session);
+
   const invoice = await db.invoice.findFirst({
-    where: { id },
+    where: { id, project: filter },
     include: { project: true },
   });
 
-  if (!invoice || invoice.project.userId !== session.user.id) {
+  if (!invoice) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
@@ -107,12 +110,14 @@ export async function DELETE(req, { params }) {
 
   const { id } = await params;
 
+  const filter = await getTenantFilter(session);
+
   const invoice = await db.invoice.findFirst({
-    where: { id },
+    where: { id, project: filter },
     include: { project: true },
   });
 
-  if (!invoice || invoice.project.userId !== session.user.id) {
+  if (!invoice) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
