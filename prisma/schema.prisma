@@ -8,6 +8,7 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+
 // ─── Business (tenant root) ───────────────────────────────────────────────────
 // Every piece of data belongs to a Business. One Business can have many Users
 // (owner + team members). All queries must filter by businessId for isolation.
