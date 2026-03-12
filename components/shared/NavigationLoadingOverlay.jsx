@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useSyncExternalStore } from "react";
+import { useEffect, useSyncExternalStore, Suspense } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 
@@ -81,7 +81,7 @@ export function FullScreenLoadingOverlay({ visible = true, label = "Loading" }) 
   );
 }
 
-export default function NavigationLoadingOverlay() {
+function NavigationLoadingOverlayInner() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const routeKey = `${pathname}?${searchParams.toString()}`;
@@ -160,5 +160,13 @@ export default function NavigationLoadingOverlay() {
         <FullScreenLoadingOverlay visible={visible} />
       </div>
     </>
+  );
+}
+
+export default function NavigationLoadingOverlay() {
+  return (
+    <Suspense fallback={null}>
+      <NavigationLoadingOverlayInner />
+    </Suspense>
   );
 }

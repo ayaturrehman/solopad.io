@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   FileText, Plus, ChevronRight, ChevronDown, Search, Star,
 } from "lucide-react";
-import { formatCurrency, formatDate, cn } from "@/lib/utils";
+import { showNavigationLoading } from "@/components/shared/NavigationLoadingOverlay";
+import { formatCurrency, formatDate, cn, isInteractiveEventTarget } from "@/lib/utils";
 
 const STATUS_CONFIG = {
   all:      { label: "All" },
@@ -29,6 +30,7 @@ function getFilterLabel(filterKey) {
 }
 
 export default function ProposalsClient({ proposals }) {
+  const router = useRouter();
   const [statusFilter, setStatusFilter] = useState("all");
   const [filterOpen, setFilterOpen] = useState(false);
   const [filterSearch, setFilterSearch] = useState("");
@@ -55,6 +57,12 @@ export default function ProposalsClient({ proposals }) {
       (proposal.project?.title || "").toLowerCase().includes(query)
     );
   }, [proposals, query, statusFilter]);
+
+  function handleRowDoubleClick(event, href) {
+    if (isInteractiveEventTarget(event.target)) return;
+    showNavigationLoading();
+    router.push(href);
+  }
 
   return (
     <div>
@@ -170,7 +178,11 @@ export default function ProposalsClient({ proposals }) {
                   new Date(proposal.validUntil) < new Date() &&
                   proposal.status !== "accepted";
                 return (
-                  <tr key={proposal.id} className="hover:bg-zinc-50/60 transition-colors">
+                  <tr
+                    key={proposal.id}
+                    onDoubleClick={(event) => handleRowDoubleClick(event, `/proposals/${proposal.id}`)}
+                    className="cursor-pointer transition-colors hover:bg-zinc-50/60"
+                  >
                     <td className="px-5 py-3.5">
                       <p className="text-sm font-medium text-zinc-900">{proposal.title}</p>
                     </td>

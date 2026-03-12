@@ -2,9 +2,10 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Badge from "@/components/ui/Badge";
-import { cn, formatDate, formatCurrency, STATUS_LABELS, STATUS_COLORS } from "@/lib/utils";
+import { showNavigationLoading } from "@/components/shared/NavigationLoadingOverlay";
+import { cn, formatDate, formatCurrency, STATUS_LABELS, STATUS_COLORS, isInteractiveEventTarget } from "@/lib/utils";
 import {
   ExternalLink, Plus, List, Columns, ChevronDown, Search, Star,
 } from "lucide-react";
@@ -39,6 +40,7 @@ function getProjectFilterLabel(filterKey) {
 }
 
 export default function ProjectsClient({ projects, currency = "USD" }) {
+  const router = useRouter();
   const [view, setView] = useState(() => {
     if (typeof window === "undefined") return "list";
     const saved = localStorage.getItem(STORAGE_KEY);
@@ -78,6 +80,12 @@ export default function ProjectsClient({ projects, currency = "USD" }) {
 
   function countStage(stageKey) {
     return filteredProjects.filter((p) => (p.stage || "new") === stageKey).length;
+  }
+
+  function handleRowDoubleClick(event, href) {
+    if (isInteractiveEventTarget(event.target)) return;
+    showNavigationLoading();
+    router.push(href);
   }
 
   return (
@@ -251,7 +259,11 @@ export default function ProjectsClient({ projects, currency = "USD" }) {
                   .reduce((s, i) => s + i.total, 0);
 
                 return (
-                  <tr key={project.id} className="hover:bg-zinc-50">
+                  <tr
+                    key={project.id}
+                    onDoubleClick={(event) => handleRowDoubleClick(event, `/projects/${project.id}`)}
+                    className="cursor-pointer hover:bg-zinc-50"
+                  >
                     <td className="px-4 py-3">
                       <Link href={`/projects/${project.id}`} className="font-medium text-zinc-900 hover:underline">
                         {project.title}

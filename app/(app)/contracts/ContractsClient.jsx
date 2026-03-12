@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   ChevronDown, FileSignature, Plus, Search, Star,
 } from "lucide-react";
-import { cn, formatDate } from "@/lib/utils";
+import { showNavigationLoading } from "@/components/shared/NavigationLoadingOverlay";
+import { cn, formatDate, isInteractiveEventTarget } from "@/lib/utils";
 
 const STATUS_CONFIG = {
   all: { label: "All" },
@@ -28,6 +29,7 @@ function getFilterLabel(filterKey) {
 }
 
 export default function ContractsClient({ contracts }) {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const [statusFilter, setStatusFilter] = useState("all");
   const [filterOpen, setFilterOpen] = useState(false);
@@ -56,6 +58,12 @@ export default function ContractsClient({ contracts }) {
       (contract.project?.title || "").toLowerCase().includes(query)
     );
   }, [contracts, query, statusFilter]);
+
+  function handleRowDoubleClick(event, href) {
+    if (isInteractiveEventTarget(event.target)) return;
+    showNavigationLoading();
+    router.push(href);
+  }
 
   return (
     <div>
@@ -167,7 +175,11 @@ export default function ContractsClient({ contracts }) {
               {filtered.map((contract) => {
                 const sc = STATUS_CONFIG[contract.status] ?? STATUS_CONFIG.draft;
                 return (
-                  <tr key={contract.id} className="transition-colors hover:bg-zinc-50/60">
+                  <tr
+                    key={contract.id}
+                    onDoubleClick={(event) => handleRowDoubleClick(event, `/contracts/${contract.id}`)}
+                    className="cursor-pointer transition-colors hover:bg-zinc-50/60"
+                  >
                     <td className="px-5 py-3.5">
                       <p className="text-sm font-medium text-zinc-900">{contract.title}</p>
                       {contract.clientEmail && <p className="mt-0.5 text-xs text-zinc-400">{contract.clientEmail}</p>}

@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import {
   Search, Plus, Bell, Settings, LogOut, ChevronDown, MoonStar, Sun,
 } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { LoadingDots } from "@/components/shared/NavigationLoadingOverlay";
 import { cn } from "@/lib/utils";
 import { signOut, useSession } from "next-auth/react";
 
@@ -48,6 +49,7 @@ export default function TopBar() {
   const [showBell, setShowBell] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [searchValue, setSearchValue] = useState(searchParams.get("q") || "");
+  const [isSearchPending, startSearchTransition] = useTransition();
   const [theme, setTheme] = useState(() => {
     if (typeof document === "undefined") return "light";
     return document.documentElement.getAttribute("data-theme") || "light";
@@ -110,7 +112,9 @@ export default function TopBar() {
       if (params.has("page")) params.set("page", "1");
 
       const next = params.toString();
-      router.replace(next ? `${pathname}?${next}` : pathname, { scroll: false });
+      startSearchTransition(() => {
+        router.replace(next ? `${pathname}?${next}` : pathname, { scroll: false });
+      });
     }, 300);
 
     return () => clearTimeout(timeout);
@@ -147,8 +151,13 @@ export default function TopBar() {
           value={searchValue}
           onChange={(e) => setSearchValue(e.target.value)}
           placeholder={searchPlaceholder}
-          className="w-full rounded border border-zinc-200 bg-zinc-50 py-1.5 pl-8 pr-3 text-sm text-zinc-700 placeholder-zinc-400 outline-none focus:border-zinc-400 focus:bg-white"
+          className="w-full rounded border border-zinc-200 bg-zinc-50 py-1.5 pl-8 pr-10 text-sm text-zinc-700 placeholder-zinc-400 outline-none focus:border-zinc-400 focus:bg-white"
         />
+        {isSearchPending && (
+          <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
+            <LoadingDots className="gap-1" dotClassName="h-1.5 w-1.5 bg-blue-500" />
+          </div>
+        )}
       </div>
 
       <div className="flex items-center gap-2">

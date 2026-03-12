@@ -4,7 +4,8 @@ import { useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Search, Mail, Phone, Building2, ChevronDown, Plus } from "lucide-react";
-import { cn, formatCurrency } from "@/lib/utils";
+import { showNavigationLoading } from "@/components/shared/NavigationLoadingOverlay";
+import { cn, formatCurrency, isInteractiveEventTarget } from "@/lib/utils";
 import ContactsImportModal from "./ContactsImportModal";
 
 const STATUS_CONFIG = {
@@ -84,6 +85,12 @@ export default function ContactsTable({
     if (currentStatus === "lead") return "Lead Contacts";
     if (currentStatus === "active") return "Client Contacts";
     return "Archived Contacts";
+  }
+
+  function handleRowDoubleClick(event, href) {
+    if (isInteractiveEventTarget(event.target)) return;
+    showNavigationLoading();
+    router.push(href);
   }
 
   return (
@@ -203,7 +210,11 @@ export default function ContactsTable({
               {contacts.map((contact) => {
                 const sc = STATUS_CONFIG[contact.status] ?? STATUS_CONFIG.lead;
                 return (
-                  <tr key={contact.id} className="group hover:bg-zinc-50 transition-colors">
+                  <tr
+                    key={contact.id}
+                    onDoubleClick={(event) => handleRowDoubleClick(event, `/contacts/${contact.id}`)}
+                    className="group cursor-pointer transition-colors hover:bg-zinc-50"
+                  >
                     <td className="px-5 py-3.5">
                       <Link href={`/contacts/${contact.id}`} className="font-medium text-zinc-900 hover:underline">
                         {contact.name}

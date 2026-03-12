@@ -9,7 +9,8 @@ import {
   CheckCircle2, Clock, DollarSign, PenLine, FileCheck,
   ChevronRight, Star, Layers, Sparkles, ChevronDown, Plus, Search,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { showNavigationLoading } from "@/components/shared/NavigationLoadingOverlay";
+import { cn, isInteractiveEventTarget } from "@/lib/utils";
 import {
   TEMPLATE_GALLERY,
   createBuilderDocumentFromTemplate,
@@ -129,14 +130,20 @@ function DocThumbnail({ template }) {
 
 // ─── Template Card ────────────────────────────────────────────────────────────
 
-function TemplateCard({ template, isSaved, onPreview, onDelete, onSave, onCustomize }) {
+function TemplateCard({ template, isSaved, onPreview, onDelete, onSave, onCustomize, onOpen }) {
   const cfg = TYPE_CONFIG[template.type] || TYPE_CONFIG.proposal;
   const theme = THEME_COLORS[template.theme] || THEME_COLORS.graphite;
   const includes = template.includes || [];
   const pages = template.pages || 1;
 
   return (
-    <div className="group flex flex-col rounded border border-zinc-200 bg-white overflow-hidden transition-all hover:shadow-lg hover:-translate-y-0.5 duration-200">
+    <div
+      onDoubleClick={(event) => {
+        if (isInteractiveEventTarget(event.target)) return;
+        onOpen(template);
+      }}
+      className="group flex cursor-pointer flex-col overflow-hidden rounded border border-zinc-200 bg-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
+    >
       {/* Thumbnail */}
       <div className="relative p-4 pb-3 bg-zinc-50 border-b border-zinc-100">
         <DocThumbnail template={template} />
@@ -654,6 +661,11 @@ export default function TemplatesClient({ savedTemplates }) {
     router.push(`/templates/builder?templateId=${template.id}`);
   }
 
+  function handleOpen(template) {
+    showNavigationLoading();
+    router.push(`/templates/${template.id}`);
+  }
+
   async function handleSaveTemplate(template) {
     const payload = {
       type: template.type,
@@ -840,6 +852,7 @@ export default function TemplatesClient({ savedTemplates }) {
                 onSave={handleSaveTemplate}
                 onDelete={() => {}}
                 onCustomize={handleCustomize}
+                onOpen={handleOpen}
               />
             ))}
           </div>
@@ -872,6 +885,7 @@ export default function TemplatesClient({ savedTemplates }) {
                 onSave={() => {}}
                 onDelete={handleDelete}
                 onCustomize={handleCustomize}
+                onOpen={handleOpen}
               />
             ))}
           </div>
