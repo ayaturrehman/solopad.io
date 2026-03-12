@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   Zap, ArrowRight, Check, FileText,
-  CreditCard, Clock, Users,
+  CreditCard, Clock, Users, Menu, X,
 } from "lucide-react";
 import { PLAN_ORDER, getPlan } from "@/lib/plans";
 
@@ -36,6 +36,7 @@ function useFadeIn() {
 export default function LandingPage() {
   const { data: session } = useSession();
   const authHref = session ? "/dashboard" : "/login";
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   useFadeIn();
 
   return (
@@ -93,6 +94,8 @@ export default function LandingPage() {
         .pk-nav-inner { display:flex; align-items:center; justify-content:space-between; gap:20px; padding:16px 0; }
         .pk-nav-links { display:flex; gap:32px; }
         .pk-nav-actions { display:flex; align-items:center; gap:12px; }
+        .pk-mobile-toggle { display:none; align-items:center; justify-content:center; width:42px; height:42px; border:1px solid #E5E7EB; background:#fff; color:${CDk}; cursor:pointer; border-radius:10px; }
+        .pk-mobile-panel { display:none; }
         .pk-hero-shell { max-width:88%; margin:0 auto; text-align:center; }
         .pk-browser-shell { position:relative; max-width:860px; margin:0 auto; }
         .pk-browser-body { padding:28px 32px; }
@@ -128,10 +131,14 @@ export default function LandingPage() {
         @media (max-width: 640px) {
           .btn-primary, .btn-outline { width:100%; justify-content:center; padding:12px 18px; }
           .pk-shell, .pk-hero-shell { max-width: calc(100% - 24px); }
+          .pk-nav-inner { justify-content:space-between; gap:12px; }
           .pk-nav-links { display:none; }
-          .pk-nav-actions { gap:10px; }
+          .pk-nav-actions { width:auto; margin-left:auto; gap:10px; }
           .pk-nav-actions .nav-link { display:none; }
-          .pk-nav-actions .btn-primary { width:auto; }
+          .pk-nav-actions .btn-primary { width:auto; padding:10px 16px; font-size:14px !important; white-space:nowrap; }
+          .pk-mobile-toggle { display:inline-flex; }
+          .pk-mobile-panel { display:flex; flex-direction:column; gap:10px; width:100%; border-top:1px solid #EBEBEB; padding:14px 0 4px; }
+          .pk-mobile-panel a { color:${CDk}; text-decoration:none; font-size:15px; font-weight:600; }
           .pk-browser-body { padding:16px 14px; }
           .pk-browser-shell [style*="display:\"flex\""][style*="justifyContent:\"space-between\""] { gap:12px; }
           .pk-browser-shell [style*="maxWidth:320"] { max-width:none !important; }
@@ -162,7 +169,24 @@ export default function LandingPage() {
               <Link href="/signup" className="btn-primary" style={{ fontSize:14, padding:"10px 20px" }}>
                 Get started free <ArrowRight size={14} />
               </Link>
+              <button
+                type="button"
+                className="pk-mobile-toggle"
+                onClick={() => setMobileMenuOpen((open) => !open)}
+                aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+                aria-expanded={mobileMenuOpen}
+              >
+                {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
+              </button>
             </div>
+            {mobileMenuOpen && (
+              <div className="pk-mobile-panel">
+                <a href="#features" onClick={() => setMobileMenuOpen(false)}>Features</a>
+                <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)}>How it works</a>
+                <a href="#pricing" onClick={() => setMobileMenuOpen(false)}>Pricing</a>
+                <Link href={authHref} onClick={() => setMobileMenuOpen(false)}>Log in</Link>
+              </div>
+            )}
           </div>
         </header>
 
