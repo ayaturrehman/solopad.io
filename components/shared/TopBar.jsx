@@ -68,17 +68,20 @@ export default function TopBar() {
     if (pathname === "/finance" && financeTab === "expenses") return "Search expenses...";
     return searchModuleKey ? MODULE_SEARCH[searchModuleKey] : "Search...";
   }, [financeTab, pathname, searchModuleKey]);
+  const searchParamsString = searchParams.toString();
+
+  // Only sync URL → input when the user navigates (not while typing).
+  // We detect navigation by checking if the pathname or non-q params changed.
+  const nonQParams = useMemo(() => {
+    const p = new URLSearchParams(searchParams.toString());
+    p.delete("q");
+    return p.toString();
+  }, [searchParams]);
 
   useEffect(() => {
-    const nextValue = searchParams.get("q") || "";
-    if (nextValue === searchValue) return undefined;
-
-    const timeout = setTimeout(() => {
-      setSearchValue(nextValue);
-    }, 0);
-
-    return () => clearTimeout(timeout);
-  }, [searchParams, searchValue]);
+    setSearchValue(searchParams.get("q") || "");
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname, nonQParams]);
 
   // Fetch once on mount only — re-fetched when bell is opened
   useEffect(() => {
@@ -96,13 +99,15 @@ export default function TopBar() {
 
     const timeout = setTimeout(() => {
       const trimmed = searchValue.trim();
-      const currentQ = searchParams.get("q") || "";
+      const liveParams = new URLSearchParams(searchParamsString);
+      const currentQ = liveParams.get("q") || "";
       // Only push if the value actually changed to avoid re-triggering this effect
       if (trimmed === currentQ) return;
 
-      const params = new URLSearchParams(searchParams.toString());
+      const params = new URLSearchParams(searchParamsString);
       if (trimmed) params.set("q", trimmed);
       else params.delete("q");
+      if (params.has("page")) params.set("page", "1");
 
       const next = params.toString();
       router.replace(next ? `${pathname}?${next}` : pathname, { scroll: false });
@@ -110,7 +115,7 @@ export default function TopBar() {
 
     return () => clearTimeout(timeout);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname, searchModuleKey, searchValue]);
+  }, [pathname, searchModuleKey, searchParamsString, searchValue]);
 
   async function markAllRead() {
     await fetch("/api/notifications", { method: "PATCH" });
