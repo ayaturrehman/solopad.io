@@ -1,8 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useTransition } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Search, Mail, Phone, Building2, ChevronDown, Plus } from "lucide-react";
 import { cn, formatCurrency } from "@/lib/utils";
 import ContactsImportModal from "./ContactsImportModal";
@@ -14,9 +14,9 @@ const STATUS_CONFIG = {
 };
 
 const TABS = [
-  { key: "all",      label: "All" },
-  { key: "lead",     label: "Leads" },
-  { key: "active",   label: "Clients" },
+  { key: "all", label: "All" },
+  { key: "lead", label: "Leads" },
+  { key: "active", label: "Clients" },
   { key: "archived", label: "Archived" },
 ];
 
@@ -31,12 +31,24 @@ function relativeDate(dateStr) {
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 }
 
-export default function ContactsTable({ contacts }) {
-  const [tab, setTab] = useState("all");
+export default function ContactsTable({
+  contacts,
+  counts,
+  currentPage,
+  pageSize,
+  query,
+  status,
+  totalCount,
+  totalPages,
+}) {
   const [filterOpen, setFilterOpen] = useState(false);
   const [filterSearch, setFilterSearch] = useState("");
+  const [isPending, startTransition] = useTransition();
+  const pathname = usePathname();
+  const router = useRouter();
   const searchParams = useSearchParams();
-  const query = (searchParams.get("q") || "").trim().toLowerCase();
+  const currentStatus = searchParams.get("status") || status;
+  const currentQuery = (searchParams.get("q") || query || "").trim();
 
   const filterOptions = useMemo(
     () => TABS.filter((option) =>
@@ -45,28 +57,32 @@ export default function ContactsTable({ contacts }) {
     [filterSearch]
   );
 
-  const byTab = tab === "all" ? contacts : contacts.filter((c) => c.status === tab);
-  const filtered = query
-    ? byTab.filter((c) =>
-        [c.name, c.email, c.company, c.phone]
-          .filter(Boolean)
-          .some((v) => v.toLowerCase().includes(query))
-      )
-    : byTab;
+  const activeTab = TABS.find((item) => item.key === currentStatus) || TABS[0];
+  const isLeadView = currentStatus === "lead";
+  const rangeStart = totalCount ? (currentPage - 1) * pageSize + 1 : 0;
+  const rangeEnd = Math.min(currentPage * pageSize, totalCount);
 
-  const counts = {
-    all: contacts.length,
-    lead: contacts.filter((c) => c.status === "lead").length,
-    active: contacts.filter((c) => c.status === "active").length,
-    archived: contacts.filter((c) => c.status === "archived").length,
-  };
-  const activeTab = TABS.find((item) => item.key === tab) || TABS[0];
-  const isLeadView = tab === "lead";
+  function updateParams(updates) {
+    const params = new URLSearchParams(searchParams.toString());
+
+    Object.entries(updates).forEach(([key, value]) => {
+      if (value === null || value === undefined || value === "" || value === "all") {
+        params.delete(key);
+      } else {
+        params.set(key, String(value));
+      }
+    });
+
+    const next = params.toString();
+    startTransition(() => {
+      router.replace(next ? `${pathname}?${next}` : pathname, { scroll: false });
+    });
+  }
 
   function getHeaderLabel() {
-    if (tab === "all") return "Contacts";
-    if (tab === "lead") return "Leads";
-    if (tab === "active") return "Clients";
+    if (currentStatus === "all") return "Contacts";
+    if (currentStatus === "lead") return "Lead Contacts";
+    if (currentStatus === "active") return "Client Contacts";
     return "Archived Contacts";
   }
 
@@ -90,7 +106,7 @@ export default function ContactsTable({ contacts }) {
             </button>
 
             {filterOpen && (
-              <div className="absolute left-0 top-[calc(100%+8px)] z-20 w-[15rem] max-w-[calc(100vw-2rem)] rounded-xl border border-zinc-200 bg-white p-2 shadow-xl">
+              <div className="absolute left-0 top-[calc(100%+8px)] z-20 w-[15rem] max-w-[calc(100vw-2rem)] rounded border border-zinc-200 bg-white p-2 shadow-xl">
                 <div className="relative mb-3">
                   <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
                   <input
@@ -98,7 +114,7 @@ export default function ContactsTable({ contacts }) {
                     value={filterSearch}
                     onChange={(e) => setFilterSearch(e.target.value)}
                     placeholder="Search filters"
-                    className="h-11 w-full rounded-xl border border-blue-500 pl-11 pr-4 text-sm text-zinc-900 outline-none ring-0 placeholder:text-zinc-400 focus:border-blue-500"
+                    className="h-11 w-full rounded border border-blue-500 pl-11 pr-4 text-sm text-zinc-900 outline-none ring-0 placeholder:text-zinc-400 focus:border-blue-500"
                   />
                 </div>
 
@@ -108,19 +124,19 @@ export default function ContactsTable({ contacts }) {
                       key={option.key}
                       type="button"
                       onClick={() => {
-                        setTab(option.key);
+                        updateParams({ status: option.key, page: 1 });
                         setFilterOpen(false);
                         setFilterSearch("");
                       }}
                       className={cn(
-                        "flex w-full items-center justify-between rounded-xl px-4 py-2.5 text-left text-sm transition-colors",
-                        tab === option.key
+                        "flex w-full items-center justify-between rounded px-4 py-2.5 text-left text-sm transition-colors",
+                        currentStatus === option.key
                           ? "bg-zinc-50 text-zinc-900"
                           : "text-zinc-700 hover:bg-zinc-50"
                       )}
                     >
                       <span>{option.label}</span>
-                      {tab === option.key && <span className="h-2.5 w-2.5 rounded-full bg-blue-600" />}
+                      {currentStatus === option.key && <span className="h-2.5 w-2.5 rounded-full bg-blue-600" />}
                     </button>
                   ))}
                 </div>
@@ -141,8 +157,8 @@ export default function ContactsTable({ contacts }) {
         </div>
       </div>
 
-      {filtered.length === 0 ? (
-        contacts.length === 0 ? (
+      {totalCount === 0 ? (
+        counts.all === 0 ? (
           <div className="rounded border border-dashed border-zinc-200 bg-white px-6 py-16 text-center">
             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-zinc-100">
               <Plus className="h-5 w-5 text-zinc-400" />
@@ -163,12 +179,12 @@ export default function ContactsTable({ contacts }) {
         ) : (
           <div className="rounded border border-dashed border-zinc-200 bg-white py-12 text-center">
             <p className="text-sm text-zinc-400">
-              {query ? `No results for "${searchParams.get("q")}"` : `No ${activeTab.label.toLowerCase()} yet`}
+              {currentQuery ? `No results for "${currentQuery}"` : `No ${activeTab.label.toLowerCase()} yet`}
             </p>
           </div>
         )
       ) : (
-        <div className="overflow-hidden rounded border border-zinc-200 bg-white">
+        <div className={cn("overflow-hidden rounded border border-zinc-200 bg-white transition-opacity", isPending ? "opacity-60" : "opacity-100")}>
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-zinc-100 bg-zinc-50">
@@ -179,12 +195,12 @@ export default function ContactsTable({ contacts }) {
                 {isLeadView && <th className="px-5 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Est. value</th>}
                 {!isLeadView && <th className="px-5 py-3 text-center text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Projects</th>}
                 <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Added</th>
-                {tab === "all" && <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Type</th>}
+                {currentStatus === "all" && <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Type</th>}
                 <th className="px-5 py-3" />
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-100">
-              {filtered.map((contact) => {
+              {contacts.map((contact) => {
                 const sc = STATUS_CONFIG[contact.status] ?? STATUS_CONFIG.lead;
                 return (
                   <tr key={contact.id} className="group hover:bg-zinc-50 transition-colors">
@@ -240,7 +256,7 @@ export default function ContactsTable({ contacts }) {
                       </td>
                     )}
                     <td className="px-5 py-3.5 text-xs text-zinc-400">{relativeDate(contact.createdAt)}</td>
-                    {tab === "all" && (
+                    {currentStatus === "all" && (
                       <td className="px-5 py-3.5">
                         <span className={cn("rounded-full px-2 py-0.5 text-[11px] font-semibold", sc.color)}>
                           {sc.label}
@@ -260,6 +276,41 @@ export default function ContactsTable({ contacts }) {
               })}
             </tbody>
           </table>
+
+          {isPending && (
+            <div className="border-t border-zinc-100 bg-blue-50 px-5 py-2 text-xs font-medium text-blue-700">
+              Loading contacts...
+            </div>
+          )}
+
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between border-t border-zinc-100 px-5 py-3 text-sm">
+              <p className="text-zinc-500">
+                Showing {rangeStart}-{rangeEnd} of {totalCount}
+              </p>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => updateParams({ page: Math.max(1, currentPage - 1) })}
+                  disabled={currentPage === 1 || isPending}
+                  className="rounded border border-zinc-200 px-3 py-1.5 text-zinc-600 transition-colors hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Previous
+                </button>
+                <span className="text-zinc-500">
+                  Page {currentPage} of {totalPages}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => updateParams({ page: Math.min(totalPages, currentPage + 1) })}
+                  disabled={currentPage === totalPages || isPending}
+                  className="rounded border border-zinc-200 px-3 py-1.5 text-zinc-600 transition-colors hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

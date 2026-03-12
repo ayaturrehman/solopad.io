@@ -3,9 +3,6 @@ export default function Loading() {
     <div className="min-h-screen animate-pulse space-y-6 ">
       {/* Page title skeleton */}
       <div className="h-7 w-48 rounded bg-zinc-200" />
-
-      
-
       {/* Table skeleton */}
       <div className="rounded border border-zinc-200 bg-white">
         <div className="border-b border-zinc-100 px-5 py-4">
