@@ -3,6 +3,7 @@
 import { Suspense } from "react";
 import { usePathname } from "next/navigation";
 import Navbar from "@/components/shared/Navbar";
+import NavigationLoadingOverlay from "@/components/shared/NavigationLoadingOverlay";
 import TopBar from "@/components/shared/TopBar";
 
 export default function AppLayout({ children }) {
@@ -18,8 +19,9 @@ export default function AppLayout({ children }) {
       <Navbar />
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
         <Suspense fallback={null}><TopBar /></Suspense>
-        <main className="flex-1 overflow-y-auto">
+        <main className="relative flex-1 overflow-y-auto">
           <div className="w-full px-4 py-6 pb-24 md:pb-6 lg:px-5">{children}</div>
+          <NavigationLoadingOverlay />
         </main>
       </div>
     </div>
