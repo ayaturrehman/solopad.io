@@ -3,9 +3,45 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
+
+// ─── Business (tenant root) ───────────────────────────────────────────────────
+// Every piece of data belongs to a Business. One Business can have many Users
+// (owner + team members). All queries must filter by businessId for isolation.
+
+model Business {
+  id          String   @id @default(cuid())
+  name        String
+  plan        String   @default("free")   // free | pro | enterprise
+  ownerId     String                       // userId of the account owner
+  logoUrl     String?
+  timezone    String   @default("UTC")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  users             User[]
+  contacts          Contact[]
+  projects          Project[]
+  services          Service[]
+  expenses          Expense[]
+  expenseCategories ExpenseCategory[]
+  recurringExpenses RecurringExpense[]
+  notifications     Notification[]
+  templates         Template[]
+  tasks             Task[]
+  teamMembers       TeamMember[]
+  timeEntries       TimeEntry[]
+  bookings          Booking[]
+  availabilityRules AvailabilityRule[]
+  proposals         Proposal[]
+  contracts         Contract[]
+}
+
+// ─── User ─────────────────────────────────────────────────────────────────────
 
 model User {
   id            String         @id @default(cuid())
@@ -13,18 +49,26 @@ model User {
   name          String
   password      String
   plan          String         @default("free")
-  role          String         @default("owner")
+  role          String         @default("owner")   // owner | member
   companyName     String?
   companyLogo     String?
   timezone        String         @default("UTC")
-  paymentMethods    String         @default("card") // comma-separated: card,paypal,klarna
-  stripeAccountId   String?        // Stripe Connect account ID (acct_...)
+  paymentMethods    String         @default("card")
+  stripeAccountId   String?
   stripeOnboarded   Boolean        @default(false)
   createdAt         DateTime       @default(now())
+
+  // Multi-tenancy — nullable during onboarding; set once business is created/joined
+  businessId    String?
+  business      Business?      @relation(fields: [businessId], references: [id], onDelete: SetNull)
+
+  // Legacy per-user relations kept for backwards compatibility during migration
   projects      Project[]
   contacts      Contact[]
   services      Service[]
   expenses      Expense[]
+  expenseCategories ExpenseCategory[]
+  recurringExpenses RecurringExpense[]
   notifications Notification[]
   templates     Template[]
   tasks             Task[]
@@ -34,11 +78,14 @@ model User {
   availabilityRules AvailabilityRule[]
   proposals     Proposal[]
   contracts     Contract[]
-  leads         Lead[]
 }
+
+// ─── Contact ──────────────────────────────────────────────────────────────────
 
 model Contact {
   id            String    @id @default(cuid())
+  businessId    String?
+  business      Business? @relation(fields: [businessId], references: [id], onDelete: Cascade)
   userId        String
   user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   name          String
@@ -46,16 +93,20 @@ model Contact {
   phone         String?
   company       String?
   status        String    @default("lead")  // lead | active | archived
-  source        String?   // referral, website, linkedin, cold-outreach, event, other
-  value         Float?    // estimated deal value (for leads)
+  source        String?
+  value         Float?
   notes         String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   projects      Project[]
 }
 
+// ─── Project ──────────────────────────────────────────────────────────────────
+
 model Project {
   id           String    @id @default(cuid())
+  businessId   String?
+  business     Business? @relation(fields: [businessId], references: [id], onDelete: Cascade)
   userId       String
   user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   contactId    String?
@@ -67,22 +118,28 @@ model Project {
   startDate    DateTime?
   endDate      DateTime?
   status       String    @default("in_progress")
-  stage        String    @default("kickoff")   // new|discovery|proposal|contract_signed|kickoff|onboarding|planning|delivery|complete
+  stage        String    @default("kickoff")
   portalToken  String    @unique
   archived     Boolean   @default(false)
   viewCount    Int       @default(0)
   lastViewedAt DateTime?
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
+
   files        File[]
   comments     Comment[]
   notes        Note[]
   invoices     Invoice[]
+  expenses     Expense[]
+  recurringExpenses RecurringExpense[]
   tasks       Task[]
   timeEntries TimeEntry[]
   proposals   Proposal[]
   contracts   Contract[]
 }
+
+// ─── File ─────────────────────────────────────────────────────────────────────
+// Scoped through Project → businessId (no direct businessId needed)
 
 model File {
   id         String   @id @default(cuid())
@@ -98,6 +155,9 @@ model File {
   createdAt       DateTime @default(now())
 }
 
+// ─── Comment ──────────────────────────────────────────────────────────────────
+// Scoped through Project → businessId
+
 model Comment {
   id         String   @id @default(cuid())
   projectId  String
@@ -107,6 +167,9 @@ model Comment {
   body       String
   createdAt  DateTime @default(now())
 }
+
+// ─── Note ─────────────────────────────────────────────────────────────────────
+// Scoped through Project → businessId
 
 model Note {
   id        String   @id @default(cuid())
@@ -121,6 +184,9 @@ model Note {
   updatedAt       DateTime @updatedAt
 }
 
+// ─── Invoice ──────────────────────────────────────────────────────────────────
+// Scoped through Project → businessId
+
 model Invoice {
   id                    String        @id @default(cuid())
   projectId             String
@@ -130,14 +196,14 @@ model Invoice {
   subtotal              Float         @default(0)
   taxRate               Float         @default(0)
   taxAmount             Float         @default(0)
-  discountType          String        @default("none") // none | percent | fixed
+  discountType          String        @default("none")
   discountValue         Float         @default(0)
   discountAmount        Float         @default(0)
   total                 Float
   currency              String        @default("USD")
   dueDate               DateTime?
   notes                 String?
-  status                String        @default("draft") // draft | sent | paid | overdue | cancelled
+  status                String        @default("draft")
   remindersEnabled      Boolean       @default(true)
   stripeSessionId       String?
   stripePaymentIntentId String?
@@ -147,6 +213,9 @@ model Invoice {
   paymentPlans          PaymentPlan[]
 }
 
+// ─── PaymentPlan ──────────────────────────────────────────────────────────────
+// Scoped through Invoice → Project → businessId
+
 model PaymentPlan {
   id        String    @id @default(cuid())
   invoiceId String
@@ -154,88 +223,153 @@ model PaymentPlan {
   label     String?
   amount    Float
   dueDate   DateTime?
-  status    String    @default("upcoming") // upcoming | paid | overdue
+  status    String    @default("upcoming")
   paidAt    DateTime?
   createdAt DateTime  @default(now())
 }
 
+// ─── Service ──────────────────────────────────────────────────────────────────
+
 model Service {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
+  businessId  String?
+  business    Business? @relation(fields: [businessId], references: [id], onDelete: Cascade)
   userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   name        String
   description String?
-  defaultRate Float    @default(0)
-  unit        String   @default("flat") // flat | hour | day | word
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  defaultRate Float     @default(0)
+  unit        String    @default("flat")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
+
+// ─── Expense ──────────────────────────────────────────────────────────────────
 
 model Expense {
-  id          String   @id @default(cuid())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  description String
-  amount      Float
-  category    String   @default("other") // software | travel | equipment | contractor | marketing | other
-  date        DateTime @default(now())
-  receipt     String?
-  createdAt   DateTime @default(now())
-}
-
-model Notification {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  type      String   // invoice_paid | portal_viewed | comment_received | invoice_overdue
-  title     String
-  body      String
-  read      Boolean  @default(false)
-  link      String?
-  createdAt DateTime @default(now())
-}
-
-model Template {
-  id          String   @id @default(cuid())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  type        String   // invoice | proposal | contract | questionnaire
-  name        String
-  description String?
-  content     String   // JSON string — varies by type
-  isDefault   Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-
-model Task {
   id          String    @id @default(cuid())
+  businessId  String?
+  business    Business? @relation(fields: [businessId], references: [id], onDelete: Cascade)
   userId      String
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   projectId   String?
   project     Project?  @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  recurringExpenseId String?
+  recurringExpense   RecurringExpense? @relation(fields: [recurringExpenseId], references: [id], onDelete: SetNull)
+  description String
+  note        String?
+  amount      Float
+  category    String    @default("other")
+  date        DateTime  @default(now())
+  receipt     String?
+  createdAt   DateTime  @default(now())
+}
+
+// ─── ExpenseCategory ──────────────────────────────────────────────────────────
+
+model ExpenseCategory {
+  id         String    @id @default(cuid())
+  businessId String?
+  business   Business? @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name       String
+  createdAt  DateTime  @default(now())
+
+  @@unique([userId, name])
+}
+
+// ─── RecurringExpense ─────────────────────────────────────────────────────────
+
+model RecurringExpense {
+  id          String    @id @default(cuid())
+  businessId  String?
+  business    Business? @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  projectId   String?
+  project     Project?  @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  description String
+  note        String?
+  amount      Float
+  category    String    @default("other")
+  frequency   String    @default("monthly")
+  nextDate    DateTime
+  active      Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  expenses    Expense[]
+}
+
+// ─── Notification ─────────────────────────────────────────────────────────────
+
+model Notification {
+  id         String    @id @default(cuid())
+  businessId String?
+  business   Business? @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type       String
+  title      String
+  body       String
+  read       Boolean   @default(false)
+  link       String?
+  createdAt  DateTime  @default(now())
+}
+
+// ─── Template ─────────────────────────────────────────────────────────────────
+
+model Template {
+  id          String    @id @default(cuid())
+  businessId  String?
+  business    Business? @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type        String
+  name        String
+  description String?
+  content     String
+  isDefault   Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+// ─── Task ─────────────────────────────────────────────────────────────────────
+
+model Task {
+  id          String     @id @default(cuid())
+  businessId  String?
+  business    Business?  @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  projectId   String?
+  project     Project?   @relation(fields: [projectId], references: [id], onDelete: SetNull)
   assigneeMemberId String?
   assigneeMember   TeamMember? @relation(fields: [assigneeMemberId], references: [id], onDelete: SetNull)
   title       String
   description String?
   subtasks    String?
-  status      String    @default("todo")   // todo | in_progress | done
-  priority    String    @default("medium") // low | medium | high
+  status      String     @default("todo")
+  priority    String     @default("medium")
   dueDate     DateTime?
   completedAt DateTime?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 }
+
+// ─── TeamMember ───────────────────────────────────────────────────────────────
 
 model TeamMember {
   id          String    @id @default(cuid())
+  businessId  String?
+  business    Business? @relation(fields: [businessId], references: [id], onDelete: Cascade)
   userId      String
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   name        String
   email       String
   role        String    @default("collaborator")
   permissions String    @default("assign_tasks")
-  status      String    @default("pending") // pending | active
+  status      String    @default("pending")
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   tasks       Task[]
@@ -243,8 +377,12 @@ model TeamMember {
   @@unique([userId, email])
 }
 
+// ─── TimeEntry ────────────────────────────────────────────────────────────────
+
 model TimeEntry {
   id          String    @id @default(cuid())
+  businessId  String?
+  business    Business? @relation(fields: [businessId], references: [id], onDelete: Cascade)
   userId      String
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   projectId   String?
@@ -252,14 +390,18 @@ model TimeEntry {
   description String?
   startedAt   DateTime
   endedAt     DateTime?
-  duration    Int       @default(0) // seconds
+  duration    Int       @default(0)
   billable    Boolean   @default(true)
   hourlyRate  Float     @default(0)
   createdAt   DateTime  @default(now())
 }
 
+// ─── Booking ──────────────────────────────────────────────────────────────────
+
 model Booking {
   id          String    @id @default(cuid())
+  businessId  String?
+  business    Business? @relation(fields: [businessId], references: [id], onDelete: Cascade)
   userId      String
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   clientName  String
@@ -268,21 +410,29 @@ model Booking {
   endAt       DateTime
   title       String
   notes       String?
-  status      String    @default("confirmed") // confirmed | cancelled
+  status      String    @default("confirmed")
   createdAt   DateTime  @default(now())
 }
 
+// ─── AvailabilityRule ─────────────────────────────────────────────────────────
+
 model AvailabilityRule {
-  id        String @id @default(cuid())
-  userId    String
-  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  dayOfWeek Int    // 0=Sun, 1=Mon, ..., 6=Sat
-  startTime String // "09:00"
-  endTime   String // "17:00"
+  id         String    @id @default(cuid())
+  businessId String?
+  business   Business? @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dayOfWeek  Int
+  startTime  String
+  endTime    String
 }
+
+// ─── Proposal ─────────────────────────────────────────────────────────────────
 
 model Proposal {
   id          String    @id @default(cuid())
+  businessId  String?
+  business    Business? @relation(fields: [businessId], references: [id], onDelete: Cascade)
   userId      String
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   projectId   String?
@@ -291,20 +441,24 @@ model Proposal {
   clientName  String
   clientEmail String?
   intro       String?
-  sections    String    // JSON: [{ heading, body }]
-  pricing     String    // JSON: [{ description, amount }]
+  sections    String
+  pricing     String
   total       Float     @default(0)
   currency    String    @default("USD")
   validUntil  DateTime?
-  status      String    @default("draft") // draft | sent | accepted | declined
+  status      String    @default("draft")
   sentAt      DateTime?
   acceptedAt  DateTime?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 }
 
+// ─── Contract ─────────────────────────────────────────────────────────────────
+
 model Contract {
   id            String    @id @default(cuid())
+  businessId    String?
+  business      Business? @relation(fields: [businessId], references: [id], onDelete: Cascade)
   userId        String
   user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   projectId     String?
@@ -312,27 +466,11 @@ model Contract {
   title         String
   clientName    String
   clientEmail   String?
-  clauses       String    // JSON: [{ heading, body }]
-  status        String    @default("draft") // draft | sent | signed
+  clauses       String
+  status        String    @default("draft")
   sentAt        DateTime?
   signedAt      DateTime?
   signatureName String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-}
-
-model Lead {
-  id          String    @id @default(cuid())
-  userId      String
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  name        String
-  email       String?
-  company     String?
-  phone       String?
-  source      String?   // referral, website, linkedin, cold-outreach, etc.
-  status      String    @default("new") // new | contacted | qualified | proposal | won | lost
-  value       Float?
-  notes       String?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
 }
