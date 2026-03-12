@@ -24,13 +24,13 @@ function emptyMilestone() {
   return { label: "", amount: "", dueDate: "" };
 }
 
-export default function InvoiceBuilderClient({ projects, services }) {
+export default function InvoiceBuilderClient({ projects, services, user }) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   const [projectId, setProjectId] = useState(searchParams.get("projectId") || "");
   const [invoiceNumber, setInvoiceNumber] = useState("");
-  const [currency, setCurrency] = useState("USD");
+  const [currency, setCurrency] = useState(user?.currency || "USD");
   const [issueDate, setIssueDate] = useState(new Date().toISOString().split("T")[0]);
   const [dueDate, setDueDate] = useState("");
   const [notes, setNotes] = useState("");

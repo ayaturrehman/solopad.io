@@ -101,6 +101,7 @@ function SettingsContent() {
   const [companyName, setCompanyName] = useState("");
   const [companyLogo, setCompanyLogo] = useState("");
   const [timezone, setTimezone] = useState("UTC");
+  const [currency, setCurrency] = useState("USD");
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
@@ -133,6 +134,7 @@ function SettingsContent() {
         setCompanyName(data.user.companyName ?? "");
         setCompanyLogo(data.user.companyLogo ?? "");
         setTimezone(data.user.timezone ?? "UTC");
+        setCurrency(data.user.currency ?? "USD");
       });
 
     fetch("/api/settings/payments")
@@ -178,6 +180,7 @@ function SettingsContent() {
         companyName,
         companyLogo,
         timezone,
+        currency,
       }),
     });
 
@@ -389,6 +392,33 @@ function SettingsContent() {
                           onChange={(e) => setTimezone(e.target.value)}
                           placeholder="Europe/London"
                         />
+                      </div>
+                      <div className="grid gap-4 md:grid-cols-2">
+                        <div>
+                          <label className="mb-1.5 block text-sm font-medium text-zinc-700">Default currency</label>
+                          <select
+                            value={currency}
+                            onChange={(e) => setCurrency(e.target.value)}
+                            className="h-10 w-full rounded border border-zinc-200 bg-white px-3 text-sm text-zinc-900 focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900"
+                          >
+                            <option value="USD">USD - US Dollar</option>
+                            <option value="EUR">EUR - Euro</option>
+                            <option value="GBP">GBP - British Pound</option>
+                            <option value="CAD">CAD - Canadian Dollar</option>
+                            <option value="AUD">AUD - Australian Dollar</option>
+                            <option value="JPY">JPY - Japanese Yen</option>
+                            <option value="CHF">CHF - Swiss Franc</option>
+                            <option value="INR">INR - Indian Rupee</option>
+                            <option value="PKR">PKR - Pakistani Rupee</option>
+                            <option value="AED">AED - UAE Dirham</option>
+                            <option value="SAR">SAR - Saudi Riyal</option>
+                            <option value="MYR">MYR - Malaysian Ringgit</option>
+                            <option value="SGD">SGD - Singapore Dollar</option>
+                            <option value="NOK">NOK - Norwegian Krone</option>
+                            <option value="SEK">SEK - Swedish Krona</option>
+                            <option value="DKK">DKK - Danish Krone</option>
+                          </select>
+                        </div>
                       </div>
                       <Input
                         label="Logo URL"

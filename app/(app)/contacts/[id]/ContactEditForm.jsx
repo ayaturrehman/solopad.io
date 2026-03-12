@@ -2,12 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-
-const STATUS_OPTIONS = [
-  { value: "lead", label: "Lead" },
-  { value: "active", label: "Active" },
-  { value: "archived", label: "Archived" },
-];
+import { CONTACT_STATUS_OPTIONS } from "@/lib/contacts";
 
 export default function ContactEditForm({ contact }) {
   const router = useRouter();
@@ -94,7 +89,7 @@ export default function ContactEditForm({ contact }) {
         <div>
           <label className="mb-1 block text-xs font-medium text-zinc-700">Status</label>
           <select value={form.status} onChange={set("status")} className="w-full rounded border border-zinc-200 px-3 py-1.5 text-sm outline-none focus:border-zinc-400">
-            {STATUS_OPTIONS.map((o) => (
+            {CONTACT_STATUS_OPTIONS.map((o) => (
               <option key={o.value} value={o.value}>{o.label}</option>
             ))}
           </select>

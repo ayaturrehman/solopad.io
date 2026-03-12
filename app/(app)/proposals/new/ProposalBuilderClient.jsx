@@ -47,7 +47,7 @@ function Textarea({ className, ...props }) {
   );
 }
 
-export default function ProposalBuilderClient({ projects }) {
+export default function ProposalBuilderClient({ projects, user }) {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -58,7 +58,7 @@ export default function ProposalBuilderClient({ projects }) {
   const [clientName, setClientName] = useState("");
   const [clientEmail, setClientEmail] = useState("");
   const [validUntil, setValidUntil] = useState("");
-  const [currency, setCurrency] = useState("USD");
+  const [currency, setCurrency] = useState(user?.currency || "USD");
   const [intro, setIntro] = useState("");
   const [sections, setSections] = useState(DEFAULT_SECTIONS);
   const [pricing, setPricing] = useState(DEFAULT_PRICING);

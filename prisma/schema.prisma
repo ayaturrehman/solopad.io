@@ -54,6 +54,7 @@ model User {
   companyName     String?
   companyLogo     String?
   timezone        String         @default("UTC")
+  currency        String         @default("USD")
   paymentMethods    String         @default("card")
   stripeAccountId   String?
   stripeOnboarded   Boolean        @default(false)

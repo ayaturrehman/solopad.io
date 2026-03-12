@@ -15,6 +15,7 @@ export async function GET() {
       companyName: true,
       companyLogo: true,
       timezone: true,
+      currency: true,
     },
   });
 
@@ -25,7 +26,9 @@ export async function PATCH(req) {
   const session = await getSession();
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { name, role, companyName, companyLogo, timezone } = await req.json();
+  const { name, role, companyName, companyLogo, timezone, currency } = await req.json();
+
+  const user = await db.user.findUnique({ where: { id: session.user.id }, select: { currency: true } });
 
   await db.user.update({
     where: { id: session.user.id },
@@ -35,6 +38,7 @@ export async function PATCH(req) {
       ...(companyName !== undefined && { companyName: companyName?.trim() || null }),
       ...(companyLogo !== undefined && { companyLogo: companyLogo?.trim() || null }),
       ...(timezone !== undefined && { timezone: timezone?.trim() || "UTC" }),
+      currency: currency ?? user.currency,
     },
   });
 

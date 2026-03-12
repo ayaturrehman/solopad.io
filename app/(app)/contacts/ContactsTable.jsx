@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Search, Mail, Phone, Building2, ChevronDown, Plus } from "lucide-react";
 import { cn, formatCurrency } from "@/lib/utils";
+import ContactsImportModal from "./ContactsImportModal";
 
 const STATUS_CONFIG = {
   lead:     { label: "Lead",     color: "bg-amber-50 text-amber-700" },
@@ -127,7 +128,8 @@ export default function ContactsTable({ contacts }) {
             )}
           </div>
 
-          {contacts.length > 0 && (
+          <div className="flex items-center gap-2">
+            <ContactsImportModal />
             <Link
               href="/contacts/new"
               className="inline-flex items-center gap-1.5 rounded bg-zinc-900 px-3 py-1.5 text-sm font-semibold text-white hover:bg-zinc-700"
@@ -135,7 +137,7 @@ export default function ContactsTable({ contacts }) {
               <Plus className="h-4 w-4" />
               Add contact
             </Link>
-          )}
+          </div>
         </div>
       </div>
 
@@ -147,13 +149,16 @@ export default function ContactsTable({ contacts }) {
             </div>
             <h3 className="mb-2 font-semibold text-zinc-900">No contacts yet</h3>
             <p className="mb-6 text-sm text-zinc-500">Add your first client or lead to keep track of your relationships.</p>
-            <Link
-              href="/contacts/new"
-              className="inline-flex items-center gap-2 rounded bg-zinc-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-zinc-700"
-            >
-              <Plus className="h-4 w-4" />
-              Add first contact
-            </Link>
+            <div className="flex items-center justify-center gap-2">
+              <ContactsImportModal />
+              <Link
+                href="/contacts/new"
+                className="inline-flex items-center gap-2 rounded bg-zinc-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-zinc-700"
+              >
+                <Plus className="h-4 w-4" />
+                Add first contact
+              </Link>
+            </div>
           </div>
         ) : (
           <div className="rounded border border-dashed border-zinc-200 bg-white py-12 text-center">

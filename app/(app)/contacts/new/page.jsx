@@ -7,6 +7,7 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
+import { CONTACT_STATUS_OPTIONS } from "@/lib/contacts";
 
 export default function NewContactPage() {
   const router = useRouter();
@@ -94,9 +95,9 @@ export default function NewContactPage() {
               value={form.status}
               onChange={(e) => set("status", e.target.value)}
             >
-              <option value="lead">Lead</option>
-              <option value="active">Active client</option>
-              <option value="archived">Archived</option>
+              {CONTACT_STATUS_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>{option.label}</option>
+              ))}
             </select>
           </div>
           <div className="flex flex-col gap-1.5">

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 import { getTenantFilter, getTenantData } from "@/lib/tenant";
 import db from "@/lib/db";
+import { normalizeContactInput } from "@/lib/contacts";
 
 export async function GET(req) {
   const session = await getSession();
@@ -38,10 +39,9 @@ export async function POST(req) {
   const session = await getSession();
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { name, email, phone, company, status, source, value, notes } = await req.json();
-
-  if (!name?.trim()) {
-    return NextResponse.json({ error: "Name is required" }, { status: 400 });
+  const normalized = normalizeContactInput(await req.json(), { requireName: true });
+  if (normalized.errors.length) {
+    return NextResponse.json({ error: normalized.errors[0] }, { status: 400 });
   }
 
   const tenantData = await getTenantData(session);
@@ -49,14 +49,7 @@ export async function POST(req) {
   const contact = await db.contact.create({
     data: {
       ...tenantData,
-      name: name.trim(),
-      email: email?.trim() || null,
-      phone: phone?.trim() || null,
-      company: company?.trim() || null,
-      status: status || "lead",
-      source: source?.trim() || null,
-      value: value ? parseFloat(value) : null,
-      notes: notes?.trim() || null,
+      ...normalized.data,
     },
   });
 
