@@ -175,34 +175,39 @@ export default function ProjectsClient({ projects, currency = "USD" }) {
 
       </div>
 
-      <div className="overflow-hidden rounded border border-zinc-200 bg-white">
-        <div className="grid grid-cols-2 divide-x divide-zinc-100">
-          <div className="px-5 py-4">
-            <p className="mb-3 text-[10px] font-semibold uppercase tracking-wider text-amber-600">Opportunities</p>
-            <div className="flex gap-5">
-              <div className="text-center">
-                <p className="text-lg font-bold text-zinc-900">{filteredProjects.length}</p>
-                <p className="text-[10px] text-zinc-400">All</p>
-              </div>
-              {OPPORTUNITY_STAGES.map((s) => (
-                <div key={s} className="text-center">
-                  <p className="text-lg font-bold text-zinc-900">{countStage(s)}</p>
-                  <p className="text-[10px] text-zinc-400">{STAGE_LABELS[s]}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="px-5 py-4">
-            <p className="mb-3 text-[10px] font-semibold uppercase tracking-wider text-blue-600">Active Projects</p>
-            <div className="flex gap-5">
-              {PROJECT_STAGES.map((s) => (
-                <div key={s} className="text-center">
-                  <p className="text-lg font-bold text-zinc-900">{countStage(s)}</p>
-                  <p className="text-[10px] text-zinc-400">{STAGE_LABELS[s]}</p>
-                </div>
-              ))}
-            </div>
-          </div>
+      <div className="rounded border border-zinc-200 bg-white px-4 py-3">
+        <div className="flex flex-wrap items-center gap-1.5">
+          <span className="mr-1 text-xs font-medium text-zinc-400">Pipeline</span>
+          {[...OPPORTUNITY_STAGES, ...PROJECT_STAGES].map((s) => {
+            const count = countStage(s);
+            const isOpportunity = OPPORTUNITY_STAGES.includes(s);
+            return (
+              <button
+                key={s}
+                type="button"
+                title={STAGE_LABELS[s]}
+                onClick={() => switchView("pipeline")}
+                className={cn(
+                  "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium transition-colors",
+                  count > 0
+                    ? isOpportunity
+                      ? "border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100"
+                      : "border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100"
+                    : "border-zinc-100 bg-zinc-50 text-zinc-400"
+                )}
+              >
+                {STAGE_LABELS[s]}
+                <span className={cn(
+                  "rounded-full px-1.5 py-0.5 text-[10px] font-semibold leading-none",
+                  count > 0
+                    ? isOpportunity ? "bg-amber-100 text-amber-700" : "bg-blue-100 text-blue-700"
+                    : "bg-zinc-100 text-zinc-400"
+                )}>
+                  {count}
+                </span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
