@@ -88,25 +88,76 @@ export default function LandingPage() {
 
         .check-row { display:flex; align-items:flex-start; gap:10px; font-size:15px; color:${CDk}; line-height:1.55; }
         .check-icon { width:20px;height:20px;border-radius:50%;background:${C}15;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px; }
+
+        .pk-shell { max-width: 88%; margin: 0 auto; }
+        .pk-nav-inner { display:flex; align-items:center; justify-content:space-between; gap:20px; padding:16px 0; }
+        .pk-nav-links { display:flex; gap:32px; }
+        .pk-nav-actions { display:flex; align-items:center; gap:12px; }
+        .pk-hero-shell { max-width:88%; margin:0 auto; text-align:center; }
+        .pk-browser-shell { position:relative; max-width:860px; margin:0 auto; }
+        .pk-browser-body { padding:28px 32px; }
+        .pk-browser-stats { display:grid; grid-template-columns:repeat(3, 1fr); gap:14px; }
+        .pk-photo-strip { display:grid; grid-template-columns:1.4fr 1fr 1fr; gap:16px; border-radius:24px; overflow:hidden; }
+        .pk-price-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:20px; align-items:center; }
+        .pk-price-card-highlight { transform:scale(1.04); }
+        .pk-final-cta { background:${C}; border-radius:28px; padding:72px 48px; text-align:center; position:relative; overflow:hidden; }
+        .pk-footer-inner { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px; }
+        .pk-footer-links { display:flex; gap:24px; font-size:13px; color:#AAAAAA; }
+
+        @media (max-width: 1100px) {
+          .pk-shell, .pk-hero-shell { max-width: calc(100% - 40px); }
+          .pk-nav-links { gap:20px; }
+          .pk-price-card-highlight { transform:none; }
+        }
+
+        @media (max-width: 860px) {
+          .pk-nav-inner { flex-wrap:wrap; justify-content:center; padding:14px 0; }
+          .pk-nav-links { order:3; width:100%; justify-content:center; gap:18px; flex-wrap:wrap; }
+          .pk-nav-actions { width:100%; justify-content:center; }
+          .pk-hero-shell { max-width: calc(100% - 28px); }
+          .pk-browser-body { padding:20px 18px; }
+          .pk-browser-stats { grid-template-columns:1fr; }
+          .pk-browser-shell .pk-float { position:static !important; margin:14px auto 0; width:max-content; max-width:100%; }
+          .pk-photo-strip { grid-template-columns:1fr; }
+          .pk-photo-strip img { height:220px !important; }
+          .pk-final-cta { padding:48px 24px; border-radius:18px; }
+          .pk-footer-inner { flex-direction:column; align-items:flex-start; }
+          .pk-footer-links { flex-wrap:wrap; gap:14px; }
+        }
+
+        @media (max-width: 640px) {
+          .btn-primary, .btn-outline { width:100%; justify-content:center; padding:12px 18px; }
+          .pk-shell, .pk-hero-shell { max-width: calc(100% - 24px); }
+          .pk-nav-links { display:none; }
+          .pk-nav-actions { gap:10px; }
+          .pk-nav-actions .nav-link { display:none; }
+          .pk-nav-actions .btn-primary { width:auto; }
+          .pk-browser-body { padding:16px 14px; }
+          .pk-browser-shell [style*="display:\"flex\""][style*="justifyContent:\"space-between\""] { gap:12px; }
+          .pk-browser-shell [style*="maxWidth:320"] { max-width:none !important; }
+          .pk-price-grid { grid-template-columns:1fr; }
+          .pk-final-cta { padding:40px 18px; }
+          .pk-footer-links { flex-direction:column; align-items:flex-start; gap:8px; }
+        }
       `}</style>
 
       <div className="pk">
 
         {/* ── Nav ─────────────────────────────────────── */}
         <header style={{ background:"#fff", borderBottom:"1px solid #EBEBEB", position:"sticky", top:0, zIndex:50 }}>
-          <div style={{ maxWidth:"88%", margin:"0 auto", display:"flex", alignItems:"center", justifyContent:"space-between", padding:"16px 0" }}>
+          <div className="pk-shell pk-nav-inner">
             <div style={{ display:"flex", alignItems:"center", gap:9 }}>
               <div style={{ background:C, borderRadius:9, width:33, height:33, display:"flex", alignItems:"center", justifyContent:"center" }}>
                 <Zap size={16} color="#fff" />
               </div>
               <span style={{ fontWeight:900, fontSize:18, color:CDk, letterSpacing:"-0.3px" }}>Solopad</span>
             </div>
-            <nav style={{ display:"flex", gap:32 }}>
+            <nav className="pk-nav-links">
               <a href="#features"      className="nav-link">Features</a>
               <a href="#how-it-works"  className="nav-link">How it works</a>
               <a href="#pricing"       className="nav-link">Pricing</a>
             </nav>
-            <div style={{ display:"flex", alignItems:"center", gap:12 }}>
+            <div className="pk-nav-actions">
               <Link href={authHref} className="nav-link">Log in</Link>
               <Link href="/signup" className="btn-primary" style={{ fontSize:14, padding:"10px 20px" }}>
                 Get started free <ArrowRight size={14} />
@@ -117,7 +168,7 @@ export default function LandingPage() {
 
         {/* ── Hero ────────────────────────────────────── */}
         <section style={{ background:"#FAFAF8", overflow:"hidden", padding:"88px 0 0" }}>
-          <div style={{ maxWidth:"88%", margin:"0 auto", textAlign:"center" }}>
+          <div className="pk-hero-shell">
 
             {/* Badge */}
             <div className="pk-reveal" style={{ display:"flex", justifyContent:"center", marginBottom:28 }}>
@@ -178,7 +229,7 @@ export default function LandingPage() {
             </div>
 
             {/* Browser mockup — full width below headline */}
-            <div className="pk-reveal pk-d3" style={{ position:"relative", maxWidth:860, margin:"0 auto" }}>
+            <div className="pk-reveal pk-d3 pk-browser-shell">
               <div style={{ borderRadius:20, overflow:"hidden", border:"1px solid #E0E0E0", boxShadow:"0 40px 100px rgba(0,0,0,.14)", background:"#fff" }}>
                 {/* Browser bar */}
                 <div style={{ background:"#F5F5F5", borderBottom:"1px solid #E8E8E8", padding:"11px 16px", display:"flex", alignItems:"center", gap:12 }}>
@@ -190,7 +241,7 @@ export default function LandingPage() {
                   </div>
                 </div>
                 {/* Portal content */}
-                <div style={{ padding:"28px 32px" }}>
+                <div className="pk-browser-body">
                   <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:22 }}>
                     <div>
                       <div style={{ fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:1, color:C, marginBottom:4 }}>Brand Refresh</div>
@@ -199,7 +250,7 @@ export default function LandingPage() {
                     </div>
                     <span style={{ background:CLt, color:C, borderRadius:8, padding:"5px 14px", fontSize:12, fontWeight:700 }}>Active</span>
                   </div>
-                  <div style={{ display:"grid", gridTemplateColumns:"repeat(3, 1fr)", gap:14 }}>
+                  <div className="pk-browser-stats">
                     {[
                       { e:"📁", label:"Files",    value:"3 deliverables" },
                       { e:"💬", label:"Feedback", value:"2 threads" },
@@ -235,7 +286,7 @@ export default function LandingPage() {
 
         {/* ── Problem ──────────────────────────────────── */}
         <section style={{ background:"#fff", padding:"88px 0" }}>
-          <div style={{ maxWidth:"88%", margin:"0 auto" }}>
+          <div className="pk-shell">
             <div className="pk-reveal" style={{ textAlign:"center", marginBottom:52 }}>
               <p style={{ fontSize:12, fontWeight:800, color:C, textTransform:"uppercase", letterSpacing:1.5, marginBottom:12 }}>The problem</p>
               <h2 style={{ fontSize:"clamp(28px, 3.5vw, 46px)", fontWeight:900, color:CDk, letterSpacing:"-0.8px", lineHeight:1.1 }}>
@@ -490,7 +541,7 @@ export default function LandingPage() {
 
         {/* ── How it works ─────────────────────────────── */}
         <section id="how-it-works" style={{ background:"#fff", padding:"96px 0" }}>
-          <div style={{ maxWidth:"88%", margin:"0 auto" }}>
+          <div className="pk-shell">
             <div className="pk-reveal" style={{ textAlign:"center", marginBottom:60 }}>
               <p style={{ fontSize:12, fontWeight:800, color:C, textTransform:"uppercase", letterSpacing:1.5, marginBottom:12 }}>How it works</p>
               <h2 style={{ fontSize:"clamp(28px, 3.5vw, 46px)", fontWeight:900, color:CDk, letterSpacing:"-0.8px" }}>
@@ -518,8 +569,8 @@ export default function LandingPage() {
 
         {/* ── Photo strip ──────────────────────────────── */}
         <section style={{ background:"#FAFAF8", padding:"64px 0" }}>
-          <div style={{ maxWidth:"88%", margin:"0 auto" }}>
-            <div className="pk-reveal" style={{ display:"grid", gridTemplateColumns:"1.4fr 1fr 1fr", gap:16, borderRadius:24, overflow:"hidden" }}>
+          <div className="pk-shell">
+            <div className="pk-reveal pk-photo-strip">
               <img
                 src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=800&h=500&q=80&auto=format&fit=crop"
                 alt="Freelancer working"
@@ -541,15 +592,15 @@ export default function LandingPage() {
 
         {/* ── Pricing ──────────────────────────────────── */}
         <section id="pricing" style={{ background:"#FAFAF8", padding:"96px 0" }}>
-          <div style={{ maxWidth:"88%", margin:"0 auto" }}>
+          <div className="pk-shell">
             <div className="pk-reveal" style={{ textAlign:"center", marginBottom:52 }}>
               <p style={{ fontSize:12, fontWeight:800, color:C, textTransform:"uppercase", letterSpacing:1.5, marginBottom:12 }}>Pricing</p>
               <h2 style={{ fontSize:"clamp(28px, 3.5vw, 46px)", fontWeight:900, color:CDk, letterSpacing:"-0.8px" }}>Simple, honest pricing.</h2>
               <p style={{ fontSize:16, color:CMute, marginTop:12 }}>No transaction fees. No hidden costs. No surprises.</p>
             </div>
-            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(260px, 1fr))", gap:20, alignItems:"center" }}>
+            <div className="pk-price-grid">
               {plans.map((plan, i) => (
-                <div key={plan.name} className={`pk-reveal pk-d${i+1}`} style={{ borderRadius:22, padding:32, border:plan.highlight?`2px solid ${C}`:"1px solid #EBEBEB", background:plan.highlight?CLt:"#fff", transform:plan.highlight?"scale(1.04)":"none", boxShadow:plan.highlight?`0 24px 64px ${C}22`:"0 2px 12px rgba(0,0,0,.04)", position:"relative" }}>
+                <div key={plan.name} className={`pk-reveal pk-d${i+1} ${plan.highlight ? "pk-price-card-highlight" : ""}`} style={{ borderRadius:22, padding:32, border:plan.highlight?`2px solid ${C}`:"1px solid #EBEBEB", background:plan.highlight?CLt:"#fff", boxShadow:plan.highlight?`0 24px 64px ${C}22`:"0 2px 12px rgba(0,0,0,.04)", position:"relative" }}>
                   {plan.highlight && (
                     <div style={{ position:"absolute", top:-14, left:"50%", transform:"translateX(-50%)", background:C, color:"#fff", borderRadius:100, padding:"5px 16px", fontSize:12, fontWeight:800, whiteSpace:"nowrap" }}>
                       Most popular
@@ -585,8 +636,8 @@ export default function LandingPage() {
 
         {/* ── Final CTA ────────────────────────────────── */}
         <section style={{ background:"#fff", padding:"80px 0" }}>
-          <div style={{ maxWidth:"88%", margin:"0 auto" }}>
-            <div className="pk-reveal" style={{ background:C, borderRadius:28, padding:"72px 48px", textAlign:"center", position:"relative", overflow:"hidden" }}>
+          <div className="pk-shell">
+            <div className="pk-reveal pk-final-cta">
               <div style={{ position:"absolute", top:-70, right:-70, width:240, height:240, borderRadius:"50%", background:"rgba(255,255,255,.08)" }} />
               <div style={{ position:"absolute", bottom:-60, left:-60, width:200, height:200, borderRadius:"50%", background:"rgba(255,255,255,.05)" }} />
               <div style={{ position:"relative" }}>
@@ -632,7 +683,7 @@ export default function LandingPage() {
 
         {/* ── Footer ───────────────────────────────────── */}
         <footer style={{ borderTop:"1px solid #EBEBEB", background:"#fff", padding:"32px 0" }}>
-          <div style={{ maxWidth:"88%", margin:"0 auto", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:16 }}>
+          <div className="pk-shell pk-footer-inner">
             <div style={{ display:"flex", alignItems:"center", gap:9 }}>
               <div style={{ background:C, borderRadius:8, width:28, height:28, display:"flex", alignItems:"center", justifyContent:"center" }}>
                 <Zap size={13} color="#fff" />
@@ -640,7 +691,7 @@ export default function LandingPage() {
               <span style={{ fontWeight:900, color:CDk, fontSize:15 }}>Solopad</span>
               <span style={{ fontSize:13, color:"#CCCCCC" }}>— Built for freelancers who want to get paid.</span>
             </div>
-            <div style={{ display:"flex", gap:24, fontSize:13, color:"#AAAAAA" }}>
+            <div className="pk-footer-links">
               <Link href={authHref} style={{ color:"#AAAAAA", textDecoration:"none" }}>Log in</Link>
               <Link href="/signup" style={{ color:"#AAAAAA", textDecoration:"none" }}>Sign up</Link>
               <span>© 2026 Solopad</span>
