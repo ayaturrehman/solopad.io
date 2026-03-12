@@ -1,6 +1,6 @@
 export default function Loading() {
   return (
-    <div className="min-h-screen animate-pulse space-y-6 px-4 py-6 pb-24 md:pb-6 lg:px-5">
+    <div className="min-h-screen animate-pulse space-y-6 ">
       {/* Page title skeleton */}
       <div className="h-7 w-48 rounded bg-zinc-200" />
 
