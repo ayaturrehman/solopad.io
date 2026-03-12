@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import db from "@/lib/db";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY) : null;
 
 // GET /api/settings/stripe/callback?code=...&state=userId
 export async function GET(req) {

@@ -3,7 +3,7 @@ import { getSession } from "@/lib/session";
 import Stripe from "stripe";
 import db from "@/lib/db";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY) : null;
 
 // POST /api/settings/stripe/disconnect
 export async function POST() {

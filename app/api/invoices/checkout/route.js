@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import db from "@/lib/db";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY) : null;
 
 const STRIPE_METHOD_MAP = {
   card: "card",
@@ -20,7 +20,11 @@ export async function POST(req) {
     });
 
     if (!invoice) return NextResponse.json({ error: "Invoice not found" }, { status: 404 });
+    // Only allow checkout for invoices that have been sent — not drafts
     if (invoice.status === "paid") return NextResponse.json({ error: "Already paid" }, { status: 400 });
+    if (invoice.status === "draft" || invoice.status === "cancelled") {
+      return NextResponse.json({ error: "Invoice is not available for payment" }, { status: 400 });
+    }
 
     const lineItems = typeof invoice.lineItems === "string"
       ? JSON.parse(invoice.lineItems)
