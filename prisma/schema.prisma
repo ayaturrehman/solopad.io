@@ -4,8 +4,8 @@ generator client {
 
 datasource db {
   provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  url       = env("POSTGRES_PRISMA_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
 }
 
 
@@ -64,6 +64,8 @@ model User {
   business      Business?      @relation(fields: [businessId], references: [id], onDelete: SetNull)
 
   // Legacy per-user relations kept for backwards compatibility during migration
+  @@index([businessId])
+
   projects      Project[]
   contacts      Contact[]
   services      Service[]
@@ -100,6 +102,9 @@ model Contact {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   projects      Project[]
+
+  @@index([userId])
+  @@index([businessId])
 }
 
 // ─── Project ──────────────────────────────────────────────────────────────────
@@ -137,6 +142,9 @@ model Project {
   timeEntries TimeEntry[]
   proposals   Proposal[]
   contracts   Contract[]
+
+  @@index([userId])
+  @@index([businessId])
 }
 
 // ─── File ─────────────────────────────────────────────────────────────────────
@@ -243,6 +251,9 @@ model Service {
   unit        String    @default("flat")
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([businessId])
 }
 
 // ─── Expense ──────────────────────────────────────────────────────────────────
@@ -264,6 +275,9 @@ model Expense {
   date        DateTime  @default(now())
   receipt     String?
   createdAt   DateTime  @default(now())
+
+  @@index([userId])
+  @@index([businessId])
 }
 
 // ─── ExpenseCategory ──────────────────────────────────────────────────────────
@@ -278,6 +292,8 @@ model ExpenseCategory {
   createdAt  DateTime  @default(now())
 
   @@unique([userId, name])
+  @@index([userId])
+  @@index([businessId])
 }
 
 // ─── RecurringExpense ─────────────────────────────────────────────────────────
@@ -300,6 +316,9 @@ model RecurringExpense {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   expenses    Expense[]
+
+  @@index([userId])
+  @@index([businessId])
 }
 
 // ─── Notification ─────────────────────────────────────────────────────────────
@@ -316,6 +335,9 @@ model Notification {
   read       Boolean   @default(false)
   link       String?
   createdAt  DateTime  @default(now())
+
+  @@index([userId])
+  @@index([businessId])
 }
 
 // ─── Template ─────────────────────────────────────────────────────────────────
@@ -333,6 +355,9 @@ model Template {
   isDefault   Boolean   @default(false)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([businessId])
 }
 
 // ─── Task ─────────────────────────────────────────────────────────────────────
@@ -356,6 +381,9 @@ model Task {
   completedAt DateTime?
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
+
+  @@index([userId])
+  @@index([businessId])
 }
 
 // ─── TeamMember ───────────────────────────────────────────────────────────────
@@ -376,6 +404,8 @@ model TeamMember {
   tasks       Task[]
 
   @@unique([userId, email])
+  @@index([userId])
+  @@index([businessId])
 }
 
 // ─── TimeEntry ────────────────────────────────────────────────────────────────
@@ -395,6 +425,9 @@ model TimeEntry {
   billable    Boolean   @default(true)
   hourlyRate  Float     @default(0)
   createdAt   DateTime  @default(now())
+
+  @@index([userId])
+  @@index([businessId])
 }
 
 // ─── Booking ──────────────────────────────────────────────────────────────────
@@ -413,6 +446,9 @@ model Booking {
   notes       String?
   status      String    @default("confirmed")
   createdAt   DateTime  @default(now())
+
+  @@index([userId])
+  @@index([businessId])
 }
 
 // ─── AvailabilityRule ─────────────────────────────────────────────────────────
@@ -426,6 +462,9 @@ model AvailabilityRule {
   dayOfWeek  Int
   startTime  String
   endTime    String
+
+  @@index([userId])
+  @@index([businessId])
 }
 
 // ─── Proposal ─────────────────────────────────────────────────────────────────
@@ -452,6 +491,9 @@ model Proposal {
   acceptedAt  DateTime?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([businessId])
 }
 
 // ─── Contract ─────────────────────────────────────────────────────────────────
@@ -474,4 +516,7 @@ model Contract {
   signatureName String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([businessId])
 }
