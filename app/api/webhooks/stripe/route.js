@@ -3,8 +3,8 @@ import Stripe from "stripe";
 import db from "@/lib/db";
 import { Resend } from "resend";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-const resend = new Resend(process.env.RESEND_API_KEY);
+const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY) : null;
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 export async function POST(req) {
   const body = await req.text();
@@ -51,7 +51,7 @@ export async function POST(req) {
           from: process.env.FROM_EMAIL,
           to: invoice.project.user.email,
           subject: `Payment received for ${invoice.project.title}`,
-          html: `<p>Your client <strong>${invoice.project.clientName}</strong> paid <strong>$${invoice.total.toFixed(2)}</strong> for <strong>${invoice.project.title}</strong>.</p><p>Login to PortalKit to view the details.</p>`,
+          html: `<p>Your client <strong>${invoice.project.clientName}</strong> paid <strong>$${invoice.total.toFixed(2)}</strong> for <strong>${invoice.project.title}</strong>.</p><p>Login to Solopad to view the details.</p>`,
         });
       } catch {
         // Email failure is non-fatal

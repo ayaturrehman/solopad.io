@@ -3,7 +3,7 @@ import { getSession } from "@/lib/session";
 import db from "@/lib/db";
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 export async function POST(req) {
   const session = await getSession();
@@ -46,7 +46,7 @@ export async function POST(req) {
 
     try {
       await resend.emails.send({
-        from: process.env.RESEND_FROM_EMAIL || "noreply@portalkit.app",
+        from: process.env.RESEND_FROM_EMAIL || "noreply@solopad.app",
         to: email,
         subject: `Invoice ${invoiceLabel} from ${session.user.name}`,
         html: `
@@ -57,7 +57,7 @@ export async function POST(req) {
               View &amp; Pay Invoice
             </a>
           </p>
-          <p style="color:#71717a;font-size:12px;">Powered by PortalKit</p>
+          <p style="color:#71717a;font-size:12px;">Powered by Solopad</p>
         `,
       });
 
