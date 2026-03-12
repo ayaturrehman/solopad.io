@@ -1,18 +1,10 @@
 export default function Loading() {
   return (
-    <div className="min-h-screen animate-pulse space-y-6 p-6">
+    <div className="min-h-screen animate-pulse space-y-6 px-4 py-6 pb-24 md:pb-6 lg:px-5">
       {/* Page title skeleton */}
       <div className="h-7 w-48 rounded bg-zinc-200" />
 
-      {/* Card row */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {[...Array(4)].map((_, i) => (
-          <div key={i} className="rounded border border-zinc-200 bg-white p-5 space-y-3">
-            <div className="h-4 w-24 rounded bg-zinc-200" />
-            <div className="h-7 w-32 rounded bg-zinc-200" />
-          </div>
-        ))}
-      </div>
+      
 
       {/* Table skeleton */}
       <div className="rounded border border-zinc-200 bg-white">
