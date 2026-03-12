@@ -29,20 +29,37 @@ export async function PATCH(req) {
 
   const user = await db.user.findUnique({
     where: { id: session.user.id },
-    select: { businessId: true },
+    select: { businessId: true, name: true },
   });
 
-  if (!user?.businessId) return NextResponse.json({ error: "No business found" }, { status: 404 });
+  const data = {
+    ...(name !== undefined && { name: name?.trim() || "" }),
+    ...(logoUrl !== undefined && { logoUrl: logoUrl?.trim() || null }),
+    ...(timezone !== undefined && { timezone: timezone?.trim() || "UTC" }),
+    ...(currency !== undefined && { currency }),
+  };
 
-  await db.business.update({
-    where: { id: user.businessId },
-    data: {
-      ...(name !== undefined && { name: name?.trim() || "" }),
-      ...(logoUrl !== undefined && { logoUrl: logoUrl?.trim() || null }),
-      ...(timezone !== undefined && { timezone: timezone?.trim() || "UTC" }),
-      ...(currency !== undefined && { currency }),
-    },
-  });
+  if (!user?.businessId) {
+    // Create a new business and link the user to it
+    const business = await db.business.create({
+      data: {
+        name: name?.trim() || user.name || "My Business",
+        ownerId: session.user.id,
+        logoUrl: logoUrl?.trim() || null,
+        timezone: timezone?.trim() || "UTC",
+        currency: currency || "USD",
+      },
+    });
+    await db.user.update({
+      where: { id: session.user.id },
+      data: { businessId: business.id },
+    });
+  } else {
+    await db.business.update({
+      where: { id: user.businessId },
+      data,
+    });
+  }
 
   return NextResponse.json({ success: true });
 }
