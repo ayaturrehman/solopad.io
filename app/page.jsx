@@ -279,6 +279,30 @@ export default function LandingPage() {
         .pk-price-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:20px; align-items:center; }
         .pk-price-card-highlight { transform:scale(1.04); }
         .pk-final-cta { background:#1E3A8A; border-radius:28px; padding:72px 48px; text-align:center; position:relative; overflow:hidden; }
+        .pk-split-intro { display:grid; gap:28px; align-items:end; }
+        .pk-split-intro-problem { grid-template-columns:minmax(0, 1.1fr) minmax(280px, .9fr); }
+        .pk-split-intro-setup { grid-template-columns:minmax(0, 1.15fr) minmax(280px, .85fr); }
+        .pk-split-summary {
+          justify-self:end;
+          width:100%;
+        }
+        .pk-flow-shell {
+          position:relative;
+          background:rgba(255,255,255,.34);
+          border:1px solid rgba(17,24,39,.08);
+          border-radius:30px;
+          padding:26px;
+          box-shadow:0 24px 58px rgba(15,23,42,.06);
+          backdrop-filter:blur(10px);
+        }
+        .pk-flow-line {
+          position:absolute;
+          left:42px;
+          right:42px;
+          top:96px;
+          height:1px;
+          background:linear-gradient(90deg, rgba(29,78,216,.16) 0%, rgba(29,78,216,.08) 50%, rgba(29,78,216,.16) 100%);
+        }
         .pk-parallax-card {
           position:absolute;
           z-index:3;
@@ -317,6 +341,12 @@ export default function LandingPage() {
           .pk-photo-strip { grid-template-columns:1fr; }
           .pk-photo-strip img { height:220px !important; }
           .pk-final-cta { padding:48px 24px; border-radius:18px; }
+          .pk-split-intro,
+          .pk-split-intro-problem,
+          .pk-split-intro-setup { grid-template-columns:1fr; }
+          .pk-split-summary { justify-self:stretch; max-width:none !important; }
+          .pk-flow-shell { padding:20px; border-radius:24px; }
+          .pk-flow-line { display:none; }
           .pk-parallax-card { display:none; }
           .pk-footer-inner { flex-direction:column; align-items:flex-start; }
           .pk-footer-links { flex-wrap:wrap; gap:14px; }
@@ -341,6 +371,7 @@ export default function LandingPage() {
           .pk-footer-links { flex-direction:column; align-items:flex-start; gap:8px; }
           .pk-hero-actions { justify-content:center; }
           .pk-hero-actions .btn-primary { width:auto; min-width:220px; max-width:100%; }
+          .pk-flow-shell { padding:16px; }
         }
       `}</style>
 
@@ -515,16 +546,7 @@ export default function LandingPage() {
         {/* ── Problem ──────────────────────────────────── */}
         <section style={{ background:"#F8FAFC", padding:"96px 0" }}>
           <div className="pk-shell pk-section-stage" data-pk-section-drift>
-            <div
-              className="pk-reveal"
-              style={{
-                display:"grid",
-                gridTemplateColumns:"minmax(0, 1.1fr) minmax(280px, .9fr)",
-                gap:32,
-                alignItems:"end",
-                marginBottom:44,
-              }}
-            >
+            <div className="pk-reveal pk-split-intro pk-split-intro-problem" style={{ marginBottom:44 }}>
               <div>
                 <p style={{ fontSize:12, fontWeight:700, color:C, textTransform:"uppercase", letterSpacing:1.5, marginBottom:14 }}>The problem</p>
                 <h2 style={{ fontSize:"clamp(34px, 4.6vw, 64px)", fontWeight:700, color:CDk, letterSpacing:"-1.6px", lineHeight:1.02, marginBottom:14 }}>
@@ -534,9 +556,8 @@ export default function LandingPage() {
                 </h2>
               </div>
               <div
+                className="pk-split-summary"
                 style={{
-                  justifySelf:"end",
-                  width:"100%",
                   maxWidth:360,
                   background:"#FFFFFF",
                   border:"1px solid #E5E7EB",
@@ -810,9 +831,9 @@ export default function LandingPage() {
         {/* ── Feature 4 — AI ───────────────────────────── */}
         <section style={{ background:"#F5F0E8", padding:"104px 0", position:"relative", overflow:"hidden" }}>
           <ParallaxImageCard
-            src="https://images.unsplash.com/photo-1517842645767-c639042777db?w=720&h=960&q=80&auto=format&fit=crop"
-            alt="Freelancer typing notes beside a laptop"
-            label="Draft faster"
+            src="https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=720&h=960&q=80&auto=format&fit=crop"
+            alt="Creative brief workspace with laptop, notebook, and coffee"
+            label="From brief"
             top={36}
             left={36}
             width={200}
@@ -916,7 +937,7 @@ export default function LandingPage() {
             labelColor={CDk}
           />
           <div className="pk-shell pk-section-stage" data-pk-section-drift>
-            <div className="pk-reveal" style={{ display:"grid", gridTemplateColumns:"minmax(0, 1.15fr) minmax(280px, .85fr)", gap:28, alignItems:"end", marginBottom:54 }}>
+            <div className="pk-reveal pk-split-intro pk-split-intro-setup" style={{ marginBottom:54 }}>
               <div>
                 <p style={{ fontSize:12, fontWeight:700, color:C, textTransform:"uppercase", letterSpacing:1.5, marginBottom:12 }}>How it works</p>
                 <h2 style={{ fontSize:"clamp(30px, 4vw, 52px)", fontWeight:700, color:CDk, letterSpacing:"-1px", lineHeight:1.06, marginBottom:14 }}>
@@ -927,7 +948,7 @@ export default function LandingPage() {
                   Solopad keeps the setup simple: open the project, upload the work, share the portal, get approved and paid.
                 </p>
               </div>
-              <div style={{ justifySelf:"end", width:"100%", maxWidth:320, background:"rgba(255,255,255,.62)", border:"1px solid rgba(17,24,39,.08)", borderRadius:24, padding:"20px 22px", boxShadow:"0 18px 42px rgba(15,23,42,.06)", backdropFilter:"blur(8px)" }}>
+              <div className="pk-split-summary" style={{ maxWidth:320, background:"rgba(255,255,255,.62)", border:"1px solid rgba(17,24,39,.08)", borderRadius:24, padding:"20px 22px", boxShadow:"0 18px 42px rgba(15,23,42,.06)", backdropFilter:"blur(8px)" }}>
                 <div style={{ fontSize:11, fontWeight:700, letterSpacing:1.2, textTransform:"uppercase", color:"#64748B", marginBottom:10 }}>What the client sees</div>
                 <div style={{ display:"grid", gap:10 }}>
                   {["One clean link", "Live files and notes", "Easy payment flow"].map((item) => (
@@ -941,8 +962,8 @@ export default function LandingPage() {
                 </div>
               </div>
             </div>
-            <div style={{ position:"relative", background:"rgba(255,255,255,.34)", border:"1px solid rgba(17,24,39,.08)", borderRadius:30, padding:"26px", boxShadow:"0 24px 58px rgba(15,23,42,.06)", backdropFilter:"blur(10px)" }}>
-              <div style={{ position:"absolute", left:42, right:42, top:96, height:1, background:"linear-gradient(90deg, rgba(29,78,216,.16) 0%, rgba(29,78,216,.08) 50%, rgba(29,78,216,.16) 100%)" }} />
+            <div className="pk-flow-shell">
+              <div className="pk-flow-line" />
               <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(220px, 1fr))", gap:18, position:"relative" }}>
                 {[
                   { n:"01", t:"Create the project", d:"Add the title, deadline, and client. You are live in under a minute.", bg:"#FFFFFF", tag:"Start" },
