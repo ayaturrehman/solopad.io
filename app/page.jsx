@@ -16,10 +16,18 @@ const plans = PLAN_ORDER.map((planId) => ({
   highlight: planId === "solo",
 }));
 
-const C     = "#E8533A";
-const CLt   = "#FFF3F0";
+const C     = "#1D4ED8";
+const CLt   = "#EFF6FF";
+const O     = "#EA580C";
+const OLt   = "#FFF7ED";
+const PLt   = "#EDE9FE";
+const YLt   = "#FEF3C7";
+const BLt   = "#EAF2FF";
+const BrLt  = "#F3E8D8";
 const CDk   = "#111111";
 const CMute = "#777777";
+const PRT = "#fcffbf8c";
+
 
 
 function useFadeIn() {
@@ -34,11 +42,162 @@ function useFadeIn() {
   }, []);
 }
 
+function useParallaxCards() {
+  useEffect(() => {
+    const cards = Array.from(document.querySelectorAll("[data-pk-parallax]"));
+    if (cards.length === 0) return undefined;
+
+    let frame = 0;
+
+    const update = () => {
+      frame = 0;
+      const viewportMiddle = window.innerHeight / 2;
+
+      cards.forEach((card) => {
+        const speed = Number(card.getAttribute("data-pk-speed") || 0.12);
+        const rotate = card.getAttribute("data-pk-rotate") || "0deg";
+        const rect = card.getBoundingClientRect();
+        const cardMiddle = rect.top + rect.height / 2;
+        const delta = (cardMiddle - viewportMiddle) * speed * -1;
+        card.style.transform = `translate3d(0, ${delta.toFixed(1)}px, 0) rotate(${rotate})`;
+      });
+    };
+
+    const requestUpdate = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(update);
+    };
+
+    update();
+    window.addEventListener("scroll", requestUpdate, { passive: true });
+    window.addEventListener("resize", requestUpdate);
+
+    return () => {
+      if (frame) window.cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", requestUpdate);
+      window.removeEventListener("resize", requestUpdate);
+    };
+  }, []);
+}
+
+function useSectionDrift() {
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return undefined;
+
+    const sections = Array.from(document.querySelectorAll("[data-pk-section-drift]"));
+    if (sections.length === 0) return undefined;
+
+    let frame = 0;
+
+    const update = () => {
+      frame = 0;
+      const viewportMiddle = window.innerHeight / 2;
+
+      sections.forEach((section) => {
+        const rect = section.getBoundingClientRect();
+        const sectionMiddle = rect.top + rect.height / 2;
+        const offset = (viewportMiddle - sectionMiddle) / window.innerHeight;
+        const driftY = Math.max(-20, Math.min(20, offset * 20));
+        section.style.transform = `translate3d(0, ${driftY.toFixed(1)}px, 0)`;
+      });
+    };
+
+    const requestUpdate = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(update);
+    };
+
+    update();
+    window.addEventListener("scroll", requestUpdate, { passive: true });
+    window.addEventListener("resize", requestUpdate);
+
+    return () => {
+      if (frame) window.cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", requestUpdate);
+      window.removeEventListener("resize", requestUpdate);
+    };
+  }, []);
+}
+
+function ParallaxImageCard({
+  src,
+  alt,
+  label,
+  top,
+  right,
+  bottom,
+  left,
+  width = 220,
+  height = 280,
+  speed = 0.12,
+  rotate = "-4deg",
+  labelBg = "#FFFFFF",
+  labelColor = "#111111",
+}) {
+  return (
+    <div
+      className="pk-parallax-card pk-reveal"
+      data-pk-parallax
+      data-pk-speed={speed}
+      data-pk-rotate={rotate}
+      style={{ top, right, bottom, left }}
+      aria-hidden="true"
+    >
+      <div
+        style={{
+          position: "relative",
+          borderRadius: 20,
+          padding: 7,
+          background: "rgba(255,255,255,.64)",
+          border: "1px solid rgba(255,255,255,.52)",
+          boxShadow: "0 18px 42px rgba(15,23,42,.10)",
+          backdropFilter: "blur(7px)",
+        }}
+      >
+        <div
+          style={{
+            position: "absolute",
+            top: 10,
+            left: 10,
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 6,
+            borderRadius: 999,
+            padding: "5px 10px",
+            background: labelBg,
+            color: labelColor,
+            fontSize: 10,
+            fontWeight: 700,
+            letterSpacing: 0.8,
+            textTransform: "uppercase",
+            boxShadow: "0 8px 18px rgba(15,23,42,.06)",
+          }}
+        >
+          {label}
+        </div>
+        <img
+          src={src}
+          alt={alt}
+          style={{
+            width,
+            height,
+            display: "block",
+            objectFit: "cover",
+            borderRadius: 14,
+          }}
+        />
+      </div>
+    </div>
+  );
+}
+
 export default function LandingPage() {
   const { data: session } = useSession();
   const authHref = session ? "/dashboard" : "/login";
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   useFadeIn();
+  useParallaxCards();
+  useSectionDrift();
 
   return (
     <>
@@ -52,7 +211,7 @@ export default function LandingPage() {
           border-radius: 10px; padding: 13px 26px; font-size: 15px; font-weight: 700;
           text-decoration: none; transition: background .15s, transform .15s, box-shadow .15s;
         }
-        .btn-primary:hover { background: #CF4530; transform: translateY(-2px); box-shadow: 0 10px 28px rgba(232,83,58,.38); }
+        .btn-primary:hover { background: #1E40AF; transform: translateY(-2px); box-shadow: 0 10px 28px rgba(29,78,216,.28); }
 
         .btn-outline {
           background: #fff; color: ${CDk}; border: 1.5px solid #DEDEDE; cursor: pointer;
@@ -60,7 +219,7 @@ export default function LandingPage() {
           border-radius: 10px; padding: 12px 24px; font-size: 15px; font-weight: 600;
           text-decoration: none; transition: border-color .15s, box-shadow .15s;
         }
-        .btn-outline:hover { border-color: ${C}; box-shadow: 0 2px 14px rgba(232,83,58,.12); }
+        .btn-outline:hover { border-color: ${C}; box-shadow: 0 2px 14px rgba(29,78,216,.12); }
 
         /* Animations */
         .pk-reveal       { opacity:0; transform:translateY(30px); transition:opacity .7s ease, transform .7s ease; }
@@ -97,14 +256,42 @@ export default function LandingPage() {
         .pk-nav-actions { display:flex; align-items:center; gap:12px; }
         .pk-mobile-toggle { display:none; align-items:center; justify-content:center; width:42px; height:42px; border:1px solid #E5E7EB; background:#fff; color:${CDk}; cursor:pointer; border-radius:10px; }
         .pk-mobile-panel { display:none; }
-        .pk-hero-shell { max-width:88%; margin:0 auto; text-align:center; }
+        .pk-hero-shell { max-width:88%; margin:0 auto; }
+        .pk-hero-grid { display:grid; grid-template-columns:minmax(0, 1fr) minmax(520px, .98fr); gap:52px; align-items:center; position:relative; }
+        .pk-hero-copy { position:relative; z-index:1; }
+        .pk-hero-actions { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:16px; }
+        .pk-hero-actions .btn-primary {
+          background:#111111;
+          box-shadow:0 14px 32px rgba(17,17,17,.16);
+          width:fit-content;
+          max-width:100%;
+        }
+        .pk-hero-actions .btn-primary:hover {
+          background:#27272A;
+          box-shadow:0 16px 36px rgba(17,17,17,.22);
+        }
+        .pk-hero-proof { display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:24px; }
+        .pk-hero-panel { position:relative; z-index:1; }
         .pk-browser-shell { position:relative; max-width:860px; margin:0 auto; }
         .pk-browser-body { padding:28px 32px; }
         .pk-browser-stats { display:grid; grid-template-columns:repeat(3, 1fr); gap:14px; }
         .pk-photo-strip { display:grid; grid-template-columns:1.4fr 1fr 1fr; gap:16px; border-radius:24px; overflow:hidden; }
         .pk-price-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:20px; align-items:center; }
         .pk-price-card-highlight { transform:scale(1.04); }
-        .pk-final-cta { background:${C}; border-radius:28px; padding:72px 48px; text-align:center; position:relative; overflow:hidden; }
+        .pk-final-cta { background:#1E3A8A; border-radius:28px; padding:72px 48px; text-align:center; position:relative; overflow:hidden; }
+        .pk-parallax-card {
+          position:absolute;
+          z-index:3;
+          pointer-events:none;
+          will-change:transform;
+          opacity:.68;
+          filter:saturate(.9);
+        }
+        .pk-section-stage {
+          position:relative;
+          z-index:1;
+          will-change:transform;
+        }
         .pk-footer-inner { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px; }
         .pk-footer-links { display:flex; gap:24px; font-size:13px; color:#AAAAAA; }
 
@@ -112,6 +299,7 @@ export default function LandingPage() {
           .pk-shell, .pk-hero-shell { max-width: calc(100% - 40px); }
           .pk-nav-links { gap:20px; }
           .pk-price-card-highlight { transform:none; }
+          .pk-hero-grid { grid-template-columns:1fr; gap:36px; }
         }
 
         @media (max-width: 860px) {
@@ -119,12 +307,17 @@ export default function LandingPage() {
           .pk-nav-links { order:3; width:100%; justify-content:center; gap:18px; flex-wrap:wrap; }
           .pk-nav-actions { width:100%; justify-content:center; }
           .pk-hero-shell { max-width: calc(100% - 28px); }
+          .pk-hero-grid { gap:28px; }
+          .pk-hero-actions { justify-content:center; }
+          .pk-hero-actions .btn-primary { width:auto; min-width:220px; }
+          .pk-hero-proof { justify-content:flex-start; }
           .pk-browser-body { padding:20px 18px; }
           .pk-browser-stats { grid-template-columns:1fr; }
           .pk-browser-shell .pk-float { position:static !important; margin:14px auto 0; width:max-content; max-width:100%; }
           .pk-photo-strip { grid-template-columns:1fr; }
           .pk-photo-strip img { height:220px !important; }
           .pk-final-cta { padding:48px 24px; border-radius:18px; }
+          .pk-parallax-card { display:none; }
           .pk-footer-inner { flex-direction:column; align-items:flex-start; }
           .pk-footer-links { flex-wrap:wrap; gap:14px; }
         }
@@ -146,6 +339,8 @@ export default function LandingPage() {
           .pk-price-grid { grid-template-columns:1fr; }
           .pk-final-cta { padding:40px 18px; }
           .pk-footer-links { flex-direction:column; align-items:flex-start; gap:8px; }
+          .pk-hero-actions { justify-content:center; }
+          .pk-hero-actions .btn-primary { width:auto; min-width:220px; max-width:100%; }
         }
       `}</style>
 
@@ -154,7 +349,11 @@ export default function LandingPage() {
         {/* ── Nav ─────────────────────────────────────── */}
         <header style={{ background:"#fff", borderBottom:"1px solid #EBEBEB", position:"sticky", top:0, zIndex:50 }}>
           <div className="pk-shell pk-nav-inner">
-            <BrandLogo className="gap-0" markClassName="h-[42px] w-[42px]" textClassName="text-[24px] font-black text-[#111111]" />
+            <BrandLogo
+              className="gap-0"
+              markClassName="h-[34px] w-[34px] sm:h-[42px] sm:w-[42px]"
+              textClassName="text-[20px] font-black text-[#111111] sm:text-[24px]"
+            />
             <nav className="pk-nav-links">
               <a href="#features"      className="nav-link">Features</a>
               <a href="#how-it-works"  className="nav-link">How it works</a>
@@ -187,85 +386,77 @@ export default function LandingPage() {
         </header>
 
         {/* ── Hero ────────────────────────────────────── */}
-        <section style={{ background:"#FAFAF8", overflow:"hidden", padding:"88px 0 0" }}>
-          <div className="pk-hero-shell">
-
-            {/* Badge */}
-            <div className="pk-reveal" style={{ display:"flex", justifyContent:"center", marginBottom:28 }}>
-              <div style={{ display:"inline-flex", alignItems:"center", gap:8, background:"#fff", border:`1.5px solid ${C}30`, borderRadius:100, padding:"6px 16px" }}>
-                <span style={{ position:"relative", display:"inline-flex", width:8, height:8 }}>
-                  <span className="pk-ping" style={{ position:"absolute", inset:0, borderRadius:"50%", background:C }} />
-                  <span style={{ width:8, height:8, borderRadius:"50%", background:C, display:"block", position:"relative" }} />
-                </span>
-                <span style={{ fontSize:13, fontWeight:600, color:C }}>Client portals for freelancers — from $0/mo</span>
-              </div>
-            </div>
-
-            {/* Headline */}
-            <div className="pk-reveal pk-d1">
-              <h1 style={{ fontSize:"clamp(44px, 6vw, 80px)", fontWeight:900, lineHeight:1.04, letterSpacing:"-2px", color:CDk, marginBottom:22 }}>
-                One link.<br />Your client sees everything.
-              </h1>
-              <p style={{ fontSize:18, color:CMute, lineHeight:1.72, maxWidth:520, margin:"0 auto 36px" }}>
-                Send one link. Your client sees files, feedback, and invoices — without logging in. No chasing. No confusion. Set up in 10 minutes.
-              </p>
-            </div>
-
-            {/* CTAs */}
-            <div className="pk-reveal pk-d2" style={{ display:"flex", gap:12, flexWrap:"wrap", justifyContent:"center", marginBottom:14 }}>
-              <Link href="/signup" className="btn-primary">Start for free <ArrowRight size={15} /></Link>
-              <Link href={authHref} className="btn-outline">Already have an account?</Link>
-            </div>
-            <p className="pk-reveal pk-d2" style={{ fontSize:12, color:"#AAAAAA", marginBottom:32 }}>Free on 1 project · No credit card · Cancel anytime</p>
-
-            {/* Avatar social proof row */}
-            <div className="pk-reveal pk-d2" style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:10, marginBottom:28 }}>
-              <div style={{ display:"flex" }}>
-                {[
-                  "photo-1494790108377-be9c29b29330",
-                  "photo-1507003211169-0a1dd7228f2d",
-                  "photo-1438761681033-6461ffad8d80",
-                  "photo-1472099645785-5658abf4ff4e",
-                  "photo-1534528741775-53994a69daeb",
-                ].map((id, i) => (
-                  <img
-                    key={id}
-                    src={`https://images.unsplash.com/${id}?w=64&h=64&q=80&auto=format&fit=crop&crop=face`}
-                    alt="Solopad user"
-                    style={{ width:36, height:36, borderRadius:"50%", border:"2.5px solid #fff", objectFit:"cover", marginLeft: i === 0 ? 0 : -10, boxShadow:"0 2px 6px rgba(0,0,0,.12)" }}
-                  />
-                ))}
-              </div>
-              <span style={{ fontSize:13, color:CMute, fontWeight:500 }}>Loved by <strong style={{ color:CDk }}>500+</strong> freelancers worldwide</span>
-            </div>
-
-            {/* Trust pills */}
-            <div className="pk-reveal pk-d3" style={{ display:"flex", gap:12, justifyContent:"center", flexWrap:"wrap", marginBottom:56 }}>
-              {[{ e:"⚡", l:"10 min setup" }, { e:"🔒", l:"No client login" }, { e:"💳", l:"Stripe built in" }].map(({ e, l }) => (
-                <div key={l} style={{ display:"flex", alignItems:"center", gap:7, background:"#fff", border:"1px solid #EBEBEB", borderRadius:100, padding:"7px 16px", fontSize:13, fontWeight:600, color:CDk, boxShadow:"0 2px 8px rgba(0,0,0,.04)" }}>
-                  {e} {l}
+        <section style={{ background:BLt, overflow:"hidden", padding:"96px 0 28px", position:"relative" }}>
+          <div className="pk-hero-shell pk-section-stage" data-pk-section-drift>
+            <div className="pk-hero-grid">
+              <div className="pk-hero-copy">
+                <div className="pk-reveal" style={{ display:"flex", marginBottom:24 }}>
+                  <div style={{ display:"inline-flex", alignItems:"center", gap:8, background:"#fff", border:`1.5px solid ${C}28`, borderRadius:100, padding:"7px 16px", boxShadow:"0 10px 28px rgba(29,78,216,.08)" }}>
+                    <span style={{ position:"relative", display:"inline-flex", width:8, height:8 }}>
+                      <span className="pk-ping" style={{ position:"absolute", inset:0, borderRadius:"50%", background:C }} />
+                      <span style={{ width:8, height:8, borderRadius:"50%", background:C, display:"block", position:"relative" }} />
+                    </span>
+                    <span style={{ fontSize:13, fontWeight:600, color:C }}>Client portals for freelancers</span>
+                  </div>
                 </div>
-              ))}
-            </div>
 
-            {/* Browser mockup — full width below headline */}
-            <div className="pk-reveal pk-d3 pk-browser-shell">
-              <div style={{ borderRadius:20, overflow:"hidden", border:"1px solid #E0E0E0", boxShadow:"0 40px 100px rgba(0,0,0,.14)", background:"#fff" }}>
+                <div className="pk-reveal pk-d1">
+                  <h1 style={{ fontSize:"clamp(48px, 6.4vw, 88px)", fontWeight:700, lineHeight:0.98, letterSpacing:"-2.8px", color:CDk, marginBottom:22, maxWidth:760 }}>
+                    One link.
+                    <br />
+                    Your client sees
+                    <br />
+                    <span style={{ color:C }}>everything.</span>
+                  </h1>
+                  <p style={{ fontSize:19, color:"#52525B", lineHeight:1.74, maxWidth:560, marginBottom:32 }}>
+                    Send one clean link. Your client sees files, feedback, invoices, and progress in one place, without logging in or asking what happens next.
+                  </p>
+                </div>
+
+                <div className="pk-reveal pk-d2 pk-hero-actions">
+                  <Link href="/signup" className="btn-primary">Start for free <ArrowRight size={15} /></Link>
+                </div>
+
+                <div className="pk-reveal pk-d2 pk-hero-proof">
+                  <div style={{ display:"flex" }}>
+                    {[
+                      "photo-1494790108377-be9c29b29330",
+                      "photo-1507003211169-0a1dd7228f2d",
+                      "photo-1438761681033-6461ffad8d80",
+                      "photo-1472099645785-5658abf4ff4e",
+                      "photo-1534528741775-53994a69daeb",
+                    ].map((id, i) => (
+                      <img
+                        key={id}
+                        src={`https://images.unsplash.com/${id}?w=64&h=64&q=80&auto=format&fit=crop&crop=face`}
+                        alt="Solopad user"
+                        style={{ width:38, height:38, borderRadius:"50%", border:"2.5px solid #fff", objectFit:"cover", marginLeft: i === 0 ? 0 : -10, boxShadow:"0 4px 12px rgba(0,0,0,.12)" }}
+                      />
+                    ))}
+                  </div>
+                  <span style={{ fontSize:14, color:CMute, fontWeight:500 }}>Trusted by <strong style={{ color:CDk }}>500+</strong> freelancers worldwide</span>
+                </div>
+
+              </div>
+
+              <div className="pk-hero-panel pk-reveal pk-d3 pk-browser-shell">
+                <div style={{ position:"absolute", inset:"10% -8% auto auto", width:180, height:180, background:"#FFFFFFA8", filter:"blur(24px)", borderRadius:"50%" }} />
+                <div style={{ borderRadius:24, overflow:"hidden", border:"1px solid #DCE7FF", boxShadow:"0 36px 100px rgba(15,23,42,.15)", background:"#fff", position:"relative" }}>
                 {/* Browser bar */}
-                <div style={{ background:"#F5F5F5", borderBottom:"1px solid #E8E8E8", padding:"11px 16px", display:"flex", alignItems:"center", gap:12 }}>
+                  <div style={{ background:"#F8FAFC", borderBottom:"1px solid #E8EEF9", padding:"11px 16px", display:"flex", alignItems:"center", gap:12 }}>
                   <div style={{ display:"flex", gap:6 }}>
                     {["#FF6058","#FFC130","#27C840"].map(bg => <div key={bg} style={{ width:11, height:11, borderRadius:"50%", background:bg }} />)}
                   </div>
-                  <div style={{ flex:1, background:"#fff", border:"1px solid #E2E2E2", borderRadius:7, padding:"5px 12px", display:"flex", alignItems:"center", gap:6, maxWidth:320, margin:"0 auto", fontSize:12, color:"#AAAAAA" }}>
+                    <div style={{ flex:1, background:"#fff", border:"1px solid #E2E8F0", borderRadius:8, padding:"5px 12px", display:"flex", alignItems:"center", gap:6, maxWidth:320, margin:"0 auto", fontSize:12, color:"#94A3B8" }}>
                     🔒 solopad.app/p/acme-co
                   </div>
                 </div>
                 {/* Portal content */}
-                <div className="pk-browser-body">
+                  <div className="pk-browser-body">
                   <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:22 }}>
                     <div>
                       <div style={{ fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:1, color:C, marginBottom:4 }}>Brand Refresh</div>
-                      <div style={{ fontSize:20, fontWeight:800, color:CDk }}>Website Redesign — Acme Co.</div>
+                      <div style={{ fontSize:20, fontWeight:700, color:CDk }}>Website Redesign — Acme Co.</div>
                       <div style={{ fontSize:13, color:CMute, marginTop:5 }}>Due March 28 · In progress</div>
                     </div>
                     <span style={{ background:CLt, color:C, borderRadius:8, padding:"5px 14px", fontSize:12, fontWeight:700 }}>Active</span>
@@ -290,14 +481,31 @@ export default function LandingPage() {
                   <div style={{ display:"flex", justifyContent:"space-between", fontSize:12, color:CMute, marginTop:6 }}>
                     <span>60% complete</span><span>Due in 12 days</span>
                   </div>
+                  </div>
                 </div>
-              </div>
-              {/* Floating paid badge */}
-              <div className="pk-float" style={{ position:"absolute", bottom:-20, right:20, background:"#fff", borderRadius:14, padding:"12px 18px", boxShadow:"0 8px 32px rgba(0,0,0,.16)", display:"flex", alignItems:"center", gap:10, border:"1px solid #F0F0F0" }}>
-                <div style={{ width:34, height:34, borderRadius:"50%", background:"#ECFDF5", display:"flex", alignItems:"center", justifyContent:"center", fontSize:16 }}>✓</div>
-                <div>
-                  <div style={{ fontSize:13, fontWeight:800, color:"#059669" }}>Invoice paid!</div>
-                  <div style={{ fontSize:11, color:CMute }}>$2,400 received</div>
+                <div className="pk-float" style={{ position:"absolute", top:34, right:-24, background:"#fff", borderRadius:16, padding:"14px 16px", boxShadow:"0 18px 44px rgba(15,23,42,.14)", display:"flex", alignItems:"center", gap:12, border:"1px solid #EEF2F7" }}>
+                  <div style={{ width:36, height:36, borderRadius:"50%", background:"#ECFDF5", display:"flex", alignItems:"center", justifyContent:"center", fontSize:16 }}>✓</div>
+                  <div>
+                    <div style={{ fontSize:13, fontWeight:700, color:"#059669" }}>Invoice paid</div>
+                    <div style={{ fontSize:11, color:CMute }}>$2,400 received today</div>
+                  </div>
+                </div>
+                <div className="pk-float" style={{ position:"absolute", bottom:26, left:-24, background:"#fff", borderRadius:16, padding:"14px 16px", boxShadow:"0 18px 44px rgba(15,23,42,.14)", border:"1px solid #EEF2F7", minWidth:190 }}>
+                  <div style={{ fontSize:11, fontWeight:700, letterSpacing:1, textTransform:"uppercase", color:"#94A3B8", marginBottom:8 }}>Client timeline</div>
+                  <div style={{ display:"grid", gap:8 }}>
+                    {[
+                      { label:"Proposal sent", done:true },
+                      { label:"Contract signed", done:true },
+                      { label:"Final delivery", done:false },
+                    ].map((item) => (
+                      <div key={item.label} style={{ display:"flex", alignItems:"center", gap:8 }}>
+                        <div style={{ width:16, height:16, borderRadius:"50%", background:item.done ? C : "#E2E8F0", color:"#fff", display:"flex", alignItems:"center", justifyContent:"center", fontSize:10, fontWeight:700 }}>
+                          {item.done ? "✓" : ""}
+                        </div>
+                        <span style={{ fontSize:12, color:item.done ? "#475569" : CDk, fontWeight:600 }}>{item.label}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
@@ -305,33 +513,91 @@ export default function LandingPage() {
         </section>
 
         {/* ── Problem ──────────────────────────────────── */}
-        <section style={{ background:"#fff", padding:"88px 0" }}>
-          <div className="pk-shell">
-            <div className="pk-reveal" style={{ textAlign:"center", marginBottom:52 }}>
-              <p style={{ fontSize:12, fontWeight:800, color:C, textTransform:"uppercase", letterSpacing:1.5, marginBottom:12 }}>The problem</p>
-              <h2 style={{ fontSize:"clamp(28px, 3.5vw, 46px)", fontWeight:900, color:CDk, letterSpacing:"-0.8px", lineHeight:1.1 }}>
-                Freelancing is great.<br /><span style={{ color:"#CCCCCC" }}>Client management isn&apos;t.</span>
-              </h2>
+        <section style={{ background:"#F8FAFC", padding:"96px 0" }}>
+          <div className="pk-shell pk-section-stage" data-pk-section-drift>
+            <div
+              className="pk-reveal"
+              style={{
+                display:"grid",
+                gridTemplateColumns:"minmax(0, 1.1fr) minmax(280px, .9fr)",
+                gap:32,
+                alignItems:"end",
+                marginBottom:44,
+              }}
+            >
+              <div>
+                <p style={{ fontSize:12, fontWeight:700, color:C, textTransform:"uppercase", letterSpacing:1.5, marginBottom:14 }}>The problem</p>
+                <h2 style={{ fontSize:"clamp(34px, 4.6vw, 64px)", fontWeight:700, color:CDk, letterSpacing:"-1.6px", lineHeight:1.02, marginBottom:14 }}>
+                  Freelancing is great.
+                  <br />
+                  <span style={{ color:"#94A3B8" }}>Client management isn&apos;t.</span>
+                </h2>
+              </div>
+              <div
+                style={{
+                  justifySelf:"end",
+                  width:"100%",
+                  maxWidth:360,
+                  background:"#FFFFFF",
+                  border:"1px solid #E5E7EB",
+                  borderRadius:20,
+                  padding:"22px 22px 18px",
+                  boxShadow:"0 18px 40px rgba(15,23,42,.06)",
+                }}
+              >
+                <div style={{ fontSize:11, fontWeight:700, letterSpacing:1, textTransform:"uppercase", color:"#94A3B8", marginBottom:10 }}>What breaks first</div>
+                <div style={{ display:"grid", gap:10 }}>
+                  {[
+                    { n:"01", t:"Feedback gets buried in email threads" },
+                    { n:"02", t:"Files drift across tools and versions" },
+                    { n:"03", t:"Payments depend on awkward follow-ups" },
+                  ].map((item) => (
+                    <div key={item.n} style={{ display:"grid", gridTemplateColumns:"36px 1fr", gap:12, alignItems:"start" }}>
+                      <div style={{ width:36, height:36, borderRadius:12, background:CLt, color:C, display:"flex", alignItems:"center", justifyContent:"center", fontSize:12, fontWeight:700 }}>
+                        {item.n}
+                      </div>
+                      <div style={{ fontSize:14, lineHeight:1.5, color:"#475569", paddingTop:6 }}>{item.t}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
-            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(260px, 1fr))", gap:18 }}>
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(280px, 1fr))", gap:22 }}>
               {[
                 { icon:Clock,       p:"Chasing feedback via email",    f:"One portal link — clients comment directly. No hunting inboxes." },
                 { icon:FileText,    p:"Files scattered everywhere",     f:"Upload once. Latest version always there. Zero version confusion." },
                 { icon:CreditCard,  p:"Awkward invoice follow-ups",     f:"Client pays on the portal. Stripe handles it. You get notified." },
               ].map(({ icon:Icon, p, f }, i) => (
-                <div key={p} className={`pk-card pk-reveal pk-d${i+1}`} style={{ padding:28 }}>
-                  <div style={{ width:42, height:42, borderRadius:11, background:"#F5F5F5", display:"flex", alignItems:"center", justifyContent:"center", marginBottom:18 }}>
-                    <Icon size={19} color="#BBBBBB" />
+                <div
+                  key={p}
+                  className={`pk-reveal pk-d${i+1}`}
+                  style={{
+                    padding:30,
+                    background:"#FFFFFF",
+                    border:"1px solid #E5E7EB",
+                    borderRadius:22,
+                    boxShadow:"0 18px 48px rgba(15,23,42,.06)",
+                  }}
+                >
+                  <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:20 }}>
+                    <div style={{ width:46, height:46, borderRadius:14, background:"#F1F5F9", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                      <Icon size={19} color="#94A3B8" />
+                    </div>
+                    <div style={{ fontSize:11, fontWeight:700, color:"#CBD5E1", letterSpacing:1, textTransform:"uppercase" }}>
+                      Before
+                    </div>
                   </div>
-                  <p style={{ fontSize:14, fontWeight:600, color:"#CCCCCC", textDecoration:"line-through", marginBottom:14 }}>{p}</p>
-                  <div style={{ borderTop:"1px solid #F2F2F2", paddingTop:14 }}>
-                    <div style={{ display:"flex", alignItems:"center", gap:7, marginBottom:8 }}>
-                      <div style={{ width:17, height:17, borderRadius:"50%", background:C, display:"flex", alignItems:"center", justifyContent:"center" }}>
+                  <p style={{ fontSize:18, fontWeight:600, color:"#94A3B8", lineHeight:1.45, textDecoration:"line-through", textDecorationThickness:"1.5px", marginBottom:18 }}>
+                    {p}
+                  </p>
+                  <div style={{ borderTop:"1px solid #E2E8F0", paddingTop:16 }}>
+                    <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:10 }}>
+                      <div style={{ width:20, height:20, borderRadius:"50%", background:C, display:"flex", alignItems:"center", justifyContent:"center" }}>
                         <Check size={10} color="#fff" strokeWidth={3} />
                       </div>
-                      <span style={{ fontSize:11, fontWeight:700, color:C }}>Solopad solves this</span>
+                      <span style={{ fontSize:12, fontWeight:700, color:C, letterSpacing:0.2 }}>Solopad fixes it</span>
                     </div>
-                    <p style={{ fontSize:14, color:CMute, lineHeight:1.65 }}>{f}</p>
+                    <p style={{ fontSize:16, color:"#475569", lineHeight:1.65 }}>{f}</p>
                   </div>
                 </div>
               ))}
@@ -340,11 +606,24 @@ export default function LandingPage() {
         </section>
 
         {/* ── Feature 1 — Proposals ────────────────────── */}
-        <section id="features" style={{ background:"#FAFAF8", padding:"96px 0" }}>
-          <div className="feat-grid">
+        <section id="features" style={{ background:PLt, padding:"96px 0", position:"relative", overflow:"hidden" }}>
+          <ParallaxImageCard
+            src="https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=720&h=960&q=80&auto=format&fit=crop"
+            alt="Creative team reviewing proposal work"
+            label="Proposal flow"
+            top={48}
+            right={36}
+            width={220}
+            height={270}
+            speed={0.1}
+            rotate="-5deg"
+            labelBg="#FFFFFF"
+            labelColor={C}
+          />
+          <div className="feat-grid pk-section-stage" data-pk-section-drift>
             <div className="pk-reveal-left">
-              <p style={{ fontSize:12, fontWeight:800, color:C, textTransform:"uppercase", letterSpacing:1.5, marginBottom:14 }}>Proposals</p>
-              <h2 style={{ fontSize:"clamp(26px, 3vw, 44px)", fontWeight:900, color:CDk, lineHeight:1.1, letterSpacing:"-0.8px", marginBottom:18 }}>
+              <p style={{ fontSize:12, fontWeight:700, color:C, textTransform:"uppercase", letterSpacing:1.5, marginBottom:14 }}>Proposals</p>
+              <h2 style={{ fontSize:"clamp(32px, 4vw, 52px)", fontWeight:700, color:CDk, lineHeight:1.08, letterSpacing:"-1px", marginBottom:18 }}>
                 Win the job before<br />your competitor replies.
               </h2>
               <p style={{ fontSize:16, color:CMute, lineHeight:1.72, marginBottom:28 }}>
@@ -365,7 +644,7 @@ export default function LandingPage() {
             <div className="pk-reveal-right" style={{ background:"#FAFAFA", borderRadius:20, border:"1px solid #EDEDED", overflow:"hidden", boxShadow:"0 20px 56px rgba(0,0,0,.08)" }}>
               <div style={{ background:C, padding:"22px 24px" }}>
                 <div style={{ fontSize:11, color:"rgba(255,255,255,.7)", fontWeight:600, marginBottom:4 }}>PROPOSAL · March 2026</div>
-                <div style={{ fontSize:18, fontWeight:800, color:"#fff" }}>Brand Identity Package</div>
+                <div style={{ fontSize:18, fontWeight:700, color:"#fff" }}>Brand Identity Package</div>
                 <div style={{ fontSize:13, color:"rgba(255,255,255,.75)", marginTop:4 }}>Prepared for Acme Co.</div>
               </div>
               <div style={{ padding:"20px 24px" }}>
@@ -389,16 +668,29 @@ export default function LandingPage() {
         </section>
 
         {/* ── Feature 2 — Contracts ────────────────────── */}
-        <section style={{ background:"#fff", padding:"96px 0" }}>
-          <div className="feat-grid">
+        <section style={{ background:"#FFF7ED", padding:"96px 0", position:"relative", overflow:"hidden" }}>
+          <ParallaxImageCard
+            src="https://images.unsplash.com/photo-1521791136064-7986c2920216?w=720&h=960&q=80&auto=format&fit=crop"
+            alt="Client meeting and agreement discussion"
+            label="Signed docs"
+            top={56}
+            left={42}
+            width={210}
+            height={250}
+            speed={0.08}
+            rotate="4deg"
+            labelBg={OLt}
+            labelColor={O}
+          />
+          <div className="feat-grid pk-section-stage" data-pk-section-drift>
             {/* Contract mockup */}
             <div className="pk-reveal-left" style={{ background:"#fff", borderRadius:20, border:"1px solid #EDEDED", overflow:"hidden", boxShadow:"0 20px 56px rgba(0,0,0,.08)" }}>
               <div style={{ padding:"20px 24px", borderBottom:"1px solid #F0F0F0", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
                 <div>
                   <div style={{ fontSize:11, fontWeight:700, color:CMute, textTransform:"uppercase", letterSpacing:1 }}>Service Agreement</div>
-                  <div style={{ fontSize:16, fontWeight:800, color:CDk, marginTop:2 }}>Website Redesign Contract</div>
+                  <div style={{ fontSize:16, fontWeight:700, color:CDk, marginTop:2 }}>Website Redesign Contract</div>
                 </div>
-                <div style={{ background:"#FEF3C7", color:"#D97706", fontSize:11, fontWeight:700, padding:"4px 10px", borderRadius:100 }}>Awaiting signature</div>
+                <div style={{ background:OLt, color:O, fontSize:11, fontWeight:700, padding:"4px 10px", borderRadius:100 }}>Awaiting signature</div>
               </div>
               <div style={{ padding:"16px 24px" }}>
                 {[
@@ -421,8 +713,8 @@ export default function LandingPage() {
               </div>
             </div>
             <div className="pk-reveal-right">
-              <p style={{ fontSize:12, fontWeight:800, color:C, textTransform:"uppercase", letterSpacing:1.5, marginBottom:14 }}>Contracts & E-sign</p>
-              <h2 style={{ fontSize:"clamp(26px, 3vw, 44px)", fontWeight:900, color:CDk, lineHeight:1.1, letterSpacing:"-0.8px", marginBottom:18 }}>
+              <p style={{ fontSize:12, fontWeight:700, color:C, textTransform:"uppercase", letterSpacing:1.5, marginBottom:14 }}>Contracts & E-sign</p>
+              <h2 style={{ fontSize:"clamp(32px, 4vw, 52px)", fontWeight:700, color:CDk, lineHeight:1.08, letterSpacing:"-1px", marginBottom:18 }}>
                 Protect yourself.<br />Look professional.<br />Get paid faster.
               </h2>
               <p style={{ fontSize:16, color:CMute, lineHeight:1.72, marginBottom:28 }}>
@@ -442,11 +734,24 @@ export default function LandingPage() {
         </section>
 
         {/* ── Feature 3 — Tasks ────────────────────────── */}
-        <section style={{ background:"#FAFAF8", padding:"96px 0" }}>
-          <div className="feat-grid">
+        <section style={{ background:BLt, padding:"96px 0", position:"relative", overflow:"hidden" }}>
+          <ParallaxImageCard
+            src="https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?w=720&h=960&q=80&auto=format&fit=crop"
+            alt="Project planning notes and laptop"
+            label="Live progress"
+            bottom={36}
+            right={34}
+            width={220}
+            height={265}
+            speed={0.11}
+            rotate="5deg"
+            labelBg={CLt}
+            labelColor={C}
+          />
+          <div className="feat-grid pk-section-stage" data-pk-section-drift>
             <div className="pk-reveal-left">
-              <p style={{ fontSize:12, fontWeight:800, color:C, textTransform:"uppercase", letterSpacing:1.5, marginBottom:14 }}>Projects & Tasks</p>
-              <h2 style={{ fontSize:"clamp(26px, 3vw, 44px)", fontWeight:900, color:CDk, lineHeight:1.1, letterSpacing:"-0.8px", marginBottom:18 }}>
+              <p style={{ fontSize:12, fontWeight:700, color:C, textTransform:"uppercase", letterSpacing:1.5, marginBottom:14 }}>Projects & Tasks</p>
+              <h2 style={{ fontSize:"clamp(32px, 4vw, 52px)", fontWeight:700, color:CDk, lineHeight:1.08, letterSpacing:"-1px", marginBottom:18 }}>
                 Big milestones.<br />Tiny tasks.<br />Total control.
               </h2>
               <p style={{ fontSize:16, color:CMute, lineHeight:1.72, marginBottom:28 }}>
@@ -466,8 +771,8 @@ export default function LandingPage() {
             {/* Tasks mockup */}
             <div className="pk-reveal-right" style={{ background:"#fff", borderRadius:20, border:"1px solid #EDEDED", overflow:"hidden", boxShadow:"0 20px 56px rgba(0,0,0,.08)" }}>
               <div style={{ padding:"16px 20px", borderBottom:"1px solid #F0F0F0", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-                <span style={{ fontSize:15, fontWeight:800, color:CDk }}>Website Redesign</span>
-                <span style={{ background:"#EEF2FF", color:"#4F46E5", fontSize:11, fontWeight:700, padding:"4px 10px", borderRadius:100 }}>In Progress</span>
+                <span style={{ fontSize:15, fontWeight:700, color:CDk }}>Website Redesign</span>
+                <span style={{ background:CLt, color:C, fontSize:11, fontWeight:700, padding:"4px 10px", borderRadius:100 }}>In Progress</span>
               </div>
               <div style={{ padding:"12px 20px" }}>
                 {[
@@ -479,7 +784,7 @@ export default function LandingPage() {
                       <div style={{ width:18, height:18, borderRadius:"50%", background:done?C:"#E5E7EB", display:"flex", alignItems:"center", justifyContent:"center" }}>
                         {done && <Check size={9} color="#fff" strokeWidth={3} />}
                       </div>
-                      <span style={{ fontSize:13, fontWeight:800, color:done?CMute:CDk, textDecoration:done?"line-through":"none" }}>{milestone}</span>
+                      <span style={{ fontSize:13, fontWeight:700, color:done?CMute:CDk, textDecoration:done?"line-through":"none" }}>{milestone}</span>
                       <span style={{ fontSize:11, color:CMute, marginLeft:"auto" }}>{done?"Complete":"Active"}</span>
                     </div>
                     {tasks.map((t, i) => (
@@ -488,7 +793,7 @@ export default function LandingPage() {
                           {(done||i===0) && <Check size={8} color="#fff" strokeWidth={3} />}
                         </div>
                         <span style={{ fontSize:13, color:done||i===0?CMute:CDk, textDecoration:done||i===0?"line-through":"none" }}>{t}</span>
-                        {i===1&&!done && <span style={{ marginLeft:"auto", fontSize:10, fontWeight:700, color:C, background:CLt, padding:"2px 8px", borderRadius:100 }}>Now</span>}
+                        {i===1&&!done && <span style={{ marginLeft:"auto", fontSize:10, fontWeight:700, color:O, background:OLt, padding:"2px 8px", borderRadius:100 }}>Now</span>}
                       </div>
                     ))}
                   </div>
@@ -503,53 +808,89 @@ export default function LandingPage() {
         </section>
 
         {/* ── Feature 4 — AI ───────────────────────────── */}
-        <section style={{ background:"#111111", padding:"96px 0", position:"relative", overflow:"hidden" }}>
-          <div style={{ position:"absolute", inset:0, background:`radial-gradient(ellipse at 65% 50%, ${C}20 0%, transparent 65%)` }} />
-          <div className="feat-grid" style={{ position:"relative" }}>
+        <section style={{ background:"#F5F0E8", padding:"104px 0", position:"relative", overflow:"hidden" }}>
+          <ParallaxImageCard
+            src="https://images.unsplash.com/photo-1517842645767-c639042777db?w=720&h=960&q=80&auto=format&fit=crop"
+            alt="Freelancer typing notes beside a laptop"
+            label="Draft faster"
+            top={36}
+            left={36}
+            width={200}
+            height={245}
+            speed={0.1}
+            rotate="4deg"
+            labelBg="#FFFFFF"
+            labelColor={CDk}
+          />
+          <div style={{ position:"absolute", inset:0, background:"linear-gradient(135deg, rgba(255,255,255,.54) 0%, rgba(255,250,245,.48) 34%, rgba(245,240,232,.92) 100%)" }} />
+          <div style={{ position:"absolute", top:-90, right:"10%", width:360, height:360, borderRadius:"50%", background:"rgba(251,191,36,.10)", filter:"blur(92px)" }} />
+          <div style={{ position:"absolute", bottom:-120, left:"6%", width:320, height:320, borderRadius:"50%", background:"rgba(59,130,246,.08)", filter:"blur(96px)" }} />
+          <div className="feat-grid pk-section-stage" data-pk-section-drift>
             {/* AI chat mockup */}
-            <div className="pk-reveal-left" style={{ background:"rgba(255,255,255,.06)", borderRadius:20, border:"1px solid rgba(255,255,255,.1)", overflow:"hidden", boxShadow:"0 20px 56px rgba(0,0,0,.3)" }}>
-              <div style={{ padding:"16px 20px", borderBottom:"1px solid rgba(255,255,255,.08)", display:"flex", alignItems:"center", gap:10 }}>
-                <div style={{ width:28, height:28, borderRadius:8, background:"linear-gradient(135deg,#7C3AED,#E8533A)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:14 }}>✦</div>
-                <span style={{ fontSize:14, fontWeight:700, color:"#fff" }}>AI Draft Assistant</span>
-                <span style={{ marginLeft:"auto", fontSize:10, fontWeight:700, color:"#A78BFA", background:"rgba(167,139,250,.15)", padding:"3px 9px", borderRadius:100 }}>Beta</span>
-              </div>
-              <div style={{ padding:"16px 20px", display:"flex", flexDirection:"column", gap:12 }}>
-                {/* User message */}
-                <div style={{ background:"rgba(255,255,255,.08)", borderRadius:10, padding:"12px 14px", fontSize:13, color:"rgba(255,255,255,.7)", lineHeight:1.5 }}>
-                  <span style={{ fontWeight:700, color:"#fff" }}>You:</span> Draft a proposal for a logo redesign, $2,500 budget, 3 week timeline.
-                </div>
-                {/* AI response */}
-                <div style={{ background:`${C}18`, border:`1px solid ${C}30`, borderRadius:10, padding:"14px", fontSize:13, color:"rgba(255,255,255,.9)", lineHeight:1.65 }}>
-                  <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:10 }}>
-                    <span style={{ fontSize:12 }}>✦</span>
-                    <span style={{ fontSize:11, fontWeight:700, color:C }}>AI generated · Review before sending</span>
+            <div className="pk-reveal-left" style={{ position:"relative" }}>
+              <div style={{ position:"absolute", top:-12, left:-14, width:144, height:144, borderRadius:34, background:"rgba(255,255,255,.48)", filter:"blur(18px)" }} />
+              <div style={{ position:"absolute", right:-16, bottom:42, width:164, height:164, borderRadius:40, background:"rgba(251,191,36,.12)", filter:"blur(28px)" }} />
+              <div style={{ background:"rgba(255,255,255,.78)", borderRadius:30, border:"1px solid rgba(226,232,240,.9)", overflow:"hidden", boxShadow:"0 28px 72px rgba(15,23,42,.08)", backdropFilter:"blur(10px)", position:"relative" }}>
+                <div style={{ padding:"18px 22px", borderBottom:"1px solid rgba(226,232,240,.9)", display:"flex", alignItems:"center", gap:12, background:"rgba(255,255,255,.76)" }}>
+                  <div style={{ width:36, height:36, borderRadius:14, background:"linear-gradient(135deg,#2563EB,#7C3AED)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:15, color:"#fff", boxShadow:"0 12px 24px rgba(37,99,235,.22)" }}>✦</div>
+                  <div style={{ display:"flex", flexDirection:"column", gap:2 }}>
+                    <span style={{ fontSize:15, fontWeight:700, color:CDk }}>AI Draft Assistant</span>
+                    <span style={{ fontSize:11, color:"#64748B" }}>Proposal draft in seconds</span>
                   </div>
-                  <strong style={{ color:"#fff" }}>Logo Redesign Proposal</strong><br /><br />
-                  I&apos;d love to help refresh your brand. Here&apos;s what I&apos;ll deliver in 3 weeks:<br /><br />
-                  • 3 initial logo concepts<br />
-                  • 2 revision rounds included<br />
-                  • Final files in all formats<br /><br />
-                  <strong style={{ color:C }}>Investment: $2,500</strong>
+                  <span style={{ marginLeft:"auto", fontSize:10, fontWeight:700, color:C, background:"#E0EAFF", padding:"5px 10px", borderRadius:100 }}>Live beta</span>
                 </div>
-                <div style={{ display:"flex", gap:8 }}>
-                  <div style={{ flex:1, background:C, borderRadius:8, padding:"10px", textAlign:"center", fontSize:12, fontWeight:700, color:"#fff" }}>Use this draft</div>
-                  <div style={{ flex:1, background:"rgba(255,255,255,.08)", borderRadius:8, padding:"10px", textAlign:"center", fontSize:12, fontWeight:600, color:"rgba(255,255,255,.55)" }}>Regenerate</div>
+
+                <div style={{ padding:"22px", display:"grid", gap:16, background:"linear-gradient(180deg, rgba(255,255,255,.86) 0%, rgba(248,250,252,.96) 100%)" }}>
+                  <div style={{ background:"#FFFFFF", border:"1px solid #E2E8F0", borderRadius:20, padding:"16px 18px", boxShadow:"0 12px 30px rgba(15,23,42,.05)" }}>
+                    <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:10 }}>
+                      <div style={{ width:8, height:8, borderRadius:"50%", background:"#2563EB" }} />
+                      <span style={{ fontSize:11, fontWeight:700, color:"#64748B", textTransform:"uppercase", letterSpacing:1.2 }}>Prompt</span>
+                    </div>
+                    <p style={{ margin:0, fontSize:14, color:"#334155", lineHeight:1.65 }}>
+                      Draft a logo redesign proposal. Budget is $2,500. Make it polished and easy to approve.
+                    </p>
+                  </div>
+
+                  <div style={{ background:"linear-gradient(180deg, #1E3A8A 0%, #1D4ED8 100%)", borderRadius:22, padding:"18px 18px 16px", color:"#fff", boxShadow:"0 20px 42px rgba(37,99,235,.22)" }}>
+                    <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:14 }}>
+                      <span style={{ fontSize:11, fontWeight:700, letterSpacing:1.2, textTransform:"uppercase", color:"#DBEAFE" }}>Generated draft</span>
+                      <span style={{ fontSize:11, fontWeight:700, color:"#DBEAFE" }}>12 sec</span>
+                    </div>
+                    <h3 style={{ margin:"0 0 10px", fontSize:21, fontWeight:700, color:"#fff" }}>Logo Redesign Proposal</h3>
+                    <p style={{ margin:"0 0 14px", fontSize:13, lineHeight:1.65, color:"rgba(255,255,255,.88)" }}>
+                      Clean scope, clear price, ready to review.
+                    </p>
+                    <div style={{ display:"grid", gap:8, marginBottom:16 }}>
+                      {["3 logo concepts", "2 revision rounds"].map((item) => (
+                        <div key={item} style={{ display:"flex", alignItems:"center", gap:8, fontSize:13, color:"rgba(255,255,255,.92)" }}>
+                          <span style={{ width:5, height:5, borderRadius:"50%", background:"#BFDBFE", flexShrink:0 }} />
+                          <span>{item}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div style={{ display:"grid", gridTemplateColumns:"1fr auto auto", gap:10, alignItems:"center", paddingTop:14, borderTop:"1px solid rgba(191,219,254,.2)" }}>
+                      <span style={{ fontSize:12, color:"#DBEAFE" }}>Investment $2,500</span>
+                      <div style={{ background:"#FFFFFF", borderRadius:12, padding:"10px 14px", fontSize:12, fontWeight:700, color:C }}>Use draft</div>
+                      <div style={{ background:"rgba(255,255,255,.18)", border:"1px solid rgba(255,255,255,.18)", borderRadius:12, padding:"10px 14px", fontSize:12, fontWeight:600, color:"#DBEAFE" }}>Edit</div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
 
             <div className="pk-reveal-right">
-              <p style={{ fontSize:12, fontWeight:800, color:C, textTransform:"uppercase", letterSpacing:1.5, marginBottom:14 }}>AI Writing Assistant</p>
-              <h2 style={{ fontSize:"clamp(26px, 3vw, 44px)", fontWeight:900, color:"#fff", lineHeight:1.1, letterSpacing:"-0.8px", marginBottom:18 }}>
-                Writer&apos;s block?<br />AI drafts it.<br /><span style={{ color:C }}>You just send it.</span>
+              <p style={{ fontSize:12, fontWeight:700, color:C, textTransform:"uppercase", letterSpacing:1.5, marginBottom:14 }}>AI Writing Assistant</p>
+              <h2 style={{ fontSize:"clamp(32px, 4vw, 52px)", fontWeight:700, color:CDk, lineHeight:1.08, letterSpacing:"-1px", marginBottom:18 }}>
+                Stuck on the first draft?<br />AI writes the start.<br /><span style={{ color:C }}>You finish with confidence.</span>
               </h2>
-              <p style={{ fontSize:16, color:"rgba(255,255,255,.55)", lineHeight:1.72, marginBottom:28 }}>
-                Stop staring at a blank page. Tell Solopad AI what you need — a proposal, a contract clause, a project update — and get a polished draft in seconds. Edit, send, done.
+              <p style={{ fontSize:17, color:"#52525B", lineHeight:1.74, marginBottom:28 }}>
+                Give Solopad a short brief and get a clean draft back in seconds. Edit it, approve it, send it.
               </p>
+              
               <div style={{ display:"flex", flexDirection:"column", gap:13, marginBottom:32 }}>
-                {["Proposals, contracts & updates — all AI-drafted", "Trained on freelance best practices, not generic fluff", "Edit freely — it's your voice, AI just starts it"].map(b => (
-                  <div key={b} className="check-row" style={{ color:"rgba(255,255,255,.8)" }}>
-                    <div className="check-icon" style={{ background:`${C}25` }}><Check size={10} color={C} strokeWidth={3} /></div>
+                {["Starts from your brief", "Built for freelance workflows", "You stay in control of the final version"].map((b) => (
+                  <div key={b} className="check-row" style={{ color:"#334155" }}>
+                    <div className="check-icon" style={{ background:"#DBEAFE" }}><Check size={10} color={C} strokeWidth={3} /></div>
                     <span>{b}</span>
                   </div>
                 ))}
@@ -560,39 +901,75 @@ export default function LandingPage() {
         </section>
 
         {/* ── How it works ─────────────────────────────── */}
-        <section id="how-it-works" style={{ background:"#fff", padding:"96px 0" }}>
-          <div className="pk-shell">
-            <div className="pk-reveal" style={{ textAlign:"center", marginBottom:60 }}>
-              <p style={{ fontSize:12, fontWeight:800, color:C, textTransform:"uppercase", letterSpacing:1.5, marginBottom:12 }}>How it works</p>
-              <h2 style={{ fontSize:"clamp(28px, 3.5vw, 46px)", fontWeight:900, color:CDk, letterSpacing:"-0.8px" }}>
-                Set up in 10 minutes. <span style={{ color:C }}>Seriously.</span>
-              </h2>
-            </div>
-            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(220px, 1fr))", gap:20 }}>
-              {[
-                { n:"01", t:"Create a project",   d:"Add your project details and deadline. Done in under a minute.", bg:"#FAFAF8" },
-                { n:"02", t:"Upload your work",   d:"Drop in files, attach an invoice, write project notes.",          bg:CLt },
-                { n:"03", t:"Share one link",     d:"Send the portal URL. Client sees everything — no login needed.",  bg:"#FAFAF8" },
-                { n:"04", t:"Get paid, move on",  d:"Client approves, pays via Stripe, project closes. Clean.",        bg:CLt },
-              ].map(({ n, t, d, bg }, i) => (
-                <div key={n} className={`pk-reveal pk-d${i+1}`} style={{ background:bg, borderRadius:18, border:"1px solid #EBEBEB", padding:"32px 24px", textAlign:"center" }}>
-                  <div style={{ width:46, height:46, borderRadius:13, background:C, color:"#fff", fontSize:16, fontWeight:900, display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 18px" }}>
-                    {n}
-                  </div>
-                  <h3 style={{ fontSize:16, fontWeight:800, color:CDk, marginBottom:8 }}>{t}</h3>
-                  <p style={{ fontSize:14, color:CMute, lineHeight:1.65 }}>{d}</p>
+        <section id="how-it-works" style={{ background:PRT, padding:"96px 0", position:"relative", overflow:"hidden" }}>
+          <ParallaxImageCard
+            src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=720&h=960&q=80&auto=format&fit=crop"
+            alt="Freelancer setting up a digital workflow"
+            label="Set up fast"
+            top={38}
+            right={40}
+            width={210}
+            height={250}
+            speed={0.09}
+            rotate="-4deg"
+            labelBg="#FFFFFF"
+            labelColor={CDk}
+          />
+          <div className="pk-shell pk-section-stage" data-pk-section-drift>
+            <div className="pk-reveal" style={{ display:"grid", gridTemplateColumns:"minmax(0, 1.15fr) minmax(280px, .85fr)", gap:28, alignItems:"end", marginBottom:54 }}>
+              <div>
+                <p style={{ fontSize:12, fontWeight:700, color:C, textTransform:"uppercase", letterSpacing:1.5, marginBottom:12 }}>How it works</p>
+                <h2 style={{ fontSize:"clamp(30px, 4vw, 52px)", fontWeight:700, color:CDk, letterSpacing:"-1px", lineHeight:1.06, marginBottom:14 }}>
+                  Set up once.<br />
+                  <span style={{ color:C }}>Run every client project from one place.</span>
+                </h2>
+                <p style={{ fontSize:16, color:"#5B6475", lineHeight:1.75, maxWidth:620 }}>
+                  Solopad keeps the setup simple: open the project, upload the work, share the portal, get approved and paid.
+                </p>
+              </div>
+              <div style={{ justifySelf:"end", width:"100%", maxWidth:320, background:"rgba(255,255,255,.62)", border:"1px solid rgba(17,24,39,.08)", borderRadius:24, padding:"20px 22px", boxShadow:"0 18px 42px rgba(15,23,42,.06)", backdropFilter:"blur(8px)" }}>
+                <div style={{ fontSize:11, fontWeight:700, letterSpacing:1.2, textTransform:"uppercase", color:"#64748B", marginBottom:10 }}>What the client sees</div>
+                <div style={{ display:"grid", gap:10 }}>
+                  {["One clean link", "Live files and notes", "Easy payment flow"].map((item) => (
+                    <div key={item} style={{ display:"flex", alignItems:"center", gap:10, fontSize:14, color:"#334155" }}>
+                      <div style={{ width:18, height:18, borderRadius:"50%", background:CLt, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                        <Check size={10} color={C} strokeWidth={3} />
+                      </div>
+                      <span>{item}</span>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              </div>
+            </div>
+            <div style={{ position:"relative", background:"rgba(255,255,255,.34)", border:"1px solid rgba(17,24,39,.08)", borderRadius:30, padding:"26px", boxShadow:"0 24px 58px rgba(15,23,42,.06)", backdropFilter:"blur(10px)" }}>
+              <div style={{ position:"absolute", left:42, right:42, top:96, height:1, background:"linear-gradient(90deg, rgba(29,78,216,.16) 0%, rgba(29,78,216,.08) 50%, rgba(29,78,216,.16) 100%)" }} />
+              <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(220px, 1fr))", gap:18, position:"relative" }}>
+                {[
+                  { n:"01", t:"Create the project", d:"Add the title, deadline, and client. You are live in under a minute.", bg:"#FFFFFF", tag:"Start" },
+                  { n:"02", t:"Upload the work", d:"Drop in files, notes, and invoices so nothing gets scattered.", bg:CLt, tag:"Organize" },
+                  { n:"03", t:"Share the portal", d:"Send one link. Clients see progress without chasing you for updates.", bg:"#FFFFFF", tag:"Share" },
+                  { n:"04", t:"Get approved", d:"Client reviews, pays with Stripe, and the project moves forward cleanly.", bg:OLt, tag:"Finish" },
+                ].map(({ n, t, d, bg, tag }, i) => (
+                  <div key={n} className={`pk-reveal pk-d${i+1}`} style={{ background:bg, borderRadius:24, border:"1px solid rgba(17,24,39,.08)", padding:"26px 22px 24px", minHeight:228, boxShadow:"0 12px 28px rgba(15,23,42,.04)" }}>
+                    <div style={{ width:50, height:50, borderRadius:16, background:C, color:"#fff", fontSize:17, fontWeight:700, display:"flex", alignItems:"center", justifyContent:"center", marginBottom:22, boxShadow:"0 14px 28px rgba(29,78,216,.18)" }}>
+                      {n}
+                    </div>
+                    <h3 style={{ fontSize:20, fontWeight:700, color:CDk, marginBottom:10, lineHeight:1.25 }}>{t}</h3>
+                    <p style={{ fontSize:14, color:"#5B6475", lineHeight:1.72, marginBottom:20 }}>{d}</p>
+                    <div style={{ fontSize:12, fontWeight:700, color:C, letterSpacing:.2 }}>{tag}</div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </section>
 
         {/* ── Photo strip ──────────────────────────────── */}
-        <section style={{ background:"#FAFAF8", padding:"64px 0" }}>
-          <div className="pk-shell">
+        <section style={{ background:"#F3F4F6", padding:"64px 0" }}>
+          <div className="pk-shell pk-section-stage" data-pk-section-drift>
             <div className="pk-reveal pk-photo-strip">
               <img
-                src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=800&h=500&q=80&auto=format&fit=crop"
+                src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=700&h=500&q=80&auto=format&fit=crop"
                 alt="Freelancer working"
                 style={{ width:"100%", height:280, objectFit:"cover", borderRadius:0, display:"block" }}
               />
@@ -611,10 +988,10 @@ export default function LandingPage() {
         </section>
 
         {/* ── Pricing ──────────────────────────────────── */}
-        <section id="pricing" style={{ background:"#FAFAF8", padding:"96px 0" }}>
-          <div className="pk-shell">
+        <section id="pricing" style={{ background:"#FFF7ED", padding:"96px 0", position:"relative", overflow:"hidden" }}>
+          <div className="pk-shell pk-section-stage" data-pk-section-drift>
             <div className="pk-reveal" style={{ textAlign:"center", marginBottom:52 }}>
-              <p style={{ fontSize:12, fontWeight:800, color:C, textTransform:"uppercase", letterSpacing:1.5, marginBottom:12 }}>Pricing</p>
+              <p style={{ fontSize:12, fontWeight:700, color:C, textTransform:"uppercase", letterSpacing:1.5, marginBottom:12 }}>Pricing</p>
               <h2 style={{ fontSize:"clamp(28px, 3.5vw, 46px)", fontWeight:900, color:CDk, letterSpacing:"-0.8px" }}>Simple, honest pricing.</h2>
               <p style={{ fontSize:16, color:CMute, marginTop:12 }}>No transaction fees. No hidden costs. No surprises.</p>
             </div>
@@ -622,11 +999,11 @@ export default function LandingPage() {
               {plans.map((plan, i) => (
                 <div key={plan.name} className={`pk-reveal pk-d${i+1} ${plan.highlight ? "pk-price-card-highlight" : ""}`} style={{ borderRadius:22, padding:32, border:plan.highlight?`2px solid ${C}`:"1px solid #EBEBEB", background:plan.highlight?CLt:"#fff", boxShadow:plan.highlight?`0 24px 64px ${C}22`:"0 2px 12px rgba(0,0,0,.04)", position:"relative" }}>
                   {plan.highlight && (
-                    <div style={{ position:"absolute", top:-14, left:"50%", transform:"translateX(-50%)", background:C, color:"#fff", borderRadius:100, padding:"5px 16px", fontSize:12, fontWeight:800, whiteSpace:"nowrap" }}>
+                    <div style={{ position:"absolute", top:-14, left:"50%", transform:"translateX(-50%)", background:O, color:"#fff", borderRadius:100, padding:"5px 16px", fontSize:12, fontWeight:700, whiteSpace:"nowrap" }}>
                       Most popular
                     </div>
                   )}
-                  <p style={{ fontSize:11, fontWeight:800, textTransform:"uppercase", letterSpacing:1.2, color:CMute, marginBottom:8 }}>{plan.name}</p>
+                  <p style={{ fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:1.2, color:CMute, marginBottom:8 }}>{plan.name}</p>
                   <div style={{ display:"flex", alignItems:"flex-end", gap:4, marginBottom:8 }}>
                     <span style={{ fontSize:52, fontWeight:900, color:plan.highlight?C:CDk, lineHeight:1, letterSpacing:"-1px" }}>{plan.price}</span>
                     <span style={{ fontSize:14, color:CMute, marginBottom:8 }}>{plan.period}</span>
@@ -657,7 +1034,7 @@ export default function LandingPage() {
         {/* ── Final CTA ────────────────────────────────── */}
         <section style={{ background:"#fff", padding:"80px 0" }}>
           <div className="pk-shell">
-            <div className="pk-reveal pk-final-cta">
+            <div className="pk-reveal pk-final-cta pk-section-stage" data-pk-section-drift>
               <div style={{ position:"absolute", top:-70, right:-70, width:240, height:240, borderRadius:"50%", background:"rgba(255,255,255,.08)" }} />
               <div style={{ position:"absolute", bottom:-60, left:-60, width:200, height:200, borderRadius:"50%", background:"rgba(255,255,255,.05)" }} />
               <div style={{ position:"relative" }}>
@@ -689,7 +1066,7 @@ export default function LandingPage() {
                   Set up your first client portal in 10 minutes. Free forever on one project.
                 </p>
                 <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:14, flexWrap:"wrap" }}>
-                  <Link href="/signup" style={{ background:"#fff", color:C, borderRadius:12, padding:"14px 30px", fontSize:16, fontWeight:800, textDecoration:"none", display:"inline-flex", alignItems:"center", gap:8, boxShadow:"0 8px 28px rgba(0,0,0,.18)", transition:"transform .15s" }}>
+                  <Link href="/signup" style={{ background:"#fff", color:C, borderRadius:12, padding:"14px 30px", fontSize:16, fontWeight:700, textDecoration:"none", display:"inline-flex", alignItems:"center", gap:8, boxShadow:"0 8px 28px rgba(0,0,0,.18)", transition:"transform .15s" }}>
                     Create your free portal <ArrowRight size={16} />
                   </Link>
                   <Link href={authHref} style={{ color:"rgba(255,255,255,.75)", fontSize:14, fontWeight:600, textDecoration:"none" }}>
