@@ -8,7 +8,9 @@ import CollectionPageHeader, {
   collectionPageHeaderSegmentedGroupClassName,
   getCollectionPageHeaderSegmentedButtonClassName,
 } from "@/components/shared/CollectionPageHeader";
-import { Copy, Check, X, ChevronDown, ChevronUp } from "lucide-react";
+import { Copy, Check, X, ChevronDown, ChevronUp, Plus } from "lucide-react";
+import Modal from "@/components/shared/Modal";
+import Input from "@/components/ui/Input";
 
 const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const FULL_DAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -45,6 +47,8 @@ function buildDayRules(savedRules) {
   });
 }
 
+const EMPTY_MEETING = { title: "", clientName: "", clientEmail: "", date: "", startTime: "09:00", endTime: "10:00", notes: "" };
+
 export default function SchedulerClient({ bookings: initialBookings, availabilityRules, bookingPageUrl }) {
   const [tab, setTab] = useState("bookings");
   const [bookings, setBookings] = useState(initialBookings);
@@ -53,6 +57,11 @@ export default function SchedulerClient({ bookings: initialBookings, availabilit
   const [saving, setSaving] = useState(false);
   const [savedOk, setSavedOk] = useState(false);
   const [showPast, setShowPast] = useState(false);
+  const [meetingModal, setMeetingModal] = useState(false);
+  const [meetingForm, setMeetingForm] = useState(EMPTY_MEETING);
+  const [meetingErrors, setMeetingErrors] = useState({});
+  const [meetingSubmitting, setMeetingSubmitting] = useState(false);
+  const [meetingError, setMeetingError] = useState("");
 
   const now = new Date();
   const upcoming = bookings.filter(
@@ -76,6 +85,56 @@ export default function SchedulerClient({ bookings: initialBookings, availabilit
     });
     if (res.ok) {
       setBookings((prev) => prev.map((b) => (b.id === id ? { ...b, status: "cancelled" } : b)));
+    }
+  }
+
+  function setMeetingField(key, value) {
+    setMeetingForm((f) => ({ ...f, [key]: value }));
+    setMeetingErrors((e) => ({ ...e, [key]: "" }));
+    setMeetingError("");
+  }
+
+  async function submitMeeting(e) {
+    e.preventDefault();
+    const errs = {};
+    if (!meetingForm.title.trim()) errs.title = "Title is required.";
+    if (!meetingForm.clientName.trim()) errs.clientName = "Client name is required.";
+    if (!meetingForm.date) errs.date = "Date is required.";
+    if (!meetingForm.startTime) errs.startTime = "Required.";
+    if (!meetingForm.endTime) errs.endTime = "Required.";
+    if (Object.keys(errs).length) { setMeetingErrors(errs); return; }
+
+    const startAt = new Date(`${meetingForm.date}T${meetingForm.startTime}`);
+    const endAt   = new Date(`${meetingForm.date}T${meetingForm.endTime}`);
+    if (endAt <= startAt) {
+      setMeetingErrors((e) => ({ ...e, endTime: "End time must be after start time." }));
+      return;
+    }
+
+    setMeetingSubmitting(true);
+    setMeetingError("");
+    try {
+      const res = await fetch("/api/meetings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: meetingForm.title.trim(),
+          clientName: meetingForm.clientName.trim(),
+          clientEmail: meetingForm.clientEmail.trim(),
+          startAt: startAt.toISOString(),
+          endAt: endAt.toISOString(),
+          notes: meetingForm.notes.trim() || null,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data?.error || "Failed to create meeting.");
+      setBookings((prev) => [...prev, data.booking]);
+      setMeetingModal(false);
+      setMeetingForm(EMPTY_MEETING);
+    } catch (err) {
+      setMeetingError(err.message);
+    } finally {
+      setMeetingSubmitting(false);
     }
   }
 
@@ -118,20 +177,25 @@ export default function SchedulerClient({ bookings: initialBookings, availabilit
           showFilter={false}
           className="px-0 pb-6 pt-0"
           actions={(
-            <div className={collectionPageHeaderSegmentedGroupClassName}>
-              {[{ id: "bookings", label: "Bookings" }, { id: "availability", label: "Availability" }].map((item, index, items) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => setTab(item.id)}
-                  className={getCollectionPageHeaderSegmentedButtonClassName(
-                    tab === item.id,
-                    index === 0 ? "left" : index === items.length - 1 ? "right" : "middle"
-                  )}
-                >
-                  {item.label}
-                </button>
-              ))}
+            <div className="flex items-center gap-2">
+              <Button size="sm" onClick={() => { setMeetingModal(true); setMeetingForm(EMPTY_MEETING); setMeetingErrors({}); setMeetingError(""); }}>
+                <Plus className="h-3.5 w-3.5" /> Add meeting
+              </Button>
+              <div className={collectionPageHeaderSegmentedGroupClassName}>
+                {[{ id: "bookings", label: "Bookings" }, { id: "availability", label: "Availability" }].map((item, index, items) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => setTab(item.id)}
+                    className={getCollectionPageHeaderSegmentedButtonClassName(
+                      tab === item.id,
+                      index === 0 ? "left" : index === items.length - 1 ? "right" : "middle"
+                    )}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
             </div>
           )}
         />
@@ -314,6 +378,84 @@ export default function SchedulerClient({ bookings: initialBookings, availabilit
           </div>
         )}
       </div>
+
+      {/* Add meeting modal */}
+      <Modal open={meetingModal} onClose={() => setMeetingModal(false)} title="Add meeting" className="max-w-md">
+        <form onSubmit={submitMeeting} className="space-y-4">
+          <Input
+            label="Title"
+            required
+            value={meetingForm.title}
+            onChange={(e) => setMeetingField("title", e.target.value)}
+            placeholder="e.g. Discovery call"
+            error={meetingErrors.title}
+          />
+          <div className="grid grid-cols-2 gap-3">
+            <Input
+              label="Client name"
+              required
+              value={meetingForm.clientName}
+              onChange={(e) => setMeetingField("clientName", e.target.value)}
+              placeholder="Jane Smith"
+              error={meetingErrors.clientName}
+            />
+            <Input
+              label="Client email"
+              type="email"
+              value={meetingForm.clientEmail}
+              onChange={(e) => setMeetingField("clientEmail", e.target.value)}
+              placeholder="jane@example.com"
+            />
+          </div>
+          <Input
+            label="Date"
+            type="date"
+            required
+            value={meetingForm.date}
+            onChange={(e) => setMeetingField("date", e.target.value)}
+            error={meetingErrors.date}
+          />
+          <div className="grid grid-cols-2 gap-3">
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-medium text-zinc-700">Start time <span className="text-red-500">*</span></label>
+              <select
+                value={meetingForm.startTime}
+                onChange={(e) => setMeetingField("startTime", e.target.value)}
+                className={cn("w-full h-9 rounded border border-zinc-200 bg-white px-3 text-sm text-zinc-900 outline-none focus:border-zinc-400 transition-colors", meetingErrors.startTime && "border-red-400")}
+              >
+                {TIME_OPTIONS.map((t) => <option key={t} value={t}>{t}</option>)}
+              </select>
+              {meetingErrors.startTime && <p className="text-xs text-red-600">{meetingErrors.startTime}</p>}
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-medium text-zinc-700">End time <span className="text-red-500">*</span></label>
+              <select
+                value={meetingForm.endTime}
+                onChange={(e) => setMeetingField("endTime", e.target.value)}
+                className={cn("w-full h-9 rounded border border-zinc-200 bg-white px-3 text-sm text-zinc-900 outline-none focus:border-zinc-400 transition-colors", meetingErrors.endTime && "border-red-400")}
+              >
+                {TIME_OPTIONS.map((t) => <option key={t} value={t}>{t}</option>)}
+              </select>
+              {meetingErrors.endTime && <p className="text-xs text-red-600">{meetingErrors.endTime}</p>}
+            </div>
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-medium text-zinc-700">Notes</label>
+            <textarea
+              rows={3}
+              value={meetingForm.notes}
+              onChange={(e) => setMeetingField("notes", e.target.value)}
+              placeholder="Optional notes about this meeting…"
+              className="w-full rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-900 outline-none placeholder:text-zinc-400 focus:border-zinc-400 transition-colors resize-none"
+            />
+          </div>
+          {meetingError && <p className="rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">{meetingError}</p>}
+          <div className="flex items-center justify-end gap-2 border-t border-zinc-100 pt-3">
+            <Button type="button" variant="secondary" size="sm" onClick={() => setMeetingModal(false)}>Cancel</Button>
+            <Button type="submit" size="sm" loading={meetingSubmitting}>Save meeting</Button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 }
