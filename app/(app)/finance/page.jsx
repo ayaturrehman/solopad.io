@@ -3,12 +3,11 @@ import { Suspense } from "react";
 import { getSession } from "@/lib/session";
 import db from "@/lib/db";
 import { redirect } from "next/navigation";
-import Link from "next/link";
-import { cn, formatCurrency } from "@/lib/utils";
+import { formatCurrency } from "@/lib/utils";
 import ExpensesClient from "./ExpensesClient";
 import InvoicesClient from "../invoices/InvoicesClient";
 import PaymentsClient from "./PaymentsClient";
-import MonthlyCashflowChart from "./MonthlyCashflowChart";
+import FinanceOverviewClient from "./FinanceOverviewClient";
 import {
   DEFAULT_EXPENSE_CATEGORIES,
   getExpenseCategoryOptions,
@@ -16,8 +15,6 @@ import {
   supportsExtendedExpenseModels,
   syncRecurringExpenses,
 } from "@/lib/expenses";
-
-const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 const TABS = ["overview", "invoices", "payments", "expenses"];
 
@@ -131,115 +128,19 @@ export default async function FinancePage({ searchParams }) {
 
       {/* Overview tab */}
       {tab === "overview" && (
-        <div className="flex flex-col gap-4 px-4 py-4 md:px-6">
-          {/* KPI strip */}
-          <div className="overflow-hidden rounded border border-zinc-200 bg-white">
-            <div className="grid sm:grid-cols-2 xl:grid-cols-4">
-              {[
-                { label: "Revenue", value: formatCurrency(totalRevenue, currency), color: "text-green-600" },
-                { label: "Expenses", value: formatCurrency(totalExpenses, currency), color: "text-rose-500" },
-                { label: "Net Income", value: formatCurrency(netIncome, currency), color: "text-zinc-900" },
-                { label: "Outstanding", value: formatCurrency(outstanding, currency), color: "text-amber-600" },
-              ].map(({ label, value, color }, index) => (
-                <div
-                  key={label}
-                  className={cn(
-                    "relative px-4 py-4",
-                    index > 0 && "border-t border-zinc-100 sm:border-t-0",
-                    index >= 2 && "sm:border-t border-zinc-100 xl:border-t-0",
-                    index % 2 === 1 && "sm:border-l-0",
-                    index > 0 && "xl:border-l-0",
-                    index % 2 === 1 && "sm:before:absolute sm:before:left-0 sm:before:top-5 sm:before:bottom-5 sm:before:w-px sm:before:bg-zinc-100",
-                    index > 0 && "xl:before:absolute xl:before:left-0 xl:before:top-5 xl:before:bottom-5 xl:before:w-px xl:before:bg-zinc-100"
-                  )}
-                >
-                  <p className={`text-lg font-semibold tracking-tight ${color}`}>{value}</p>
-                  <p className="mt-1 text-sm text-zinc-400">{label}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Cashflow chart */}
-          <div className="rounded border border-zinc-200 bg-white px-4 py-4">
-            <h2 className="mb-5 font-semibold text-zinc-900">Monthly Cashflow</h2>
-            <MonthlyCashflowChart
-              months={MONTH_NAMES}
-              monthlyRevenue={monthlyRevenue}
-              monthlyExpenses={monthlyExpenses}
-              maxBar={maxBar}
-              currency={currency}
-            />
-          </div>
-
-          {/* Recent paid + expenses side by side */}
-          <div className="grid gap-4 lg:grid-cols-2">
-            <div className="rounded border border-zinc-200 bg-white px-4 py-4">
-              <div className="mb-4 flex items-center justify-between">
-                <h2 className="font-semibold text-zinc-900">Invoices</h2>
-                <Link href="/finance?tab=invoices" className="text-xs text-zinc-400 hover:text-zinc-700">Manage all</Link>
-              </div>
-              {invoices.length === 0 ? (
-                <p className="text-sm text-zinc-400">No invoices created yet.</p>
-              ) : (
-                <div className="space-y-2">
-                  {invoices.slice(0, 6).map((inv) => (
-                    <div key={inv.id} className="flex items-center justify-between rounded bg-zinc-50 px-3 py-2">
-                      <div>
-                        <p className="text-sm font-medium text-zinc-800">
-                          {inv.invoiceNumber || `INV-${inv.id.slice(-6).toUpperCase()}`}
-                        </p>
-                        <p className="text-xs text-zinc-400">{inv.project?.contact?.name}</p>
-                      </div>
-                      <span className="text-sm font-semibold text-zinc-700">{formatCurrency(inv.total, currency)}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <div className="rounded border border-zinc-200 bg-white px-4 py-4">
-              <div className="mb-4 flex items-center justify-between">
-                <h2 className="font-semibold text-zinc-900">Recent Payments</h2>
-                <Link href="/finance?tab=payments" className="text-xs text-zinc-400 hover:text-zinc-700">View all</Link>
-              </div>
-              {paid.length === 0 ? (
-                <p className="text-sm text-zinc-400">No payments yet this year.</p>
-              ) : (
-                <div className="space-y-2">
-                  {paid.slice(0, 6).map((inv) => (
-                    <div key={inv.id} className="flex items-center justify-between rounded bg-zinc-50 px-3 py-2">
-                      <div>
-                        <p className="text-sm font-medium text-zinc-800">
-                          {inv.invoiceNumber || `INV-${inv.id.slice(-6).toUpperCase()}`}
-                        </p>
-                        <p className="text-xs text-zinc-400">{inv.project?.contact?.name}</p>
-                      </div>
-                      <span className="text-sm font-semibold text-green-700">{formatCurrency(inv.total, currency)}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <div className="rounded border border-zinc-200 bg-white px-4 py-4">
-              <div className="mb-4 flex items-center justify-between">
-                <h2 className="font-semibold text-zinc-900">Expenses</h2>
-                <Link href="/finance?tab=expenses" className="text-xs text-zinc-400 hover:text-zinc-700">View all</Link>
-              </div>
-              {expenses.slice(0, 6).map((exp) => (
-                <div key={exp.id} className="flex items-center justify-between rounded bg-zinc-50 px-3 py-2 mb-2">
-                  <div>
-                    <p className="text-sm font-medium text-zinc-800">{exp.description}</p>
-                    <p className="text-xs capitalize text-zinc-400">{exp.category}</p>
-                  </div>
-                  <span className="text-sm font-semibold text-red-600">-{formatCurrency(exp.amount, currency)}</span>
-                </div>
-              ))}
-              {expenses.length === 0 && <p className="text-sm text-zinc-400">No expenses recorded yet.</p>}
-            </div>
-          </div>
-        </div>
+        <FinanceOverviewClient
+          totalRevenue={totalRevenue}
+          totalExpenses={totalExpenses}
+          netIncome={netIncome}
+          outstanding={outstanding}
+          monthlyRevenue={monthlyRevenue}
+          monthlyExpenses={monthlyExpenses}
+          maxBar={maxBar}
+          currency={currency}
+          invoices={invoices}
+          paid={paid}
+          expenses={expenses}
+        />
       )}
 
       {tab === "invoices" && (
