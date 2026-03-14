@@ -226,12 +226,14 @@ export default function ProjectsClient({ projects, currency = "USD", contacts = 
           <>
             <div className={collectionPageHeaderSegmentedGroupClassName}>
               <button
+                title="List view"
                 onClick={() => switchView("list")}
                 className={getCollectionPageHeaderSegmentedButtonClassName(view === "list", "left")}
               >
                 <List className="h-3.5 w-3.5" />
               </button>
               <button
+                title="Pipeline view"
                 onClick={() => switchView("pipeline")}
                 className={getCollectionPageHeaderSegmentedButtonClassName(view === "pipeline", "right")}
               >

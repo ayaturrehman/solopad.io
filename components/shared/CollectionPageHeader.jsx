@@ -13,7 +13,7 @@ export function getCollectionPageHeaderSegmentedButtonClassName(active, edge = "
     "inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium transition-colors",
     edge === "left" ? "rounded-l" : "",
     edge === "right" ? "rounded-r" : "",
-    active ? "bg-zinc-900 text-white" : "text-zinc-500 hover:text-zinc-900"
+    active ? "bg-zinc-700 text-white" : "text-zinc-500 hover:text-zinc-700"
   );
 }
 
