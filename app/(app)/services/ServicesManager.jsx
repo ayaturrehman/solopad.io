@@ -160,7 +160,7 @@ function ServiceStatusModal({ open, service, loading, onClose, onSubmit }) {
           <select
             value={status}
             onChange={(event) => setStatus(event.target.value)}
-            className="h-10 w-full rounded border border-zinc-200 px-3 text-sm outline-none focus:border-zinc-900"
+            className={selectClassName}
           >
             {SERVICE_STATUS_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>{option.label}</option>

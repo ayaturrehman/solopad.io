@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { selectClassName } from "@/components/ui/Input";
 import { Check, ChevronDown, ChevronRight, RefreshCw, Save, X } from "lucide-react";
 import ProposalPreview from "@/app/(app)/proposals/[id]/ProposalPreview";
 import ContractPreview from "@/app/(app)/contracts/[id]/ContractPreview";
@@ -688,7 +689,7 @@ export default function TemplateEditor({ initialTemplate }) {
               <select
                 value={template.fontFamily || "helvetica"}
                 onChange={(e) => set("fontFamily", e.target.value)}
-                className="h-9 w-full rounded border border-zinc-200 px-3 text-sm text-zinc-900 bg-white outline-none focus:border-zinc-400"
+                className={selectClassName}
               >
                 <option value="helvetica">Helvetica (Sans-serif)</option>
                 <option value="times">Times New Roman (Serif)</option>

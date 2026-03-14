@@ -7,6 +7,7 @@ import {
   CircleDollarSign, UserRound, Sparkles, ChevronDown, Settings2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { selectClassName } from "@/components/ui/Input";
 import ProposalRichTextEditor, { RichTextToolbar } from "../ProposalRichTextEditor";
 import { normalizeRichText } from "../richText";
 
@@ -231,7 +232,7 @@ export default function ProposalBuilderClient({
             </div>
             <div>
               <label className="mb-1 block text-[10px] font-semibold uppercase tracking-widest text-zinc-400"><FolderOpen className="inline h-3 w-3 mr-0.5" />Project</label>
-              <select value={projectId} onChange={(e) => handleProjectChange(e.target.value)} className="h-7 w-full rounded border border-zinc-200 bg-white px-2 text-xs text-zinc-900 outline-none focus:border-zinc-400">
+              <select value={projectId} onChange={(e) => handleProjectChange(e.target.value)} className={selectClassName}>
                 <option value="">None</option>
                 {projects.map((p) => <option key={p.id} value={p.id}>{p.title}</option>)}
               </select>
@@ -242,7 +243,7 @@ export default function ProposalBuilderClient({
             </div>
             <div>
               <label className="mb-1 block text-[10px] font-semibold uppercase tracking-widest text-zinc-400"><CircleDollarSign className="inline h-3 w-3 mr-0.5" />Currency</label>
-              <select value={currency} onChange={(e) => setCurrency(e.target.value)} className="h-7 w-full rounded border border-zinc-200 bg-white px-2 text-xs text-zinc-900 outline-none focus:border-zinc-400">
+              <select value={currency} onChange={(e) => setCurrency(e.target.value)} className={selectClassName}>
                 {CURRENCIES.map((c) => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>

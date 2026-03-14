@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, FileText, FileCheck2, ClipboardList } from "lucide-react";
+import { selectClassName } from "@/components/ui/Input";
 
 const TYPE_OPTIONS = [
   { value: "invoice", label: "Invoice", icon: FileText, desc: "For billing clients for your work" },
@@ -126,7 +127,7 @@ function NewTemplateForm() {
             <select
               value={copyFrom}
               onChange={(e) => setCopyFrom(e.target.value)}
-              className="w-full border border-zinc-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-900 bg-white"
+              className={selectClassName}
             >
               <option value="">Start from scratch</option>
               {existingTemplates.map((t) => (

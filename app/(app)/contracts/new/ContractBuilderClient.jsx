@@ -6,6 +6,7 @@ import {
   Plus, Trash2, AlertCircle, FolderOpen, UserRound, Sparkles, ChevronDown, Settings2, Search, X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { selectClassName } from "@/components/ui/Input";
 import ProposalRichTextEditor, { RichTextToolbar } from "../../proposals/ProposalRichTextEditor";
 import { normalizeRichText } from "../../proposals/richText";
 
@@ -343,7 +344,7 @@ export default function ContractBuilderClient({
               <select
                 value={projectId}
                 onChange={(e) => handleProjectChange(e.target.value)}
-                className="h-7 w-full rounded border border-zinc-200 bg-white px-2 text-xs text-zinc-900 outline-none focus:border-zinc-400"
+                className={selectClassName}
               >
                 <option value="">None</option>
                 {projects.map((p) => <option key={p.id} value={p.id}>{p.title}</option>)}
