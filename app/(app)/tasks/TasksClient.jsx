@@ -17,6 +17,8 @@ import {
   UserRound,
   ChevronRight,
   FileText,
+  Sparkles,
+  Loader2,
 } from "lucide-react";
 
 const PRIORITY_DOT = {
@@ -116,12 +118,46 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
   const [openMenu, setOpenMenu] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [expandedTaskIds, setExpandedTaskIds] = useState(() => new Set());
+  const [aiOpen, setAiOpen] = useState(false);
+  const [aiPrompt, setAiPrompt] = useState("");
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState("");
 
   function resetTaskForm() {
-    setFormData({
-      ...emptyTaskForm,
-      subtasks: [makeSubtask("")],
-    });
+    setFormData({ ...emptyTaskForm, subtasks: [makeSubtask("")] });
+    setAiOpen(false);
+    setAiPrompt("");
+    setAiError("");
+  }
+
+  async function handleAiGenerate() {
+    if (!aiPrompt.trim()) return;
+    setAiLoading(true);
+    setAiError("");
+    try {
+      const res = await fetch("/api/tasks/ai-generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ description: aiPrompt }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data?.error || "Failed to generate task.");
+      const t = data.task;
+      setFormData((prev) => ({
+        ...prev,
+        title: t.title,
+        description: t.description || "",
+        priority: t.priority,
+        dueDate: t.dueDate || "",
+        subtasks: t.subtasks.length ? t.subtasks : [makeSubtask("")],
+      }));
+      setAiOpen(false);
+      setAiPrompt("");
+    } catch (err) {
+      setAiError(err.message);
+    } finally {
+      setAiLoading(false);
+    }
   }
 
   function toggleExpanded(taskId) {
@@ -659,6 +695,48 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
         className="w-full max-w-3xl"
       >
           <form onSubmit={handleAddTask} className="flex flex-col gap-4">
+
+            {/* AI generate panel */}
+            {!aiOpen ? (
+              <button
+                type="button"
+                onClick={() => setAiOpen(true)}
+                className="flex items-center gap-2 rounded border border-dashed border-zinc-300 px-3 py-2 text-sm text-zinc-500 transition-colors hover:border-zinc-400 hover:bg-zinc-50 hover:text-zinc-700"
+              >
+                <Sparkles className="h-4 w-4 text-purple-500" />
+                Describe your milestone — AI will generate tasks &amp; subtasks
+              </button>
+            ) : (
+              <div className="rounded border border-purple-200 bg-purple-50 p-3 space-y-2">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="h-4 w-4 shrink-0 text-purple-500" />
+                  <span className="text-xs font-semibold text-purple-700">AI Task Generator</span>
+                  <button type="button" onClick={() => { setAiOpen(false); setAiPrompt(""); setAiError(""); }} className="ml-auto text-xs text-purple-400 hover:text-purple-600">✕</button>
+                </div>
+                <textarea
+                  autoFocus
+                  rows={3}
+                  value={aiPrompt}
+                  onChange={(e) => { setAiPrompt(e.target.value); setAiError(""); }}
+                  placeholder="e.g. Build a landing page for a SaaS product — design, copywriting, development and deployment by end of month"
+                  className="w-full rounded border border-purple-200 bg-white px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-purple-400 focus:outline-none resize-none"
+                />
+                {aiError && <p className="text-xs text-red-600">{aiError}</p>}
+                <div className="flex items-center justify-between">
+                  <p className="text-[11px] text-purple-500">AI will fill the form with a title, subtasks, priority &amp; due date</p>
+                  <button
+                    type="button"
+                    disabled={aiLoading || !aiPrompt.trim()}
+                    onClick={handleAiGenerate}
+                    className="flex items-center gap-1.5 rounded bg-purple-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-purple-700 disabled:opacity-50"
+                  >
+                    {aiLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
+                    {aiLoading ? "Generating…" : "Generate"}
+                  </button>
+                </div>
+              </div>
+            )}
+
             <input
               type="text"
               required
