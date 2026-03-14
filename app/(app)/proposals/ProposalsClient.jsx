@@ -4,13 +4,11 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
-  FileText, Plus, ChevronRight, List, Columns,
+  FileText, Plus, ChevronRight,
 } from "lucide-react";
 import { showNavigationLoading } from "@/components/shared/NavigationLoadingOverlay";
 import CollectionPageHeader, {
   collectionPageHeaderPrimaryActionClassName,
-  collectionPageHeaderSegmentedGroupClassName,
-  getCollectionPageHeaderSegmentedButtonClassName,
 } from "@/components/shared/CollectionPageHeader";
 import { CollectionDataTable, CollectionEmptyState } from "@/components/shared/CollectionDataTable";
 import { formatCurrency, formatDate, cn, isInteractiveEventTarget } from "@/lib/utils";
@@ -25,8 +23,6 @@ const STATUS_CONFIG = {
 
 const FILTERS = ["all", "draft", "sent", "accepted"];
 const MAX_BULK_SELECTION = 25;
-const PIPELINE_COLS = ["draft", "sent", "accepted", "declined"];
-const STORAGE_KEY = "proposals-view";
 
 function getHeaderLabel(filterKey) {
   if (filterKey === "all") return "Proposals";
@@ -40,11 +36,6 @@ function getFilterLabel(filterKey) {
 
 export default function ProposalsClient({ proposals }) {
   const router = useRouter();
-  const [view, setView] = useState(() => {
-    if (typeof window === "undefined") return "list";
-    const saved = localStorage.getItem(STORAGE_KEY);
-    return saved === "pipeline" ? "pipeline" : "list";
-  });
   const [statusFilter, setStatusFilter] = useState("all");
   const [filterOpen, setFilterOpen] = useState(false);
   const [filterSearch, setFilterSearch] = useState("");
@@ -204,31 +195,13 @@ export default function ProposalsClient({ proposals }) {
           setFilterSearch("");
         }}
         actions={(
-          <>
-            <div className={collectionPageHeaderSegmentedGroupClassName}>
-              <button
-                title="List view"
-                onClick={() => { setView("list"); localStorage.setItem(STORAGE_KEY, "list"); }}
-                className={getCollectionPageHeaderSegmentedButtonClassName(view === "list", "left")}
-              >
-                <List className="h-3.5 w-3.5" />
-              </button>
-              <button
-                title="Pipeline view"
-                onClick={() => { setView("pipeline"); localStorage.setItem(STORAGE_KEY, "pipeline"); }}
-                className={getCollectionPageHeaderSegmentedButtonClassName(view === "pipeline", "right")}
-              >
-                <Columns className="h-3.5 w-3.5" />
-              </button>
-            </div>
-            <Link
-              href="/proposals/new"
-              className={collectionPageHeaderPrimaryActionClassName}
-            >
-              <Plus className="h-4 w-4" />
-              New proposal
-            </Link>
-          </>
+          <Link
+            href="/proposals/new"
+            className={collectionPageHeaderPrimaryActionClassName}
+          >
+            <Plus className="h-4 w-4" />
+            New proposal
+          </Link>
         )}
       />
 
@@ -250,43 +223,6 @@ export default function ProposalsClient({ proposals }) {
           )}
           className="border-dashed"
         />
-      ) : view === "pipeline" ? (
-        <div className="overflow-x-auto pb-4">
-          <div className="flex gap-4 min-w-max px-4 pt-4">
-            {PIPELINE_COLS.map((col) => {
-              const colConfig = STATUS_CONFIG[col];
-              const colProposals = filteredProposals.filter((p) => (p.status || "draft") === col);
-              return (
-                <div key={col} className="w-64 flex-shrink-0">
-                  <div className="mb-3 flex items-center justify-between">
-                    <span className="text-xs font-semibold uppercase tracking-wider text-zinc-500">{colConfig.label}</span>
-                    <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-500">{colProposals.length}</span>
-                  </div>
-                  <div className="space-y-2">
-                    {colProposals.map((proposal) => (
-                      <Link
-                        key={proposal.id}
-                        href={`/proposals/${proposal.id}`}
-                        className="block rounded border border-zinc-200 bg-white p-3 transition-shadow hover:shadow-sm"
-                      >
-                        <p className="text-sm font-medium text-zinc-900 leading-snug">{proposal.title}</p>
-                        {proposal.clientName && (
-                          <p className="mt-0.5 text-xs text-zinc-400">{proposal.clientName}</p>
-                        )}
-                        {proposal.total != null && (
-                          <p className="mt-2 text-xs font-semibold text-zinc-700">{formatCurrency(proposal.total, "USD")}</p>
-                        )}
-                      </Link>
-                    ))}
-                    {colProposals.length === 0 && (
-                      <div className="rounded border border-dashed border-zinc-200 px-3 py-4 text-center text-xs text-zinc-300">No proposals</div>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
       ) : (
         <CollectionDataTable
           rows={filteredProposals}
