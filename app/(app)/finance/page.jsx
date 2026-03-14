@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { getSession } from "@/lib/session";
 import db from "@/lib/db";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { formatCurrency } from "@/lib/utils";
 import ExpensesClient from "./ExpensesClient";
 import InvoicesClient from "../invoices/InvoicesClient";
