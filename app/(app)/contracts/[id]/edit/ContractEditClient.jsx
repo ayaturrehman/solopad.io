@@ -2,6 +2,6 @@
 
 import ContractBuilderClient from "../../new/ContractBuilderClient";
 
-export default function ContractEditClient({ contract, projects }) {
-  return <ContractBuilderClient initialContract={contract} projects={projects} mode="edit" />;
+export default function ContractEditClient({ contract, projects, contacts }) {
+  return <ContractBuilderClient initialContract={contract} projects={projects} contacts={contacts} mode="edit" />;
 }

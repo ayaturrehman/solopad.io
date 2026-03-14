@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
-  Plus, Trash2, AlertCircle, FolderOpen, UserRound, Sparkles, ChevronDown, Settings2,
+  Plus, Trash2, AlertCircle, FolderOpen, UserRound, Sparkles, ChevronDown, Settings2, Search, X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ProposalRichTextEditor, { RichTextToolbar } from "../../proposals/ProposalRichTextEditor";
@@ -30,8 +30,94 @@ function parseClauses(raw, fallback) {
   } catch { return fallback; }
 }
 
+// ── Contact picker combobox ───────────────────────────────────────────────
+function ContactPicker({ contacts = [], value, onChange }) {
+  const [query, setQuery] = useState("");
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+
+  const selected = contacts.find((c) => c.id === value) || null;
+
+  const filtered = useMemo(() => {
+    const q = query.toLowerCase();
+    return contacts.filter(
+      (c) =>
+        c.name?.toLowerCase().includes(q) ||
+        c.email?.toLowerCase().includes(q) ||
+        c.company?.toLowerCase().includes(q)
+    );
+  }, [contacts, query]);
+
+  useEffect(() => {
+    function onClickOutside(e) {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    }
+    document.addEventListener("mousedown", onClickOutside);
+    return () => document.removeEventListener("mousedown", onClickOutside);
+  }, []);
+
+  function select(contact) {
+    onChange(contact);
+    setOpen(false);
+    setQuery("");
+  }
+
+  function clear() {
+    onChange(null);
+    setQuery("");
+  }
+
+  return (
+    <div ref={ref} className="relative">
+      {selected ? (
+        <div className="flex h-7 items-center justify-between gap-1 rounded border border-zinc-200 bg-white px-2 text-xs text-zinc-900">
+          <span className="truncate font-medium">{selected.name}</span>
+          {selected.company && <span className="shrink-0 text-zinc-400">· {selected.company}</span>}
+          <button type="button" onClick={clear} className="shrink-0 text-zinc-300 hover:text-zinc-600 transition-colors">
+            <X className="h-3 w-3" />
+          </button>
+        </div>
+      ) : (
+        <div className="flex h-7 items-center gap-1 rounded border border-zinc-200 bg-white px-2">
+          <Search className="h-3 w-3 shrink-0 text-zinc-400" />
+          <input
+            value={query}
+            onChange={(e) => { setQuery(e.target.value); setOpen(true); }}
+            onFocus={() => setOpen(true)}
+            placeholder="Search contacts…"
+            className="flex-1 bg-transparent text-xs text-zinc-900 outline-none placeholder:text-zinc-400"
+          />
+        </div>
+      )}
+
+      {open && !selected && (
+        <div className="absolute left-0 top-[calc(100%+4px)] z-50 w-64 rounded border border-zinc-200 bg-white py-1 shadow-lg">
+          {filtered.length === 0 ? (
+            <div className="px-3 py-2 text-xs text-zinc-400">No contacts found</div>
+          ) : (
+            filtered.slice(0, 8).map((c) => (
+              <button
+                key={c.id}
+                type="button"
+                onClick={() => select(c)}
+                className="flex w-full flex-col items-start px-3 py-2 text-left transition-colors hover:bg-zinc-50"
+              >
+                <span className="text-xs font-medium text-zinc-900">{c.name}</span>
+                {(c.email || c.company) && (
+                  <span className="text-[10px] text-zinc-400">{[c.company, c.email].filter(Boolean).join(" · ")}</span>
+                )}
+              </button>
+            ))
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function ContractBuilderClient({
   projects,
+  contacts = [],
   user,
   initialContract = null,
   mode = "create",
@@ -49,12 +135,30 @@ export default function ContractBuilderClient({
   const [activeEditor, setActiveEditor] = useState(null);
   const [pageCount, setPageCount] = useState(1);
 
+  // Find initial contact match from contacts list
+  const initialContact = useMemo(() => {
+    if (!initialContract?.clientName) return null;
+    return contacts.find((c) => c.name === initialContract.clientName) || null;
+  }, []);
+
   const [title, setTitle] = useState(initialContract?.title || "Untitled contract");
   const [projectId, setProjectId] = useState(initialContract?.projectId || "");
+  const [selectedContact, setSelectedContact] = useState(initialContact);
   const [clientName, setClientName] = useState(initialContract?.clientName || "");
   const [clientEmail, setClientEmail] = useState(initialContract?.clientEmail || "");
   const [signatureName, setSignatureName] = useState(initialContract?.signatureName || "");
   const [clauses, setClauses] = useState(() => parseClauses(initialContract?.clauses, DEFAULT_CLAUSES));
+
+  // Sync clientName/clientEmail from selectedContact
+  useEffect(() => {
+    if (selectedContact) {
+      setClientName(selectedContact.name || "");
+      setClientEmail(selectedContact.email || "");
+    } else if (!selectedContact && !initialContract) {
+      setClientName("");
+      setClientEmail("");
+    }
+  }, [selectedContact]);
 
   const selectedProject = useMemo(() => projects.find((p) => p.id === projectId) || null, [projectId, projects]);
 
@@ -74,9 +178,25 @@ export default function ContractBuilderClient({
     if (!id) return;
     const p = projects.find((x) => x.id === id);
     if (!p) return;
-    if (!clientName.trim()) setClientName(p.contact?.name || "");
-    if (!clientEmail.trim()) setClientEmail(p.contact?.email || "");
+    // Auto-select the project's contact if no contact chosen yet
+    if (!selectedContact && p.contact?.name) {
+      const match = contacts.find((c) => c.name === p.contact.name);
+      if (match) {
+        setSelectedContact(match);
+      } else {
+        setClientName(p.contact.name || "");
+        setClientEmail(p.contact.email || "");
+      }
+    }
     if (!title || title === "Untitled contract") setTitle(`${p.title} — Service Agreement`);
+  }
+
+  function handleContactSelect(contact) {
+    setSelectedContact(contact);
+    if (!contact) {
+      setClientName("");
+      setClientEmail("");
+    }
   }
 
   function addClause() { setClauses((c) => [...c, { heading: "New clause", body: "" }]); }
@@ -201,27 +321,19 @@ export default function ContractBuilderClient({
       {settingsOpen && (
         <div className="shrink-0 border-b border-zinc-100 bg-zinc-50 px-4 py-3">
           <div className="mx-auto grid max-w-3xl grid-cols-2 gap-3 sm:grid-cols-4">
-            <div>
+            <div className="sm:col-span-2">
               <label className="mb-1 block text-[10px] font-semibold uppercase tracking-widest text-zinc-400">
                 <UserRound className="inline h-3 w-3 mr-0.5" />
-                Client name
+                Client
               </label>
-              <input
-                value={clientName}
-                onChange={(e) => setClientName(e.target.value)}
-                placeholder="Jane Smith"
-                className="h-7 w-full rounded border border-zinc-200 bg-white px-2 text-xs text-zinc-900 outline-none focus:border-zinc-400"
+              <ContactPicker
+                contacts={contacts}
+                value={selectedContact?.id || null}
+                onChange={handleContactSelect}
               />
-            </div>
-            <div>
-              <label className="mb-1 block text-[10px] font-semibold uppercase tracking-widest text-zinc-400">Client email</label>
-              <input
-                type="email"
-                value={clientEmail}
-                onChange={(e) => setClientEmail(e.target.value)}
-                placeholder="jane@example.com"
-                className="h-7 w-full rounded border border-zinc-200 bg-white px-2 text-xs text-zinc-900 outline-none focus:border-zinc-400"
-              />
+              {selectedContact?.email && (
+                <div className="mt-0.5 truncate text-[10px] text-zinc-400">{selectedContact.email}</div>
+              )}
             </div>
             <div>
               <label className="mb-1 block text-[10px] font-semibold uppercase tracking-widest text-zinc-400">
@@ -310,11 +422,8 @@ export default function ContractBuilderClient({
 
                 <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
                   {clauses.map((clause, i) => (
-                    <div key={`clause-${i}`} style={{ paddingBottom: 24, marginBottom: 24, borderBottom: "1px solid #f3f4f6" }}>
+                    <div key={`clause-${i}`} style={{ paddingBottom: 24, marginBottom: 24 }}>
                       <div style={{ display: "flex", alignItems: "flex-start", gap: 8, marginBottom: 8 }}>
-                        <span style={{ flexShrink: 0, fontSize: 10, fontWeight: 700, color: "#d1d5db", marginTop: 3, minWidth: 20 }}>
-                          {i + 1}.
-                        </span>
                         <input
                           value={clause.heading}
                           onChange={(e) => updateClause(i, "heading", e.target.value)}
@@ -331,17 +440,15 @@ export default function ContractBuilderClient({
                           </button>
                         )}
                       </div>
-                      <div style={{ paddingLeft: 20 }}>
-                        <ProposalRichTextEditor
-                          value={clause.body}
-                          onChange={(v) => updateClause(i, "body", v)}
-                          placeholder="Write the full text of this clause…"
-                          minHeightClassName="min-h-[60px]"
-                          noToolbar
-                          onEditorFocus={setActiveEditor}
-                          onEditorBlur={() => setActiveEditor(null)}
-                        />
-                      </div>
+                      <ProposalRichTextEditor
+                        value={clause.body}
+                        onChange={(v) => updateClause(i, "body", v)}
+                        placeholder="Write the full text of this clause…"
+                        minHeightClassName="min-h-[60px]"
+                        noToolbar
+                        onEditorFocus={setActiveEditor}
+                        onEditorBlur={() => setActiveEditor(null)}
+                      />
                     </div>
                   ))}
                 </div>

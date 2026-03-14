@@ -9,7 +9,7 @@ export default async function ContractEditPage({ params }) {
   const session = await getSession();
   if (!session?.user) redirect("/login");
 
-  const [contract, projects] = await Promise.all([
+  const [contract, projects, contacts] = await Promise.all([
     db.contract.findFirst({
       where: { id, userId: session.user.id },
       include: { project: { select: { id: true, title: true } } },
@@ -19,9 +19,14 @@ export default async function ContractEditPage({ params }) {
       select: { id: true, title: true, contact: { select: { name: true, email: true } } },
       orderBy: { createdAt: "desc" },
     }),
+    db.contact.findMany({
+      where: { userId: session.user.id },
+      select: { id: true, name: true, email: true, company: true },
+      orderBy: { name: "asc" },
+    }),
   ]);
 
   if (!contract) notFound();
 
-  return <ContractEditClient contract={contract} projects={projects} />;
+  return <ContractEditClient contract={contract} projects={projects} contacts={contacts} />;
 }
