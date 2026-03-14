@@ -164,10 +164,12 @@ export default function ContactFormModal({
       onClose={() => onOpenChange(false)}
       title={modalTitle}
       layout="side"
-      className="max-w-2xl bg-zinc-100"
+      className="max-w-xl"
     >
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid gap-4 md:grid-cols-2">
+      <form onSubmit={handleSubmit} className="space-y-5">
+
+        {/* Section: Contact details */}
+        <div className="grid gap-3 sm:grid-cols-2">
           <Input
             label="Full name"
             value={form.name}
@@ -215,22 +217,24 @@ export default function ContactFormModal({
             label="Website"
             value={form.website}
             onChange={(event) => setField("website", event.target.value)}
-            className="md:col-span-2"
+            className="sm:col-span-2"
           />
         </div>
 
-        <div className="space-y-4 border-t border-zinc-100 pt-5">
-          <div className="grid gap-4 md:grid-cols-3">
+        {/* Section: CRM */}
+        <div className="border-t border-zinc-100 pt-4">
+          <p className="mb-3 text-[11px] font-semibold uppercase tracking-wider text-zinc-400">CRM</p>
+          <div className="grid gap-3 sm:grid-cols-3">
             <Select
-            label="Status"
-            value={form.status}
-            onChange={(event) => setField("status", event.target.value)}
-            required
-            error={fieldErrors.status}
-          >
-            {CONTACT_STATUS_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>{option.label}</option>
-            ))}
+              label="Status"
+              value={form.status}
+              onChange={(event) => setField("status", event.target.value)}
+              required
+              error={fieldErrors.status}
+            >
+              {CONTACT_STATUS_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>{option.label}</option>
+              ))}
             </Select>
             <Input
               label="Lead source"
@@ -238,23 +242,25 @@ export default function ContactFormModal({
               onChange={(event) => setField("source", event.target.value)}
             />
             <Input
-            label="Est. value"
-            type="text"
-            inputMode="decimal"
-            value={form.value}
-            onChange={(event) => setField("value", event.target.value)}
-            error={fieldErrors.value}
-          />
+              label="Est. value"
+              type="text"
+              inputMode="decimal"
+              value={form.value}
+              onChange={(event) => setField("value", event.target.value)}
+              error={fieldErrors.value}
+            />
           </div>
         </div>
 
-        <div className="space-y-4 border-t border-zinc-100 pt-5">
-          <div className="grid gap-4 md:grid-cols-2">
+        {/* Section: Address */}
+        <div className="border-t border-zinc-100 pt-4">
+          <p className="mb-3 text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Address</p>
+          <div className="grid gap-3 sm:grid-cols-2">
             <Input
-              label="Address"
+              label="Street address"
               value={form.companyAddressLine1}
               onChange={(event) => setField("companyAddressLine1", event.target.value)}
-              className="md:col-span-2"
+              className="sm:col-span-2"
             />
             <Input
               label="City"
@@ -279,18 +285,20 @@ export default function ContactFormModal({
           </div>
         </div>
 
-        <div className="space-y-4 border-t border-zinc-100 pt-5">
+        {/* Section: Notes */}
+        <div className="border-t border-zinc-100 pt-4">
           <TextareaField
             label="Notes"
             value={form.notes}
             onChange={(event) => setField("notes", event.target.value)}
-            placeholder=""
+            placeholder="Any additional notes about this contact…"
+            rows={3}
           />
         </div>
 
         {error ? <p className="rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">{error}</p> : null}
 
-        <div className="flex items-center justify-end gap-3 border-t border-zinc-100 pt-3">
+        <div className="flex items-center justify-end gap-2 border-t border-zinc-100 pt-3">
           <Button
             type="button"
             variant="secondary"
