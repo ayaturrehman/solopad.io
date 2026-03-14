@@ -4,35 +4,7 @@ import db from "@/lib/db";
 import { renderToBuffer } from "@react-pdf/renderer";
 import React from "react";
 import { InvoicePDF } from "@/lib/pdf-templates/InvoicePDF";
-
-const DEFAULT_TEMPLATE = {
-  accentColor: "#18181b",
-  fontFamily: "helvetica",
-  fontSize: 10,
-  headerStyle: "classic",
-  showLogo: true,
-  showWatermark: false,
-  showPageNumbers: true,
-  showItemNumbers: true,
-  showTaxColumn: false,
-  tableHeaderBg: "#18181b",
-  tableHeaderTextColor: "#ffffff",
-  showTerms: false,
-  termsText: null,
-  showSignatureBlock: false,
-  paperSize: "A4",
-  orientation: "portrait",
-  marginTop: 0.4,
-  marginBottom: 0.4,
-  marginLeft: 0.4,
-  marginRight: 0.4,
-  footerText: null,
-  logoUrl: null,
-  businessName: null,
-  businessAddress: null,
-  businessEmail: null,
-  businessPhone: null,
-};
+import { DEFAULT_PDF_TEMPLATE } from "@/lib/pdf-templates/defaultTemplate";
 
 export async function GET(request, { params }) {
   const { id } = await params;
@@ -49,12 +21,14 @@ export async function GET(request, { params }) {
           clientName: true,
           clientEmail: true,
           userId: true,
+          contact: { select: { name: true, email: true } },
         },
       },
     },
   });
 
-  if (!invoice || invoice.project.userId !== session.user.id) {
+  // Guard: null project or wrong user
+  if (!invoice || !invoice.project || invoice.project.userId !== session.user.id) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
@@ -62,11 +36,17 @@ export async function GET(request, { params }) {
     where: { userId: session.user.id, type: "invoice", isDefault: true },
   });
 
-  const template = templateRecord || DEFAULT_TEMPLATE;
+  const template = templateRecord || DEFAULT_PDF_TEMPLATE;
 
-  const buffer = await renderToBuffer(
-    React.createElement(InvoicePDF, { invoice, template })
-  );
+  let buffer;
+  try {
+    buffer = await renderToBuffer(
+      React.createElement(InvoicePDF, { invoice, template })
+    );
+  } catch (err) {
+    console.error("[PDF] Invoice render failed:", err);
+    return NextResponse.json({ error: "Failed to generate PDF" }, { status: 500 });
+  }
 
   const invoiceNum = invoice.invoiceNumber ? `-${invoice.invoiceNumber}` : "";
   const filename = `invoice${invoiceNum}.pdf`;

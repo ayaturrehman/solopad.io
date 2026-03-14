@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 import db from "@/lib/db";
+import { validateTemplateUpdates } from "@/lib/pdf-templates/defaultTemplate";
 
 export async function GET(request, { params }) {
   const { id } = await params;
@@ -29,6 +30,11 @@ export async function PATCH(request, { params }) {
   const body = await request.json();
   // Strip protected fields
   const { id: _id, userId: _userId, createdAt: _createdAt, isDefault: _isDefault, ...updates } = body;
+
+  const errors = validateTemplateUpdates(updates);
+  if (errors.length > 0) {
+    return NextResponse.json({ error: errors.join("; ") }, { status: 400 });
+  }
 
   const template = await db.pdfTemplate.update({
     where: { id },

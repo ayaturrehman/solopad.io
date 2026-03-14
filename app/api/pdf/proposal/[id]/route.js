@@ -4,35 +4,7 @@ import db from "@/lib/db";
 import { renderToBuffer } from "@react-pdf/renderer";
 import React from "react";
 import { ProposalPDF } from "@/lib/pdf-templates/ProposalPDF";
-
-const DEFAULT_TEMPLATE = {
-  accentColor: "#18181b",
-  fontFamily: "helvetica",
-  fontSize: 10,
-  headerStyle: "classic",
-  showLogo: true,
-  showWatermark: false,
-  showPageNumbers: true,
-  showItemNumbers: true,
-  showTaxColumn: false,
-  tableHeaderBg: "#18181b",
-  tableHeaderTextColor: "#ffffff",
-  showTerms: false,
-  termsText: null,
-  showSignatureBlock: true,
-  paperSize: "A4",
-  orientation: "portrait",
-  marginTop: 0.4,
-  marginBottom: 0.4,
-  marginLeft: 0.4,
-  marginRight: 0.4,
-  footerText: null,
-  logoUrl: null,
-  businessName: null,
-  businessAddress: null,
-  businessEmail: null,
-  businessPhone: null,
-};
+import { DEFAULT_PDF_TEMPLATE } from "@/lib/pdf-templates/defaultTemplate";
 
 export async function GET(request, { params }) {
   const { id } = await params;
@@ -54,11 +26,17 @@ export async function GET(request, { params }) {
     where: { userId: session.user.id, type: "proposal", isDefault: true },
   });
 
-  const template = templateRecord || DEFAULT_TEMPLATE;
+  const template = templateRecord || DEFAULT_PDF_TEMPLATE;
 
-  const buffer = await renderToBuffer(
-    React.createElement(ProposalPDF, { proposal, template })
-  );
+  let buffer;
+  try {
+    buffer = await renderToBuffer(
+      React.createElement(ProposalPDF, { proposal, template })
+    );
+  } catch (err) {
+    console.error("[PDF] Proposal render failed:", err);
+    return NextResponse.json({ error: "Failed to generate PDF" }, { status: 500 });
+  }
 
   const safeName = proposal.title.replace(/[^a-z0-9]/gi, "-").toLowerCase();
   const filename = `proposal-${safeName}.pdf`;

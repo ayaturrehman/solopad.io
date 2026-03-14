@@ -12,16 +12,15 @@ export async function POST(request, { params }) {
   });
   if (!template) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-  // Unset all defaults for this user+type
-  await db.pdfTemplate.updateMany({
-    where: { userId: session.user.id, type: template.type },
-    data: { isDefault: false },
-  });
-
-  // Set this one as default
-  const updated = await db.pdfTemplate.update({
-    where: { id },
-    data: { isDefault: true },
+  const updated = await db.$transaction(async (tx) => {
+    await tx.pdfTemplate.updateMany({
+      where: { userId: session.user.id, type: template.type },
+      data: { isDefault: false },
+    });
+    return tx.pdfTemplate.update({
+      where: { id },
+      data: { isDefault: true },
+    });
   });
 
   return NextResponse.json({ template: updated });
