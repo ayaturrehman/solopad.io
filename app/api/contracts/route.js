@@ -31,15 +31,15 @@ export async function POST(req) {
   if (projectId) {
     project = await db.project.findFirst({
       where: { id: projectId, ...filter },
-      select: { id: true, clientName: true, clientEmail: true },
+      select: { id: true, contact: { select: { name: true, email: true } } },
     });
     if (!project) {
       return NextResponse.json({ error: "Invalid project." }, { status: 400 });
     }
   }
 
-  const resolvedClientName = clientName?.trim() || project?.clientName || "";
-  const resolvedClientEmail = clientEmail?.trim() || project?.clientEmail || null;
+  const resolvedClientName = clientName?.trim() || project?.contact?.name || "";
+  const resolvedClientEmail = clientEmail?.trim() || project?.contact?.email || null;
 
   if (!title?.trim() || !resolvedClientName) {
     return NextResponse.json({ error: "Title and client name are required" }, { status: 400 });

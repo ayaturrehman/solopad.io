@@ -101,13 +101,13 @@ export default async function FinancePage({ searchParams }) {
   const maxBar = Math.max(...monthlyRevenue, ...monthlyExpenses, 1);
 
   return (
-    <div className="space-y-8">
+    <div className="px-4 py-4 md:px-6">
       <div>
-        <h1 className="text-2xl font-bold text-zinc-900">Finance</h1>
+        <h1 className="text-2xl font-semibold tracking-tight text-zinc-900">Finance</h1>
       </div>
 
       {/* Tabs */}
-      <div className="border-b border-zinc-200">
+      <div className="border-b border-zinc-200 px-4">
         {TABS.map((t) => (
           <Link
             key={t}
@@ -143,7 +143,7 @@ export default async function FinancePage({ searchParams }) {
                 <div
                   key={label}
                   className={cn(
-                    "relative px-5 py-4",
+                    "relative px-4 py-4",
                     index > 0 && "border-t border-zinc-100 sm:border-t-0",
                     index >= 2 && "sm:border-t border-zinc-100 xl:border-t-0",
                     index % 2 === 1 && "sm:border-l-0",
@@ -160,7 +160,7 @@ export default async function FinancePage({ searchParams }) {
           </div>
 
           {/* Cashflow chart */}
-          <div className="rounded border border-zinc-200 bg-white p-6">
+          <div className="rounded border border-zinc-200 bg-white px-4 py-4">
             <h2 className="mb-5 font-semibold text-zinc-900">Monthly Cashflow</h2>
             <MonthlyCashflowChart
               months={MONTH_NAMES}
@@ -173,7 +173,7 @@ export default async function FinancePage({ searchParams }) {
 
           {/* Recent paid + expenses side by side */}
           <div className="grid gap-6 lg:grid-cols-2">
-            <div className="rounded border border-zinc-200 bg-white p-6">
+            <div className="rounded border border-zinc-200 bg-white px-4 py-4">
               <div className="mb-4 flex items-center justify-between">
                 <h2 className="font-semibold text-zinc-900">Invoices</h2>
                 <Link href="/finance?tab=invoices" className="text-xs text-zinc-400 hover:text-zinc-700">Manage all</Link>
@@ -197,7 +197,7 @@ export default async function FinancePage({ searchParams }) {
               )}
             </div>
 
-            <div className="rounded border border-zinc-200 bg-white p-6">
+            <div className="rounded border border-zinc-200 bg-white px-4 py-4">
               <div className="mb-4 flex items-center justify-between">
                 <h2 className="font-semibold text-zinc-900">Recent Payments</h2>
                 <Link href="/finance?tab=payments" className="text-xs text-zinc-400 hover:text-zinc-700">View all</Link>
@@ -221,7 +221,7 @@ export default async function FinancePage({ searchParams }) {
               )}
             </div>
 
-            <div className="rounded border border-zinc-200 bg-white p-6">
+            <div className="rounded border border-zinc-200 bg-white px-4 py-4">
               <div className="mb-4 flex items-center justify-between">
                 <h2 className="font-semibold text-zinc-900">Expenses</h2>
                 <Link href="/finance?tab=expenses" className="text-xs text-zinc-400 hover:text-zinc-700">View all</Link>
@@ -254,7 +254,7 @@ export default async function FinancePage({ searchParams }) {
           {paid.length === 0 ? (
             <p className="px-6 py-10 text-sm text-zinc-400">No payments collected yet this year.</p>
           ) : (
-            <table className="w-full text-sm">
+            <div className="overflow-x-auto"><table className="w-full min-w-[500px] text-sm">
               <thead className="border-b border-zinc-100 bg-zinc-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-semibold text-zinc-500">Invoice</th>
@@ -275,7 +275,7 @@ export default async function FinancePage({ searchParams }) {
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </table></div>
           )}
         </div>
       )}

@@ -4,9 +4,10 @@ import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { cn, formatDate } from "@/lib/utils";
 import Modal from "@/components/shared/Modal";
+import Button from "@/components/ui/Button";
+import CollectionPageHeader, { collectionPageHeaderPrimaryActionClassName } from "@/components/shared/CollectionPageHeader";
 import {
   Plus,
-  Search,
   ChevronDown,
   MoreHorizontal,
   Check,
@@ -353,7 +354,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
       <div className="border-t border-zinc-100 bg-zinc-50/60 px-5 py-4">
         {task.description && (
           <div className="mb-4">
-            <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+            <div className="mb-2 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-400">
               <FileText className="h-3.5 w-3.5" />
               Notes
             </div>
@@ -363,7 +364,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
 
         {subtasks.length > 0 && (
           <div>
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-400">Subtasks</p>
+            <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-400">Subtasks</p>
             <div className="space-y-2">
               {subtasks.map((subtask) => (
                 <button
@@ -396,7 +397,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
     return (
       <div className="space-y-4 bg-zinc-50 px-4 py-4">
         <input
-          className="w-full rounded border border-zinc-300 px-3 py-1.5 text-sm focus:border-zinc-500 focus:outline-none"
+          className="w-full rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-900 outline-none transition-colors focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900 placeholder:text-zinc-400"
           value={editData.title}
           onChange={(e) => setEditData((data) => ({ ...data, title: e.target.value }))}
           placeholder="Task title"
@@ -404,7 +405,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
 
         <div className="grid gap-3 md:grid-cols-5">
           <select
-            className="rounded border border-zinc-200 px-3 py-1.5 text-sm text-zinc-600 focus:outline-none"
+            className="w-full rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-900 outline-none transition-colors focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900"
             value={editData.projectId}
             onChange={(e) => setEditData((data) => ({ ...data, projectId: e.target.value }))}
           >
@@ -414,7 +415,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
             ))}
           </select>
           <select
-            className="rounded border border-zinc-200 px-3 py-1.5 text-sm text-zinc-600 focus:outline-none"
+            className="w-full rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-900 outline-none transition-colors focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900"
             value={editData.assigneeMemberId}
             onChange={(e) => setEditData((data) => ({ ...data, assigneeMemberId: e.target.value }))}
           >
@@ -426,7 +427,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
             ))}
           </select>
           <select
-            className="rounded border border-zinc-200 px-3 py-1.5 text-sm text-zinc-600 focus:outline-none"
+            className="w-full rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-900 outline-none transition-colors focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900"
             value={editData.status}
             onChange={(e) => setEditData((data) => ({ ...data, status: e.target.value }))}
           >
@@ -437,7 +438,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
             ))}
           </select>
           <select
-            className="rounded border border-zinc-200 px-3 py-1.5 text-sm text-zinc-600 focus:outline-none"
+            className="w-full rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-900 outline-none transition-colors focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900"
             value={editData.priority}
             onChange={(e) => setEditData((data) => ({ ...data, priority: e.target.value }))}
           >
@@ -447,7 +448,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
           </select>
           <input
             type="date"
-            className="rounded border border-zinc-200 px-3 py-1.5 text-sm text-zinc-600 focus:outline-none"
+            className="w-full rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-900 outline-none transition-colors focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900"
             value={editData.dueDate}
             onChange={(e) => setEditData((data) => ({ ...data, dueDate: e.target.value }))}
           />
@@ -458,7 +459,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
           value={editData.description}
           onChange={(e) => setEditData((data) => ({ ...data, description: e.target.value }))}
           placeholder="Add notes for this task"
-          className="w-full rounded border border-zinc-200 px-3 py-1.5 text-sm text-zinc-800 focus:border-zinc-400 focus:outline-none"
+          className="w-full rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-900 outline-none transition-colors focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900 placeholder:text-zinc-400"
         />
 
         <div className="space-y-2">
@@ -474,7 +475,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
                 value={subtask.title}
                 onChange={(e) => updateEditSubtask(subtask.id, e.target.value)}
                 placeholder="Subtask title"
-                className="flex-1 rounded border border-zinc-200 px-3 py-1.5 text-sm focus:border-zinc-400 focus:outline-none"
+                className="flex-1 rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-900 outline-none transition-colors focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900 placeholder:text-zinc-400"
               />
               <button
                 type="button"
@@ -488,20 +489,22 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
         </div>
 
         <div className="flex justify-end gap-2">
-          <button
+          <Button
             type="button"
+            variant="ghost"
+            size="sm"
             onClick={() => setEditingId(null)}
-            className="rounded px-3 py-1.5 text-sm text-zinc-500 hover:text-zinc-900"
           >
             Cancel
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
+            variant="primary"
+            size="sm"
             onClick={() => saveEdit(taskId)}
-            className="rounded bg-zinc-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-zinc-700"
           >
             Save task
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -619,79 +622,31 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
   }
 
   return (
-    <div className="space-y-4">
-      <div className="mb-6">
-        <div className="flex items-center justify-between">
-          <div className="relative">
-            <button
-              type="button"
-              onClick={() => setFilterOpen((v) => !v)}
-              className="inline-flex items-center justify-between gap-2 rounded-lg bg-zinc-100 px-2 py-1 text-left text-sm text-zinc-900 transition-colors hover:bg-zinc-200"
-            >
-              <span className="text-lg font-bold tracking-tight">{getFilterHeading(filter)}</span>
-              <ChevronDown className={cn("h-5 w-5 text-blue-600 transition-transform", filterOpen ? "rotate-180" : "")} />
-            </button>
-
-            {filterOpen && (
-              <div className="absolute left-0 top-[calc(100%+8px)] z-20 w-[15rem] max-w-[calc(100vw-2rem)] rounded-xl border border-zinc-200 bg-white p-2 shadow-xl">
-                <div className="relative mb-3">
-                  <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
-                  <input
-                    type="text"
-                    value={filterSearch}
-                    onChange={(e) => setFilterSearch(e.target.value)}
-                    placeholder="Search filters"
-                    className="h-11 w-full rounded-xl border border-blue-500 pl-11 pr-4 text-sm text-zinc-900 outline-none placeholder:text-zinc-400"
-                  />
-                </div>
-                <div className="max-h-72 overflow-y-auto py-1">
-                  {["Status", "Date"].map((group) => {
-                    const groupOptions = filterOptions.filter((option) => option.group === group);
-                    if (groupOptions.length === 0) return null;
-
-                    return (
-                      <div key={group} className="mb-1 last:mb-0">
-                        <div className="px-4 pb-1 pt-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-400">
-                          {group}
-                        </div>
-                        {groupOptions.map((option) => (
-                          <button
-                            key={option.key}
-                            type="button"
-                            onClick={() => {
-                              setFilter(option.key);
-                              setFilterOpen(false);
-                              setFilterSearch("");
-                            }}
-                            className={cn(
-                              "flex w-full items-center justify-between rounded-xl px-4 py-2.5 text-left text-sm transition-colors",
-                              filter === option.key ? "bg-zinc-50 text-zinc-900" : "text-zinc-700 hover:bg-zinc-50"
-                            )}
-                          >
-                            <span>{option.label}</span>
-                            {filter === option.key && <span className="h-2.5 w-2.5 rounded-full bg-blue-600" />}
-                          </button>
-                        ))}
-                      </div>
-                    );
-                  })}
-                  {filterOptions.length === 0 && (
-                    <div className="px-4 py-6 text-sm text-zinc-400">No filters found.</div>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
+    <div className="space-y-4 px-4 py-4 md:px-6">
+      <CollectionPageHeader
+        title={getFilterHeading(filter)}
+        filterOpen={filterOpen}
+        onToggleFilter={() => setFilterOpen((value) => !value)}
+        filterSearch={filterSearch}
+        onFilterSearchChange={setFilterSearch}
+        filterOptions={filterOptions}
+        selectedFilterKey={filter}
+        onSelectFilter={(key) => {
+          setFilter(key);
+          setFilterOpen(false);
+          setFilterSearch("");
+        }}
+        actions={(
           <button
             type="button"
             onClick={() => setShowForm((value) => !value)}
-            className="inline-flex items-center gap-1.5 rounded bg-zinc-900 px-3 py-1.5 text-sm font-semibold text-white hover:bg-zinc-700"
+            className={collectionPageHeaderPrimaryActionClassName}
           >
             <Plus className="h-4 w-4" />
             Add task
           </button>
-        </div>
-      </div>
+        )}
+      />
 
       <Modal
         open={showForm}
@@ -700,7 +655,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
           resetTaskForm();
         }}
         title="Add Task"
-        className="max-w-3xl"
+        className="w-full max-w-3xl"
       >
           <form onSubmit={handleAddTask} className="flex flex-col gap-4">
             <input
@@ -709,14 +664,14 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
               placeholder="Task title"
               value={formData.title}
               onChange={(e) => setFormData((data) => ({ ...data, title: e.target.value }))}
-              className="w-full rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-800 focus:border-zinc-400 focus:outline-none"
+              className="w-full rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-900 outline-none transition-colors focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900 placeholder:text-zinc-400"
             />
 
             <div className="grid gap-3 md:grid-cols-5">
               <select
                 value={formData.projectId}
                 onChange={(e) => setFormData((data) => ({ ...data, projectId: e.target.value }))}
-                className="rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-600 focus:outline-none"
+                className="w-full rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-900 outline-none transition-colors focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900"
               >
                 <option value="">No project</option>
                 {projects.map((project) => (
@@ -726,7 +681,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
               <select
                 value={formData.assigneeMemberId}
                 onChange={(e) => setFormData((data) => ({ ...data, assigneeMemberId: e.target.value }))}
-                className="rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-600 focus:outline-none"
+                className="w-full rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-900 outline-none transition-colors focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900"
               >
                 <option value="">Me</option>
                 {teamMembers.map((member) => (
@@ -738,7 +693,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
               <select
                 value={formData.status}
                 onChange={(e) => setFormData((data) => ({ ...data, status: e.target.value }))}
-                className="rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-600 focus:outline-none"
+                className="w-full rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-900 outline-none transition-colors focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900"
               >
                 {STATUS_OPTIONS.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -749,7 +704,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
               <select
                 value={formData.priority}
                 onChange={(e) => setFormData((data) => ({ ...data, priority: e.target.value }))}
-                className="rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-600 focus:outline-none"
+                className="w-full rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-900 outline-none transition-colors focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900"
               >
                 <option value="low">Low priority</option>
                 <option value="medium">Medium priority</option>
@@ -759,7 +714,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
                 type="date"
                 value={formData.dueDate}
                 onChange={(e) => setFormData((data) => ({ ...data, dueDate: e.target.value }))}
-                className="rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-600 focus:outline-none"
+                className="w-full rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-900 outline-none transition-colors focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900"
               />
             </div>
 
@@ -768,7 +723,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
               value={formData.description}
               onChange={(e) => setFormData((data) => ({ ...data, description: e.target.value }))}
               placeholder="Add notes for this task"
-              className="w-full rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-800 focus:border-zinc-400 focus:outline-none"
+              className="w-full rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-900 outline-none transition-colors focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900 placeholder:text-zinc-400"
             />
 
             <div className="space-y-2">
@@ -784,7 +739,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
                     value={subtask.title}
                     onChange={(e) => updateFormSubtask(subtask.id, e.target.value)}
                     placeholder="Subtask title"
-                    className="flex-1 rounded border border-zinc-200 px-3 py-2 text-sm focus:border-zinc-400 focus:outline-none"
+                    className="flex-1 rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-900 outline-none transition-colors focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900 placeholder:text-zinc-400"
                   />
                   <button
                     type="button"
@@ -798,23 +753,23 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
             </div>
 
             <div className="flex justify-end gap-2 border-t border-zinc-100 pt-4">
-              <button
+              <Button
                 type="button"
+                variant="secondary"
                 onClick={() => {
                   setShowForm(false);
                   resetTaskForm();
                 }}
-                className="rounded border border-zinc-200 px-4 py-2 text-sm text-zinc-600 hover:bg-zinc-50"
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
                 type="submit"
-                disabled={submitting}
-                className="rounded bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50"
+                variant="primary"
+                loading={submitting}
               >
                 {submitting ? "Adding..." : "Add task"}
-              </button>
+              </Button>
             </div>
           </form>
       </Modal>
@@ -838,7 +793,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
           <>
             {active.length > 0 && <div className="border-t border-zinc-100" />}
             <div className="px-3 py-1.5">
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-400">
                 Completed ({done.length})
               </p>
             </div>

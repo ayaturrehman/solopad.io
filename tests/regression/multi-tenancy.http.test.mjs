@@ -9,15 +9,46 @@ import bcrypt from "bcryptjs";
 import { PrismaClient } from "@prisma/client";
 
 const root = "/Users/ayaturrehman/Documents/syslom/Project/freelancer/freelance-managment-app";
+const rawTestDatabaseUrl = process.env.TEST_REGRESSION_DATABASE_URL || "";
+const canRunHttpSuite = /^postgres(ql)?:\/\//.test(rawTestDatabaseUrl);
 
 let tmpDir;
-let dbPath;
 let dbUrl;
 let baseUrl;
 let server;
 let prisma;
 let seed;
 let appDir;
+
+function withSchema(url, schema) {
+  const parsed = new URL(url);
+  parsed.searchParams.set("schema", schema);
+  return parsed.toString();
+}
+
+async function runCommand(command, args, options = {}) {
+  await new Promise((resolve, reject) => {
+    const child = spawn(command, args, { stdio: "pipe", ...options });
+    let output = "";
+
+    child.stdout.on("data", (chunk) => {
+      output += chunk.toString();
+    });
+
+    child.stderr.on("data", (chunk) => {
+      output += chunk.toString();
+    });
+
+    child.on("exit", (code) => {
+      if (code === 0) {
+        resolve();
+        return;
+      }
+
+      reject(new Error(`${command} ${args.join(" ")} failed with code ${code}\n${output}`));
+    });
+  });
+}
 
 function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -139,12 +170,13 @@ async function login(email, password) {
   return cookies;
 }
 
+if (!canRunHttpSuite) {
+  test.skip("multi-tenancy HTTP suite requires TEST_REGRESSION_DATABASE_URL", () => {});
+} else {
 before(async () => {
   tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "portalkit-regression-"));
   appDir = path.join(tmpDir, "app-under-test");
-  dbPath = path.join(tmpDir, "multi-tenant.db");
-  await fs.copyFile(path.join(root, "prisma/dev.db"), dbPath);
-  dbUrl = `file:${dbPath}`;
+  dbUrl = withSchema(rawTestDatabaseUrl, `regression_${Date.now()}`);
   await fs.cp(root, appDir, {
     recursive: true,
     filter(source) {
@@ -153,6 +185,14 @@ before(async () => {
     },
   });
   await fs.symlink(path.join(root, "node_modules"), path.join(appDir, "node_modules"), "dir");
+  await runCommand("npx", ["prisma", "db", "push", "--skip-generate"], {
+    cwd: appDir,
+    env: {
+      ...process.env,
+      DATABASE_URL: dbUrl,
+      DIRECT_URL: dbUrl,
+    },
+  });
 
   prisma = new PrismaClient({
     datasources: {
@@ -173,7 +213,7 @@ before(async () => {
   await prisma.task.deleteMany();
   await prisma.recurringExpense.deleteMany();
   await prisma.expense.deleteMany();
-  await prisma.template.deleteMany();
+  await prisma.pdfTemplate.deleteMany();
   await prisma.notification.deleteMany();
   await prisma.booking.deleteMany();
   await prisma.availabilityRule.deleteMany();
@@ -440,23 +480,19 @@ before(async () => {
     },
   });
 
-  const templateA = await prisma.template.create({
+  const templateA = await prisma.pdfTemplate.create({
     data: {
-      businessId: businessA.id,
       userId: ownerA.id,
       type: "proposal",
       name: "Tenant A Template",
-      content: JSON.stringify({ pages: [] }),
     },
   });
 
-  const templateB = await prisma.template.create({
+  const templateB = await prisma.pdfTemplate.create({
     data: {
-      businessId: businessB.id,
       userId: ownerB.id,
       type: "contract",
       name: "Tenant B Template",
-      content: JSON.stringify({ pages: [] }),
     },
   });
 
@@ -631,7 +667,7 @@ test("list routes stay tenant-scoped across critical modules", async () => {
     jsonRequest("/api/services", { cookies: ownerCookies }),
     jsonRequest("/api/tasks", { cookies: ownerCookies }),
     jsonRequest("/api/expenses", { cookies: ownerCookies }),
-    jsonRequest("/api/templates", { cookies: ownerCookies }),
+    jsonRequest("/api/pdf-templates", { cookies: ownerCookies }),
   ]);
 
   assert.equal(ownerProposals.status, 200);
@@ -662,11 +698,11 @@ test("authenticated app routes render successfully for the active tenant", async
     ["/projects", "Projects"],
     ["/proposals", "Proposals"],
     ["/contracts", "Contracts"],
-    ["/templates", "Templates"],
     ["/finance?tab=invoices", "Invoices"],
     ["/tasks", "Tasks"],
     ["/services", "Services"],
     ["/settings", "Settings"],
+    ["/settings/pdf-templates", "PDF Templates"],
   ];
 
   for (const [pathname, marker] of routeChecks) {
@@ -675,3 +711,4 @@ test("authenticated app routes render successfully for the active tenant", async
     assert.match(page.body, new RegExp(marker, "i"), `${pathname} should include ${marker}`);
   }
 });
+}

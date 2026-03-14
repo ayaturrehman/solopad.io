@@ -2,112 +2,56 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { CONTACT_STATUS_OPTIONS } from "@/lib/contacts";
+import ContactFormModal from "../ContactFormModal";
+import { cn } from "@/lib/utils";
 
-export default function ContactEditForm({ contact }) {
+export default function ContactEditForm({
+  contact,
+  className,
+  editButtonClassName,
+  deleteButtonClassName,
+}) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [form, setForm] = useState({
-    name: contact.name,
-    company: contact.company || "",
-    email: contact.email || "",
-    phone: contact.phone || "",
-    status: contact.status,
-    notes: contact.notes || "",
-  });
 
-  const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
-
-  async function handleSave() {
-    if (!form.name.trim()) return setError("Name is required.");
-    setLoading(true);
-    setError("");
-    try {
-      const res = await fetch(`/api/contacts/${contact.id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to save.");
-      setOpen(false);
-      router.refresh();
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+  async function handleDelete() {
+    if (!window.confirm("Delete this contact? This will unlink them from all projects.")) return;
+    const res = await fetch(`/api/contacts/${contact.id}`, { method: "DELETE" });
+    if (res.ok) {
+      router.push("/contacts");
     }
   }
 
-  async function handleDelete() {
-    if (!confirm("Delete this contact? This will unlink them from all projects.")) return;
-    const res = await fetch(`/api/contacts/${contact.id}`, { method: "DELETE" });
-    if (res.ok) router.push("/contacts");
-  }
-
-  if (!open) {
-    return (
-      <div className="flex gap-2">
+  return (
+    <>
+      <div className={cn("flex flex-wrap gap-2", className)}>
         <button
+          type="button"
           onClick={() => setOpen(true)}
-          className="flex-1 rounded border border-zinc-200 py-2 text-center text-sm font-medium text-zinc-700 hover:bg-zinc-50"
+          className={cn(
+            "inline-flex h-9 items-center justify-center rounded border border-zinc-200 px-3 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50",
+            editButtonClassName
+          )}
         >
           Edit contact
         </button>
         <button
+          type="button"
           onClick={handleDelete}
-          className="rounded border border-red-100 px-3 py-1.5 text-sm font-medium text-red-500 hover:bg-red-50"
+          className={cn(
+            "inline-flex h-9 items-center justify-center rounded border border-red-200 px-3 text-sm font-medium text-red-600 transition-colors hover:bg-red-50",
+            deleteButtonClassName
+          )}
         >
           Delete
         </button>
       </div>
-    );
-  }
 
-  return (
-    <div className="rounded border border-zinc-200 bg-white p-5">
-      <h3 className="mb-4 font-semibold text-zinc-900">Edit contact</h3>
-      <div className="space-y-3">
-        <div>
-          <label className="mb-1 block text-xs font-medium text-zinc-700">Name *</label>
-          <input value={form.name} onChange={set("name")} className="w-full rounded border border-zinc-200 px-3 py-1.5 text-sm outline-none focus:border-zinc-400" />
-        </div>
-        <div>
-          <label className="mb-1 block text-xs font-medium text-zinc-700">Company</label>
-          <input value={form.company} onChange={set("company")} className="w-full rounded border border-zinc-200 px-3 py-1.5 text-sm outline-none focus:border-zinc-400" />
-        </div>
-        <div>
-          <label className="mb-1 block text-xs font-medium text-zinc-700">Email</label>
-          <input type="email" value={form.email} onChange={set("email")} className="w-full rounded border border-zinc-200 px-3 py-1.5 text-sm outline-none focus:border-zinc-400" />
-        </div>
-        <div>
-          <label className="mb-1 block text-xs font-medium text-zinc-700">Phone</label>
-          <input type="tel" value={form.phone} onChange={set("phone")} className="w-full rounded border border-zinc-200 px-3 py-1.5 text-sm outline-none focus:border-zinc-400" />
-        </div>
-        <div>
-          <label className="mb-1 block text-xs font-medium text-zinc-700">Status</label>
-          <select value={form.status} onChange={set("status")} className="w-full rounded border border-zinc-200 px-3 py-1.5 text-sm outline-none focus:border-zinc-400">
-            {CONTACT_STATUS_OPTIONS.map((o) => (
-              <option key={o.value} value={o.value}>{o.label}</option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label className="mb-1 block text-xs font-medium text-zinc-700">Notes</label>
-          <textarea value={form.notes} onChange={set("notes")} rows={3} className="w-full resize-none rounded border border-zinc-200 px-3 py-1.5 text-sm outline-none focus:border-zinc-400" />
-        </div>
-        {error && <p className="text-xs text-red-500">{error}</p>}
-        <div className="flex gap-2 pt-1">
-          <button onClick={handleSave} disabled={loading} className="flex-1 rounded bg-zinc-900 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50">
-            {loading ? "Saving…" : "Save changes"}
-          </button>
-          <button onClick={() => setOpen(false)} className="rounded border border-zinc-200 px-3 py-1.5 text-sm text-zinc-600 hover:bg-zinc-50">
-            Cancel
-          </button>
-        </div>
-      </div>
-    </div>
+      <ContactFormModal
+        open={open}
+        onOpenChange={setOpen}
+        contact={contact}
+      />
+    </>
   );
 }

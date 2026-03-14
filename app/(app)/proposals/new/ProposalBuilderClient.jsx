@@ -1,426 +1,472 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { ArrowLeft, Plus, Trash2, AlertCircle } from "lucide-react";
+import {
+  Plus, Trash2, AlertCircle, FolderOpen, CalendarDays,
+  CircleDollarSign, UserRound, Sparkles, ChevronDown, Settings2,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
+import ProposalRichTextEditor, { RichTextToolbar } from "../ProposalRichTextEditor";
+import { normalizeRichText } from "../richText";
+
+// A4 at 96dpi
+const PAGE_W = 794;
+const PAGE_H = 1123;
+const PAGE_PAD_H = 72;  // ~1 inch top/bottom padding inside paper
+const PAGE_PAD_V = 80;  // ~1.1 inch left/right padding inside paper
 
 const DEFAULT_SECTIONS = [
-  { heading: "Project Overview", body: "" },
-  { heading: "Deliverables", body: "" },
+  { heading: "Executive summary", body: "Summarize the client need, your recommendation, and the expected outcome." },
+  { heading: "Scope of work", body: "Outline what is included, what you will deliver, and how the engagement will be structured." },
+  { heading: "Timeline", body: "Explain phases, milestones, and the target delivery window." },
 ];
-
-const DEFAULT_PRICING = [{ description: "", amount: "" }];
-
+const DEFAULT_PRICING = [
+  { description: "Discovery and planning", amount: "" },
+  { description: "Delivery and implementation", amount: "" },
+];
 const CURRENCIES = ["USD", "GBP", "EUR", "CAD", "AUD"];
 
-function Label({ children }) {
-  return (
-    <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-zinc-500">
-      {children}
-    </label>
-  );
+function parseJsonArray(value, fallback) {
+  if (!value) return fallback;
+  try {
+    const parsed = typeof value === "string" ? JSON.parse(value) : value;
+    return Array.isArray(parsed) && parsed.length ? parsed : fallback;
+  } catch { return fallback; }
 }
 
-function Input({ className, ...props }) {
-  return (
-    <input
-      className={cn(
-        "w-full rounded border border-zinc-200 bg-white px-3 py-1.5 text-sm text-zinc-900 placeholder-zinc-400 outline-none focus:border-zinc-400 focus:ring-1 focus:ring-zinc-200",
-        className
-      )}
-      {...props}
-    />
-  );
-}
+function pt(n) { return Math.round(n * 1.333); }
 
-function Textarea({ className, ...props }) {
-  return (
-    <textarea
-      className={cn(
-        "w-full rounded border border-zinc-200 bg-white px-3 py-1.5 text-sm text-zinc-900 placeholder-zinc-400 outline-none focus:border-zinc-400 focus:ring-1 focus:ring-zinc-200 resize-none",
-        className
-      )}
-      {...props}
-    />
-  );
-}
-
-export default function ProposalBuilderClient({ projects, user }) {
+export default function ProposalBuilderClient({
+  projects,
+  user,
+  initialProposal = null,
+  defaultTemplate = null,
+  mode = "create",
+}) {
   const router = useRouter();
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState("");
+  const isEdit = mode === "edit" || Boolean(initialProposal);
+  const paperRef = useRef(null);
 
-  // Form state
-  const [title, setTitle] = useState("");
-  const [projectId, setProjectId] = useState("");
-  const [clientName, setClientName] = useState("");
-  const [clientEmail, setClientEmail] = useState("");
-  const [validUntil, setValidUntil] = useState("");
-  const [currency, setCurrency] = useState(user?.currency || "USD");
-  const [intro, setIntro] = useState("");
-  const [sections, setSections] = useState(DEFAULT_SECTIONS);
-  const [pricing, setPricing] = useState(DEFAULT_PRICING);
+  // Use template margins (same as ProposalPreview / print page)
+  const tpl = defaultTemplate || {};
+  const paperPadH = pt((tpl.marginLeft || 0.55) * 72);
+  const paperPadTop = pt((tpl.marginTop || 0.55) * 72);
+  const paperPadBot = pt((tpl.marginBottom || 0.55) * 72);
+
+  const [saving, setSaving] = useState(false);
+  const [drafting, setDrafting] = useState(false);
+  const [error, setError] = useState("");
+  const [brief, setBrief] = useState("");
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [briefOpen, setBriefOpen] = useState(false);
+  const [activeEditor, setActiveEditor] = useState(null);
+  const [pageCount, setPageCount] = useState(1);
+
+  const [title, setTitle] = useState(initialProposal?.title || "Untitled proposal");
+  const [projectId, setProjectId] = useState(initialProposal?.projectId || "");
+  const [clientName, setClientName] = useState(initialProposal?.clientName || "");
+  const [clientEmail, setClientEmail] = useState(initialProposal?.clientEmail || "");
+  const [validUntil, setValidUntil] = useState(
+    initialProposal?.validUntil ? new Date(initialProposal.validUntil).toISOString().split("T")[0] : ""
+  );
+  const [currency, setCurrency] = useState(initialProposal?.currency || user?.currency || "USD");
+  const [intro, setIntro] = useState(
+    initialProposal?.intro || "Outline the opportunity, your recommendation, and why this proposal is the right fit."
+  );
+  const [sections, setSections] = useState(() => parseJsonArray(initialProposal?.sections, DEFAULT_SECTIONS));
+  const [pricing, setPricing] = useState(() => parseJsonArray(initialProposal?.pricing, DEFAULT_PRICING));
   const [taxRate, setTaxRate] = useState(0);
 
+  const subtotal = pricing.reduce((sum, row) => sum + (parseFloat(row.amount) || 0), 0);
+  const taxAmount = subtotal * ((parseFloat(taxRate) || 0) / 100);
+  const total = subtotal + taxAmount;
+  const symbol = { USD: "$", GBP: "£", EUR: "€", CAD: "CA$", AUD: "A$" }[currency] || "$";
+
+  const selectedProject = useMemo(() => projects.find((p) => p.id === projectId) || null, [projectId, projects]);
+
+  // Measure paper height and compute page count
   useEffect(() => {
-    try {
-      const raw = sessionStorage.getItem("proposalTemplate");
-      if (!raw) return;
-
-      const template = JSON.parse(raw);
-      sessionStorage.removeItem("proposalTemplate");
-
-      if (template.title) setTitle(template.title);
-      if (template.intro) setIntro(template.intro);
-      if (template.currency) setCurrency(template.currency);
-      if (Array.isArray(template.sections) && template.sections.length) setSections(template.sections);
-      if (Array.isArray(template.pricing) && template.pricing.length) setPricing(template.pricing);
-    } catch {
-      sessionStorage.removeItem("proposalTemplate");
-    }
+    if (!paperRef.current) return;
+    const ro = new ResizeObserver(() => {
+      if (!paperRef.current) return;
+      setPageCount(Math.max(1, Math.ceil(paperRef.current.scrollHeight / PAGE_H)));
+    });
+    ro.observe(paperRef.current);
+    return () => ro.disconnect();
   }, []);
 
   function handleProjectChange(id) {
     setProjectId(id);
-    if (id) {
-      const project = projects.find((p) => p.id === id);
-      if (project) {
-        setClientName(project.clientName || "");
-        setClientEmail(project.clientEmail || "");
-      }
+    if (!id) return;
+    const p = projects.find((x) => x.id === id);
+    if (!p) return;
+    setClientName(p.clientName || "");
+    setClientEmail(p.clientEmail || "");
+    if (!title || title === "Untitled proposal") setTitle(`${p.title} proposal`);
+  }
+
+  function addSection() { setSections((c) => [...c, { heading: "New section", body: "" }]); }
+  function removeSection(i) { setSections((c) => c.filter((_, idx) => idx !== i)); }
+  function updateSection(i, field, value) { setSections((c) => c.map((s, idx) => idx === i ? { ...s, [field]: value } : s)); }
+  function addPricingRow() { setPricing((c) => [...c, { description: "", amount: "" }]); }
+  function removePricingRow(i) { setPricing((c) => c.filter((_, idx) => idx !== i)); }
+  function updatePricingRow(i, field, value) { setPricing((c) => c.map((r, idx) => idx === i ? { ...r, [field]: value } : r)); }
+
+  function setDraftIntoForm(draft) {
+    if (draft.title) setTitle(draft.title);
+    if (draft.clientName) setClientName(draft.clientName);
+    if (draft.clientEmail) setClientEmail(draft.clientEmail);
+    if (draft.intro) setIntro(draft.intro);
+    if (Array.isArray(draft.sections) && draft.sections.length) setSections(draft.sections);
+    if (Array.isArray(draft.pricing) && draft.pricing.length)
+      setPricing(draft.pricing.map((r) => ({ description: r.description || "", amount: r.amount?.toString?.() || "" })));
+    if (typeof draft.taxRate === "number") setTaxRate(draft.taxRate.toString());
+    if (typeof draft.validUntilDays === "number") {
+      const d = new Date(); d.setDate(d.getDate() + draft.validUntilDays);
+      setValidUntil(d.toISOString().split("T")[0]);
     }
   }
-
-  function addSection() {
-    setSections((s) => [...s, { heading: "", body: "" }]);
-  }
-
-  function removeSection(i) {
-    setSections((s) => s.filter((_, idx) => idx !== i));
-  }
-
-  function updateSection(i, field, value) {
-    setSections((s) => s.map((sec, idx) => (idx === i ? { ...sec, [field]: value } : sec)));
-  }
-
-  function addPricingRow() {
-    setPricing((p) => [...p, { description: "", amount: "" }]);
-  }
-
-  function removePricingRow(i) {
-    setPricing((p) => p.filter((_, idx) => idx !== i));
-  }
-
-  function updatePricingRow(i, field, value) {
-    setPricing((p) => p.map((row, idx) => (idx === i ? { ...row, [field]: value } : row)));
-  }
-
-  const subtotal = pricing.reduce((sum, row) => sum + (parseFloat(row.amount) || 0), 0);
-  const taxAmount = subtotal * (parseFloat(taxRate) / 100 || 0);
-  const total = subtotal + taxAmount;
-
-  const currencySymbols = { USD: "$", GBP: "£", EUR: "€", CAD: "CA$", AUD: "A$" };
-  const symbol = currencySymbols[currency] || "$";
 
   async function handleSave(status) {
-    if (!title.trim()) { setError("Title is required"); return; }
-    if (!clientName.trim()) { setError("Client name is required"); return; }
-    setError("");
-    setSaving(true);
-
+    if (!title.trim()) { setError("Proposal title is required."); return; }
+    if (!clientName.trim()) { setError("Client name is required."); return; }
+    setSaving(true); setError("");
+    const payload = {
+      title: title.trim(), projectId: projectId || null, clientName: clientName.trim(),
+      clientEmail: clientEmail.trim() || null, intro: normalizeRichText(intro),
+      sections: sections.map((s) => ({ ...s, heading: s.heading?.trim() || "", body: normalizeRichText(s.body) || "" })),
+      pricing, total, currency, validUntil: validUntil || null, status,
+    };
     try {
-      const res = await fetch("/api/proposals", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title, projectId: projectId || null, clientName, clientEmail,
-          intro, sections, pricing, total, currency, validUntil: validUntil || null, status,
-        }),
+      const res = await fetch(isEdit ? `/api/proposals/${initialProposal.id}` : "/api/proposals", {
+        method: isEdit ? "PATCH" : "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload),
       });
       const data = await res.json();
-      if (!res.ok) { setError(data.error || "Failed to save"); return; }
-      router.push(`/proposals/${data.proposal.id}`);
-    } catch {
-      setError("Something went wrong");
-    } finally {
-      setSaving(false);
-    }
+      if (!res.ok) { setError(data.error || "Failed to save proposal."); return; }
+      router.push(`/proposals/${isEdit ? initialProposal.id : data.proposal.id}`);
+    } catch { setError("Failed to save proposal."); }
+    finally { setSaving(false); }
   }
 
+  async function handleDraftFromBrief() {
+    if (!brief.trim()) { setError("Add a short brief first."); return; }
+    setDrafting(true); setError("");
+    try {
+      const res = await fetch("/api/proposals/draft", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ requirements: brief.trim(), projectTitle: selectedProject?.title || null, clientName: clientName || null, clientEmail: clientEmail || null, currency }),
+      });
+      const data = await res.json();
+      if (!res.ok) { setError(data.error || "Failed to draft proposal."); return; }
+      setDraftIntoForm(data.draft); setBriefOpen(false);
+    } catch { setError("Failed to draft proposal."); }
+    finally { setDrafting(false); }
+  }
+
+  // Page break separator positions
+  const pageBreaks = Array.from({ length: pageCount - 1 }, (_, i) => PAGE_H * (i + 1));
+
   return (
-    <div>
-      <div className="mb-6 flex items-center gap-3">
-        <Link href="/proposals" className="inline-flex items-center gap-2 text-sm text-zinc-500 hover:text-zinc-900">
-          <ArrowLeft className="h-4 w-4" />
-          Proposals
-        </Link>
-        <span className="text-zinc-300">/</span>
-        <span className="text-sm font-medium text-zinc-900">New proposal</span>
+    <div className="flex h-[calc(100vh-57px)] flex-col overflow-hidden proposal-builder-root">
+      <style>{`
+        @media print {
+          @page { size: 210mm 297mm; margin: 0; }
+          html, body { background: #fff !important; }
+          .proposal-builder-root > *:not(.proposal-print-paper-wrap) { display: none !important; }
+          .proposal-print-paper-wrap {
+            display: block !important;
+            background: #fff !important;
+            padding: 0 !important;
+          }
+          .proposal-print-paper {
+            width: 210mm !important;
+            min-height: auto !important;
+            box-shadow: none !important;
+            padding: 19mm 21mm !important;
+          }
+          .proposal-print-section { break-inside: avoid; }
+          .proposal-print-pagebreak { display: none !important; }
+        }
+      `}</style>
+
+      {/* ── Top bar ─────────────────────────────────────────────── */}
+      <div className="flex h-11 shrink-0 items-center gap-3 border-b border-zinc-200 bg-white px-4">
+        <input
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          className="min-w-0 flex-1 border-0 bg-transparent text-sm font-semibold text-zinc-900 outline-none placeholder:text-zinc-400"
+          placeholder="Untitled proposal"
+        />
+        <button
+          type="button"
+          onClick={() => setSettingsOpen((v) => !v)}
+          className={cn("inline-flex h-7 items-center gap-1.5 rounded px-2.5 text-xs font-medium transition-colors", settingsOpen ? "bg-zinc-100 text-zinc-900" : "text-zinc-500 hover:bg-zinc-50 hover:text-zinc-800")}
+        >
+          <Settings2 className="h-3.5 w-3.5" />
+          Details
+        </button>
+        <div className="h-4 w-px bg-zinc-200" />
+        <button type="button" onClick={() => handleSave("draft")} disabled={saving}
+          className="h-7 rounded border border-zinc-200 px-3 text-xs font-medium text-zinc-600 transition hover:bg-zinc-50 disabled:opacity-50">
+          {saving ? "Saving…" : "Save draft"}
+        </button>
+        <button type="button" onClick={() => handleSave("sent")} disabled={saving}
+          className="h-7 rounded bg-blue-600 px-3 text-xs font-medium text-white transition hover:bg-blue-700 disabled:opacity-50">
+          {saving ? "Saving…" : isEdit ? "Save & update" : "Save & send"}
+        </button>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_280px]">
-        {/* Left: Form */}
-        <div className="space-y-5">
-          {/* Details */}
-          <div className="rounded border border-zinc-200 bg-white p-6">
-            <h2 className="mb-4 text-sm font-semibold text-zinc-900">Details</h2>
-            <div className="grid gap-4">
-              <div>
-                <Label>Proposal title *</Label>
-                <Input
+      {/* ── Settings panel (collapsible) ─────────────────────────── */}
+      {settingsOpen && (
+        <div className="shrink-0 border-b border-zinc-100 bg-zinc-50 px-4 py-3">
+          <div className="mx-auto grid max-w-3xl grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+            <div>
+              <label className="mb-1 block text-[10px] font-semibold uppercase tracking-widest text-zinc-400">Client</label>
+              <input value={clientName} onChange={(e) => setClientName(e.target.value)} placeholder="Name" className="h-7 w-full rounded border border-zinc-200 bg-white px-2 text-xs text-zinc-900 outline-none focus:border-zinc-400" />
+            </div>
+            <div>
+              <label className="mb-1 block text-[10px] font-semibold uppercase tracking-widest text-zinc-400">Email</label>
+              <input type="email" value={clientEmail} onChange={(e) => setClientEmail(e.target.value)} placeholder="email@co.com" className="h-7 w-full rounded border border-zinc-200 bg-white px-2 text-xs text-zinc-900 outline-none focus:border-zinc-400" />
+            </div>
+            <div>
+              <label className="mb-1 block text-[10px] font-semibold uppercase tracking-widest text-zinc-400"><FolderOpen className="inline h-3 w-3 mr-0.5" />Project</label>
+              <select value={projectId} onChange={(e) => handleProjectChange(e.target.value)} className="h-7 w-full rounded border border-zinc-200 bg-white px-2 text-xs text-zinc-900 outline-none focus:border-zinc-400">
+                <option value="">None</option>
+                {projects.map((p) => <option key={p.id} value={p.id}>{p.title}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="mb-1 block text-[10px] font-semibold uppercase tracking-widest text-zinc-400"><CalendarDays className="inline h-3 w-3 mr-0.5" />Valid until</label>
+              <input type="date" value={validUntil} onChange={(e) => setValidUntil(e.target.value)} className="h-7 w-full rounded border border-zinc-200 bg-white px-2 text-xs text-zinc-900 outline-none focus:border-zinc-400" />
+            </div>
+            <div>
+              <label className="mb-1 block text-[10px] font-semibold uppercase tracking-widest text-zinc-400"><CircleDollarSign className="inline h-3 w-3 mr-0.5" />Currency</label>
+              <select value={currency} onChange={(e) => setCurrency(e.target.value)} className="h-7 w-full rounded border border-zinc-200 bg-white px-2 text-xs text-zinc-900 outline-none focus:border-zinc-400">
+                {CURRENCIES.map((c) => <option key={c} value={c}>{c}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="mb-1 block text-[10px] font-semibold uppercase tracking-widest text-zinc-400">Tax %</label>
+              <input type="number" min="0" max="100" step="0.1" value={taxRate} onChange={(e) => setTaxRate(e.target.value)} className="h-7 w-full rounded border border-zinc-200 bg-white px-2 text-xs text-zinc-900 outline-none focus:border-zinc-400" />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Sticky formatting toolbar ────────────────────────────── */}
+      <div className={cn("shrink-0 border-b border-zinc-100 bg-white px-3 py-1 transition-all", !activeEditor && "opacity-40 pointer-events-none")}>
+        <RichTextToolbar editor={activeEditor} />
+      </div>
+
+      {/* ── Document area ────────────────────────────────────────── */}
+      <div className="proposal-print-paper-wrap flex-1 overflow-auto bg-zinc-300">
+        <div className="flex justify-center py-10 pb-20">
+
+          {/* Paper with page break overlays */}
+          <div style={{ position: "relative", width: PAGE_W, flexShrink: 0 }}>
+
+            {/* Page break lines */}
+            {pageBreaks.map((top, i) => (
+              <div key={i} className="proposal-print-pagebreak" style={{ position: "absolute", top, left: 0, right: 0, zIndex: 10, pointerEvents: "none" }}>
+                {/* bottom of page n */}
+                <div style={{ height: 1, backgroundColor: "#d1d5db", marginBottom: 20 }} />
+                {/* top of page n+1 */}
+                <div style={{ position: "absolute", top: 20, left: 0, right: 0, height: 1, backgroundColor: "#d1d5db" }} />
+                {/* gray gap between pages */}
+                <div style={{ position: "absolute", top: 1, left: -100, right: -100, height: 18, backgroundColor: "#d1d5db" }} />
+                <span style={{ position: "absolute", top: 3, right: 8, fontSize: 9, color: "#9ca3af", fontFamily: "Arial, sans-serif", fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", userSelect: "none" }}>
+                  Page {i + 2}
+                </span>
+              </div>
+            ))}
+
+            {/* White paper */}
+            <div
+              ref={paperRef}
+              className="proposal-print-paper bg-white shadow-xl"
+              style={{ width: PAGE_W, minHeight: PAGE_H, paddingLeft: paperPadH, paddingRight: paperPadH, paddingTop: paperPadTop, paddingBottom: paperPadBot, boxSizing: "border-box" }}
+            >
+
+              {/* Title */}
+              <div style={{ marginBottom: 32, paddingBottom: 24, borderBottom: "1px solid #e5e7eb" }}>
+                <div style={{ fontSize: 11, fontWeight: 600, color: "#9ca3af", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 8 }}>Proposal</div>
+                <input
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="e.g. Website Redesign Proposal"
+                  style={{ width: "100%", border: 0, background: "transparent", fontSize: 26, fontWeight: 700, color: "#111827", outline: "none", padding: 0, lineHeight: 1.2 }}
+                  placeholder="Proposal title"
                 />
-              </div>
-              <div>
-                <Label>Project (optional)</Label>
-                <select
-                  value={projectId}
-                  onChange={(e) => handleProjectChange(e.target.value)}
-                  className="w-full rounded border border-zinc-200 bg-white px-3 py-1.5 text-sm text-zinc-900 outline-none focus:border-zinc-400"
-                >
-                  <option value="">No project</option>
-                  {projects.map((p) => (
-                    <option key={p.id} value={p.id}>{p.title}</option>
-                  ))}
-                </select>
-              </div>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div>
-                  <Label>Client name *</Label>
-                  <Input
-                    value={clientName}
-                    onChange={(e) => setClientName(e.target.value)}
-                    placeholder="Jane Smith"
-                  />
-                </div>
-                <div>
-                  <Label>Client email</Label>
-                  <Input
-                    type="email"
-                    value={clientEmail}
-                    onChange={(e) => setClientEmail(e.target.value)}
-                    placeholder="jane@example.com"
-                  />
-                </div>
-              </div>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div>
-                  <Label>Valid until</Label>
-                  <Input
-                    type="date"
-                    value={validUntil}
-                    onChange={(e) => setValidUntil(e.target.value)}
-                  />
-                </div>
-                <div>
-                  <Label>Currency</Label>
-                  <select
-                    value={currency}
-                    onChange={(e) => setCurrency(e.target.value)}
-                    className="w-full rounded border border-zinc-200 bg-white px-3 py-1.5 text-sm text-zinc-900 outline-none focus:border-zinc-400"
-                  >
-                    {CURRENCIES.map((c) => (
-                      <option key={c} value={c}>{c}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Introduction */}
-          <div className="rounded border border-zinc-200 bg-white p-6">
-            <h2 className="mb-4 text-sm font-semibold text-zinc-900">Introduction</h2>
-            <Textarea
-              rows={4}
-              value={intro}
-              onChange={(e) => setIntro(e.target.value)}
-              placeholder="Thank you for considering us. We're excited to propose a solution that will help you achieve..."
-            />
-          </div>
-
-          {/* Sections */}
-          <div className="rounded border border-zinc-200 bg-white p-6">
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-sm font-semibold text-zinc-900">Scope & Deliverables</h2>
-              <button
-                type="button"
-                onClick={addSection}
-                className="inline-flex items-center gap-1.5 rounded border border-zinc-200 px-2.5 py-1.5 text-xs font-medium text-zinc-600 hover:bg-zinc-50"
-              >
-                <Plus className="h-3.5 w-3.5" /> Add section
-              </button>
-            </div>
-            <div className="space-y-4">
-              {sections.map((section, i) => (
-                <div key={i} className="rounded border border-zinc-100 p-4">
-                  <div className="mb-3 flex items-center gap-3">
-                    <Input
-                      value={section.heading}
-                      onChange={(e) => updateSection(i, "heading", e.target.value)}
-                      placeholder="Section heading"
-                      className="flex-1"
-                    />
-                    {sections.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => removeSection(i)}
-                        className="rounded p-1.5 text-zinc-400 hover:bg-red-50 hover:text-red-500"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    )}
-                  </div>
-                  <Textarea
-                    rows={3}
-                    value={section.body}
-                    onChange={(e) => updateSection(i, "body", e.target.value)}
-                    placeholder="Describe this section..."
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Pricing */}
-          <div className="rounded border border-zinc-200 bg-white p-6">
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-sm font-semibold text-zinc-900">Pricing</h2>
-              <button
-                type="button"
-                onClick={addPricingRow}
-                className="inline-flex items-center gap-1.5 rounded border border-zinc-200 px-2.5 py-1.5 text-xs font-medium text-zinc-600 hover:bg-zinc-50"
-              >
-                <Plus className="h-3.5 w-3.5" /> Add item
-              </button>
-            </div>
-            <div className="space-y-2 mb-4">
-              {pricing.map((row, i) => (
-                <div key={i} className="flex items-center gap-2">
-                  <Input
-                    value={row.description}
-                    onChange={(e) => updatePricingRow(i, "description", e.target.value)}
-                    placeholder="Description"
-                    className="flex-1"
-                  />
-                  <div className="relative w-36 shrink-0">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-zinc-400">{symbol}</span>
-                    <Input
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      value={row.amount}
-                      onChange={(e) => updatePricingRow(i, "amount", e.target.value)}
-                      placeholder="0.00"
-                      className="pl-7"
-                    />
-                  </div>
-                  {pricing.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => removePricingRow(i)}
-                      className="rounded p-1.5 text-zinc-400 hover:bg-red-50 hover:text-red-500"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
-            {/* Tax + totals */}
-            <div className="border-t border-zinc-100 pt-4 space-y-3">
-              <div className="flex items-center gap-3">
-                <Label>Tax rate (%)</Label>
-                <Input
-                  type="number"
-                  min="0"
-                  max="100"
-                  step="0.1"
-                  value={taxRate}
-                  onChange={(e) => setTaxRate(e.target.value)}
-                  className="w-24"
-                />
-              </div>
-              <div className="ml-auto w-56 space-y-1.5 text-sm">
-                <div className="flex justify-between text-zinc-500">
-                  <span>Subtotal</span>
-                  <span>{symbol}{subtotal.toFixed(2)}</span>
-                </div>
-                {taxAmount > 0 && (
-                  <div className="flex justify-between text-zinc-500">
-                    <span>Tax ({taxRate}%)</span>
-                    <span>+{symbol}{taxAmount.toFixed(2)}</span>
+                {clientName && (
+                  <div style={{ fontSize: 13, color: "#6b7280", marginTop: 8 }}>
+                    Prepared for <strong style={{ color: "#374151" }}>{clientName}</strong>
+                    {validUntil && <span style={{ marginLeft: 16 }}>· Valid until {new Date(validUntil).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>}
                   </div>
                 )}
-                <div className="flex justify-between border-t border-zinc-200 pt-2 text-base font-bold text-zinc-900">
-                  <span>Total</span>
-                  <span>{symbol}{total.toFixed(2)}</span>
-                </div>
               </div>
-            </div>
-          </div>
+
+              {/* Introduction */}
+              <div className="proposal-print-section" style={{ marginBottom: 32 }}>
+                <div style={{ fontSize: 10, fontWeight: 600, color: "#9ca3af", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 10 }}>Introduction</div>
+                <ProposalRichTextEditor
+                  value={intro}
+                  onChange={setIntro}
+                  placeholder="Outline the opportunity and your recommendation…"
+                  minHeightClassName="min-h-[80px]"
+                  noToolbar
+                  onEditorFocus={setActiveEditor}
+                  onEditorBlur={() => setActiveEditor(null)}
+                />
+              </div>
+
+              {/* Scope sections */}
+              <div style={{ marginBottom: 32 }}>
+                <div style={{ fontSize: 10, fontWeight: 600, color: "#9ca3af", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 14 }}>Scope of Work</div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+                  {sections.map((section, i) => (
+                    <div key={`section-${i}`} className="proposal-print-section" style={{ paddingBottom: 20 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                        <input
+                          value={section.heading}
+                          onChange={(e) => updateSection(i, "heading", e.target.value)}
+                          style={{ flex: 1, border: 0, background: "transparent", fontSize: 14, fontWeight: 700, color: "#111827", outline: "none", padding: 0 }}
+                          placeholder="Section heading"
+                        />
+                        {sections.length > 1 && (
+                          <button type="button" onClick={() => removeSection(i)} className="h-6 w-6 inline-flex items-center justify-center rounded text-zinc-200 hover:text-red-400 transition-colors">
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                        )}
+                      </div>
+                      <ProposalRichTextEditor
+                        value={section.body}
+                        onChange={(v) => updateSection(i, "body", v)}
+                        placeholder="Add details for this section…"
+                        minHeightClassName="min-h-[60px]"
+                        noToolbar
+                        onEditorFocus={setActiveEditor}
+                        onEditorBlur={() => setActiveEditor(null)}
+                      />
+                    </div>
+                  ))}
+                </div>
+                <button type="button" onClick={addSection}
+                  className="mt-3 inline-flex items-center gap-1.5 rounded border border-dashed border-zinc-300 px-3 py-1.5 text-xs text-zinc-400 transition hover:border-zinc-400 hover:text-zinc-700">
+                  <Plus className="h-3.5 w-3.5" /> Add section
+                </button>
+              </div>
+
+              {/* Pricing */}
+              <div className="proposal-print-section">
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+                  <div style={{ fontSize: 10, fontWeight: 600, color: "#9ca3af", letterSpacing: "0.14em", textTransform: "uppercase" }}>Investment</div>
+                  <button type="button" onClick={addPricingRow} className="inline-flex items-center gap-1 text-xs text-zinc-400 hover:text-zinc-700 transition-colors">
+                    <Plus className="h-3.5 w-3.5" /> Add line
+                  </button>
+                </div>
+                <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                  <thead>
+                    <tr style={{ borderBottom: "2px solid #111827" }}>
+                      <th style={{ textAlign: "left", fontSize: 10, fontWeight: 600, color: "#9ca3af", letterSpacing: "0.1em", textTransform: "uppercase", paddingBottom: 6 }}>Description</th>
+                      <th style={{ textAlign: "right", fontSize: 10, fontWeight: 600, color: "#9ca3af", letterSpacing: "0.1em", textTransform: "uppercase", paddingBottom: 6, width: 120 }}>Amount</th>
+                      <th style={{ width: 28 }} />
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {pricing.map((row, i) => (
+                      <tr key={`pricing-${i}`} style={{ borderBottom: "1px solid #f3f4f6" }}>
+                        <td style={{ padding: "7px 0" }}>
+                          <input value={row.description} onChange={(e) => updatePricingRow(i, "description", e.target.value)}
+                            style={{ width: "100%", border: 0, background: "transparent", fontSize: 13, color: "#374151", outline: "none" }}
+                            placeholder="Description" />
+                        </td>
+                        <td style={{ padding: "7px 0", textAlign: "right" }}>
+                          <input type="number" min="0" step="0.01" value={row.amount} onChange={(e) => updatePricingRow(i, "amount", e.target.value)}
+                            style={{ width: "100%", border: 0, background: "transparent", fontSize: 13, fontWeight: 600, color: "#111827", outline: "none", textAlign: "right" }}
+                            placeholder="0.00" />
+                        </td>
+                        <td style={{ padding: "7px 0 7px 8px" }}>
+                          {pricing.length > 1 && (
+                            <button type="button" onClick={() => removePricingRow(i)} className="h-5 w-5 inline-flex items-center justify-center text-zinc-200 hover:text-red-400 transition-colors">
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                  <tfoot>
+                    {taxAmount > 0 && (
+                      <tr>
+                        <td colSpan={2} style={{ paddingTop: 8, fontSize: 12, color: "#6b7280", textAlign: "right" }}>Subtotal: {symbol}{subtotal.toFixed(2)}</td>
+                        <td />
+                      </tr>
+                    )}
+                    {taxAmount > 0 && (
+                      <tr>
+                        <td colSpan={2} style={{ fontSize: 12, color: "#6b7280", textAlign: "right" }}>Tax ({taxRate}%): +{symbol}{taxAmount.toFixed(2)}</td>
+                        <td />
+                      </tr>
+                    )}
+                    <tr style={{ borderTop: "2px solid #111827" }}>
+                      <td style={{ paddingTop: 8, fontSize: 13, fontWeight: 700, color: "#111827" }}>Total</td>
+                      <td style={{ paddingTop: 8, fontSize: 15, fontWeight: 700, color: "#111827", textAlign: "right" }}>{symbol}{total.toFixed(2)}</td>
+                      <td />
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+
+              {/* Signature block */}
+              {tpl.showSignatureBlock !== false && (
+                <div className="proposal-print-section" style={{ display: "flex", gap: 40, marginTop: 40, paddingTop: 24, borderTop: "1px solid #e5e7eb" }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 10, fontWeight: 600, color: "#9ca3af", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 28 }}>Service Provider</div>
+                    <div style={{ height: 1, backgroundColor: "#374151", marginBottom: 6 }} />
+                    {tpl.businessName && <div style={{ fontSize: 12, color: "#374151" }}>{tpl.businessName}</div>}
+                    <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 4 }}>Date: _______________</div>
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 10, fontWeight: 600, color: "#9ca3af", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 28 }}>Client Signature</div>
+                    <div style={{ height: 1, backgroundColor: "#374151", marginBottom: 6 }} />
+                    {clientName && <div style={{ fontSize: 12, color: "#374151" }}>{clientName}</div>}
+                    <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 4 }}>Date: _______________</div>
+                  </div>
+                </div>
+              )}
+
+            </div>{/* end paper */}
+          </div>{/* end relative wrapper */}
         </div>
 
-        {/* Right: Summary + actions */}
-        <div className="space-y-4">
-          <div className="rounded border border-zinc-200 bg-white p-5">
-            <h3 className="mb-4 text-sm font-semibold text-zinc-900">Summary</h3>
-            <div className="space-y-3 text-sm">
-              <div>
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">Client</p>
-                <p className="mt-0.5 font-medium text-zinc-900">{clientName || "—"}</p>
-                {clientEmail && <p className="text-zinc-500">{clientEmail}</p>}
+        {/* AI brief + error — below document */}
+        <div className="mx-auto mb-8 w-full max-w-xl px-4 space-y-3">
+          <div className="rounded border border-zinc-200 bg-white shadow-sm overflow-hidden">
+            <button type="button" onClick={() => setBriefOpen((v) => !v)}
+              className="flex w-full items-center justify-between px-4 py-3 text-xs font-semibold text-zinc-500 hover:text-zinc-800 transition-colors">
+              <span className="flex items-center gap-1.5"><Sparkles className="h-3.5 w-3.5 text-blue-500" /> Draft from AI brief</span>
+              <ChevronDown className={cn("h-4 w-4 transition-transform", briefOpen && "rotate-180")} />
+            </button>
+            {briefOpen && (
+              <div className="px-4 pb-4 space-y-2 border-t border-zinc-100">
+                <textarea value={brief} onChange={(e) => setBrief(e.target.value)} rows={4}
+                  className="mt-3 w-full rounded border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-900 outline-none transition placeholder:text-zinc-400 focus:border-zinc-400 resize-none"
+                  placeholder="E.g. Brand identity for a cafe. Budget ~$2,500. Logo, guidelines, launch assets in 3 weeks." />
+                <button type="button" onClick={handleDraftFromBrief} disabled={drafting}
+                  className="h-8 w-full rounded bg-blue-600 text-sm font-medium text-white transition hover:bg-blue-700 disabled:opacity-50">
+                  {drafting ? "Drafting…" : "Fill from brief"}
+                </button>
               </div>
-              {projectId && (
-                <div>
-                  <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">Project</p>
-                  <p className="mt-0.5 text-zinc-700">{projects.find((p) => p.id === projectId)?.title}</p>
-                </div>
-              )}
-              {validUntil && (
-                <div>
-                  <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">Valid until</p>
-                  <p className="mt-0.5 text-zinc-700">{new Date(validUntil).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</p>
-                </div>
-              )}
-              <div className="border-t border-zinc-100 pt-3">
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">Total</p>
-                <p className="mt-0.5 text-xl font-bold text-zinc-900">{symbol}{total.toFixed(2)}</p>
-              </div>
-            </div>
+            )}
           </div>
-
           {error && (
-            <div className="flex items-center gap-2 rounded bg-red-50 px-4 py-3 text-sm text-red-600">
-              <AlertCircle className="h-4 w-4 shrink-0" />
-              {error}
+            <div className="flex items-start gap-2 rounded border border-red-200 bg-red-50 px-3 py-2.5 text-sm text-red-600">
+              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" /><span>{error}</span>
             </div>
           )}
-
-          <div className="space-y-2">
-            <button
-              type="button"
-              disabled={saving}
-              onClick={() => handleSave("draft")}
-              className="w-full rounded border border-zinc-200 bg-white py-2.5 text-sm font-semibold text-zinc-700 hover:bg-zinc-50 disabled:opacity-50"
-            >
-              {saving ? "Saving…" : "Save as draft"}
-            </button>
-            <button
-              type="button"
-              disabled={saving}
-              onClick={() => handleSave("sent")}
-              className="w-full rounded bg-zinc-900 py-2.5 text-sm font-semibold text-white hover:bg-zinc-700 disabled:opacity-50"
-            >
-              {saving ? "Saving…" : "Save & Send"}
-            </button>
-          </div>
         </div>
       </div>
+
     </div>
   );
 }

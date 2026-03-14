@@ -18,9 +18,12 @@ export async function GET(req) {
     ...filter,
     ...(search && {
       OR: [
-        { name: { contains: search } },
-        { email: { contains: search } },
-        { company: { contains: search } },
+        { name: { contains: search, mode: "insensitive" } },
+        { email: { contains: search, mode: "insensitive" } },
+        { company: { contains: search, mode: "insensitive" } },
+        { phone: { contains: search, mode: "insensitive" } },
+        { website: { contains: search, mode: "insensitive" } },
+        { source: { contains: search, mode: "insensitive" } },
       ],
     }),
     ...(status && { status }),
@@ -39,19 +42,28 @@ export async function POST(req) {
   const session = await getSession();
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const normalized = normalizeContactInput(await req.json(), { requireName: true });
-  if (normalized.errors.length) {
-    return NextResponse.json({ error: normalized.errors[0] }, { status: 400 });
+  try {
+    const normalized = normalizeContactInput(await req.json(), { requireName: true });
+    if (normalized.errors.length) {
+      return NextResponse.json({ error: normalized.errors[0] }, { status: 400 });
+    }
+
+    const tenantData = await getTenantData(session);
+
+    const contact = await db.contact.create({
+      data: {
+        ...tenantData,
+        ...normalized.data,
+      },
+    });
+
+    return NextResponse.json(contact, { status: 201 });
+  } catch (error) {
+    const message =
+      process.env.NODE_ENV === "production"
+        ? "Failed to save contact."
+        : error?.message || "Failed to save contact.";
+
+    return NextResponse.json({ error: message }, { status: 500 });
   }
-
-  const tenantData = await getTenantData(session);
-
-  const contact = await db.contact.create({
-    data: {
-      ...tenantData,
-      ...normalized.data,
-    },
-  });
-
-  return NextResponse.json(contact, { status: 201 });
 }

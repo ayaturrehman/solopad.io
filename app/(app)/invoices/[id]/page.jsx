@@ -46,9 +46,9 @@ export default async function InvoiceDetailPage({ params }) {
   const StatusIcon = status.icon;
 
   return (
-    <div className="mx-auto max-w-4xl">
+    <div className="px-4 py-4 md:px-6 mx-auto max-w-4xl">
       <div className="mb-6 flex items-center justify-between">
-        <Link href="/finance?tab=invoices" className="inline-flex items-center gap-2 text-sm text-zinc-500 hover:text-zinc-900">
+        <Link href="/finance?tab=invoices" className="inline-flex items-center gap-1.5 text-sm text-zinc-500 transition-colors hover:text-zinc-900">
           <ArrowLeft className="h-4 w-4" /> All invoices
         </Link>
         <InvoiceActions invoice={{ id: invoice.id, status: invoice.status, projectId: invoice.project.id }} />
@@ -56,10 +56,9 @@ export default async function InvoiceDetailPage({ params }) {
 
       {/* Invoice document */}
       <div className="overflow-hidden rounded border border-zinc-200 bg-white shadow-sm">
-        {/* Top stripe by status */}
         <div className={`h-1.5 w-full ${invoice.status === "paid" ? "bg-green-400" : invoice.status === "overdue" ? "bg-red-400" : invoice.status === "sent" ? "bg-blue-400" : "bg-zinc-200"}`} />
 
-        <div className="p-8 md:p-12">
+        <div className="p-6 md:p-10">
           {/* Header row */}
           <div className="mb-10 flex items-start justify-between gap-6">
             <div>
@@ -122,8 +121,8 @@ export default async function InvoiceDetailPage({ params }) {
           </div>
 
           {/* Line items table */}
-          <div className="mb-8 overflow-hidden rounded border border-zinc-100">
-            <table className="w-full">
+          <div className="mb-8 overflow-x-auto rounded border border-zinc-100">
+            <table className="w-full min-w-[400px]">
               <thead className="bg-zinc-50">
                 <tr>
                   <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Description</th>
@@ -169,8 +168,8 @@ export default async function InvoiceDetailPage({ params }) {
                   <span className="text-red-500">-{formatCurrency(invoice.discountAmount, invoice.currency)}</span>
                 </div>
               )}
-              <div className="flex justify-between border-t border-zinc-200 pt-2 text-base font-bold text-zinc-900">
-                <span>Total</span>
+              <div className="flex justify-between border-t border-zinc-200 pt-2 text-base font-bold">
+                <span className="text-zinc-900">Total</span>
                 <span>{formatCurrency(invoice.total, invoice.currency)}</span>
               </div>
               {invoice.paidAt && (

@@ -26,14 +26,22 @@
       "Bash(git reset HEAD .claude/settings.json .vscode/mcp.json)",
       "Bash(npx --prefix /Users/ayaturrehman/Documents/syslom/Project/freelancer/freelance-managment-app prisma generate)",
       "Bash(.env:*)",
-      "Bash(git reset HEAD .agents/skills/neon-postgres/SKILL.md .claude/settings.json .vscode/mcp.json skills-lock.json tests/regression/multi-tenancy.static.test.mjs)"
+      "Bash(git reset HEAD .agents/skills/neon-postgres/SKILL.md .claude/settings.json .vscode/mcp.json skills-lock.json tests/regression/multi-tenancy.static.test.mjs)",
+      "Bash(git add app/api/settings/business/route.js)",
+      "Bash(git add app/api/auth/register/route.js)",
+      "Bash(git add prisma/schema.prisma lib/team.js app/api/settings/team/route.js \"app/api/settings/team/[id]/route.js\" app/api/join/route.js app/join/page.jsx)",
+      "Bash(cat -n /Users/ayaturrehman/Documents/syslom/Project/freelancer/freelance-managment-app/app/api/settings/team/[id]/route.js)",
+      "Bash(git add app/api/settings/team/ app/api/join/ app/join/ lib/team.js prisma/schema.prisma)",
+      "Bash(ls /Users/ayaturrehman/Documents/syslom/Project/freelancer/freelance-managment-app/app/\\\\\\(app\\\\\\)/pipeline/)",
+      "Bash(git add app/\\\\\\(app\\\\\\)/projects/ProjectsClient.jsx)"
     ],
     "additionalDirectories": [
       "/Users/ayaturrehman/Documents/syslom/Project/freelancer/freelance-managment-app/app/(app)/proposals/[id]",
       "/Users/ayaturrehman/Documents/syslom/Project/freelancer/freelance-managment-app/app/api/notes",
       "/Users/ayaturrehman/Documents/syslom/Project/freelancer/freelance-managment-app/app/api/files/[projectId]/[filename]",
       "/templates",
-      "/Users/ayaturrehman/Documents/syslom/Project/freelancer/freelance-managment-app/app/p/[token]"
+      "/Users/ayaturrehman/Documents/syslom/Project/freelancer/freelance-managment-app/app/p/[token]",
+      "/Users/ayaturrehman/Documents/syslom/Project/freelancer/freelance-managment-app/app/api/settings/team"
     ]
   }
 }

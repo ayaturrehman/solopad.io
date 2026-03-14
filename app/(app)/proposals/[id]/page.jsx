@@ -1,26 +1,24 @@
-
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
   ArrowLeft,
-  Calendar,
-  FileText,
-  Mail,
-  User,
   CheckCircle2,
-  Send,
-  XCircle,
-  Clock,
-  Pencil,
+  FileText,
   FolderOpen,
+  Mail,
+  Send,
+  User,
+  XCircle,
 } from "lucide-react";
 import { getSession } from "@/lib/session";
 import db from "@/lib/db";
 import Badge from "@/components/ui/Badge";
-import { formatCurrency, formatDate } from "@/lib/utils";
+import ProposalActions from "./ProposalActions";
+import ProposalPreview from "./ProposalPreview";
+import { formatDate } from "@/lib/utils";
 
 const STATUS_CONFIG = {
-  draft: { label: "Draft", className: "bg-zinc-100 text-zinc-600", icon: FileText },
+  draft: { label: "Draft", className: "bg-zinc-100 text-zinc-700", icon: FileText },
   sent: { label: "Sent", className: "bg-blue-100 text-blue-700", icon: Send },
   accepted: { label: "Accepted", className: "bg-green-100 text-green-700", icon: CheckCircle2 },
   declined: { label: "Declined", className: "bg-red-100 text-red-700", icon: XCircle },
@@ -36,6 +34,22 @@ function parseJsonArray(value) {
   }
 }
 
+function getPreparedBy(proposal) {
+  return (
+    proposal.business?.name ||
+    proposal.user?.companyName ||
+    proposal.user?.name ||
+    "Solopad"
+  );
+}
+
+function getTimelineLabel(proposal) {
+  if (proposal.acceptedAt) return `Accepted ${formatDate(proposal.acceptedAt)}`;
+  if (proposal.sentAt) return `Sent ${formatDate(proposal.sentAt)}`;
+  return `Created ${formatDate(proposal.createdAt)}`;
+}
+
+
 export default async function ProposalDetailPage({ params }) {
   const { id } = await params;
   const session = await getSession();
@@ -43,190 +57,196 @@ export default async function ProposalDetailPage({ params }) {
 
   const proposal = await db.proposal.findFirst({
     where: { id, userId: session.user.id },
-    include: { project: { select: { id: true, title: true } } },
+    include: {
+      business: { select: { name: true, logoUrl: true } },
+      user: { select: { name: true, email: true, companyName: true, companyLogo: true } },
+      project: {
+        select: {
+          id: true,
+          title: true,
+          files: {
+            orderBy: { createdAt: "desc" },
+            take: 6,
+            select: {
+              id: true,
+              name: true,
+              path: true,
+              sizeBytes: true,
+              label: true,
+              uploadedBy: true,
+              visibleToClient: true,
+              createdAt: true,
+            },
+          },
+          comments: {
+            orderBy: { createdAt: "desc" },
+            take: 4,
+            select: {
+              id: true,
+              authorName: true,
+              authorType: true,
+              body: true,
+              createdAt: true,
+            },
+          },
+          notes: {
+            orderBy: [{ pinned: "desc" }, { updatedAt: "desc" }],
+            take: 4,
+            select: {
+              id: true,
+              title: true,
+              body: true,
+              pinned: true,
+              visibleToClient: true,
+              updatedAt: true,
+            },
+          },
+        },
+      },
+    },
   });
 
   if (!proposal) redirect("/proposals");
 
-  const sections = parseJsonArray(proposal.sections);
-  const pricing = parseJsonArray(proposal.pricing);
+  const defaultTemplate = await db.pdfTemplate.findFirst({
+    where: { userId: session.user.id, type: "proposal", isDefault: true },
+  });
+
   const status = STATUS_CONFIG[proposal.status] ?? STATUS_CONFIG.draft;
   const StatusIcon = status.icon;
+  const preparedBy = getPreparedBy(proposal);
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <Link href="/proposals" className="inline-flex items-center gap-2 text-sm text-zinc-500 hover:text-zinc-900">
-          <ArrowLeft className="h-4 w-4" />
-          All proposals
-        </Link>
-        <div className="flex items-center gap-3">
+    <div className="px-4 py-4 md:px-6">
+      {/* Back link */}
+      <Link
+        href="/proposals"
+        className="inline-flex items-center gap-1.5 text-sm text-zinc-500 transition-colors hover:text-zinc-900 mb-3"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        All proposals
+      </Link>
+
+      {/* Page header */}
+      <div className="flex flex-col gap-2.5 mb-4">
+        <div className="flex flex-wrap items-center gap-2">
+          <h1 className="text-lg font-semibold text-zinc-900 leading-tight truncate">
+            {proposal.title}
+          </h1>
           <Badge className={status.className}>
-            <StatusIcon className="mr-1 h-3.5 w-3.5" />
+            <StatusIcon className="mr-1 h-3 w-3" />
             {status.label}
           </Badge>
-          <Link
-            href={`/proposals/${id}/edit`}
-            className="inline-flex items-center gap-1.5 rounded border border-zinc-200 bg-white px-3 py-1.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50"
-          >
-            <Pencil className="h-3.5 w-3.5" />
-            Edit
-          </Link>
+          <span className="text-sm text-zinc-400">{getTimelineLabel(proposal)}</span>
         </div>
+        <ProposalActions
+          proposalId={id}
+          title={proposal.title}
+          clientName={proposal.clientName}
+          clientEmail={proposal.clientEmail}
+        />
       </div>
 
-      {/* Proposal card */}
-      <div className="rounded-2xl border border-zinc-200 bg-white shadow-sm">
-        {/* Title + meta row */}
-        <div className="flex flex-col gap-6 border-b border-zinc-100 px-8 py-8 md:flex-row md:items-start md:justify-between">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-zinc-400">Proposal</p>
-            <h1 className="mt-2 text-3xl font-bold text-zinc-900">{proposal.title}</h1>
-            <div className="mt-4 flex flex-wrap gap-5 text-sm text-zinc-500">
-              <span className="inline-flex items-center gap-2">
-                <User className="h-4 w-4 shrink-0" />
-                {proposal.clientName}
-              </span>
-              {proposal.clientEmail && (
-                <span className="inline-flex items-center gap-2">
-                  <Mail className="h-4 w-4 shrink-0" />
-                  {proposal.clientEmail}
-                </span>
-              )}
-              <span className="inline-flex items-center gap-2">
-                <Calendar className="h-4 w-4 shrink-0" />
-                Created {formatDate(proposal.createdAt)}
-              </span>
-              {proposal.sentAt && (
-                <span className="inline-flex items-center gap-2">
-                  <Send className="h-4 w-4 shrink-0" />
-                  Sent {formatDate(proposal.sentAt)}
-                </span>
-              )}
-            </div>
-          </div>
+      {/* Two-column layout */}
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_280px] xl:items-start">
 
-          <div className="shrink-0 rounded-xl border border-zinc-200 bg-zinc-50 px-6 py-5 text-right">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-zinc-400">Total</p>
-            <p className="mt-1 text-3xl font-bold text-zinc-900">{formatCurrency(proposal.total, proposal.currency)}</p>
-            {proposal.validUntil && (
-              <p className="mt-2 inline-flex items-center gap-1.5 text-xs text-zinc-500">
-                <Clock className="h-3.5 w-3.5" />
-                Valid until {formatDate(proposal.validUntil)}
-              </p>
+        {/* Main content — PDF preview */}
+        <div className="min-w-0 rounded border border-zinc-200 bg-white overflow-hidden">
+          <div className="flex items-center justify-between px-4 py-2.5 border-b border-zinc-100">
+            <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-400">
+              Preview
+              {defaultTemplate ? <span className="ml-2 normal-case font-normal tracking-normal text-zinc-300">— {defaultTemplate.name}</span> : null}
+            </span>
+            {defaultTemplate ? (
+              <Link href={`/settings/pdf-templates/${defaultTemplate.id}/edit`} className="text-xs text-zinc-400 hover:text-zinc-700 transition-colors">
+                Edit template
+              </Link>
+            ) : (
+              <Link href="/settings/pdf-templates" className="text-xs text-blue-600 hover:text-blue-700">
+                Set up a template →
+              </Link>
             )}
           </div>
+          <ProposalPreview proposal={proposal} template={defaultTemplate} />
         </div>
 
-        {/* Body */}
-        <div className="px-8 py-8">
-          {/* Intro */}
-          {proposal.intro && (
-            <section className="mb-10">
-              <h2 className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-zinc-400">Introduction</h2>
-              <p className="whitespace-pre-wrap text-sm leading-7 text-zinc-600">{proposal.intro}</p>
-            </section>
-          )}
+        {/* Sidebar */}
+        <aside className="xl:sticky xl:top-4 space-y-px">
+          <div className="rounded border border-zinc-200 bg-white overflow-hidden">
 
-          {/* Scope */}
-          {sections.length > 0 && (
-            <section className="mb-10">
-              <h2 className="mb-5 text-xs font-semibold uppercase tracking-[0.18em] text-zinc-400">Scope & Deliverables</h2>
-              <div className="grid gap-4 sm:grid-cols-2">
-                {sections.map((section, index) => (
-                  <div key={`${section.heading || "section"}-${index}`} className="rounded-xl border border-zinc-200 p-5">
-                    <h3 className="text-sm font-semibold text-zinc-900">{section.heading || `Section ${index + 1}`}</h3>
-                    <p className="mt-2 whitespace-pre-wrap text-sm leading-7 text-zinc-500">{section.body || "No details."}</p>
+            {/* Client */}
+            <section className="px-4 py-3 space-y-2">
+              <h2 className="text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-400">Client</h2>
+              <dl className="space-y-1.5 text-sm">
+                <div className="flex items-center gap-1.5">
+                  <User className="h-3.5 w-3.5 shrink-0 text-zinc-400" />
+                  <span className="font-medium text-zinc-900">{proposal.clientName}</span>
+                </div>
+                {proposal.clientEmail ? (
+                  <div className="flex items-center gap-1.5">
+                    <Mail className="h-3.5 w-3.5 shrink-0 text-zinc-400" />
+                    <span className="text-zinc-600 truncate">{proposal.clientEmail}</span>
                   </div>
-                ))}
-              </div>
+                ) : null}
+                <div className="pt-1.5 border-t border-zinc-100 flex items-center justify-between">
+                  <span className="text-zinc-500">Prepared by</span>
+                  <span className="text-zinc-900">{preparedBy}</span>
+                </div>
+              </dl>
             </section>
-          )}
 
-          {/* Pricing + meta side by side */}
-          <div className="grid gap-6 lg:grid-cols-[1fr_300px]">
-            {/* Pricing table */}
-            <section>
-              <h2 className="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-zinc-400">Pricing breakdown</h2>
-              <div className="rounded-xl border border-zinc-200 overflow-hidden">
-                <table className="w-full text-sm">
-                  <thead className="border-b border-zinc-100 bg-zinc-50">
-                    <tr>
-                      <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-zinc-400">Description</th>
-                      <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wider text-zinc-400">Amount</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-zinc-100 bg-white">
-                    {pricing.length === 0 ? (
-                      <tr>
-                        <td colSpan={2} className="px-5 py-4 text-center text-sm text-zinc-400">No pricing added.</td>
-                      </tr>
-                    ) : (
-                      pricing.map((item, index) => (
-                        <tr key={`${item.description || "line"}-${index}`}>
-                          <td className="px-5 py-3.5 font-medium text-zinc-900">{item.description || `Line item ${index + 1}`}</td>
-                          <td className="px-5 py-3.5 text-right font-semibold text-zinc-900">{formatCurrency(item.amount || 0, proposal.currency)}</td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                  <tfoot className="border-t-2 border-zinc-200 bg-zinc-50">
-                    <tr>
-                      <td className="px-5 py-4 text-sm font-semibold text-zinc-700">Total</td>
-                      <td className="px-5 py-4 text-right text-lg font-bold text-zinc-900">{formatCurrency(proposal.total, proposal.currency)}</td>
-                    </tr>
-                  </tfoot>
-                </table>
+            <div className="h-px bg-zinc-100" />
+
+            {/* Dates */}
+            <section className="px-4 py-3 space-y-2">
+              <h2 className="text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-400">Dates</h2>
+              <div className="space-y-1.5 text-sm">
+                <div className="flex items-center justify-between gap-4">
+                  <span className="text-zinc-500">Created</span>
+                  <span className="text-zinc-900">{formatDate(proposal.createdAt)}</span>
+                </div>
+                <div className="flex items-center justify-between gap-4">
+                  <span className="text-zinc-500">Sent</span>
+                  <span className="text-zinc-900">
+                    {proposal.sentAt ? formatDate(proposal.sentAt) : <span className="text-zinc-400">Not sent</span>}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between gap-4">
+                  <span className="text-zinc-500">Valid until</span>
+                  <span className="text-zinc-900">
+                    {proposal.validUntil ? formatDate(proposal.validUntil) : <span className="text-zinc-400">Not set</span>}
+                  </span>
+                </div>
+                {proposal.acceptedAt ? (
+                  <div className="flex items-center justify-between gap-4">
+                    <span className="text-zinc-500">Accepted</span>
+                    <span className="text-zinc-900">{formatDate(proposal.acceptedAt)}</span>
+                  </div>
+                ) : null}
               </div>
             </section>
 
-            {/* Meta panel */}
-            <div className="space-y-4">
-              {proposal.project && (
-                <section className="rounded-xl border border-zinc-200 p-5">
-                  <h2 className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-zinc-400">Linked project</h2>
+            {/* Linked project */}
+            {proposal.project ? (
+              <>
+                <div className="h-px bg-zinc-100" />
+                <section className="px-4 py-3 space-y-1.5">
+                  <h2 className="text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-400">Project</h2>
                   <Link
                     href={`/projects/${proposal.project.id}`}
-                    className="inline-flex items-center gap-2 text-sm font-medium text-zinc-900 hover:text-zinc-600"
+                    className="inline-flex items-center gap-2 text-sm text-zinc-900 transition-colors hover:text-blue-600"
                   >
                     <FolderOpen className="h-4 w-4 text-zinc-400" />
                     {proposal.project.title}
                   </Link>
                 </section>
-              )}
+              </>
+            ) : null}
 
-              <section className="rounded-xl border border-zinc-200 p-5">
-                <h2 className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-zinc-400">Timeline</h2>
-                <div className="space-y-2.5 text-sm text-zinc-600">
-                  <div className="flex justify-between">
-                    <span className="text-zinc-400">Created</span>
-                    <span>{formatDate(proposal.createdAt)}</span>
-                  </div>
-                  {proposal.sentAt && (
-                    <div className="flex justify-between">
-                      <span className="text-zinc-400">Sent</span>
-                      <span>{formatDate(proposal.sentAt)}</span>
-                    </div>
-                  )}
-                  {proposal.acceptedAt && (
-                    <div className="flex justify-between">
-                      <span className="text-zinc-400">Accepted</span>
-                      <span className="font-medium text-green-600">{formatDate(proposal.acceptedAt)}</span>
-                    </div>
-                  )}
-                  {proposal.validUntil && (
-                    <div className="flex justify-between border-t border-zinc-100 pt-2.5">
-                      <span className="text-zinc-400">Valid until</span>
-                      <span>{formatDate(proposal.validUntil)}</span>
-                    </div>
-                  )}
-                </div>
-              </section>
-            </div>
           </div>
-        </div>
+        </aside>
       </div>
+
     </div>
   );
 }

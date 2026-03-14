@@ -20,6 +20,7 @@ import {
   Check,
   CheckCircle2,
   CreditCard,
+  FileText,
   Link2,
   Link2Off,
   ShieldCheck,
@@ -126,6 +127,7 @@ function SettingsContent() {
   const [currentPlan, setCurrentPlan] = useState("free");
   const [savingPlan, setSavingPlan] = useState(false);
 
+
   const stripeParam = searchParams?.get("stripe");
   const plan = currentPlan || session?.user?.plan || "free";
   const userRole = session?.user?.role ?? "owner";
@@ -171,6 +173,7 @@ function SettingsContent() {
       .then((data) => {
         if (data.plan) setCurrentPlan(data.plan);
       });
+
   }, []);
 
   const planColors = {
@@ -330,10 +333,21 @@ function SettingsContent() {
   const sections = activeTab === "profile" ? PROFILE_TAB_SECTIONS : SETTINGS_TAB_SECTIONS;
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-zinc-900">Settings</h1>
-        <p className="mt-1 text-sm text-zinc-500">Manage your account, permissions, payments, and team access.</p>
+    <div className="space-y-6 px-4 py-4 md:px-6">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900">Settings</h1>
+          <p className="mt-1 text-sm text-zinc-500">Manage your account, permissions, payments, and team access.</p>
+        </div>
+        <a
+          href="/settings/pdf-templates"
+          className="shrink-0 inline-flex items-center gap-2 rounded-lg border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-700 shadow-sm hover:bg-zinc-50 transition-colors"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          PDF Templates
+        </a>
       </div>
 
       <div className="border-b border-zinc-200">
@@ -683,7 +697,7 @@ function SettingsContent() {
                         </p>
                         <a
                           href="/api/settings/stripe/connect"
-                          className="inline-flex items-center gap-2 rounded bg-[#635BFF] px-3 py-1.5.5 text-sm font-semibold text-white hover:bg-[#4F46E5]"
+                          className="inline-flex items-center gap-2 rounded bg-indigo-600 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-700"
                         >
                           <Link2 className="h-4 w-4" /> Connect with Stripe
                         </a>
@@ -809,6 +823,7 @@ function SettingsContent() {
               </section>
             </>
           )}
+
         </div>
       </div>
     </div>

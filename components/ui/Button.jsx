@@ -1,16 +1,16 @@
 import { cn } from "@/lib/utils";
 
 const variants = {
-  primary: "bg-zinc-900 text-white hover:bg-zinc-700 disabled:bg-zinc-300",
-  secondary: "bg-white text-zinc-900 border border-zinc-200 hover:bg-zinc-50 disabled:opacity-50",
-  danger: "bg-red-600 text-white hover:bg-red-700 disabled:opacity-50",
-  ghost: "text-zinc-600 hover:bg-zinc-100 disabled:opacity-50",
+  primary: "bg-zinc-900 text-white hover:bg-zinc-700",
+  secondary: "border border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50",
+  danger: "bg-red-600 text-white hover:bg-red-700",
+  ghost: "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900",
 };
 
 const sizes = {
   sm: "h-8 px-3 text-sm",
-  md: "h-10 px-4 text-sm",
-  lg: "h-11 px-6 text-base",
+  md: "h-9 px-4 text-sm",
+  lg: "h-10 px-5 text-sm",
 };
 
 export default function Button({
@@ -24,7 +24,7 @@ export default function Button({
   return (
     <button
       className={cn(
-        "inline-flex items-center justify-center gap-2 rounded font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:ring-offset-2 disabled:cursor-not-allowed",
+        "inline-flex items-center gap-1.5 rounded font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed",
         variants[variant],
         sizes[size],
         className

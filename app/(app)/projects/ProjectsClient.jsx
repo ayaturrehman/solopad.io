@@ -1,15 +1,22 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import Badge from "@/components/ui/Badge";
 import { showNavigationLoading } from "@/components/shared/NavigationLoadingOverlay";
-import { cn, formatDate, formatCurrency, STATUS_LABELS, STATUS_COLORS, isInteractiveEventTarget } from "@/lib/utils";
+import CollectionPageHeader, {
+  collectionPageHeaderPrimaryActionClassName,
+  collectionPageHeaderSegmentedGroupClassName,
+  getCollectionPageHeaderSegmentedButtonClassName,
+} from "@/components/shared/CollectionPageHeader";
+import { CollectionDataTable, CollectionEmptyState, CollectionTableFrame } from "@/components/shared/CollectionDataTable";
+import { formatDate, formatCurrency, STATUS_LABELS, STATUS_COLORS, isInteractiveEventTarget } from "@/lib/utils";
 import {
-  ExternalLink, Plus, List, Columns, ChevronDown, Search, Star,
+  ExternalLink, Pencil, Plus, List, Columns,
 } from "lucide-react";
 import PipelineBoard from "./PipelineBoard";
+import ProjectFormModal from "./ProjectFormModal";
 
 const STAGES = [
   { key: "new", label: "New" },
@@ -28,6 +35,7 @@ const OPPORTUNITY_STAGES = ["new", "discovery", "proposal", "contract_signed"];
 const PROJECT_STAGES = ["kickoff", "onboarding", "planning", "delivery", "complete"];
 const STORAGE_KEY = "projects-view";
 const PROJECT_FILTERS = ["all", "not_started", "in_progress", "in_review", "complete"];
+const MAX_BULK_SELECTION = 25;
 
 function getProjectHeaderLabel(filterKey) {
   if (filterKey === "all") return "Projects";
@@ -39,7 +47,7 @@ function getProjectFilterLabel(filterKey) {
   return STATUS_LABELS[filterKey];
 }
 
-export default function ProjectsClient({ projects, currency = "USD" }) {
+export default function ProjectsClient({ projects, currency = "USD", contacts = [] }) {
   const router = useRouter();
   const [view, setView] = useState(() => {
     if (typeof window === "undefined") return "list";
@@ -49,6 +57,11 @@ export default function ProjectsClient({ projects, currency = "USD" }) {
   const [statusFilter, setStatusFilter] = useState("all");
   const [filterOpen, setFilterOpen] = useState(false);
   const [filterSearch, setFilterSearch] = useState("");
+  const [selectedIds, setSelectedIds] = useState([]);
+  const [bulkError, setBulkError] = useState("");
+  const [bulkLoading, setBulkLoading] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editingProject, setEditingProject] = useState(null);
   const searchParams = useSearchParams();
   const query = (searchParams.get("q") || "").trim().toLowerCase();
 
@@ -73,10 +86,20 @@ export default function ProjectsClient({ projects, currency = "USD" }) {
 
     return list.filter((project) =>
       project.title.toLowerCase().includes(query) ||
-      (project.contact?.name || "").toLowerCase().includes(query) ||
-      (project.clientName || "").toLowerCase().includes(query)
+      (project.contact?.name || "").toLowerCase().includes(query)
     );
   }, [projects, query, statusFilter]);
+
+  useEffect(() => {
+    setSelectedIds([]);
+    setBulkError("");
+  }, [query, statusFilter, view]);
+
+  const visibleProjectIds = filteredProjects.map((project) => project.id);
+  const selectedCount = selectedIds.length;
+  const selectedVisibleCount = visibleProjectIds.filter((id) => selectedIds.includes(id)).length;
+  const allVisibleSelected = visibleProjectIds.length > 0 && selectedVisibleCount === visibleProjectIds.length;
+  const canSelectMore = selectedCount < MAX_BULK_SELECTION;
 
   function countStage(stageKey) {
     return filteredProjects.filter((p) => (p.stage || "new") === stageKey).length;
@@ -88,123 +111,169 @@ export default function ProjectsClient({ projects, currency = "USD" }) {
     router.push(href);
   }
 
+  function toggleOne(id, checked) {
+    setBulkError("");
+    setSelectedIds((current) => {
+      if (!checked) return current.filter((value) => value !== id);
+      if (current.includes(id)) return current;
+      if (current.length >= MAX_BULK_SELECTION) {
+        setBulkError(`You can select up to ${MAX_BULK_SELECTION} projects at a time.`);
+        return current;
+      }
+      return [...current, id];
+    });
+  }
+
+  function toggleAllVisible() {
+    setBulkError("");
+    setSelectedIds((current) => {
+      if (allVisibleSelected) {
+        return current.filter((id) => !visibleProjectIds.includes(id));
+      }
+
+      const next = [...current];
+      for (const id of visibleProjectIds) {
+        if (next.includes(id)) continue;
+        if (next.length >= MAX_BULK_SELECTION) {
+          setBulkError(`You can select up to ${MAX_BULK_SELECTION} projects at a time.`);
+          break;
+        }
+        next.push(id);
+      }
+      return next;
+    });
+  }
+
+  async function bulkUpdateStatus(nextStatus) {
+    if (!selectedCount || bulkLoading) return;
+    setBulkLoading(true);
+    setBulkError("");
+
+    try {
+      const responses = await Promise.all(
+        selectedIds.map((id) =>
+          fetch(`/api/projects/${id}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ status: nextStatus }),
+          })
+        )
+      );
+
+      const failed = responses.find((response) => !response.ok);
+      if (failed) {
+        const data = await failed.json().catch(() => ({}));
+        throw new Error(data.error || "Could not update selected projects.");
+      }
+
+      setSelectedIds([]);
+      router.refresh();
+    } catch (error) {
+      setBulkError(error.message || "Could not update selected projects.");
+    } finally {
+      setBulkLoading(false);
+    }
+  }
+
+  async function bulkDelete() {
+    if (!selectedCount || bulkLoading) return;
+    if (!window.confirm(`Delete ${selectedCount} project${selectedCount === 1 ? "" : "s"}?`)) return;
+
+    setBulkLoading(true);
+    setBulkError("");
+
+    try {
+      const responses = await Promise.all(
+        selectedIds.map((id) =>
+          fetch(`/api/projects/${id}`, { method: "DELETE" })
+        )
+      );
+
+      const failed = responses.find((response) => !response.ok);
+      if (failed) {
+        const data = await failed.json().catch(() => ({}));
+        throw new Error(data.error || "Could not delete selected projects.");
+      }
+
+      setSelectedIds([]);
+      router.refresh();
+    } catch (error) {
+      setBulkError(error.message || "Could not delete selected projects.");
+    } finally {
+      setBulkLoading(false);
+    }
+  }
+
   return (
-    <div className="space-y-6">
-      <div className="space-y-6">
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => setFilterOpen((current) => !current)}
-                className="inline-flex items-center justify-between gap-2 rounded-lg bg-zinc-100 px-2 py-1 text-left text-sm text-zinc-900 transition-colors hover:bg-zinc-200"
-              >
-                <span className="text-lg font-bold tracking-tight">
-                  {getProjectHeaderLabel(statusFilter)}
-                </span>
-                <ChevronDown
-                  className={`h-5 w-5 text-blue-600 transition-transform ${filterOpen ? "rotate-180" : ""}`}
-                />
-              </button>
-
-              {filterOpen && (
-                <div className="absolute left-0 top-[calc(100%+8px)] z-20 w-[15rem] max-w-[calc(100vw-2rem)] rounded-xl border border-zinc-200 bg-white p-2 shadow-xl">
-                  <div className="relative mb-3">
-                    <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
-                    <input
-                      type="text"
-                      value={filterSearch}
-                      onChange={(e) => setFilterSearch(e.target.value)}
-                      placeholder="Search filters"
-                      className="h-11 w-full rounded-xl border border-blue-500 pl-11 pr-4 text-sm text-zinc-900 outline-none ring-0 placeholder:text-zinc-400 focus:border-blue-500"
-                    />
-                  </div>
-
-                  <div className="max-h-72 overflow-y-auto py-1">
-                    {filterOptions.map((filterKey) => (
-                      <button
-                        key={filterKey}
-                        type="button"
-                        onClick={() => {
-                          setStatusFilter(filterKey);
-                          setFilterOpen(false);
-                          setFilterSearch("");
-                        }}
-                        className={cn(
-                          "flex w-full items-center justify-between rounded-xl px-4 py-2.5 text-left text-sm transition-colors",
-                          statusFilter === filterKey
-                            ? "bg-zinc-50 text-zinc-900"
-                            : "text-zinc-700 hover:bg-zinc-50"
-                        )}
-                      >
-                        <span>{getProjectFilterLabel(filterKey)}</span>
-                        {statusFilter === filterKey && (
-                          <span className="h-2.5 w-2.5 rounded-full bg-blue-600" />
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <div className="flex items-center rounded border border-zinc-200 bg-white">
+    <>
+      <CollectionPageHeader
+        title={getProjectHeaderLabel(statusFilter)}
+        filterOpen={filterOpen}
+        onToggleFilter={() => setFilterOpen((current) => !current)}
+        filterSearch={filterSearch}
+        onFilterSearchChange={setFilterSearch}
+        filterOptions={filterOptions.map((filterKey) => ({
+          key: filterKey,
+          label: getProjectFilterLabel(filterKey),
+        }))}
+        selectedFilterKey={statusFilter}
+        onSelectFilter={(key) => {
+          setStatusFilter(key);
+          setFilterOpen(false);
+          setFilterSearch("");
+        }}
+        actions={(
+          <>
+            <div className={collectionPageHeaderSegmentedGroupClassName}>
               <button
                 onClick={() => switchView("list")}
-                className={`inline-flex items-center gap-1.5 rounded-l px-3 py-1.5 text-xs font-medium transition-colors ${
-                  view === "list" ? "bg-zinc-900 text-white" : "text-zinc-500 hover:text-zinc-900"
-                }`}
+                className={getCollectionPageHeaderSegmentedButtonClassName(view === "list", "left")}
               >
                 <List className="h-3.5 w-3.5" />
               </button>
               <button
                 onClick={() => switchView("pipeline")}
-                className={`inline-flex items-center gap-1.5 rounded-r px-3 py-1.5 text-xs font-medium transition-colors ${
-                  view === "pipeline" ? "bg-zinc-900 text-white" : "text-zinc-500 hover:text-zinc-900"
-                }`}
+                className={getCollectionPageHeaderSegmentedButtonClassName(view === "pipeline", "right")}
               >
                 <Columns className="h-3.5 w-3.5" />
               </button>
             </div>
 
             {projects.length > 0 && (
-              <Link
-                href="/projects/new"
-                className="inline-flex items-center gap-2 rounded bg-zinc-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-zinc-700"
+              <button
+                onClick={() => { setEditingProject(null); setModalOpen(true); }}
+                className={collectionPageHeaderPrimaryActionClassName}
               >
                 <Plus className="h-4 w-4" />
                 New project
-              </Link>
+              </button>
             )}
-          </div>
-        </div>
+          </>
+        )}
+      />
 
-      </div>
-
-      <div className="overflow-hidden rounded border border-zinc-200 bg-white">
-        <div className="grid grid-cols-2 divide-x divide-zinc-100">
-          <div className="px-5 py-4">
+      <CollectionTableFrame>
+        <div className="grid grid-cols-1 divide-y divide-zinc-100 sm:grid-cols-2 sm:divide-x sm:divide-y-0">
+          <div className="px-5 py-4 pb-4">
             <p className="mb-3 text-[10px] font-semibold uppercase tracking-wider text-amber-600">Opportunities</p>
-            <div className="flex gap-5">
-              <div className="text-center">
+            <div className="grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-3 lg:grid-cols-5">
+              <div className="text-center sm:text-left">
                 <p className="text-lg font-bold text-zinc-900">{filteredProjects.length}</p>
                 <p className="text-[10px] text-zinc-400">All</p>
               </div>
               {OPPORTUNITY_STAGES.map((s) => (
-                <div key={s} className="text-center">
+                <div key={s} className="text-center sm:text-left">
                   <p className="text-lg font-bold text-zinc-900">{countStage(s)}</p>
                   <p className="text-[10px] text-zinc-400">{STAGE_LABELS[s]}</p>
                 </div>
               ))}
             </div>
           </div>
-          <div className="px-5 py-4">
+          <div className="px-5 py-4 pb-4">
             <p className="mb-3 text-[10px] font-semibold uppercase tracking-wider text-blue-600">Active Projects</p>
-            <div className="flex gap-5">
+            <div className="grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-3 lg:grid-cols-5">
               {PROJECT_STAGES.map((s) => (
-                <div key={s} className="text-center">
+                <div key={s} className="text-center sm:text-left">
                   <p className="text-lg font-bold text-zinc-900">{countStage(s)}</p>
                   <p className="text-[10px] text-zinc-400">{STAGE_LABELS[s]}</p>
                 </div>
@@ -212,111 +281,163 @@ export default function ProjectsClient({ projects, currency = "USD" }) {
             </div>
           </div>
         </div>
-      </div>
+      </CollectionTableFrame>
 
       {filteredProjects.length === 0 ? (
-        <div className="rounded border border-dashed border-zinc-200 bg-white px-8 py-16 text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-zinc-100">
-            <Plus className="h-5 w-5 text-zinc-400" />
-          </div>
-          <p className="text-lg font-semibold text-zinc-900">{projects.length === 0 ? "No projects yet" : "No projects found"}</p>
-          <p className="mt-2 text-sm text-zinc-500">
-            {projects.length === 0
-              ? "Create your first project to start tracking work, stages, and revenue."
-              : "Try a different filter or top search term."}
-          </p>
-          <Link
-            href="/projects/new"
-            className="mt-6 inline-flex items-center gap-2 rounded bg-zinc-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-zinc-700"
-          >
-            <Plus className="h-4 w-4" />
-            Add first project
-          </Link>
-        </div>
+        <CollectionEmptyState
+          icon={Plus}
+          title={projects.length === 0 ? "No projects yet" : "No projects found"}
+          description={projects.length === 0
+            ? "Create your first project to start tracking work, stages, and revenue."
+            : "Try a different filter or top search term."}
+          action={(
+            <button
+              onClick={() => { setEditingProject(null); setModalOpen(true); }}
+              className={collectionPageHeaderPrimaryActionClassName}
+            >
+              <Plus className="h-4 w-4" />
+              Add first project
+            </button>
+          )}
+          className="border-dashed"
+        />
       ) : view === "pipeline" ? (
         <PipelineBoard projects={filteredProjects} stages={STAGES} currency={currency} />
       ) : (
-        <div className="overflow-hidden rounded border border-zinc-200 bg-white">
-          <table className="w-full table-fixed">
-            <thead className="border-b border-zinc-100 bg-zinc-50">
-              <tr>
-                <th className="w-1/3 px-4 py-3 text-left text-xs font-semibold text-zinc-500">Project</th>
-                <th className="hidden w-1/6 px-4 py-3 text-left text-xs font-semibold text-zinc-500 md:table-cell">Contact</th>
-                <th className="hidden w-1/6 px-4 py-3 text-left text-xs font-semibold text-zinc-500 lg:table-cell">Stage</th>
-                <th className="w-1/6 px-4 py-3 text-left text-xs font-semibold text-zinc-500">Status</th>
-                <th className="hidden w-1/6 px-4 py-3 text-left text-xs font-semibold text-zinc-500 sm:table-cell">Deadline</th>
-                <th className="hidden w-1/6 px-4 py-3 text-right text-xs font-semibold text-zinc-500 sm:table-cell">Revenue</th>
-                <th className="w-10 px-4 py-3" />
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-zinc-50">
-              {filteredProjects.map((project) => {
-                const revenue = project.invoices
-                  .filter((i) => i.status === "paid")
-                  .reduce((s, i) => s + i.total, 0);
-                const unpaid = project.invoices
-                  .filter((i) => i.status !== "paid" && i.status !== "cancelled")
-                  .reduce((s, i) => s + i.total, 0);
+        <CollectionDataTable
+          rows={filteredProjects}
+          tableClassName="w-full table-fixed"
+          selection={{
+            allVisibleSelected,
+            onToggleAll: toggleAllVisible,
+            isSelected: (project) => selectedIds.includes(project.id),
+            isRowDisabled: (project) => !selectedIds.includes(project.id) && !canSelectMore,
+            onToggleRow: (project, checked) => toggleOne(project.id, checked),
+            getRowLabel: (project) => `Select ${project.title}`,
+          }}
+          bulkActions={{
+            count: selectedCount,
+            maxCount: MAX_BULK_SELECTION,
+            error: bulkError,
+            isSubmitting: bulkLoading,
+            actions: [
+              { key: "not_started", label: "Not started", onClick: () => bulkUpdateStatus("not_started") },
+              { key: "in_progress", label: "In progress", onClick: () => bulkUpdateStatus("in_progress") },
+              { key: "in_review", label: "In review", onClick: () => bulkUpdateStatus("in_review") },
+              { key: "complete", label: "Complete", onClick: () => bulkUpdateStatus("complete") },
+              { key: "delete", label: bulkLoading ? "Working..." : "Delete", onClick: bulkDelete, variant: "danger" },
+            ],
+            onClear: () => {
+              setSelectedIds([]);
+              setBulkError("");
+            },
+          }}
+          columns={[
+            { key: "project", header: "Project", headerClassName: "w-1/3 px-4 text-xs normal-case tracking-normal text-zinc-500" },
+            { key: "contact", header: "Contact", headerClassName: "hidden w-1/6 px-4 text-xs normal-case tracking-normal text-zinc-500 md:table-cell" },
+            { key: "stage", header: "Stage", headerClassName: "hidden w-1/6 px-4 text-xs normal-case tracking-normal text-zinc-500 lg:table-cell" },
+            { key: "status", header: "Status", headerClassName: "w-1/6 px-4 text-xs normal-case tracking-normal text-zinc-500" },
+            { key: "deadline", header: "Deadline", headerClassName: "hidden w-1/6 px-4 text-xs normal-case tracking-normal text-zinc-500 sm:table-cell" },
+            { key: "revenue", header: "Revenue", headerClassName: "hidden w-1/6 px-4 text-right text-xs normal-case tracking-normal text-zinc-500 sm:table-cell" },
+            { key: "actions", header: "", headerClassName: "w-10 px-4" },
+          ]}
+          renderRow={(project) => {
+            const revenue = project.invoices
+              .filter((i) => i.status === "paid")
+              .reduce((s, i) => s + i.total, 0);
+            const unpaid = project.invoices
+              .filter((i) => i.status !== "paid" && i.status !== "cancelled")
+              .reduce((s, i) => s + i.total, 0);
 
-                return (
-                  <tr
-                    key={project.id}
-                    onDoubleClick={(event) => handleRowDoubleClick(event, `/projects/${project.id}`)}
-                    className="cursor-pointer hover:bg-zinc-50"
-                  >
-                    <td className="px-4 py-3">
-                      <Link href={`/projects/${project.id}`} className="font-medium text-zinc-900 hover:underline">
-                        {project.title}
-                      </Link>
-                      <p className="text-xs text-zinc-400">{formatDate(project.updatedAt)}</p>
-                    </td>
-                    <td className="hidden px-4 py-3 text-sm text-zinc-500 md:table-cell">
-                      {project.contact?.name || project.clientName}
-                    </td>
-                    <td className="hidden px-4 py-3 lg:table-cell">
-                      <span className="text-xs text-zinc-500">{STAGE_LABELS[project.stage] || project.stage}</span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <Badge className={STATUS_COLORS[project.status]}>
-                        {STATUS_LABELS[project.status]}
-                      </Badge>
-                    </td>
-                    <td className="hidden px-4 py-3 text-left sm:table-cell">
-                      {project.endDate ? (
-                        <span className={(() => {
-                          const daysLeft = Math.ceil((new Date(project.endDate) - new Date()) / 86400000);
-                          return daysLeft < 0 ? "text-xs font-medium text-red-500" : daysLeft <= 7 ? "text-xs font-medium text-amber-600" : "text-xs text-zinc-500";
-                        })()}>
-                          {(() => {
-                            const daysLeft = Math.ceil((new Date(project.endDate) - new Date()) / 86400000);
-                            if (daysLeft < 0) return `${Math.abs(daysLeft)}d overdue`;
-                            if (daysLeft === 0) return "Due today";
-                            if (daysLeft <= 7) return `${daysLeft}d left`;
-                            return formatDate(project.endDate);
-                          })()}
-                        </span>
-                      ) : (
-                        <span className="text-xs text-zinc-300">—</span>
-                      )}
-                    </td>
-                    <td className="hidden px-4 py-3 text-right sm:table-cell">
-                      <span className="text-sm font-medium text-green-700">{formatCurrency(revenue, currency)}</span>
-                      {unpaid > 0 && (
-                        <p className="text-[11px] text-red-500">{formatCurrency(unpaid, currency)} due</p>
-                      )}
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      <Link href={`/projects/${project.id}`} className="text-zinc-400 hover:text-zinc-700">
-                        <ExternalLink className="h-4 w-4" />
-                      </Link>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+            return (
+              <>
+                <td
+                  onDoubleClick={(event) => handleRowDoubleClick(event, `/projects/${project.id}`)}
+                  className="cursor-pointer px-4 py-3 transition-colors"
+                >
+                  <Link href={`/projects/${project.id}`} className="font-medium text-zinc-900 hover:underline">
+                    {project.title}
+                  </Link>
+                  <p className="text-xs text-zinc-400">{formatDate(project.updatedAt)}</p>
+                </td>
+                <td
+                  onDoubleClick={(event) => handleRowDoubleClick(event, `/projects/${project.id}`)}
+                  className="hidden cursor-pointer px-4 py-3 text-sm text-zinc-500 transition-colors md:table-cell"
+                >
+                  {project.contact?.name || "—"}
+                </td>
+                <td
+                  onDoubleClick={(event) => handleRowDoubleClick(event, `/projects/${project.id}`)}
+                  className="hidden cursor-pointer px-4 py-3 transition-colors lg:table-cell"
+                >
+                  <span className="text-xs text-zinc-500">{STAGE_LABELS[project.stage] || project.stage}</span>
+                </td>
+                <td
+                  onDoubleClick={(event) => handleRowDoubleClick(event, `/projects/${project.id}`)}
+                  className="cursor-pointer px-4 py-3 transition-colors"
+                >
+                  <Badge className={STATUS_COLORS[project.status]}>
+                    {STATUS_LABELS[project.status]}
+                  </Badge>
+                </td>
+                <td
+                  onDoubleClick={(event) => handleRowDoubleClick(event, `/projects/${project.id}`)}
+                  className="hidden cursor-pointer px-4 py-3 text-left transition-colors sm:table-cell"
+                >
+                  {project.endDate ? (
+                    <span className={(() => {
+                      const daysLeft = Math.ceil((new Date(project.endDate) - new Date()) / 86400000);
+                      return daysLeft < 0 ? "text-xs font-medium text-red-500" : daysLeft <= 7 ? "text-xs font-medium text-amber-600" : "text-xs text-zinc-500";
+                    })()}>
+                      {(() => {
+                        const daysLeft = Math.ceil((new Date(project.endDate) - new Date()) / 86400000);
+                        if (daysLeft < 0) return `${Math.abs(daysLeft)}d overdue`;
+                        if (daysLeft === 0) return "Due today";
+                        if (daysLeft <= 7) return `${daysLeft}d left`;
+                        return formatDate(project.endDate);
+                      })()}
+                    </span>
+                  ) : (
+                    <span className="text-xs text-zinc-300">—</span>
+                  )}
+                </td>
+                <td
+                  onDoubleClick={(event) => handleRowDoubleClick(event, `/projects/${project.id}`)}
+                  className="hidden cursor-pointer px-4 py-3 text-right transition-colors sm:table-cell"
+                >
+                  <span className="text-sm font-medium text-green-700">{formatCurrency(revenue, currency)}</span>
+                  {unpaid > 0 && (
+                    <p className="text-[11px] text-red-500">{formatCurrency(unpaid, currency)} due</p>
+                  )}
+                </td>
+                <td className="px-4 py-3 text-right">
+                  <div className="flex items-center justify-end gap-2">
+                    <button
+                      type="button"
+                      onClick={() => { setEditingProject(project); setModalOpen(true); }}
+                      className="text-zinc-400 hover:text-zinc-700 transition-colors"
+                      data-no-row-nav="true"
+                      title="Edit project"
+                    >
+                      <Pencil className="h-3.5 w-3.5" />
+                    </button>
+                    <Link href={`/projects/${project.id}`} className="text-zinc-400 hover:text-zinc-700" data-no-row-nav="true">
+                      <ExternalLink className="h-4 w-4" />
+                    </Link>
+                  </div>
+                </td>
+              </>
+            );
+          }}
+        />
       )}
-    </div>
+
+      <ProjectFormModal
+        open={modalOpen}
+        onClose={() => { setModalOpen(false); setEditingProject(null); }}
+        project={editingProject}
+        contacts={contacts}
+      />
+    </>
   );
 }

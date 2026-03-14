@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
@@ -38,7 +38,7 @@ export default function InvoiceBuilderClient({ projects, services, user }) {
   const [taxRate, setTaxRate] = useState(0);
   const [discountType, setDiscountType] = useState("none");
   const [discountValue, setDiscountValue] = useState("");
-  const [lineItems, setLineItems] = useState([{ description: "", quantity: 1, rate: "", amount: 0 }]);
+  const [lineItems, setLineItems] = useState([{ serviceId: null, description: "", quantity: 1, rate: "", amount: 0 }]);
 
   // Payment plan state
   const [paymentType, setPaymentType] = useState("lump_sum"); // "lump_sum" | "installments"
@@ -46,33 +46,6 @@ export default function InvoiceBuilderClient({ projects, services, user }) {
 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
-
-  useEffect(() => {
-    try {
-      const raw = sessionStorage.getItem("invoiceTemplate");
-      if (!raw) return;
-
-      const template = JSON.parse(raw);
-      sessionStorage.removeItem("invoiceTemplate");
-
-      if (Array.isArray(template.lineItems) && template.lineItems.length) {
-        setLineItems(
-          template.lineItems.map((item) => ({
-            description: item.description || "",
-            quantity: item.quantity ?? 1,
-            rate: item.rate ?? "",
-            amount: item.amount ?? (parseFloat(item.quantity || 1) * parseFloat(item.rate || 0)),
-          }))
-        );
-      }
-
-      if (template.notes) setNotes(template.notes);
-      if (template.currency) setCurrency(template.currency);
-      if (template.taxRate !== undefined) setTaxRate(template.taxRate);
-    } catch {
-      sessionStorage.removeItem("invoiceTemplate");
-    }
-  }, []);
 
   function updateLine(i, key, value) {
     setLineItems((prev) =>
@@ -88,7 +61,7 @@ export default function InvoiceBuilderClient({ projects, services, user }) {
   }
 
   function addLine() {
-    setLineItems((prev) => [...prev, { description: "", quantity: 1, rate: "", amount: 0 }]);
+    setLineItems((prev) => [...prev, { serviceId: null, description: "", quantity: 1, rate: "", amount: 0 }]);
   }
 
   function removeLine(i) {
@@ -98,7 +71,7 @@ export default function InvoiceBuilderClient({ projects, services, user }) {
   function applyService(svc) {
     setLineItems((prev) => [
       ...prev,
-      { description: svc.name, quantity: 1, rate: svc.defaultRate, amount: svc.defaultRate },
+      { serviceId: svc.id, description: svc.name, quantity: 1, rate: svc.defaultRate, amount: svc.defaultRate },
     ]);
   }
 
@@ -160,6 +133,7 @@ export default function InvoiceBuilderClient({ projects, services, user }) {
         projectId,
         invoiceNumber: invoiceNumber.trim() || null,
         lineItems: lineItems.map((l) => ({
+          serviceId: l.serviceId || null,
           description: l.description,
           quantity: parseFloat(l.quantity) || 1,
           rate: parseFloat(l.rate) || 0,
@@ -222,7 +196,7 @@ export default function InvoiceBuilderClient({ projects, services, user }) {
           <button
             onClick={() => handleSubmit("sent")}
             disabled={saving}
-            className="rounded bg-zinc-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50"
+            className="rounded bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
           >
             {saving ? "Creating…" : "Create & send"}
           </button>

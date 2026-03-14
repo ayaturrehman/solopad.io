@@ -317,7 +317,7 @@ export default function ProjectTasksSection({ project, tasks: initialTasks, team
           <button type="button" onClick={() => setEditingId(null)} className="rounded px-3 py-1.5 text-sm text-zinc-500 hover:text-zinc-900">
             Cancel
           </button>
-          <button type="button" onClick={() => saveEdit(taskId)} className="rounded bg-zinc-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-zinc-700">
+          <button type="button" onClick={() => saveEdit(taskId)} className="rounded bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700">
             Save task
           </button>
         </div>

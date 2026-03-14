@@ -273,7 +273,7 @@ export default function ClientPortal({ project, files, comments: initialComments
           )}
 
           <div className="mt-4 flex flex-wrap gap-4 text-sm text-zinc-500">
-            <span className="flex items-center gap-1.5"><User className="h-4 w-4" />{project.clientName}</span>
+            <span className="flex items-center gap-1.5"><User className="h-4 w-4" />{project.contact?.name || "Client"}</span>
             {project.endDate && (
               <span className="flex items-center gap-1.5"><Calendar className="h-4 w-4" />Due {formatDate(project.endDate)}</span>
             )}
@@ -431,7 +431,7 @@ export default function ClientPortal({ project, files, comments: initialComments
 
               <div className="rounded border border-zinc-200 bg-white p-5">
                 <h2 className="mb-1 font-semibold text-zinc-900">Got a question?</h2>
-                <p className="mb-3 text-xs text-zinc-400">Send a message and we'll get back to you.</p>
+                <p className="mb-3 text-xs text-zinc-400">Send a message and we&apos;ll get back to you.</p>
                 <button onClick={() => setActiveTab("messages")} className="flex w-full items-center justify-center gap-2 rounded border border-zinc-200 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50">
                   <MessageSquare className="h-4 w-4" /> Open messages
                 </button>

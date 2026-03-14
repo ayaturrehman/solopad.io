@@ -3,33 +3,35 @@ import { getSession } from "@/lib/session";
 import db from "@/lib/db";
 import { redirect } from "next/navigation";
 import InvoiceEditClient from "./InvoiceEditClient";
+import { getTenantFilter } from "@/lib/tenant";
 
 export default async function EditInvoicePage({ params }) {
   const { id } = await params;
   const session = await getSession();
   if (!session?.user) redirect("/login");
+  const filter = await getTenantFilter(session);
 
   const [invoice, projects, services] = await Promise.all([
     db.invoice.findFirst({
-      where: { id },
+      where: { id, project: filter },
       include: {
-        project: { select: { id: true, title: true, clientName: true, clientEmail: true, userId: true } },
+        project: { select: { id: true, title: true, clientName: true, clientEmail: true, userId: true, businessId: true } },
         paymentPlans: { orderBy: { createdAt: "asc" } },
       },
     }),
     db.project.findMany({
-      where: { userId: session.user.id, archived: false },
+      where: { ...filter, archived: false },
       select: { id: true, title: true, clientName: true, clientEmail: true },
       orderBy: { updatedAt: "desc" },
     }),
     db.service.findMany({
-      where: { userId: session.user.id },
-      select: { id: true, name: true, defaultRate: true },
+      where: { ...filter, status: "active" },
+      select: { id: true, name: true, defaultRate: true, status: true },
       orderBy: { name: "asc" },
     }),
   ]);
 
-  if (!invoice || invoice.project.userId !== session.user.id) redirect("/finance?tab=invoices");
+  if (!invoice) redirect("/finance?tab=invoices");
 
   const lineItems = typeof invoice.lineItems === "string"
     ? JSON.parse(invoice.lineItems)
@@ -50,6 +52,7 @@ export default async function EditInvoicePage({ params }) {
         discountValue: invoice.discountValue,
         status: invoice.status,
         lineItems: lineItems.map((l) => ({
+          serviceId: l.serviceId || null,
           description: l.description || "",
           quantity: l.quantity ?? 1,
           rate: l.rate ?? 0,

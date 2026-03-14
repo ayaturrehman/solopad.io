@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
-  Send, Trash2, MoreHorizontal, XCircle, LinkIcon, Pencil
+  Send, Trash2, MoreHorizontal, XCircle, LinkIcon, Pencil, Download
 } from "lucide-react";
 
 export default function InvoiceActions({ invoice }) {
@@ -24,6 +24,18 @@ export default function InvoiceActions({ invoice }) {
     router.refresh();
   }
 
+  async function downloadPdf() {
+    const res = await fetch(`/api/pdf/invoice/${invoice.id}`);
+    if (!res.ok) return;
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `invoice-${invoice.id}.pdf`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   async function del() {
     if (!confirm("Delete this invoice? This cannot be undone.")) return;
     setLoading(true);
@@ -40,6 +52,15 @@ export default function InvoiceActions({ invoice }) {
 
   return (
     <div className="relative flex items-center gap-2">
+      {/* Download PDF */}
+      <button
+        onClick={downloadPdf}
+        disabled={loading}
+        className="inline-flex items-center gap-1.5 rounded border border-zinc-200 px-3 py-1.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50 disabled:opacity-50"
+      >
+        <Download className="h-3.5 w-3.5" /> PDF
+      </button>
+
       {/* Edit — only on drafts */}
       {canEdit && (
         <Link
@@ -55,7 +76,7 @@ export default function InvoiceActions({ invoice }) {
         <button
           onClick={() => patch({ status: "sent" })}
           disabled={loading}
-          className="inline-flex items-center gap-1.5 rounded bg-zinc-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50"
+          className="inline-flex items-center gap-1.5 rounded bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
         >
           <Send className="h-3.5 w-3.5" /> Send
         </button>

@@ -1,8 +1,8 @@
-import { Plus_Jakarta_Sans } from "next/font/google";
+import { Kumbh_Sans } from "next/font/google";
 import SessionProvider from "@/components/shared/SessionProvider";
 import "./globals.css";
 
-const plusJakartaSans = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-plus-jakarta-sans" });
+const kumbhSans = Kumbh_Sans({ subsets: ["latin"], variable: "--font-kumbh-sans" });
 
 export const metadata = {
   title: "Solopad — The One-Link Client Portal for Freelancers",
@@ -29,7 +29,7 @@ export default function RootLayout({ children }) {
           }}
         />
       </head>
-      <body className={`${plusJakartaSans.variable} font-sans antialiased`}>
+      <body className={`${kumbhSans.variable} font-sans antialiased`}>
         <SessionProvider>{children}</SessionProvider>
       </body>
     </html>

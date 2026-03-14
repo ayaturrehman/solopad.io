@@ -28,7 +28,7 @@ Manage clients, projects, proposals, contracts, invoices, tasks, and time tracki
 
 - **Framework** — Next.js 16 (App Router)
 - **Styling** — Tailwind CSS v4
-- **Database** — SQLite (dev) / PostgreSQL (prod) via Prisma
+- **Database** — PostgreSQL via Prisma
 - **Auth** — NextAuth.js v4 (credentials)
 - **Payments** — Stripe Checkout
 - **Email** — Resend
@@ -47,13 +47,14 @@ npm install
 ### 2. Set up environment variables
 
 ```bash
-cp .env.example .env.local
+touch .env.local
 ```
 
 Fill in:
 
 ```env
-DATABASE_URL="file:./dev.db"
+DATABASE_URL="postgresql://USER:PASSWORD@HOST:5432/DATABASE?sslmode=require"
+DIRECT_URL="postgresql://USER:PASSWORD@HOST:5432/DATABASE?sslmode=require"
 NEXTAUTH_SECRET="your-secret"
 NEXTAUTH_URL="http://localhost:3000"
 STRIPE_SECRET_KEY="sk_test_..."
@@ -84,6 +85,10 @@ npx prisma studio          # Browse database
 npx prisma db push         # Apply schema changes
 npx prisma migrate dev     # Create a migration
 ```
+
+For local development, use a PostgreSQL database that matches the active Prisma datasource in
+[prisma/schema.prisma](/Users/ayaturrehman/Documents/syslom/Project/freelancer/freelance-managment-app/prisma/schema.prisma).
+Neon, Supabase, Railway, or a local Postgres instance all work.
 
 ---
 

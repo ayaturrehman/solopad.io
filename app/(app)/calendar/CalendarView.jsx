@@ -50,13 +50,13 @@ export default function CalendarView({ events }) {
     <div className="rounded border border-zinc-200 bg-white p-6">
       {/* Header */}
       <div className="mb-5 flex items-center justify-between">
-        <button onClick={prevMonth} className="rounded border border-zinc-200 p-1.5 hover:bg-zinc-50">
+        <button onClick={prevMonth} className="inline-flex h-9 w-9 items-center justify-center rounded border border-zinc-200 hover:bg-zinc-50">
           <ChevronLeft className="h-4 w-4 text-zinc-600" />
         </button>
-        <h2 className="font-semibold text-zinc-900">
+        <h2 className="text-base font-semibold sm:text-lg text-zinc-900">
           {MONTH_NAMES[month]} {year}
         </h2>
-        <button onClick={nextMonth} className="rounded border border-zinc-200 p-1.5 hover:bg-zinc-50">
+        <button onClick={nextMonth} className="inline-flex h-9 w-9 items-center justify-center rounded border border-zinc-200 hover:bg-zinc-50">
           <ChevronRight className="h-4 w-4 text-zinc-600" />
         </button>
       </div>
@@ -64,7 +64,7 @@ export default function CalendarView({ events }) {
       {/* Day names */}
       <div className="mb-2 grid grid-cols-7 gap-1">
         {DAY_NAMES.map((d) => (
-          <div key={d} className="text-center text-xs font-medium text-zinc-400">{d}</div>
+          <div key={d} className="text-center text-[10px] font-medium text-zinc-400 sm:text-xs">{d}</div>
         ))}
       </div>
 
@@ -84,7 +84,7 @@ export default function CalendarView({ events }) {
                 isToday ? "border-zinc-900 bg-zinc-50" : "border-zinc-100"
               )}
             >
-              <span className={cn("inline-flex h-5 w-5 items-center justify-center rounded-full text-xs font-medium",
+              <span className={cn("inline-flex h-5 w-5 items-center justify-center rounded-full text-xs font-medium sm:text-sm",
                 isToday ? "bg-zinc-900 text-white" : "text-zinc-600"
               )}>
                 {day}
@@ -94,7 +94,7 @@ export default function CalendarView({ events }) {
                   <Link
                     key={i}
                     href={ev.href}
-                    className={cn("block truncate rounded px-1 py-0.5 text-[10px] font-medium", EVENT_COLORS[ev.type] || "bg-zinc-100 text-zinc-600")}
+                    className={cn("block truncate rounded px-1 py-0.5 text-[10px] font-medium sm:text-xs", EVENT_COLORS[ev.type] || "bg-zinc-100 text-zinc-600")}
                     title={ev.label}
                   >
                     {ev.label}

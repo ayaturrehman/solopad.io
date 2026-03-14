@@ -22,13 +22,12 @@ function JoinContent() {
   const [role, setRole] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [fetching, setFetching] = useState(true);
+  const [fetching, setFetching] = useState(Boolean(token));
   const [tokenInvalid, setTokenInvalid] = useState(false);
+  const isInvalidInvite = !token || tokenInvalid;
 
   useEffect(() => {
     if (!token) {
-      setTokenInvalid(true);
-      setFetching(false);
       return;
     }
 
@@ -90,7 +89,7 @@ function JoinContent() {
     );
   }
 
-  if (tokenInvalid) {
+  if (isInvalidInvite) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-zinc-50 px-4">
         <div className="w-full max-w-sm text-center">

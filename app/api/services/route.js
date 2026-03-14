@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 import { getTenantFilter, getTenantData } from "@/lib/tenant";
 import db from "@/lib/db";
+import { normalizeServiceInput } from "@/lib/services";
 
 export async function GET() {
   const session = await getSession();
@@ -21,10 +22,9 @@ export async function POST(req) {
   const session = await getSession();
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { name, description, defaultRate, unit } = await req.json();
-
-  if (!name?.trim()) {
-    return NextResponse.json({ error: "Service name is required" }, { status: 400 });
+  const normalized = normalizeServiceInput(await req.json());
+  if (normalized.errors.length) {
+    return NextResponse.json({ error: normalized.errors[0] }, { status: 400 });
   }
 
   const tenantData = await getTenantData(session);
@@ -32,12 +32,9 @@ export async function POST(req) {
   const service = await db.service.create({
     data: {
       ...tenantData,
-      name: name.trim(),
-      description: description?.trim() || null,
-      defaultRate: parseFloat(defaultRate) || 0,
-      unit: unit || "flat",
+      ...normalized.data,
     },
   });
 
-  return NextResponse.json(service, { status: 201 });
+  return NextResponse.json({ ...service, usageCount: 0 }, { status: 201 });
 }

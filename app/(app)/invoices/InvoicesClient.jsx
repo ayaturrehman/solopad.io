@@ -1,13 +1,15 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   FileText, CheckCircle2, Send, Clock, XCircle, ArrowRight,
-  Search, X, ChevronLeft, ChevronRight, Trash2, Mail, Printer,
-  Square, CheckSquare, Filter, ChevronDown, Star, Plus,
+  X, Trash2, Mail, Printer,
+  Square, CheckSquare, Plus,
 } from "lucide-react";
+import CollectionPageHeader, { collectionPageHeaderPrimaryActionClassName } from "@/components/shared/CollectionPageHeader";
+import { CollectionEmptyState, CollectionTableFrame, CollectionTablePagination } from "@/components/shared/CollectionDataTable";
 import { cn, formatCurrency, formatDate } from "@/lib/utils";
 
 const STATUS_CONFIG = {
@@ -32,7 +34,7 @@ function getFilterLabel(filterKey) {
   return STATUS_CONFIG[filterKey]?.label || filterKey;
 }
 
-export default function InvoicesClient({ invoices, projects }) {
+export default function InvoicesClient({ invoices }) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -40,7 +42,6 @@ export default function InvoicesClient({ invoices, projects }) {
   const [tab, setTab] = useState("all");
   const [filterOpen, setFilterOpen] = useState(false);
   const [filterSearch, setFilterSearch] = useState("");
-  const [projectFilter, setProjectFilter] = useState("all");
   const [page, setPage] = useState(1);
 
   // Bulk
@@ -61,7 +62,6 @@ export default function InvoicesClient({ invoices, projects }) {
   const filtered = useMemo(() => {
     let list = invoices;
     if (tab !== "all") list = list.filter((i) => i.status === tab);
-    if (projectFilter !== "all") list = list.filter((i) => i.project.id === projectFilter);
     if (query) {
       const q = query;
       list = list.filter((i) =>
@@ -71,15 +71,13 @@ export default function InvoicesClient({ invoices, projects }) {
       );
     }
     return list;
-  }, [invoices, projectFilter, query, tab]);
+  }, [invoices, query, tab]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   // Reset page on filter change
   function changeTab(t) { setTab(t); setPage(1); setSelected(new Set()); }
-  function changeProject(v) { setProjectFilter(v); setPage(1); setSelected(new Set()); }
-
   // Selection helpers
   const selectableIds = paginated.map((i) => i.id);
   const allPageSelected = selectableIds.length > 0 && selectableIds.every((id) => selected.has(id));
@@ -161,98 +159,32 @@ export default function InvoicesClient({ invoices, projects }) {
 
   return (
     <>
-      <div className="mb-6">
-        <div className="flex items-center justify-between">
-          <div className="relative">
-            <button
-              type="button"
-              onClick={() => setFilterOpen((current) => !current)}
-              className="inline-flex items-center justify-between gap-2 rounded-lg bg-zinc-100 px-2 py-1 text-left text-sm text-zinc-900 transition-colors hover:bg-zinc-200"
-            >
-              <span className="text-lg font-bold tracking-tight">
-                {getHeaderLabel(tab)}
-              </span>
-              <ChevronDown
-                className={cn(
-                  "h-5 w-5 text-blue-600 transition-transform",
-                  filterOpen ? "rotate-180" : ""
-                )}
-              />
-            </button>
-
-            {filterOpen && (
-              <div className="absolute left-0 top-[calc(100%+8px)] z-20 w-[15rem] max-w-[calc(100vw-2rem)] rounded-xl border border-zinc-200 bg-white p-2 shadow-xl">
-                <div className="relative mb-3">
-                  <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
-                  <input
-                    type="text"
-                    value={filterSearch}
-                    onChange={(e) => setFilterSearch(e.target.value)}
-                    placeholder="Search filters"
-                    className="h-11 w-full rounded-xl border border-blue-500 pl-11 pr-4 text-sm text-zinc-900 outline-none ring-0 placeholder:text-zinc-400 focus:border-blue-500"
-                  />
-                </div>
-
-                <div className="max-h-72 overflow-y-auto py-1">
-                  {filterOptions.map((filterKey) => (
-                    <button
-                      key={filterKey}
-                      type="button"
-                      onClick={() => {
-                        changeTab(filterKey);
-                        setFilterOpen(false);
-                        setFilterSearch("");
-                      }}
-                      className={cn(
-                        "flex w-full items-center justify-between rounded-xl px-4 py-2.5 text-left text-sm transition-colors",
-                        tab === filterKey
-                          ? "bg-zinc-50 text-zinc-900"
-                          : "text-zinc-700 hover:bg-zinc-50"
-                      )}
-                    >
-                      <span>{getFilterLabel(filterKey)}</span>
-                      {tab === filterKey && (
-                        <span className="h-2.5 w-2.5 rounded-full bg-blue-600" />
-                      )}
-                    </button>
-                  ))}
-                  {filterOptions.length === 0 && (
-                    <div className="px-4 py-6 text-sm text-zinc-400">No filters found.</div>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-
+      <CollectionPageHeader
+        title={getHeaderLabel(tab)}
+        filterOpen={filterOpen}
+        onToggleFilter={() => setFilterOpen((current) => !current)}
+        filterSearch={filterSearch}
+        onFilterSearchChange={setFilterSearch}
+        filterOptions={filterOptions.map((filterKey) => ({
+          key: filterKey,
+          label: getFilterLabel(filterKey),
+        }))}
+        selectedFilterKey={tab}
+        onSelectFilter={(key) => {
+          changeTab(key);
+          setFilterOpen(false);
+          setFilterSearch("");
+        }}
+        actions={(
           <Link
             href="/invoices/new"
-            className="inline-flex items-center gap-1.5 rounded bg-zinc-900 px-3 py-1.5 text-sm font-semibold text-white hover:bg-zinc-700"
+            className={collectionPageHeaderPrimaryActionClassName}
           >
             <Plus className="h-4 w-4" />
             New invoice
           </Link>
-        </div>
-      </div>
-
-      <div className="mb-4 flex flex-wrap items-center gap-2">
-        {projects.length > 0 && (
-          <div className="relative">
-            <Filter className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-400" />
-            <select
-              value={projectFilter}
-              onChange={(e) => changeProject(e.target.value)}
-              className="h-9 rounded border border-zinc-200 pl-8 pr-8 text-sm text-zinc-700 focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900"
-            >
-              <option value="all">All projects</option>
-              {projects.map((p) => (
-                <option key={p.id} value={p.id}>{p.title}</option>
-              ))}
-            </select>
-          </div>
         )}
-
-        <p className="text-sm text-zinc-400">{filtered.length} invoice{filtered.length !== 1 ? "s" : ""}</p>
-      </div>
+      />
 
       {/* Bulk action bar */}
       {showBulkBar && (
@@ -300,16 +232,19 @@ export default function InvoicesClient({ invoices, projects }) {
 
       {/* Table */}
       {filtered.length === 0 ? (
-        <div className="rounded border border-dashed border-zinc-200 py-20 text-center">
-          <FileText className="mx-auto mb-3 h-10 w-10 text-zinc-300" />
-          <p className="font-medium text-zinc-500">No invoices found</p>
-          <Link href="/invoices/new" className="mt-3 inline-block text-sm text-zinc-600 hover:underline">
-            Create your first invoice
-          </Link>
-        </div>
+        <CollectionEmptyState
+          icon={FileText}
+          title="No invoices found"
+          action={(
+            <Link href="/invoices/new" className="text-sm text-zinc-600 hover:underline">
+              Create your first invoice
+            </Link>
+          )}
+          className="border-dashed py-20"
+        />
       ) : (
-        <div className="overflow-hidden rounded border border-zinc-200 bg-white">
-          <table className="w-full">
+        <CollectionTableFrame>
+          <table className="w-full min-w-[560px]">
             <thead className="border-b border-zinc-100 bg-zinc-50">
               <tr>
                 <th className="w-10 px-4 py-3.5">
@@ -387,56 +322,20 @@ export default function InvoicesClient({ invoices, projects }) {
               })}
             </tbody>
           </table>
-        </div>
+        </CollectionTableFrame>
       )}
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="mt-4 flex items-center justify-between">
-          <p className="text-sm text-zinc-500">
-            Showing {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, filtered.length)} of {filtered.length}
-          </p>
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              disabled={page === 1}
-              className="flex h-8 w-8 items-center justify-center rounded border border-zinc-200 text-zinc-500 hover:bg-zinc-50 disabled:opacity-40"
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </button>
-            {Array.from({ length: totalPages }, (_, i) => i + 1)
-              .filter((p) => p === 1 || p === totalPages || Math.abs(p - page) <= 1)
-              .reduce((acc, p, idx, arr) => {
-                if (idx > 0 && p - arr[idx - 1] > 1) acc.push("...");
-                acc.push(p);
-                return acc;
-              }, [])
-              .map((p, i) =>
-                p === "..." ? (
-                  <span key={`ellipsis-${i}`} className="px-1 text-zinc-400">…</span>
-                ) : (
-                  <button
-                    key={p}
-                    onClick={() => setPage(p)}
-                    className={`flex h-8 w-8 items-center justify-center rounded text-sm font-medium transition-colors ${
-                      page === p
-                        ? "bg-zinc-900 text-white"
-                        : "border border-zinc-200 text-zinc-600 hover:bg-zinc-50"
-                    }`}
-                  >
-                    {p}
-                  </button>
-                )
-              )}
-            <button
-              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              disabled={page === totalPages}
-              className="flex h-8 w-8 items-center justify-center rounded border border-zinc-200 text-zinc-500 hover:bg-zinc-50 disabled:opacity-40"
-            >
-              <ChevronRight className="h-4 w-4" />
-            </button>
-          </div>
-        </div>
+        <CollectionTablePagination
+          className="mt-4 rounded border border-zinc-200 bg-white"
+          currentPage={page}
+          totalPages={totalPages}
+          totalCount={filtered.length}
+          rangeStart={(page - 1) * PAGE_SIZE + 1}
+          rangeEnd={Math.min(page * PAGE_SIZE, filtered.length)}
+          onPageChange={setPage}
+        />
       )}
     </>
   );

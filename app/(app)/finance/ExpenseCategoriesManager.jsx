@@ -7,7 +7,7 @@ import Modal from "@/components/shared/Modal";
 
 const PAGE_SIZE = 6;
 
-export default function ExpenseCategoriesManager({ defaultCategories = [], customCategories = [] }) {
+export default function ExpenseCategoriesManager({ defaultCategories = [], customCategories = [], triggerClassName }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
@@ -94,7 +94,7 @@ export default function ExpenseCategoriesManager({ defaultCategories = [], custo
     <>
       <button
         onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-1.5 rounded border border-zinc-200 px-3 py-1.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50"
+        className={triggerClassName || "inline-flex items-center gap-1.5 rounded border border-zinc-200 px-3 py-1.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50"}
       >
         Manage categories
       </button>
@@ -240,7 +240,7 @@ export default function ExpenseCategoriesManager({ defaultCategories = [], custo
               />
             </div>
             {error && <p className="text-xs text-red-500">{error}</p>}
-            <button type="submit" disabled={loading} className="inline-flex items-center gap-1.5 rounded bg-zinc-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50">
+            <button type="submit" disabled={loading} className="inline-flex items-center gap-1.5 rounded bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50">
               <Plus className="h-3.5 w-3.5" />
               Add category
             </button>

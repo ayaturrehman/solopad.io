@@ -203,7 +203,7 @@ export default function LandingPage() {
     <>
       <style>{`
         *, *::before, *::after { box-sizing: border-box; }
-        .pk { font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif; color: ${CDk}; background: #fff; }
+        .pk { font-family: 'Kumbh Sans', 'Inter', -apple-system, sans-serif; color: ${CDk}; background: #fff; }
 
         .btn-primary {
           background: ${C}; color: #fff; border: none; cursor: pointer;

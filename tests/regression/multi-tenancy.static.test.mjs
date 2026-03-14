@@ -19,7 +19,6 @@ const modulePages = [
   "app/(app)/projects/page.jsx",
   "app/(app)/proposals/page.jsx",
   "app/(app)/contracts/page.jsx",
-  "app/(app)/templates/page.jsx",
   "app/(app)/finance/page.jsx",
   "app/(app)/services/page.jsx",
   "app/(app)/tasks/page.jsx",
@@ -38,12 +37,12 @@ const sessionTenantRoutes = [
   "app/api/proposals/[id]/route.js",
   "app/api/contracts/route.js",
   "app/api/contracts/[id]/route.js",
+  "app/api/pdf-templates/route.js",
+  "app/api/pdf-templates/[id]/route.js",
   "app/api/invoices/route.js",
   "app/api/invoices/[id]/route.js",
   "app/api/tasks/route.js",
   "app/api/tasks/[id]/route.js",
-  "app/api/templates/route.js",
-  "app/api/templates/[id]/route.js",
   "app/api/expenses/route.js",
   "app/api/expenses/[id]/route.js",
   "app/api/recurring-expenses/route.js",
@@ -70,8 +69,8 @@ const createRoutes = [
   "app/api/projects/route.js",
   "app/api/proposals/route.js",
   "app/api/contracts/route.js",
+  "app/api/pdf-templates/route.js",
   "app/api/tasks/route.js",
-  "app/api/templates/route.js",
   "app/api/expenses/route.js",
   "app/api/recurring-expenses/route.js",
   "app/api/services/route.js",
@@ -99,8 +98,8 @@ test("tenant helper preserves business fallback and user ownership stamping", ()
   const file = read("lib/tenant.js");
   assert.match(file, /businessId/);
   assert.match(file, /return \{ businessId: user\.businessId \}/);
-  assert.match(file, /return \{ userId: session\.user\.id \}/);
-  assert.match(file, /userId: session\.user\.id/);
+  assert.match(file, /return \{ userId: user\?\.id \?\? session\.user\.id \}/);
+  assert.match(file, /userId: user\?\.id \?\? session\.user\.id/);
 });
 
 test("critical API routes are session-gated", () => {

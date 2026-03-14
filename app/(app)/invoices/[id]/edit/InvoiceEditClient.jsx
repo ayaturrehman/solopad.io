@@ -39,7 +39,7 @@ export default function InvoiceEditClient({ invoice, projects, services }) {
   const [lineItems, setLineItems] = useState(
     invoice.lineItems.length > 0
       ? invoice.lineItems
-      : [{ description: "", quantity: 1, rate: "", amount: 0 }]
+      : [{ serviceId: null, description: "", quantity: 1, rate: "", amount: 0 }]
   );
 
   const hasExistingPlan = invoice.paymentPlans && invoice.paymentPlans.length > 0;
@@ -71,7 +71,7 @@ export default function InvoiceEditClient({ invoice, projects, services }) {
   }
 
   function addLine() {
-    setLineItems((prev) => [...prev, { description: "", quantity: 1, rate: "", amount: 0 }]);
+    setLineItems((prev) => [...prev, { serviceId: null, description: "", quantity: 1, rate: "", amount: 0 }]);
   }
 
   function removeLine(i) {
@@ -81,7 +81,7 @@ export default function InvoiceEditClient({ invoice, projects, services }) {
   function applyService(svc) {
     setLineItems((prev) => [
       ...prev,
-      { description: svc.name, quantity: 1, rate: svc.defaultRate, amount: svc.defaultRate },
+      { serviceId: svc.id, description: svc.name, quantity: 1, rate: svc.defaultRate, amount: svc.defaultRate },
     ]);
   }
 
@@ -135,6 +135,7 @@ export default function InvoiceEditClient({ invoice, projects, services }) {
         projectId,
         invoiceNumber: invoiceNumber.trim() || null,
         lineItems: lineItems.map((l) => ({
+          serviceId: l.serviceId || null,
           description: l.description,
           quantity: parseFloat(l.quantity) || 1,
           rate: parseFloat(l.rate) || 0,
@@ -196,7 +197,7 @@ export default function InvoiceEditClient({ invoice, projects, services }) {
           <button
             onClick={() => handleSave("sent")}
             disabled={saving}
-            className="rounded bg-zinc-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50"
+            className="rounded bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
           >
             {saving ? "Saving…" : "Save & send"}
           </button>

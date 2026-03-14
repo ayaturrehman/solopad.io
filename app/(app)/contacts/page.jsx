@@ -5,8 +5,11 @@ import { redirect } from "next/navigation";
 import ContactsTable from "./ContactsTable";
 import { getTenantFilter } from "@/lib/tenant";
 
-const PAGE_SIZE = 10;
+const DEFAULT_PAGE_SIZE = 10;
+const VALID_PAGE_SIZES = new Set([10, 25, 50]);
 const VALID_STATUS = new Set(["lead", "active", "archived"]);
+const VALID_SORT_FIELDS = new Set(["name", "company", "source", "value", "createdAt", "status"]);
+const VALID_SORT_DIRECTIONS = new Set(["asc", "desc"]);
 
 export default async function ContactsPage({ searchParams }) {
   const session = await getSession();
@@ -18,6 +21,14 @@ export default async function ContactsPage({ searchParams }) {
   const status = typeof params?.status === "string" && VALID_STATUS.has(params.status)
     ? params.status
     : "all";
+  const sortBy = typeof params?.sortBy === "string" && VALID_SORT_FIELDS.has(params.sortBy)
+    ? params.sortBy
+    : null;
+  const sortDir = typeof params?.sortDir === "string" && VALID_SORT_DIRECTIONS.has(params.sortDir)
+    ? params.sortDir
+    : "asc";
+  const requestedPageSize = Number.parseInt(typeof params?.pageSize === "string" ? params.pageSize : `${DEFAULT_PAGE_SIZE}`, 10);
+  const pageSize = VALID_PAGE_SIZES.has(requestedPageSize) ? requestedPageSize : DEFAULT_PAGE_SIZE;
   const requestedPage = Number.parseInt(typeof params?.page === "string" ? params.page : "1", 10);
   const page = Number.isFinite(requestedPage) && requestedPage > 0 ? requestedPage : 1;
 
@@ -29,6 +40,9 @@ export default async function ContactsPage({ searchParams }) {
         { email: { contains: query, mode: "insensitive" } },
         { company: { contains: query, mode: "insensitive" } },
         { phone: { contains: query, mode: "insensitive" } },
+        { website: { contains: query, mode: "insensitive" } },
+        { source: { contains: query, mode: "insensitive" } },
+        { companyCity: { contains: query, mode: "insensitive" } },
       ],
     }),
     ...(status !== "all" ? { status } : {}),
@@ -42,14 +56,20 @@ export default async function ContactsPage({ searchParams }) {
     db.contact.count({ where: { ...filter, status: "archived" } }),
   ]);
 
-  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
   const currentPage = Math.min(page, totalPages);
+  const orderBy = sortBy
+    ? [
+      { [sortBy]: sortDir },
+      { updatedAt: "desc" },
+    ]
+    : [{ updatedAt: "desc" }];
 
   const contacts = await db.contact.findMany({
     where,
-    orderBy: { updatedAt: "desc" },
-    skip: (currentPage - 1) * PAGE_SIZE,
-    take: PAGE_SIZE,
+    orderBy,
+    skip: (currentPage - 1) * pageSize,
+    take: pageSize,
     include: { _count: { select: { projects: true } } },
   });
 
@@ -64,9 +84,11 @@ export default async function ContactsPage({ searchParams }) {
           archived: archivedCount,
         }}
         currentPage={currentPage}
-        pageSize={PAGE_SIZE}
+        pageSize={pageSize}
         query={query}
         status={status}
+        sortBy={sortBy}
+        sortDir={sortDir}
         totalCount={totalCount}
         totalPages={totalPages}
       />

@@ -53,6 +53,7 @@ export default function AddExpenseForm({
   recurringExpense = null,
   categories = DEFAULT_EXPENSE_CATEGORIES,
   projects = [],
+  triggerClassName,
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -149,9 +150,9 @@ export default function AddExpenseForm({
     return (
       <button
         onClick={() => setOpen(true)}
-        className={isEdit
+        className={triggerClassName || (isEdit
           ? "inline-flex items-center gap-1.5 rounded border border-zinc-200 px-3 py-1.5 text-xs font-medium text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900"
-          : "inline-flex items-center gap-1.5 rounded bg-zinc-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-zinc-700"}
+          : "inline-flex items-center gap-1.5 rounded bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700")}
       >
         {isEdit ? <Pencil className="h-3.5 w-3.5" /> : <Plus className="h-3.5 w-3.5" />}
         {isEdit ? "Edit" : "Add expense"}

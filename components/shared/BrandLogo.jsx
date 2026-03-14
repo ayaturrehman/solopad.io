@@ -20,7 +20,7 @@ export function BrandMark({ className, dark = false }) {
   );
 }
 
-export default function BrandLogo({
+export default function BrandLogo({ 
   className,
   markClassName,
   textClassName,

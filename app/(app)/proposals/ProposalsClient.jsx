@@ -1,12 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
-  FileText, Plus, ChevronRight, ChevronDown, Search, Star,
+  FileText, Plus, ChevronRight,
 } from "lucide-react";
 import { showNavigationLoading } from "@/components/shared/NavigationLoadingOverlay";
+import CollectionPageHeader, { collectionPageHeaderPrimaryActionClassName } from "@/components/shared/CollectionPageHeader";
+import { CollectionDataTable, CollectionEmptyState } from "@/components/shared/CollectionDataTable";
 import { formatCurrency, formatDate, cn, isInteractiveEventTarget } from "@/lib/utils";
 
 const STATUS_CONFIG = {
@@ -18,6 +20,7 @@ const STATUS_CONFIG = {
 };
 
 const FILTERS = ["all", "draft", "sent", "accepted"];
+const MAX_BULK_SELECTION = 25;
 
 function getHeaderLabel(filterKey) {
   if (filterKey === "all") return "Proposals";
@@ -34,6 +37,9 @@ export default function ProposalsClient({ proposals }) {
   const [statusFilter, setStatusFilter] = useState("all");
   const [filterOpen, setFilterOpen] = useState(false);
   const [filterSearch, setFilterSearch] = useState("");
+  const [selectedIds, setSelectedIds] = useState([]);
+  const [bulkError, setBulkError] = useState("");
+  const [bulkLoading, setBulkLoading] = useState(false);
   const searchParams = useSearchParams();
   const query = (searchParams.get("q") || "").trim().toLowerCase();
 
@@ -58,179 +64,282 @@ export default function ProposalsClient({ proposals }) {
     );
   }, [proposals, query, statusFilter]);
 
+  useEffect(() => {
+    setSelectedIds([]);
+    setBulkError("");
+  }, [query, statusFilter]);
+
+  const visibleProposalIds = filteredProposals.map((proposal) => proposal.id);
+  const selectedCount = selectedIds.length;
+  const selectedVisibleCount = visibleProposalIds.filter((id) => selectedIds.includes(id)).length;
+  const allVisibleSelected = visibleProposalIds.length > 0 && selectedVisibleCount === visibleProposalIds.length;
+  const canSelectMore = selectedCount < MAX_BULK_SELECTION;
+
   function handleRowDoubleClick(event, href) {
     if (isInteractiveEventTarget(event.target)) return;
     showNavigationLoading();
     router.push(href);
   }
 
+  function toggleOne(id, checked) {
+    setBulkError("");
+    setSelectedIds((current) => {
+      if (!checked) return current.filter((value) => value !== id);
+      if (current.includes(id)) return current;
+      if (current.length >= MAX_BULK_SELECTION) {
+        setBulkError(`You can select up to ${MAX_BULK_SELECTION} proposals at a time.`);
+        return current;
+      }
+      return [...current, id];
+    });
+  }
+
+  function toggleAllVisible() {
+    setBulkError("");
+    setSelectedIds((current) => {
+      if (allVisibleSelected) {
+        return current.filter((id) => !visibleProposalIds.includes(id));
+      }
+
+      const next = [...current];
+      for (const id of visibleProposalIds) {
+        if (next.includes(id)) continue;
+        if (next.length >= MAX_BULK_SELECTION) {
+          setBulkError(`You can select up to ${MAX_BULK_SELECTION} proposals at a time.`);
+          break;
+        }
+        next.push(id);
+      }
+      return next;
+    });
+  }
+
+  async function bulkUpdateStatus(nextStatus) {
+    if (!selectedCount || bulkLoading) return;
+    setBulkLoading(true);
+    setBulkError("");
+
+    try {
+      const responses = await Promise.all(
+        selectedIds.map((id) =>
+          fetch(`/api/proposals/${id}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ status: nextStatus }),
+          })
+        )
+      );
+
+      const failed = responses.find((response) => !response.ok);
+      if (failed) {
+        const data = await failed.json().catch(() => ({}));
+        throw new Error(data.error || "Could not update selected proposals.");
+      }
+
+      setSelectedIds([]);
+      router.refresh();
+    } catch (error) {
+      setBulkError(error.message || "Could not update selected proposals.");
+    } finally {
+      setBulkLoading(false);
+    }
+  }
+
+  async function bulkDelete() {
+    if (!selectedCount || bulkLoading) return;
+    if (!window.confirm(`Delete ${selectedCount} proposal${selectedCount === 1 ? "" : "s"}?`)) return;
+
+    setBulkLoading(true);
+    setBulkError("");
+
+    try {
+      const responses = await Promise.all(
+        selectedIds.map((id) =>
+          fetch(`/api/proposals/${id}`, { method: "DELETE" })
+        )
+      );
+
+      const failed = responses.find((response) => !response.ok);
+      if (failed) {
+        const data = await failed.json().catch(() => ({}));
+        throw new Error(data.error || "Could not delete selected proposals.");
+      }
+
+      setSelectedIds([]);
+      router.refresh();
+    } catch (error) {
+      setBulkError(error.message || "Could not delete selected proposals.");
+    } finally {
+      setBulkLoading(false);
+    }
+  }
+
   return (
     <div>
-      <div className="mb-6 space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => setFilterOpen((current) => !current)}
-                className="inline-flex items-center justify-between gap-2 rounded-lg bg-zinc-100 px-2 py-1 text-left text-sm text-zinc-900 transition-colors hover:bg-zinc-200"
-              >
-                <span className="text-lg font-bold tracking-tight">
-                  {getHeaderLabel(statusFilter)}
-                </span>
-                <ChevronDown
-                  className={cn(
-                    "h-5 w-5 text-blue-600 transition-transform",
-                    filterOpen ? "rotate-180" : ""
-                  )}
-                />
-              </button>
-
-              {filterOpen && (
-                <div className="absolute left-0 top-[calc(100%+8px)] z-20 w-[15rem] max-w-[calc(100vw-2rem)] rounded-xl border border-zinc-200 bg-white p-2 shadow-xl">
-                  <div className="relative mb-3">
-                    <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
-                    <input
-                      type="text"
-                      value={filterSearch}
-                      onChange={(e) => setFilterSearch(e.target.value)}
-                      placeholder="Search filters"
-                      className="h-11 w-full rounded-xl border border-blue-500 pl-11 pr-4 text-sm text-zinc-900 outline-none ring-0 placeholder:text-zinc-400 focus:border-blue-500"
-                    />
-                  </div>
-
-                  <div className="max-h-72 overflow-y-auto py-1">
-                    {filterOptions.map((filterKey) => (
-                      <button
-                        key={filterKey}
-                        type="button"
-                        onClick={() => {
-                          setStatusFilter(filterKey);
-                          setFilterOpen(false);
-                          setFilterSearch("");
-                        }}
-                        className={cn(
-                          "flex w-full items-center justify-between rounded-xl px-4 py-2.5 text-left text-sm transition-colors",
-                          statusFilter === filterKey
-                            ? "bg-zinc-50 text-zinc-900"
-                            : "text-zinc-700 hover:bg-zinc-50"
-                        )}
-                      >
-                        <span>{getFilterLabel(filterKey)}</span>
-                        {statusFilter === filterKey && (
-                          <span className="h-2.5 w-2.5 rounded-full bg-blue-600" />
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
+      <CollectionPageHeader
+        title={getHeaderLabel(statusFilter)}
+        filterOpen={filterOpen}
+        onToggleFilter={() => setFilterOpen((current) => !current)}
+        filterSearch={filterSearch}
+        onFilterSearchChange={setFilterSearch}
+        filterOptions={filterOptions.map((filterKey) => ({
+          key: filterKey,
+          label: getFilterLabel(filterKey),
+        }))}
+        selectedFilterKey={statusFilter}
+        onSelectFilter={(key) => {
+          setStatusFilter(key);
+          setFilterOpen(false);
+          setFilterSearch("");
+        }}
+        actions={(
           <Link
             href="/proposals/new"
-            className="inline-flex items-center gap-1.5 rounded bg-zinc-900 px-3 py-1.5 text-sm font-semibold text-white hover:bg-zinc-700"
+            className={collectionPageHeaderPrimaryActionClassName}
           >
             <Plus className="h-4 w-4" />
             New proposal
           </Link>
-        </div>
-
-      </div>
+        )}
+      />
 
       {filteredProposals.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded border border-dashed border-zinc-200 bg-white py-16 text-center">
-          <FileText className="mb-3 h-10 w-10 text-zinc-300" />
-          <p className="font-medium text-zinc-500">{proposals.length === 0 ? "No proposals yet" : "No proposals found"}</p>
-          <p className="mt-1 text-sm text-zinc-400">
-            {proposals.length === 0
-              ? "Create your first proposal to get started"
-              : "Try a different filter or top search term"}
-          </p>
-          <Link
-            href="/proposals/new"
-            className="mt-4 inline-flex items-center gap-1.5 rounded bg-zinc-900 px-3 py-1.5 text-sm font-semibold text-white hover:bg-zinc-700"
-          >
-            <Plus className="h-4 w-4" />
-            New proposal
-          </Link>
-        </div>
+        <CollectionEmptyState
+          icon={FileText}
+          title={proposals.length === 0 ? "No proposals yet" : "No proposals found"}
+          description={proposals.length === 0
+            ? "Create your first proposal to get started"
+            : "Try a different filter or top search term"}
+          action={(
+            <Link
+              href="/proposals/new"
+              className={collectionPageHeaderPrimaryActionClassName}
+            >
+              <Plus className="h-4 w-4" />
+              New proposal
+            </Link>
+          )}
+          className="border-dashed"
+        />
       ) : (
-        <div className="overflow-hidden rounded border border-zinc-200 bg-white">
-          <table className="w-full">
-            <thead className="border-b border-zinc-100 bg-zinc-50">
-              <tr>
-                <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Title</th>
-                <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Client</th>
-                <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Project</th>
-                <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Status</th>
-                <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Valid until</th>
-                <th className="px-5 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Total</th>
-                <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Created</th>
-                <th className="px-5 py-3" />
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-zinc-50">
-              {filteredProposals.map((proposal) => {
-                const sc = STATUS_CONFIG[proposal.status] ?? STATUS_CONFIG.draft;
-                const isExpired =
-                  proposal.validUntil &&
-                  new Date(proposal.validUntil) < new Date() &&
-                  proposal.status !== "accepted";
-                return (
-                  <tr
-                    key={proposal.id}
-                    onDoubleClick={(event) => handleRowDoubleClick(event, `/proposals/${proposal.id}`)}
-                    className="cursor-pointer transition-colors hover:bg-zinc-50/60"
+        <CollectionDataTable
+          rows={filteredProposals}
+          tableClassName="w-full min-w-[600px]"
+          selection={{
+            allVisibleSelected,
+            onToggleAll: toggleAllVisible,
+            isSelected: (proposal) => selectedIds.includes(proposal.id),
+            isRowDisabled: (proposal) => !selectedIds.includes(proposal.id) && !canSelectMore,
+            onToggleRow: (proposal, checked) => toggleOne(proposal.id, checked),
+            getRowLabel: (proposal) => `Select ${proposal.title}`,
+          }}
+          bulkActions={{
+            count: selectedCount,
+            maxCount: MAX_BULK_SELECTION,
+            error: bulkError,
+            isSubmitting: bulkLoading,
+            actions: [
+              { key: "draft", label: "Mark draft", onClick: () => bulkUpdateStatus("draft") },
+              { key: "sent", label: "Mark sent", onClick: () => bulkUpdateStatus("sent") },
+              { key: "accepted", label: "Accept", onClick: () => bulkUpdateStatus("accepted") },
+              { key: "declined", label: "Decline", onClick: () => bulkUpdateStatus("declined") },
+              { key: "delete", label: bulkLoading ? "Working..." : "Delete", onClick: bulkDelete, variant: "danger" },
+            ],
+            onClear: () => {
+              setSelectedIds([]);
+              setBulkError("");
+            },
+          }}
+          columns={[
+            { key: "title", header: "Title" },
+            { key: "client", header: "Client" },
+            { key: "project", header: "Project" },
+            { key: "status", header: "Status" },
+            { key: "validUntil", header: "Valid until" },
+            { key: "total", header: "Total", headerClassName: "text-right" },
+            { key: "createdAt", header: "Created" },
+            { key: "actions", header: "", headerClassName: "w-16" },
+          ]}
+          renderRow={(proposal) => {
+            const sc = STATUS_CONFIG[proposal.status] ?? STATUS_CONFIG.draft;
+            const isExpired =
+              proposal.validUntil &&
+              new Date(proposal.validUntil) < new Date() &&
+              proposal.status !== "accepted";
+            return (
+              <>
+                <td
+                  onDoubleClick={(event) => handleRowDoubleClick(event, `/proposals/${proposal.id}`)}
+                  className="cursor-pointer px-5 py-3.5 text-sm font-medium text-zinc-900"
+                >
+                  {proposal.title}
+                </td>
+                <td
+                  onDoubleClick={(event) => handleRowDoubleClick(event, `/proposals/${proposal.id}`)}
+                  className="cursor-pointer px-5 py-3.5 text-sm text-zinc-600"
+                >
+                  {proposal.clientName}
+                </td>
+                <td
+                  onDoubleClick={(event) => handleRowDoubleClick(event, `/proposals/${proposal.id}`)}
+                  className="cursor-pointer px-5 py-3.5 text-sm"
+                >
+                  {proposal.project ? (
+                    <Link
+                      href={`/projects/${proposal.project.id}`}
+                      className="text-zinc-600 underline underline-offset-2 hover:text-zinc-900"
+                    >
+                      {proposal.project.title}
+                    </Link>
+                  ) : (
+                    <span className="text-zinc-300">—</span>
+                  )}
+                </td>
+                <td
+                  onDoubleClick={(event) => handleRowDoubleClick(event, `/proposals/${proposal.id}`)}
+                  className="cursor-pointer px-5 py-3.5"
+                >
+                  <span className={cn("inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold", sc.color)}>
+                    {sc.label}
+                  </span>
+                </td>
+                <td
+                  onDoubleClick={(event) => handleRowDoubleClick(event, `/proposals/${proposal.id}`)}
+                  className="cursor-pointer px-5 py-3.5 text-sm"
+                >
+                  {proposal.validUntil ? (
+                    <span className={cn(isExpired ? "font-medium text-red-500" : "text-zinc-600")}>
+                      {formatDate(proposal.validUntil)}
+                    </span>
+                  ) : (
+                    <span className="text-zinc-300">—</span>
+                  )}
+                </td>
+                <td
+                  onDoubleClick={(event) => handleRowDoubleClick(event, `/proposals/${proposal.id}`)}
+                  className="cursor-pointer px-5 py-3.5 text-right text-sm font-semibold text-zinc-900"
+                >
+                  {formatCurrency(proposal.total, proposal.currency)}
+                </td>
+                <td
+                  onDoubleClick={(event) => handleRowDoubleClick(event, `/proposals/${proposal.id}`)}
+                  className="cursor-pointer px-5 py-3.5 text-sm text-zinc-500"
+                >
+                  {formatDate(proposal.createdAt)}
+                </td>
+                <td className="px-5 py-3.5 text-right">
+                  <Link
+                    href={`/proposals/${proposal.id}`}
+                    className="inline-flex items-center gap-1 text-xs font-medium text-zinc-500 hover:text-zinc-900"
+                    data-no-row-nav="true"
                   >
-                    <td className="px-5 py-3.5">
-                      <p className="text-sm font-medium text-zinc-900">{proposal.title}</p>
-                    </td>
-                    <td className="px-5 py-3.5 text-sm text-zinc-600">{proposal.clientName}</td>
-                    <td className="px-5 py-3.5 text-sm">
-                      {proposal.project ? (
-                        <Link
-                          href={`/projects/${proposal.project.id}`}
-                          className="text-zinc-600 underline underline-offset-2 hover:text-zinc-900"
-                        >
-                          {proposal.project.title}
-                        </Link>
-                      ) : (
-                        <span className="text-zinc-300">—</span>
-                      )}
-                    </td>
-                    <td className="px-5 py-3.5">
-                      <span className={cn("inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold", sc.color)}>
-                        {sc.label}
-                      </span>
-                    </td>
-                    <td className="px-5 py-3.5 text-sm">
-                      {proposal.validUntil ? (
-                        <span className={cn(isExpired ? "font-medium text-red-500" : "text-zinc-600")}>
-                          {formatDate(proposal.validUntil)}
-                        </span>
-                      ) : (
-                        <span className="text-zinc-300">—</span>
-                      )}
-                    </td>
-                    <td className="px-5 py-3.5 text-right text-sm font-semibold text-zinc-900">
-                      {formatCurrency(proposal.total, proposal.currency)}
-                    </td>
-                    <td className="px-5 py-3.5 text-sm text-zinc-500">{formatDate(proposal.createdAt)}</td>
-                    <td className="px-5 py-3.5 text-right">
-                      <Link
-                        href={`/proposals/${proposal.id}`}
-                        className="inline-flex items-center gap-1 text-xs font-medium text-zinc-500 hover:text-zinc-900"
-                      >
-                        View <ChevronRight className="h-3.5 w-3.5" />
-                      </Link>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+                    View <ChevronRight className="h-3.5 w-3.5" />
+                  </Link>
+                </td>
+              </>
+            );
+          }}
+        />
       )}
     </div>
   );

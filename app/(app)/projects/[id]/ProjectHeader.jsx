@@ -2,15 +2,18 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Copy, Check, ExternalLink, MoreHorizontal, CalendarDays } from "lucide-react";
+import Link from "next/link";
+import { Copy, Check, ExternalLink, MoreHorizontal, CalendarDays, Pencil } from "lucide-react";
 import Badge from "@/components/ui/Badge";
 import { STATUS_LABELS, STATUS_COLORS, formatDate } from "@/lib/utils";
+import ProjectFormModal from "../ProjectFormModal";
 
-export default function ProjectHeader({ project, portalUrl }) {
+export default function ProjectHeader({ project, portalUrl, contacts = [] }) {
   const router = useRouter();
   const [copied, setCopied] = useState(false);
   const [status, setStatus] = useState(project.status);
   const [showMenu, setShowMenu] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
   const [endDate, setEndDate] = useState(
     project.endDate ? new Date(project.endDate).toISOString().split("T")[0] : ""
   );
@@ -62,9 +65,16 @@ export default function ProjectHeader({ project, portalUrl }) {
             <Badge className={STATUS_COLORS[status]}>{STATUS_LABELS[status]}</Badge>
           </div>
           <p className="mt-1 text-sm text-zinc-500">
-            Client: <span className="font-medium text-zinc-700">{project.clientName}</span>
-            {project.clientEmail && (
-              <span className="ml-1 text-zinc-400">({project.clientEmail})</span>
+            Client:{" "}
+            {project.contactId ? (
+              <Link href={`/contacts/${project.contactId}`} className="font-medium text-zinc-700 hover:underline">
+                {project.contact?.name || "—"}
+              </Link>
+            ) : (
+              <span className="font-medium text-zinc-700">{project.contact?.name || "—"}</span>
+            )}
+            {project.contact?.email && (
+              <span className="ml-1 text-zinc-400">({project.contact.email})</span>
             )}
           </p>
           {project.description && (
@@ -100,7 +110,15 @@ export default function ProjectHeader({ project, portalUrl }) {
           </div>
         </div>
 
-        <div className="relative">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setEditModalOpen(true)}
+            className="inline-flex items-center gap-1.5 rounded border border-zinc-200 px-2.5 py-1.5 text-xs font-medium text-zinc-600 hover:bg-zinc-50"
+          >
+            <Pencil className="h-3.5 w-3.5" />
+            Edit
+          </button>
+          <div className="relative">
           <button
             onClick={() => setShowMenu((v) => !v)}
             className="rounded border border-zinc-200 p-2 hover:bg-zinc-50"
@@ -127,6 +145,7 @@ export default function ProjectHeader({ project, portalUrl }) {
               </button>
             </div>
           )}
+          </div>
         </div>
       </div>
 
@@ -149,6 +168,13 @@ export default function ProjectHeader({ project, portalUrl }) {
           Preview
         </a>
       </div>
+
+      <ProjectFormModal
+        open={editModalOpen}
+        onClose={() => setEditModalOpen(false)}
+        project={project}
+        contacts={contacts}
+      />
     </div>
   );
 }

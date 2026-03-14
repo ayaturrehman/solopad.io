@@ -2,6 +2,11 @@
 
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import Button from "@/components/ui/Button";
+import CollectionPageHeader, {
+  collectionPageHeaderSegmentedGroupClassName,
+  getCollectionPageHeaderSegmentedButtonClassName,
+} from "@/components/shared/CollectionPageHeader";
 import { Copy, Check, X, ChevronDown, ChevronUp } from "lucide-react";
 
 const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -105,54 +110,50 @@ export default function SchedulerClient({ bookings: initialBookings, availabilit
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="px-4 py-4 md:px-6">
       <div className="w-full">
-        <h1 className="mb-6 text-xl font-semibold text-zinc-900">Scheduler</h1>
-
-        {/* Tabs */}
-        <div className="mb-6 border-b border-zinc-200">
-          {[{ id: "bookings", label: "Bookings" }, { id: "availability", label: "Availability" }].map((t) => (
-            <button
-              key={t.id}
-              type="button"
-              onClick={() => setTab(t.id)}
-              className={`relative mr-8 inline-flex h-12 items-center text-sm font-medium transition-colors ${
-                tab === t.id ? "text-blue-600" : "text-zinc-400 hover:text-zinc-700"
-              }`}
-            >
-              <span>{t.label}</span>
-              <span
-                className={`absolute inset-x-0 bottom-0 h-0.5 rounded-full transition-opacity ${
-                  tab === t.id ? "bg-blue-600 opacity-100" : "bg-transparent opacity-0"
-                }`}
-              />
-            </button>
-          ))}
-        </div>
+        <CollectionPageHeader
+          title="Scheduler"
+          showFilter={false}
+          className="px-0 pb-6 pt-0"
+          actions={(
+            <div className={collectionPageHeaderSegmentedGroupClassName}>
+              {[{ id: "bookings", label: "Bookings" }, { id: "availability", label: "Availability" }].map((item, index, items) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => setTab(item.id)}
+                  className={getCollectionPageHeaderSegmentedButtonClassName(
+                    tab === item.id,
+                    index === 0 ? "left" : index === items.length - 1 ? "right" : "middle"
+                  )}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
+          )}
+        />
 
         {tab === "bookings" && (
           <div className="flex flex-col gap-5">
             {/* Booking link card */}
             <div className="rounded border border-zinc-200 bg-white p-4">
-              <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+              <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-400">
                 Your booking link
               </p>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
                 <code className="flex-1 truncate rounded bg-zinc-50 px-3 py-1.5 text-xs text-zinc-700 border border-zinc-200">
                   {bookingPageUrl}
                 </code>
-                <button
+                <Button
                   onClick={copyLink}
-                  className={cn(
-                    "flex items-center gap-1.5 rounded px-3 py-1.5 text-xs font-medium transition-colors",
-                    copied
-                      ? "bg-green-50 text-green-700 border border-green-200"
-                      : "bg-zinc-900 text-white hover:bg-zinc-700"
-                  )}
+                  size="sm"
+                  className={copied ? "bg-green-600 hover:bg-green-700" : ""}
                 >
                   {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
                   {copied ? "Copied!" : "Copy"}
-                </button>
+                </Button>
               </div>
             </div>
 
@@ -183,12 +184,14 @@ export default function SchedulerClient({ bookings: initialBookings, availabilit
                       <span className="rounded-full bg-green-100 px-2 py-0.5 text-[11px] font-medium text-green-700">
                         Confirmed
                       </span>
-                      <button
+                      <Button
+                        variant="secondary"
+                        size="sm"
                         onClick={() => cancelBooking(b.id)}
-                        className="rounded border border-zinc-200 px-2 py-1 text-xs text-zinc-500 hover:border-red-200 hover:text-red-600"
+                        className="hover:border-red-200 hover:text-red-600"
                       >
                         Cancel
-                      </button>
+                      </Button>
                     </div>
                   ))}
                 </div>
@@ -273,7 +276,7 @@ export default function SchedulerClient({ bookings: initialBookings, availabilit
                         <select
                           value={rule.startTime}
                           onChange={(e) => updateDay(rule.dayOfWeek, "startTime", e.target.value)}
-                          className="rounded border border-zinc-200 px-2 py-1 text-xs text-zinc-700 focus:outline-none"
+                          className="rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-900 outline-none transition-colors focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900"
                         >
                           {TIME_OPTIONS.map((t) => (
                             <option key={t} value={t}>{t}</option>
@@ -283,7 +286,7 @@ export default function SchedulerClient({ bookings: initialBookings, availabilit
                         <select
                           value={rule.endTime}
                           onChange={(e) => updateDay(rule.dayOfWeek, "endTime", e.target.value)}
-                          className="rounded border border-zinc-200 px-2 py-1 text-xs text-zinc-700 focus:outline-none"
+                          className="rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-900 outline-none transition-colors focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900"
                         >
                           {TIME_OPTIONS.map((t) => (
                             <option key={t} value={t}>{t}</option>
@@ -297,16 +300,14 @@ export default function SchedulerClient({ bookings: initialBookings, availabilit
                 ))}
               </div>
               <div className="border-t border-zinc-100 px-4 py-3 flex justify-end">
-                <button
+                <Button
                   onClick={saveAvailability}
                   disabled={saving}
-                  className={cn(
-                    "rounded px-3 py-1.5 text-xs font-semibold text-white transition-colors disabled:opacity-50",
-                    savedOk ? "bg-green-600 hover:bg-green-700" : "bg-zinc-900 hover:bg-zinc-700"
-                  )}
+                  size="sm"
+                  className={savedOk ? "bg-green-600 hover:bg-green-700" : ""}
                 >
                   {saving ? "Saving…" : savedOk ? "Saved!" : "Save availability"}
-                </button>
+                </Button>
               </div>
             </div>
           </div>

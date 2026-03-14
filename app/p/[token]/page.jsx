@@ -9,6 +9,7 @@ export default async function PortalPage({ params }) {
 
   const project = await db.project.findUnique({
     where: { portalToken: token },
+    include: { contact: { select: { name: true, email: true } } },
   });
 
   if (!project) notFound();
@@ -30,7 +31,7 @@ export default async function PortalPage({ params }) {
         userId: project.userId,
         type: "portal_viewed",
         title: "Client viewed your portal",
-        body: `${project.clientName} viewed the portal for "${project.title}"`,
+        body: `${project.contact?.name || "Client"} viewed the portal for "${project.title}"`,
         link: `/projects/${project.id}`,
       },
     });

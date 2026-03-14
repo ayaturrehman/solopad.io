@@ -56,7 +56,10 @@ export function LoadingDots({ className, dotClassName }) {
       {[0, 1, 2].map((dot) => (
         <span
           key={dot}
-          className={cn("h-2.5 w-2.5 animate-[loading-bounce_0.8s_infinite] rounded-full bg-blue-600", dotClassName)}
+          className={cn(
+            "h-2 w-2 animate-[loading-bounce_0.8s_infinite] rounded-full bg-blue-600 dark:bg-blue-400",
+            dotClassName
+          )}
           style={{ animationDelay: `${dot * 0.12}s` }}
         />
       ))}
@@ -68,14 +71,14 @@ export function FullScreenLoadingOverlay({ visible = true, label = "Loading" }) 
   return (
     <div
       className={cn(
-        "absolute inset-0 z-[120] flex justify-center bg-zinc-100/70 backdrop-blur-[2px] transition-opacity duration-150 mt-6",
+        "absolute inset-0 z-[120] flex items-start justify-center pt-12 transition-opacity duration-150 bg-white/70 dark:bg-zinc-900/70 backdrop-blur-[2px]",
         visible ? "opacity-100" : "pointer-events-none opacity-0"
       )}
       aria-hidden={!visible}
     >
-      <div className="flex min-w-32 flex-col items-center gap-3 rounded bg-zinc-100/90 px-6 py-5">
+      <div className="flex flex-col items-center gap-2">
         <LoadingDots />
-        <p className="text-sm font-medium text-zinc-700">{label}</p>
+        <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400">{label}</p>
       </div>
     </div>
   );
@@ -108,12 +111,6 @@ function NavigationLoadingOverlayInner() {
 
       const target = event.target;
       if (!(target instanceof Element)) return;
-
-      const submitButton = target.closest('button[type="submit"], input[type="submit"]');
-      if (submitButton && !submitButton.hasAttribute("disabled")) {
-        overlayStore.show();
-        return;
-      }
 
       const link = target.closest("a[href]");
       if (!link) return;
@@ -156,9 +153,7 @@ function NavigationLoadingOverlayInner() {
           }
         }
       `}</style>
-      <div className="pointer-events-none absolute inset-0">
-        <FullScreenLoadingOverlay visible={visible} />
-      </div>
+      <FullScreenLoadingOverlay visible={visible} />
     </>
   );
 }

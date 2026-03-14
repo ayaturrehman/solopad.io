@@ -15,15 +15,22 @@ export default async function ProjectsPage() {
     : null;
   const currency = business?.currency || "USD";
 
-  const projects = await db.project.findMany({
-    where: { userId: session.user.id, archived: false },
-    include: {
-      invoices: { select: { total: true, status: true } },
-      contact: { select: { name: true } },
-      _count: { select: { files: true, comments: true } },
-    },
-    orderBy: { updatedAt: "desc" },
-  });
+  const [projects, contacts] = await Promise.all([
+    db.project.findMany({
+      where: { userId: session.user.id, archived: false },
+      include: {
+        invoices: { select: { total: true, status: true } },
+        contact: { select: { name: true } },
+        _count: { select: { files: true, comments: true } },
+      },
+      orderBy: { updatedAt: "desc" },
+    }),
+    db.contact.findMany({
+      where: { userId: session.user.id },
+      select: { id: true, name: true, email: true, company: true },
+      orderBy: { name: "asc" },
+    }),
+  ]);
 
-  return <Suspense fallback={null}><ProjectsClient projects={projects} currency={currency} /></Suspense>;
+  return <Suspense fallback={null}><ProjectsClient projects={projects} currency={currency} contacts={contacts} /></Suspense>;
 }

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Web App UX/UI Design"
+  short_description: "Design practical, modern product interfaces"
+  default_prompt: "Use $web-app-ux-ui-design to design or refine this web app interface for clarity, usability, responsiveness, and brand alignment."

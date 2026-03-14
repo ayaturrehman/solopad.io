@@ -7,8 +7,9 @@ import BrandLogo from "@/components/shared/BrandLogo";
 import {
   LayoutDashboard, Briefcase, Users,
   DollarSign, Package, CalendarDays,
-  LayoutTemplate, CheckSquare, Clock, CalendarCheck,
-  FileText, FileSignature, Menu, X, ChevronRight
+  CheckSquare, Clock, CalendarCheck,
+  FileText, FileSignature, Menu, X, ChevronRight,
+  Settings, LayoutTemplate,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -27,7 +28,6 @@ const navGroups = [
       { href: "/proposals",    label: "Proposals",    icon: FileText },
       { href: "/projects",     label: "Projects",     icon: Briefcase },
       { href: "/contracts",    label: "Contracts",    icon: FileSignature },
-      { href: "/templates",    label: "Templates",    icon: LayoutTemplate },
     ],
   },
   {
@@ -67,14 +67,14 @@ export default function Navbar() {
   return (
     <>
       {/* ── Desktop sidebar (hidden on mobile) ── */}
-      <aside className="hidden md:flex relative h-screen w-52 flex-col border-r border-[#2b3444] bg-[#17202d] px-2 py-4 text-white">
+      <aside className="hidden md:flex relative h-screen w-52 flex-col border-r border-zinc-800 bg-zinc-900 text-white">
         {/* Logo */}
-        <Link href="/dashboard" className="mb-5 flex items-center gap-2 px-2">
-          <BrandLogo dark markClassName="h-7 w-7" textClassName="text-base text-white" />
+        <Link href="/dashboard" className="flex items-center gap-2 px-2 bg-black/40 p-2">
+          <BrandLogo dark markClassName="h-7 w-7" textClassName="text-base text-white/90" />
         </Link>
 
         {/* Nav groups */}
-        <nav className="flex flex-1 flex-col gap-3 overflow-y-auto">
+        <nav className="flex flex-1 flex-col gap-3 overflow-y-auto mt-3 px-2">
           {navGroups.map((group, gi) => (
             <div key={group.label}>
               {gi > 0 && <div className="mb-2 mt-1 border-t border-white/10" />}
@@ -89,7 +89,7 @@ export default function Navbar() {
                     className={cn(
                       "flex items-center gap-2.5 rounded px-3 py-1.5 text-[13px] font-medium transition-colors",
                       isActive(href)
-                        ? "bg-[#243247] text-[#dbeafe] shadow-sm"
+                        ? "bg-zinc-700 text-blue-100 shadow-sm"
                         : "text-slate-300 hover:bg-white/8 hover:text-white"
                     )}
                   >
@@ -102,7 +102,33 @@ export default function Navbar() {
           ))}
         </nav>
 
-        <div className="mt-2 border-t border-white/10 pt-2" />
+        {/* Settings footer */}
+        <div className="border-t border-white/10 px-2 py-2 space-y-px">
+          <Link
+            href="/settings/pdf-templates"
+            className={cn(
+              "flex items-center gap-2.5 rounded px-3 py-1.5 text-[13px] font-medium transition-colors",
+              isActive("/settings/pdf-templates")
+                ? "bg-zinc-700 text-blue-100 shadow-sm"
+                : "text-slate-300 hover:bg-white/8 hover:text-white"
+            )}
+          >
+            <LayoutTemplate className="h-4 w-4 shrink-0" />
+            PDF Templates
+          </Link>
+          <Link
+            href="/settings"
+            className={cn(
+              "flex items-center gap-2.5 rounded px-3 py-1.5 text-[13px] font-medium transition-colors",
+              pathname === "/settings"
+                ? "bg-zinc-700 text-blue-100 shadow-sm"
+                : "text-slate-300 hover:bg-white/8 hover:text-white"
+            )}
+          >
+            <Settings className="h-4 w-4 shrink-0" />
+            Settings
+          </Link>
+        </div>
       </aside>
 
       {/* ── Mobile bottom nav ── */}
@@ -116,7 +142,7 @@ export default function Navbar() {
                 href={href}
                 className={cn(
                   "flex flex-col items-center gap-0.5 px-2 py-2 rounded min-w-0 flex-1 transition-colors",
-                  active ? "text-[#17202d]" : "text-zinc-400"
+                  active ? "text-zinc-900" : "text-zinc-400"
                 )}
               >
                 <Icon className={cn("h-5 w-5 shrink-0", active && "stroke-[2.2px]")} />
@@ -146,7 +172,7 @@ export default function Navbar() {
             onClick={() => setDrawerOpen(false)}
           />
           {/* Drawer slides up from bottom */}
-          <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 rounded-t-2xl bg-[#17202d] text-white max-h-[80vh] flex flex-col">
+          <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 rounded-t-2xl bg-zinc-900 text-white max-h-[80vh] flex flex-col">
             {/* Handle + header */}
             <div className="flex items-center justify-between px-5 pt-4 pb-3 border-b border-white/10">
             <div className="flex items-center gap-2">
@@ -178,7 +204,7 @@ export default function Navbar() {
                           className={cn(
                             "flex items-center justify-between rounded px-3 py-3 text-sm font-medium transition-colors",
                             active
-                              ? "bg-[#243247] text-[#dbeafe]"
+                              ? "bg-zinc-700 text-blue-100"
                               : "text-slate-300 hover:bg-white/8 hover:text-white"
                           )}
                         >
@@ -194,6 +220,33 @@ export default function Navbar() {
                 </div>
               ))}
             </nav>
+
+            {/* Settings links */}
+            <div className="border-t border-white/10 px-3 py-3 space-y-px">
+              {[
+                { href: "/settings/pdf-templates", label: "PDF Templates", icon: LayoutTemplate },
+                { href: "/settings", label: "Settings", icon: Settings },
+              ].map(({ href, label, icon: Icon }) => {
+                const active = pathname === href;
+                return (
+                  <Link
+                    key={href}
+                    href={href}
+                    onClick={() => setDrawerOpen(false)}
+                    className={cn(
+                      "flex items-center justify-between rounded px-3 py-3 text-sm font-medium transition-colors",
+                      active ? "bg-zinc-700 text-blue-100" : "text-slate-300 hover:bg-white/8 hover:text-white"
+                    )}
+                  >
+                    <span className="flex items-center gap-3">
+                      <Icon className="h-4 w-4 shrink-0" />
+                      {label}
+                    </span>
+                    {active && <ChevronRight className="h-3.5 w-3.5 text-slate-400" />}
+                  </Link>
+                );
+              })}
+            </div>
 
             {/* Safe area spacer */}
             <div className="h-6" />

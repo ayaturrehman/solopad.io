@@ -8,7 +8,15 @@ export async function POST(req) {
   const session = await getSession();
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { title, clientName, clientEmail, description, startDate, endDate, status } = await req.json();
+  const { title, contactId, description, startDate, endDate, status, stage } = await req.json();
+
+  if (!contactId) return NextResponse.json({ error: "A contact is required." }, { status: 400 });
+
+  const contact = await db.contact.findFirst({
+    where: { id: contactId, userId: session.user.id },
+    select: { id: true },
+  });
+  if (!contact) return NextResponse.json({ error: "Contact not found." }, { status: 404 });
 
   const tenantData = await getTenantData(session);
 
@@ -16,12 +24,12 @@ export async function POST(req) {
     data: {
       ...tenantData,
       title,
-      clientName,
-      clientEmail: clientEmail || null,
+      contactId,
       description: description || null,
       startDate: startDate ? new Date(startDate) : null,
       endDate: endDate ? new Date(endDate) : null,
       status: status || "in_progress",
+      stage: stage || "new",
       portalToken: nanoid(12),
     },
   });

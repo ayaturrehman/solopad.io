@@ -101,7 +101,7 @@ export default async function DashboardPage() {
   ];
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 px-4 py-4 md:px-6">
       <div className="flex items-center justify-between">
         <div>
           <p className="text-2xl tracking-tight text-zinc-900">{greeting}, {firstName}</p>
@@ -124,14 +124,14 @@ export default async function DashboardPage() {
         ].map((item) => (
           <div key={item.label} className="rounded border border-zinc-200 bg-white px-4 py-4">
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-400">{item.label}</p>
-            <p className="mt-2 text-3xl tracking-tight text-zinc-900">{item.value}</p>
+            <p className="mt-2 text-2xl md:text-3xl tracking-tight text-zinc-900">{item.value}</p>
             <p className="mt-1 text-xs text-zinc-400">{item.note}</p>
           </div>
         ))}
       </div>
 
-      <div className="grid gap-4 xl:grid-cols-[220px_minmax(0,1.2fr)_minmax(0,0.9fr)_minmax(0,0.9fr)]">
-        <div className="rounded border border-zinc-200 bg-white p-4">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-[220px_minmax(0,1.2fr)_minmax(0,0.9fr)_minmax(0,0.9fr)]">
+        <div className="rounded border border-zinc-200 bg-white px-4 py-4">
           <div className="mb-4 flex items-center justify-between">
             <p className="text-sm font-semibold text-zinc-900">Create new</p>
           </div>
@@ -152,7 +152,7 @@ export default async function DashboardPage() {
           </div>
         </div>
 
-        <div className="rounded border border-zinc-200 bg-white p-4">
+        <div className="rounded border border-zinc-200 bg-white px-4 py-4">
           <div className="mb-4 flex items-center justify-between">
             <div>
               <p className="text-sm font-semibold text-zinc-900">Projects</p>
@@ -192,7 +192,7 @@ export default async function DashboardPage() {
           )}
         </div>
 
-        <div className="rounded border border-zinc-200 bg-white p-4">
+        <div className="rounded border border-zinc-200 bg-white px-4 py-4">
           <div className="mb-4 flex items-center justify-between">
             <div>
               <p className="text-sm font-semibold text-zinc-900">Tasks</p>
@@ -228,7 +228,7 @@ export default async function DashboardPage() {
           )}
         </div>
 
-        <div className="rounded border border-zinc-200 bg-white p-4">
+        <div className="rounded border border-zinc-200 bg-white px-4 py-4">
           <div className="mb-4 flex items-center justify-between">
             <div>
               <p className="text-sm font-semibold text-zinc-900">Contacts</p>
@@ -258,7 +258,7 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      <div className="rounded border border-zinc-200 bg-white p-4">
+      <div className="rounded border border-zinc-200 bg-white px-4 py-4">
         <div className="mb-4 flex items-center justify-between">
           <div>
             <p className="text-sm font-semibold text-zinc-900">Documents</p>

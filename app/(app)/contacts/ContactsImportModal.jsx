@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Download, FileSpreadsheet, Upload } from "lucide-react";
 import Modal from "@/components/shared/Modal";
@@ -11,8 +11,42 @@ import {
   parseContactImportCsv,
 } from "@/lib/contacts";
 
-const TEMPLATE_HEADERS = ["Name", "Email", "Phone", "Company", "Status", "Source", "Value", "Notes"];
-const TEMPLATE_EXAMPLE = ["Jane Smith", "jane@acme.com", "+1 555 100 2000", "Acme Corp", "lead", "Referral", "4500", "Interested in a website redesign"];
+const TEMPLATE_HEADERS = [
+  "Name",
+  "Contact Type",
+  "Job Title",
+  "Email",
+  "Phone",
+  "Website",
+  "Company",
+  "Status",
+  "Source",
+  "Value",
+  "Company Address",
+  "Company City",
+  "Company State",
+  "Company Postal Code",
+  "Company Country",
+  "Notes",
+];
+const TEMPLATE_EXAMPLE = [
+  "Jane Smith",
+  "individual",
+  "Creative Director",
+  "jane@acme.com",
+  "+1 555 100 2000",
+  "acme.com",
+  "Acme Corp",
+  "lead",
+  "Referral",
+  "4500",
+  "221B Baker Street",
+  "London",
+  "Greater London",
+  "NW1 6XE",
+  "United Kingdom",
+  "Interested in a website redesign",
+];
 
 async function readJsonResponse(res) {
   const text = await res.text();
@@ -48,15 +82,41 @@ function downloadTemplate() {
   URL.revokeObjectURL(url);
 }
 
-export default function ContactsImportModal() {
+export default function ContactsImportModal({
+  open: controlledOpen,
+  onOpenChange,
+  hideTrigger = false,
+  buttonLabel = "Import CSV",
+}) {
   const router = useRouter();
   const inputRef = useRef(null);
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
   const [fileName, setFileName] = useState("");
   const [parseError, setParseError] = useState("");
   const [summary, setSummary] = useState(null);
   const [parsed, setParsed] = useState({ headers: [], rawRows: [], mapping: [], validRows: [], invalidRows: [] });
   const [loading, setLoading] = useState(false);
+  const open = controlledOpen ?? internalOpen;
+
+  function setOpen(nextOpen) {
+    if (controlledOpen === undefined) {
+      setInternalOpen(nextOpen);
+    }
+    onOpenChange?.(nextOpen);
+  }
+
+  useEffect(() => {
+    if (!open) {
+      setFileName("");
+      setParseError("");
+      setSummary(null);
+      setParsed({ headers: [], rawRows: [], mapping: [], validRows: [], invalidRows: [] });
+      setLoading(false);
+      if (inputRef.current) {
+        inputRef.current.value = "";
+      }
+    }
+  }, [open]);
 
   async function handleFileChange(event) {
     const file = event.target.files?.[0];
@@ -139,21 +199,16 @@ export default function ContactsImportModal() {
 
   function resetState() {
     setOpen(false);
-    setFileName("");
-    setParseError("");
-    setSummary(null);
-    setParsed({ headers: [], rawRows: [], mapping: [], validRows: [], invalidRows: [] });
-    if (inputRef.current) {
-      inputRef.current.value = "";
-    }
   }
 
   return (
     <>
-      <Button type="button" variant="secondary" size="sm" onClick={() => setOpen(true)}>
-        <Upload className="h-4 w-4" />
-        Import CSV
-      </Button>
+      {!hideTrigger && (
+        <Button type="button" variant="secondary" size="sm" onClick={() => setOpen(true)}>
+          <Upload className="h-4 w-4" />
+          {buttonLabel}
+        </Button>
+      )}
 
       <Modal
         open={open}
@@ -167,7 +222,7 @@ export default function ContactsImportModal() {
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <p className="text-sm font-medium text-zinc-900">CSV template</p>
-                <p className="text-xs text-zinc-600">Accepted columns: Name, Email, Phone, Company, Status, Source, Value, Notes. You can remap headers after upload.</p>
+                <p className="text-xs text-zinc-600">Accepted columns include type, job title, website, company address, source, value, and notes. You can remap headers after upload.</p>
               </div>
               <Button type="button" variant="secondary" size="sm" onClick={downloadTemplate}>
                 <Download className="h-4 w-4" />

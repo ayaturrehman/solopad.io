@@ -10,7 +10,6 @@ export async function PATCH(req, { params }) {
   const { id } = await params;
   const body = await req.json();
 
-  // Coerce date strings to Date objects for Prisma
   const data = { ...body };
   if (data.endDate !== undefined) data.endDate = data.endDate ? new Date(data.endDate) : null;
   if (data.startDate !== undefined) data.startDate = data.startDate ? new Date(data.startDate) : null;

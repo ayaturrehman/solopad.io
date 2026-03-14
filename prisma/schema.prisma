@@ -33,7 +33,6 @@ model Business {
   expenseCategories ExpenseCategory[]
   recurringExpenses RecurringExpense[]
   notifications     Notification[]
-  templates         Template[]
   tasks             Task[]
   teamMembers       TeamMember[]
   timeEntries       TimeEntry[]
@@ -75,7 +74,6 @@ model User {
   expenseCategories ExpenseCategory[]
   recurringExpenses RecurringExpense[]
   notifications Notification[]
-  templates     Template[]
   tasks             Task[]
   teamMembers       TeamMember[]
   timeEntries       TimeEntry[]
@@ -83,6 +81,7 @@ model User {
   availabilityRules AvailabilityRule[]
   proposals     Proposal[]
   contracts     Contract[]
+  pdfTemplates  PdfTemplate[]
 }
 
 // ─── Contact ──────────────────────────────────────────────────────────────────
@@ -94,9 +93,17 @@ model Contact {
   userId        String
   user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   name          String
+  entityType    String    @default("individual")
+  jobTitle      String?
   email         String?
   phone         String?
+  website       String?
   company       String?
+  companyAddressLine1 String?
+  companyCity   String?
+  companyState  String?
+  companyPostalCode String?
+  companyCountry String?
   status        String    @default("lead")  // lead | active | archived
   source        String?
   value         Float?
@@ -120,8 +127,6 @@ model Project {
   contactId    String?
   contact      Contact?  @relation(fields: [contactId], references: [id])
   title        String
-  clientName   String
-  clientEmail  String?
   description  String?
   startDate    DateTime?
   endDate      DateTime?
@@ -251,6 +256,7 @@ model Service {
   description String?
   defaultRate Float     @default(0)
   unit        String    @default("flat")
+  status      String    @default("active")
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
@@ -337,26 +343,6 @@ model Notification {
   read       Boolean   @default(false)
   link       String?
   createdAt  DateTime  @default(now())
-
-  @@index([userId])
-  @@index([businessId])
-}
-
-// ─── Template ─────────────────────────────────────────────────────────────────
-
-model Template {
-  id          String    @id @default(cuid())
-  businessId  String?
-  business    Business? @relation(fields: [businessId], references: [id], onDelete: Cascade)
-  userId      String
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  type        String
-  name        String
-  description String?
-  content     String
-  isDefault   Boolean   @default(false)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
 
   @@index([userId])
   @@index([businessId])
@@ -488,15 +474,70 @@ model Proposal {
   pricing     String
   total       Float     @default(0)
   currency    String    @default("USD")
-  validUntil  DateTime?
-  status      String    @default("draft")
-  sentAt      DateTime?
-  acceptedAt  DateTime?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  validUntil     DateTime?
+  status         String    @default("draft")
+  sentAt         DateTime?
+  acceptedAt     DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
   @@index([userId])
   @@index([businessId])
+}
+
+// ─── PdfTemplate ──────────────────────────────────────────────────────────────
+
+model PdfTemplate {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type        String   // "invoice" | "proposal" | "contract"
+  name        String
+  isDefault   Boolean  @default(false)
+
+  // General
+  paperSize    String   @default("A4")
+  orientation  String   @default("portrait")
+  marginTop    Float    @default(0.4)
+  marginBottom Float    @default(0.4)
+  marginLeft   Float    @default(0.4)
+  marginRight  Float    @default(0.4)
+
+  // Branding
+  accentColor       String  @default("#18181b")
+  logoUrl           String?
+  showLogo          Boolean @default(true)
+  businessName      String?
+  businessAddress   String?
+  businessEmail     String?
+  businessPhone     String?
+
+  // Typography
+  fontFamily String @default("helvetica")
+  fontSize   Int    @default(10)
+
+  // Header & Footer
+  headerStyle     String  @default("classic")
+  footerText      String?
+  showPageNumbers Boolean @default(true)
+
+  // Table
+  tableHeaderBg        String  @default("#18181b")
+  tableHeaderTextColor String  @default("#ffffff")
+  showItemNumbers      Boolean @default(true)
+  showTaxColumn        Boolean @default(false)
+
+  // Content
+  showWatermark       Boolean @default(false)
+  showTerms           Boolean @default(false)
+  termsText           String?
+  showSignatureBlock  Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([userId, type])
 }
 
 // ─── Contract ─────────────────────────────────────────────────────────────────

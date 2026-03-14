@@ -49,12 +49,9 @@ export default async function CalendarPage() {
   });
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-zinc-900">Calendar</h1>
-        <p className="text-sm text-zinc-500">Project deadlines and invoice due dates</p>
-      </div>
+    <>
+        <h1 className="text-lg font-bold text-zinc-900 p-4">Calendar</h1>
       <CalendarView events={events} />
-    </div>
+    </>
   );
 }
