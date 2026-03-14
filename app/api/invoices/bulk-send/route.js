@@ -31,14 +31,14 @@ export async function POST(req) {
       project: { userId: session.user.id },
     },
     include: {
-      project: { select: { title: true, clientEmail: true, clientName: true, portalToken: true } },
+      project: { select: { title: true, portalToken: true, contact: { select: { name: true, email: true } } } },
     },
   });
 
   const results = { sent: 0, skipped: 0, errors: [] };
 
   for (const inv of invoices) {
-    const email = inv.project?.clientEmail;
+    const email = inv.project?.contact?.email;
     if (!email) { results.skipped++; continue; }
 
     const invoiceLabel = inv.invoiceNumber || `INV-${inv.id.slice(0, 6).toUpperCase()}`;
@@ -50,7 +50,7 @@ export async function POST(req) {
         to: email,
         subject: `Invoice ${invoiceLabel} from ${session.user.name}`,
         html: `
-          <p>Hi ${inv.project.clientName},</p>
+          <p>Hi ${inv.project.contact?.name || ""},</p>
           <p>${session.user.name} has sent you invoice <strong>${invoiceLabel}</strong>.</p>
           <p>
             <a href="${portalLink}" style="display:inline-block;padding:10px 20px;background:#18181b;color:#fff;border-radius:8px;text-decoration:none;font-weight:600;">

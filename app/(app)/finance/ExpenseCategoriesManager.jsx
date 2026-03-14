@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Pencil, Plus, Search, Trash2, X } from "lucide-react";
 import Modal from "@/components/shared/Modal";
+import { inputClassName } from "@/components/ui/Input";
 
 const PAGE_SIZE = 6;
 
@@ -122,7 +123,7 @@ export default function ExpenseCategoriesManager({ defaultCategories = [], custo
                   setQuery(event.target.value);
                   setPage(1);
                 }}
-                className="w-full rounded border border-zinc-200 px-10 py-2.5 text-sm outline-none focus:border-zinc-400"
+                className={inputClassName}
                 placeholder="Search categories"
               />
             </div>
@@ -140,7 +141,7 @@ export default function ExpenseCategoriesManager({ defaultCategories = [], custo
                       <input
                         value={editingName}
                         onChange={(event) => setEditingName(event.target.value)}
-                        className="w-full rounded border border-zinc-200 px-3 py-1.5 text-sm outline-none focus:border-zinc-400"
+                        className={inputClassName}
                       />
                     ) : (
                       <>
@@ -235,7 +236,7 @@ export default function ExpenseCategoriesManager({ defaultCategories = [], custo
               <input
                 value={name}
                 onChange={(event) => setName(event.target.value)}
-                className="w-full rounded border border-zinc-200 px-3 py-1.5.5 text-sm outline-none focus:border-zinc-400"
+                className={inputClassName}
                 placeholder="e.g. Rent"
               />
             </div>

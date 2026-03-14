@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, UserPlus, ChevronDown, X } from "lucide-react";
 import Button from "@/components/ui/Button";
-import Input from "@/components/ui/Input";
+import Input, { selectClassName, textareaClassName } from "@/components/ui/Input";
+import { cn } from "@/lib/utils";
 
 export default function NewProjectClient({ contacts }) {
   const router = useRouter();
@@ -204,7 +205,7 @@ export default function NewProjectClient({ contacts }) {
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-medium text-zinc-700">Description (optional)</label>
             <textarea
-              className="min-h-[72px] resize-none rounded border border-zinc-200 bg-white px-3 py-1.5 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900"
+              className={cn(textareaClassName, "min-h-[72px]")}
               placeholder="What's this project about?"
               value={form.description}
               onChange={(e) => set("description", e.target.value)}
@@ -230,7 +231,7 @@ export default function NewProjectClient({ contacts }) {
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-medium text-zinc-700">Stage</label>
               <select
-                className="h-10 rounded border border-zinc-200 bg-white px-3 text-sm text-zinc-900 focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900"
+                className={selectClassName}
                 value={form.stage}
                 onChange={(e) => set("stage", e.target.value)}
               >

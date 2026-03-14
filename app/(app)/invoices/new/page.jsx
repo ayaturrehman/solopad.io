@@ -15,7 +15,7 @@ export default async function NewInvoicePage({ searchParams }) {
   const [projects, services, user] = await Promise.all([
     db.project.findMany({
       where: { ...filter, archived: false },
-      select: { id: true, title: true, clientName: true, clientEmail: true },
+      select: { id: true, title: true, contact: { select: { name: true, email: true } } },
       orderBy: { updatedAt: "desc" },
     }),
     db.service.findMany({

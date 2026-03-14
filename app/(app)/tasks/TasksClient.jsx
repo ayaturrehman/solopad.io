@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { cn, formatDate } from "@/lib/utils";
+import { inputClassName, selectClassName, textareaClassName } from "@/components/ui/Input";
 import Modal from "@/components/shared/Modal";
 import Button from "@/components/ui/Button";
 import CollectionPageHeader, { collectionPageHeaderPrimaryActionClassName } from "@/components/shared/CollectionPageHeader";
@@ -397,7 +398,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
     return (
       <div className="space-y-4 bg-zinc-50 px-4 py-4">
         <input
-          className="w-full rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-900 outline-none transition-colors focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900 placeholder:text-zinc-400"
+          className={inputClassName}
           value={editData.title}
           onChange={(e) => setEditData((data) => ({ ...data, title: e.target.value }))}
           placeholder="Task title"
@@ -405,7 +406,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
 
         <div className="grid gap-3 md:grid-cols-5">
           <select
-            className="w-full rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-900 outline-none transition-colors focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900"
+            className={selectClassName}
             value={editData.projectId}
             onChange={(e) => setEditData((data) => ({ ...data, projectId: e.target.value }))}
           >
@@ -415,7 +416,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
             ))}
           </select>
           <select
-            className="w-full rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-900 outline-none transition-colors focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900"
+            className={selectClassName}
             value={editData.assigneeMemberId}
             onChange={(e) => setEditData((data) => ({ ...data, assigneeMemberId: e.target.value }))}
           >
@@ -427,7 +428,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
             ))}
           </select>
           <select
-            className="w-full rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-900 outline-none transition-colors focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900"
+            className={selectClassName}
             value={editData.status}
             onChange={(e) => setEditData((data) => ({ ...data, status: e.target.value }))}
           >
@@ -438,7 +439,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
             ))}
           </select>
           <select
-            className="w-full rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-900 outline-none transition-colors focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900"
+            className={selectClassName}
             value={editData.priority}
             onChange={(e) => setEditData((data) => ({ ...data, priority: e.target.value }))}
           >
@@ -448,7 +449,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
           </select>
           <input
             type="date"
-            className="w-full rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-900 outline-none transition-colors focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900"
+            className={inputClassName}
             value={editData.dueDate}
             onChange={(e) => setEditData((data) => ({ ...data, dueDate: e.target.value }))}
           />
@@ -459,7 +460,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
           value={editData.description}
           onChange={(e) => setEditData((data) => ({ ...data, description: e.target.value }))}
           placeholder="Add notes for this task"
-          className="w-full rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-900 outline-none transition-colors focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900 placeholder:text-zinc-400"
+          className={textareaClassName}
         />
 
         <div className="space-y-2">
@@ -475,7 +476,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
                 value={subtask.title}
                 onChange={(e) => updateEditSubtask(subtask.id, e.target.value)}
                 placeholder="Subtask title"
-                className="flex-1 rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-900 outline-none transition-colors focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900 placeholder:text-zinc-400"
+                className={inputClassName}
               />
               <button
                 type="button"
@@ -664,14 +665,14 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
               placeholder="Task title"
               value={formData.title}
               onChange={(e) => setFormData((data) => ({ ...data, title: e.target.value }))}
-              className="w-full rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-900 outline-none transition-colors focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900 placeholder:text-zinc-400"
+              className={inputClassName}
             />
 
             <div className="grid gap-3 md:grid-cols-5">
               <select
                 value={formData.projectId}
                 onChange={(e) => setFormData((data) => ({ ...data, projectId: e.target.value }))}
-                className="w-full rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-900 outline-none transition-colors focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900"
+                className={selectClassName}
               >
                 <option value="">No project</option>
                 {projects.map((project) => (
@@ -681,7 +682,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
               <select
                 value={formData.assigneeMemberId}
                 onChange={(e) => setFormData((data) => ({ ...data, assigneeMemberId: e.target.value }))}
-                className="w-full rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-900 outline-none transition-colors focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900"
+                className={selectClassName}
               >
                 <option value="">Me</option>
                 {teamMembers.map((member) => (
@@ -693,7 +694,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
               <select
                 value={formData.status}
                 onChange={(e) => setFormData((data) => ({ ...data, status: e.target.value }))}
-                className="w-full rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-900 outline-none transition-colors focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900"
+                className={selectClassName}
               >
                 {STATUS_OPTIONS.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -704,7 +705,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
               <select
                 value={formData.priority}
                 onChange={(e) => setFormData((data) => ({ ...data, priority: e.target.value }))}
-                className="w-full rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-900 outline-none transition-colors focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900"
+                className={selectClassName}
               >
                 <option value="low">Low priority</option>
                 <option value="medium">Medium priority</option>
@@ -714,7 +715,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
                 type="date"
                 value={formData.dueDate}
                 onChange={(e) => setFormData((data) => ({ ...data, dueDate: e.target.value }))}
-                className="w-full rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-900 outline-none transition-colors focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900"
+                className={inputClassName}
               />
             </div>
 
@@ -723,7 +724,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
               value={formData.description}
               onChange={(e) => setFormData((data) => ({ ...data, description: e.target.value }))}
               placeholder="Add notes for this task"
-              className="w-full rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-900 outline-none transition-colors focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900 placeholder:text-zinc-400"
+              className={textareaClassName}
             />
 
             <div className="space-y-2">
@@ -739,7 +740,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
                     value={subtask.title}
                     onChange={(e) => updateFormSubtask(subtask.id, e.target.value)}
                     placeholder="Subtask title"
-                    className="flex-1 rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-900 outline-none transition-colors focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900 placeholder:text-zinc-400"
+                    className={inputClassName}
                   />
                   <button
                     type="button"

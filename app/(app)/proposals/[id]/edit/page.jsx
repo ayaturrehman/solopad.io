@@ -16,7 +16,7 @@ export default async function ProposalEditPage({ params }) {
     }),
     db.project.findMany({
       where: { userId: session.user.id },
-      select: { id: true, title: true, clientName: true, clientEmail: true },
+      select: { id: true, title: true, contact: { select: { name: true, email: true } } },
       orderBy: { createdAt: "desc" },
     }),
     db.pdfTemplate.findFirst({

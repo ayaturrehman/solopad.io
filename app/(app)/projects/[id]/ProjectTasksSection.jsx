@@ -12,6 +12,7 @@ import {
   UserRound,
 } from "lucide-react";
 import { cn, formatDate } from "@/lib/utils";
+import { inputClassName, selectClassName, textareaClassName } from "@/components/ui/Input";
 
 const PRIORITY_DOT = {
   high: "bg-red-500",
@@ -234,7 +235,7 @@ export default function ProjectTasksSection({ project, tasks: initialTasks, team
     return (
       <div className="space-y-4 bg-zinc-50 px-4 py-4">
         <input
-          className="w-full rounded border border-zinc-300 px-3 py-1.5 text-sm focus:border-zinc-500 focus:outline-none"
+          className={inputClassName}
           value={editData.title}
           onChange={(e) => setEditData((data) => ({ ...data, title: e.target.value }))}
           placeholder="Task title"
@@ -242,7 +243,7 @@ export default function ProjectTasksSection({ project, tasks: initialTasks, team
 
         <div className="grid gap-3 md:grid-cols-4">
           <select
-            className="rounded border border-zinc-200 px-3 py-1.5 text-sm text-zinc-600 focus:outline-none"
+            className={selectClassName}
             value={editData.assigneeMemberId}
             onChange={(e) => setEditData((data) => ({ ...data, assigneeMemberId: e.target.value }))}
           >
@@ -254,7 +255,7 @@ export default function ProjectTasksSection({ project, tasks: initialTasks, team
             ))}
           </select>
           <select
-            className="rounded border border-zinc-200 px-3 py-1.5 text-sm text-zinc-600 focus:outline-none"
+            className={selectClassName}
             value={editData.priority}
             onChange={(e) => setEditData((data) => ({ ...data, priority: e.target.value }))}
           >
@@ -263,7 +264,7 @@ export default function ProjectTasksSection({ project, tasks: initialTasks, team
             <option value="high">High priority</option>
           </select>
           <select
-            className="rounded border border-zinc-200 px-3 py-1.5 text-sm text-zinc-600 focus:outline-none"
+            className={selectClassName}
             value={editData.status}
             onChange={(e) => setEditData((data) => ({ ...data, status: e.target.value }))}
           >
@@ -273,7 +274,7 @@ export default function ProjectTasksSection({ project, tasks: initialTasks, team
           </select>
           <input
             type="date"
-            className="rounded border border-zinc-200 px-3 py-1.5 text-sm text-zinc-600 focus:outline-none"
+            className={inputClassName}
             value={editData.dueDate}
             onChange={(e) => setEditData((data) => ({ ...data, dueDate: e.target.value }))}
           />
@@ -284,7 +285,7 @@ export default function ProjectTasksSection({ project, tasks: initialTasks, team
           value={editData.description}
           onChange={(e) => setEditData((data) => ({ ...data, description: e.target.value }))}
           placeholder="Add notes for this task"
-          className="w-full rounded border border-zinc-200 px-3 py-1.5 text-sm text-zinc-800 focus:border-zinc-400 focus:outline-none"
+          className={textareaClassName}
         />
 
         <div className="space-y-2">
@@ -300,7 +301,7 @@ export default function ProjectTasksSection({ project, tasks: initialTasks, team
                 value={subtask.title}
                 onChange={(e) => updateEditSubtask(subtask.id, e.target.value)}
                 placeholder="Subtask title"
-                className="flex-1 rounded border border-zinc-200 px-3 py-1.5 text-sm focus:border-zinc-400 focus:outline-none"
+                className={inputClassName}
               />
               <button
                 type="button"
@@ -493,14 +494,14 @@ export default function ProjectTasksSection({ project, tasks: initialTasks, team
               placeholder={`Task for ${project.title}`}
               value={formData.title}
               onChange={(e) => setFormData((data) => ({ ...data, title: e.target.value }))}
-              className="w-full rounded border border-zinc-200 px-3 py-1.5 text-sm text-zinc-800 focus:border-zinc-400 focus:outline-none"
+              className={inputClassName}
             />
 
             <div className="grid gap-3 md:grid-cols-4">
               <select
                 value={formData.assigneeMemberId}
                 onChange={(e) => setFormData((data) => ({ ...data, assigneeMemberId: e.target.value }))}
-                className="rounded border border-zinc-200 px-3 py-1.5 text-sm text-zinc-600 focus:outline-none"
+                className={selectClassName}
               >
                 <option value="">Me</option>
                 {teamMembers.map((member) => (
@@ -512,7 +513,7 @@ export default function ProjectTasksSection({ project, tasks: initialTasks, team
               <select
                 value={formData.priority}
                 onChange={(e) => setFormData((data) => ({ ...data, priority: e.target.value }))}
-                className="rounded border border-zinc-200 px-3 py-1.5 text-sm text-zinc-600 focus:outline-none"
+                className={selectClassName}
               >
                 <option value="low">Low priority</option>
                 <option value="medium">Medium priority</option>
@@ -521,7 +522,7 @@ export default function ProjectTasksSection({ project, tasks: initialTasks, team
               <select
                 value={formData.status}
                 onChange={(e) => setFormData((data) => ({ ...data, status: e.target.value }))}
-                className="rounded border border-zinc-200 px-3 py-1.5 text-sm text-zinc-600 focus:outline-none"
+                className={selectClassName}
               >
                 <option value="todo">To do</option>
                 <option value="in_progress">In progress</option>
@@ -531,7 +532,7 @@ export default function ProjectTasksSection({ project, tasks: initialTasks, team
                 type="date"
                 value={formData.dueDate}
                 onChange={(e) => setFormData((data) => ({ ...data, dueDate: e.target.value }))}
-                className="rounded border border-zinc-200 px-3 py-1.5 text-sm text-zinc-600 focus:outline-none"
+                className={inputClassName}
               />
             </div>
 
@@ -540,7 +541,7 @@ export default function ProjectTasksSection({ project, tasks: initialTasks, team
               value={formData.description}
               onChange={(e) => setFormData((data) => ({ ...data, description: e.target.value }))}
               placeholder="Add notes for this task"
-              className="w-full rounded border border-zinc-200 px-3 py-1.5 text-sm text-zinc-800 focus:border-zinc-400 focus:outline-none"
+              className={textareaClassName}
             />
 
             <div className="space-y-2">
@@ -556,7 +557,7 @@ export default function ProjectTasksSection({ project, tasks: initialTasks, team
                     value={subtask.title}
                     onChange={(e) => updateFormSubtask(subtask.id, e.target.value)}
                     placeholder="Subtask title"
-                    className="flex-1 rounded border border-zinc-200 px-3 py-1.5 text-sm focus:border-zinc-400 focus:outline-none"
+                    className={inputClassName}
                   />
                   <button
                     type="button"

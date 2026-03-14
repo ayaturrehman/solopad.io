@@ -8,6 +8,8 @@ import {
   DEFAULT_EXPENSE_CATEGORIES,
   RECURRING_FREQUENCIES,
 } from "@/lib/expenses";
+import { inputClassName, selectClassName, textareaClassName } from "@/components/ui/Input";
+import { cn } from "@/lib/utils";
 
 function getDefaultForm(expense, recurringExpense) {
   if (recurringExpense) {
@@ -169,7 +171,7 @@ export default function AddExpenseForm({
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="mb-1.5 block text-left text-xs font-medium text-zinc-700">Description *</label>
-          <input value={form.description} onChange={set("description")} className="w-full rounded border border-zinc-200 px-3 py-1.5.5 text-sm outline-none focus:border-zinc-400" placeholder="e.g. Adobe CC subscription" />
+          <input value={form.description} onChange={set("description")} className={inputClassName} placeholder="e.g. Adobe CC subscription" />
         </div>
         <div>
           <label className="mb-1.5 block text-left text-xs font-medium text-zinc-700">Project</label>
@@ -178,11 +180,11 @@ export default function AddExpenseForm({
               type="text"
               value={projectSearch}
               onChange={(event) => setProjectSearch(event.target.value)}
-              className="mb-2 w-full rounded border border-zinc-200 px-3 py-1.5.5 text-sm outline-none focus:border-zinc-400"
+              className={inputClassName}
               placeholder="Search projects"
             />
           ) : null}
-          <select value={form.projectId} onChange={set("projectId")} className="w-full rounded border border-zinc-200 px-3 py-1.5.5 text-sm outline-none focus:border-zinc-400">
+          <select value={form.projectId} onChange={set("projectId")} className={selectClassName}>
             <option value="">No linked project</option>
             {projectOptions.map((project) => (
               <option key={project.id} value={project.id}>{project.title}</option>
@@ -195,16 +197,16 @@ export default function AddExpenseForm({
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="mb-1.5 block text-left text-xs font-medium text-zinc-700">Amount (USD) *</label>
-            <input type="number" min="0" step="0.01" value={form.amount} onChange={set("amount")} className="w-full rounded border border-zinc-200 px-3 py-1.5.5 text-sm outline-none focus:border-zinc-400" placeholder="0.00" />
+            <input type="number" min="0" step="0.01" value={form.amount} onChange={set("amount")} className={inputClassName} placeholder="0.00" />
           </div>
           <div>
             <label className="mb-1.5 block text-left text-xs font-medium text-zinc-700">{form.isRecurring ? "Next date" : "Date"}</label>
-            <input type="date" value={form.date} onChange={set("date")} className="w-full rounded border border-zinc-200 px-3 py-1.5.5 text-sm outline-none focus:border-zinc-400" />
+            <input type="date" value={form.date} onChange={set("date")} className={inputClassName} />
           </div>
         </div>
         <div>
           <label className="mb-1.5 block text-left text-xs font-medium text-zinc-700">Category</label>
-          <select value={form.category} onChange={set("category")} className="w-full rounded border border-zinc-200 px-3 py-1.5.5 text-sm capitalize outline-none focus:border-zinc-400">
+          <select value={form.category} onChange={set("category")} className={selectClassName}>
             {categories.map((c) => <option key={c} value={c} className="capitalize">{c}</option>)}
           </select>
         </div>
@@ -216,7 +218,7 @@ export default function AddExpenseForm({
           <textarea
             value={form.note}
             onChange={(event) => setForm((current) => ({ ...current, note: event.target.value.slice(0, 100) }))}
-            className="min-h-[78px] w-full rounded border border-zinc-200 px-3 py-1.5.5 text-sm outline-none focus:border-zinc-400"
+            className={cn(textareaClassName, "min-h-[78px]")}
             placeholder="Optional note"
             maxLength={100}
           />
@@ -236,7 +238,7 @@ export default function AddExpenseForm({
             <select
               value={form.frequency}
               onChange={set("frequency")}
-              className="w-full rounded border border-zinc-200 px-3 py-1.5.5 text-sm outline-none focus:border-zinc-400"
+              className={selectClassName}
             >
               {Object.entries(RECURRING_FREQUENCIES).map(([value, label]) => (
                 <option key={value} value={value}>{label}</option>

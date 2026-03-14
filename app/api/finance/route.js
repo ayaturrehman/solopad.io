@@ -31,14 +31,14 @@ export async function GET(req) {
         status: "paid",
         paidAt: { gte: startDate, lte: endDate },
       },
-      include: { project: { select: { title: true, clientName: true } } },
+      include: { project: { select: { title: true, contact: { select: { name: true } } } } },
     }),
     db.invoice.findMany({
       where: {
         project: filter,
         status: { not: "paid" },
       },
-      include: { project: { select: { title: true, clientName: true } } },
+      include: { project: { select: { title: true, contact: { select: { name: true } } } } },
     }),
   ]);
 

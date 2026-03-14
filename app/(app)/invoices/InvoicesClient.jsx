@@ -289,7 +289,7 @@ export default function InvoicesClient({ invoices }) {
                     </td>
                     <td className="px-5 py-4">
                       <p className="text-sm font-medium text-zinc-800">{inv.project.title}</p>
-                      <p className="text-xs text-zinc-400">{inv.project.clientName}</p>
+                      <p className="text-xs text-zinc-400">{inv.project.contact?.name || "—"}</p>
                     </td>
                     <td className="px-5 py-4">
                       <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${cfg.color}`}>

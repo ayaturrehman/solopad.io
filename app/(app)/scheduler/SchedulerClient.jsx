@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import Button from "@/components/ui/Button";
+import { selectClassName } from "@/components/ui/Input";
 import CollectionPageHeader, {
   collectionPageHeaderSegmentedGroupClassName,
   getCollectionPageHeaderSegmentedButtonClassName,
@@ -276,7 +277,7 @@ export default function SchedulerClient({ bookings: initialBookings, availabilit
                         <select
                           value={rule.startTime}
                           onChange={(e) => updateDay(rule.dayOfWeek, "startTime", e.target.value)}
-                          className="rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-900 outline-none transition-colors focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900"
+                          className={selectClassName}
                         >
                           {TIME_OPTIONS.map((t) => (
                             <option key={t} value={t}>{t}</option>
@@ -286,7 +287,7 @@ export default function SchedulerClient({ bookings: initialBookings, availabilit
                         <select
                           value={rule.endTime}
                           onChange={(e) => updateDay(rule.dayOfWeek, "endTime", e.target.value)}
-                          className="rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-900 outline-none transition-colors focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900"
+                          className={selectClassName}
                         >
                           {TIME_OPTIONS.map((t) => (
                             <option key={t} value={t}>{t}</option>

@@ -7,7 +7,8 @@ import {
   ArrowLeft, Plus, Trash2, ChevronDown, FileText, User, Calendar,
   DollarSign, Percent, Tag, AlignLeft, Bell, Sparkles, CreditCard, Zap
 } from "lucide-react";
-import { formatCurrency } from "@/lib/utils";
+import { cn, formatCurrency } from "@/lib/utils";
+import { inputClassName, selectClassName, textareaClassName } from "@/components/ui/Input";
 
 const CURRENCIES = ["USD", "GBP", "EUR", "AUD", "CAD", "SGD", "INR"];
 
@@ -231,18 +232,18 @@ export default function InvoiceEditClient({ invoice, projects, services }) {
                   <select
                     value={projectId}
                     onChange={(e) => setProjectId(e.target.value)}
-                    className="h-10 w-full appearance-none rounded border border-zinc-200 bg-white pl-3 pr-8 text-sm outline-none focus:border-zinc-900"
+                    className={selectClassName}
                   >
                     <option value="">— Select a project —</option>
                     {projects.map((p) => (
-                      <option key={p.id} value={p.id}>{p.title} — {p.clientName}</option>
+                      <option key={p.id} value={p.id}>{p.title}{p.contact?.name ? ` — ${p.contact.name}` : ""}</option>
                     ))}
                   </select>
                   <ChevronDown className="pointer-events-none absolute right-2.5 top-3 h-4 w-4 text-zinc-400" />
                 </div>
                 {selectedProject && (
                   <p className="mt-1.5 text-xs text-zinc-400">
-                    Client: <span className="text-zinc-600">{selectedProject.clientName}</span>
+                    Client: <span className="text-zinc-600">{selectedProject.contact?.name || "—"}</span>
                   </p>
                 )}
               </div>
@@ -252,7 +253,7 @@ export default function InvoiceEditClient({ invoice, projects, services }) {
                   value={invoiceNumber}
                   onChange={(e) => setInvoiceNumber(e.target.value)}
                   placeholder="e.g. INV-2026-001"
-                  className="h-10 w-full rounded border border-zinc-200 px-3 text-sm outline-none focus:border-zinc-900"
+                  className={inputClassName}
                 />
               </div>
             </div>
@@ -269,7 +270,7 @@ export default function InvoiceEditClient({ invoice, projects, services }) {
                     type="date"
                     value={dueDate}
                     onChange={(e) => setDueDate(e.target.value)}
-                    className="h-10 w-full rounded border border-zinc-200 px-3 text-sm outline-none focus:border-zinc-900"
+                    className={inputClassName}
                   />
                 </div>
               )}
@@ -279,7 +280,7 @@ export default function InvoiceEditClient({ invoice, projects, services }) {
                   <select
                     value={currency}
                     onChange={(e) => setCurrency(e.target.value)}
-                    className="h-10 w-full appearance-none rounded border border-zinc-200 bg-white pl-3 pr-8 text-sm outline-none focus:border-zinc-900"
+                    className={selectClassName}
                   >
                     {CURRENCIES.map((c) => <option key={c}>{c}</option>)}
                   </select>
@@ -324,12 +325,12 @@ export default function InvoiceEditClient({ invoice, projects, services }) {
                 <div key={i} className="grid grid-cols-12 items-center gap-2">
                   <input value={line.description} onChange={(e) => updateLine(i, "description", e.target.value)}
                     placeholder="Service or product description"
-                    className="col-span-5 h-10 rounded border border-zinc-200 px-3 text-sm outline-none focus:border-zinc-900" />
+                    className={cn(inputClassName, "col-span-5")} />
                   <input type="number" min="0" step="0.01" value={line.quantity} onChange={(e) => updateLine(i, "quantity", e.target.value)}
-                    className="col-span-2 h-10 rounded border border-zinc-200 px-3 text-right text-sm outline-none focus:border-zinc-900" />
+                    className={cn(inputClassName, "col-span-2 text-right")} />
                   <input type="number" min="0" step="0.01" value={line.rate} onChange={(e) => updateLine(i, "rate", e.target.value)}
                     placeholder="0.00"
-                    className="col-span-2 h-10 rounded border border-zinc-200 px-3 text-right text-sm outline-none focus:border-zinc-900" />
+                    className={cn(inputClassName, "col-span-2 text-right")} />
                   <div className="col-span-2 text-right text-sm font-medium text-zinc-700">
                     {formatCurrency(parseFloat(line.amount) || 0, currency)}
                   </div>
@@ -394,16 +395,16 @@ export default function InvoiceEditClient({ invoice, projects, services }) {
                     <div key={i} className="grid grid-cols-12 items-center gap-2">
                       <input value={m.label} onChange={(e) => updateMilestone(i, "label", e.target.value)}
                         placeholder={i === 0 ? "e.g. Deposit" : i === milestones.length - 1 ? "e.g. Final payment" : `Milestone ${i + 1}`}
-                        className="col-span-5 h-10 rounded border border-zinc-200 px-3 text-sm outline-none focus:border-zinc-900" />
+                        className={cn(inputClassName, "col-span-5")} />
                       <div className="relative col-span-3">
                         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] font-medium text-zinc-400">{currency}</span>
                         <input type="number" min="0" step="0.01" value={m.amount}
                           onChange={(e) => updateMilestone(i, "amount", e.target.value)}
                           placeholder="0.00"
-                          className="h-10 w-full rounded border border-zinc-200 pl-10 pr-3 text-right text-sm outline-none focus:border-zinc-900" />
+                          className={cn(inputClassName, "pl-10 pr-3 text-right")} />
                       </div>
                       <input type="date" value={m.dueDate} onChange={(e) => updateMilestone(i, "dueDate", e.target.value)}
-                        className="col-span-3 h-10 rounded border border-zinc-200 px-3 text-sm outline-none focus:border-zinc-900" />
+                        className={cn(inputClassName, "col-span-3")} />
                       <button type="button" onClick={() => removeMilestone(i)} disabled={milestones.length === 1}
                         className="col-span-1 flex items-center justify-center text-zinc-300 hover:text-red-400 disabled:opacity-0">
                         <Trash2 className="h-4 w-4" />
@@ -434,7 +435,7 @@ export default function InvoiceEditClient({ invoice, projects, services }) {
             <SectionLabel icon={AlignLeft}>Notes & Terms</SectionLabel>
             <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={4}
               placeholder="Payment terms, bank details, or any notes for the client…"
-              className="w-full resize-none rounded border border-zinc-200 px-3 py-1.5.5 text-sm outline-none focus:border-zinc-900" />
+              className={textareaClassName} />
           </div>
         </div>
 
@@ -448,7 +449,7 @@ export default function InvoiceEditClient({ invoice, projects, services }) {
                 <div className="relative">
                   <input type="number" min="0" max="100" step="0.01" value={taxRate}
                     onChange={(e) => setTaxRate(e.target.value)}
-                    className="h-10 w-full rounded border border-zinc-200 pl-3 pr-8 text-sm outline-none focus:border-zinc-900" placeholder="0" />
+                    className={cn(inputClassName, "pr-8")} placeholder="0" />
                   <Percent className="pointer-events-none absolute right-3 top-3 h-4 w-4 text-zinc-300" />
                 </div>
               </div>
@@ -457,7 +458,7 @@ export default function InvoiceEditClient({ invoice, projects, services }) {
                 <div className="flex gap-2">
                   <div className="relative">
                     <select value={discountType} onChange={(e) => { setDiscountType(e.target.value); setDiscountValue(""); }}
-                      className="h-10 appearance-none rounded border border-zinc-200 bg-white pl-3 pr-7 text-sm outline-none focus:border-zinc-900">
+                      className={selectClassName}>
                       <option value="none">None</option>
                       <option value="percent">%</option>
                       <option value="fixed">Fixed $</option>
@@ -467,7 +468,7 @@ export default function InvoiceEditClient({ invoice, projects, services }) {
                   {discountType !== "none" && (
                     <input type="number" min="0" step="0.01" value={discountValue}
                       onChange={(e) => setDiscountValue(e.target.value)} placeholder="0"
-                      className="h-10 flex-1 rounded border border-zinc-200 px-3 text-sm outline-none focus:border-zinc-900" />
+                      className={inputClassName} />
                   )}
                 </div>
               </div>

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Download, FileSpreadsheet, Upload } from "lucide-react";
 import Modal from "@/components/shared/Modal";
 import Button from "@/components/ui/Button";
+import { selectClassName } from "@/components/ui/Input";
 import {
   buildContactImportPreview,
   CONTACT_IMPORT_FIELDS,
@@ -309,7 +310,7 @@ export default function ContactsImportModal({
                           <select
                             value={parsed.mapping[index] || "ignore"}
                             onChange={(event) => updateMapping(index, event.target.value)}
-                            className="h-9 w-full min-w-[160px] rounded border border-zinc-200 bg-white px-3 text-sm text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            className={selectClassName}
                           >
                             {CONTACT_IMPORT_FIELDS.map((option) => (
                               <option key={option.value} value={option.value}>{option.label}</option>

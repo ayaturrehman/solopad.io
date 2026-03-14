@@ -28,8 +28,8 @@ export default async function InvoiceDetailPage({ params }) {
     include: {
       project: {
         select: {
-          id: true, title: true, clientName: true, clientEmail: true,
-          userId: true, contact: { select: { name: true, email: true, company: true } },
+          id: true, title: true, userId: true,
+          contact: { select: { name: true, email: true, company: true } },
         },
       },
       paymentPlans: { orderBy: { createdAt: "asc" } },
@@ -85,10 +85,10 @@ export default async function InvoiceDetailPage({ params }) {
           <div className="mb-10 grid gap-8 sm:grid-cols-2">
             <div>
               <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-zinc-400">Billed to</p>
-              <p className="font-semibold text-zinc-900">{invoice.project.clientName}</p>
-              {invoice.project.clientEmail && (
+              <p className="font-semibold text-zinc-900">{invoice.project.contact?.name || "—"}</p>
+              {invoice.project.contact?.email && (
                 <p className="flex items-center gap-1.5 text-sm text-zinc-500">
-                  <Mail className="h-3.5 w-3.5" />{invoice.project.clientEmail}
+                  <Mail className="h-3.5 w-3.5" />{invoice.project.contact.email}
                 </p>
               )}
               {invoice.project.contact?.company && (

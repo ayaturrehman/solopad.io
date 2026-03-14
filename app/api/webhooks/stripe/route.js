@@ -28,7 +28,7 @@ export async function POST(req) {
         paidAt: new Date(),
         stripePaymentIntentId: session.payment_intent,
       },
-      include: { project: { include: { user: true } } },
+      include: { project: { include: { user: true, contact: { select: { name: true } } } } },
     });
 
     // Create in-app notification
@@ -38,7 +38,7 @@ export async function POST(req) {
           userId: invoice.project.user.id,
           type: "invoice_paid",
           title: "Payment received",
-          body: `${invoice.project.clientName} paid $${invoice.total.toFixed(2)} for "${invoice.project.title}"`,
+          body: `${invoice.project.contact?.name || "Client"} paid $${invoice.total.toFixed(2)} for "${invoice.project.title}"`,
           link: `/projects/${invoice.project.id}`,
         },
       });
@@ -51,7 +51,7 @@ export async function POST(req) {
           from: process.env.FROM_EMAIL,
           to: invoice.project.user.email,
           subject: `Payment received for ${invoice.project.title}`,
-          html: `<p>Your client <strong>${invoice.project.clientName}</strong> paid <strong>$${invoice.total.toFixed(2)}</strong> for <strong>${invoice.project.title}</strong>.</p><p>Login to Solopad to view the details.</p>`,
+          html: `<p>Your client <strong>${invoice.project.contact?.name || "Client"}</strong> paid <strong>$${invoice.total.toFixed(2)}</strong> for <strong>${invoice.project.title}</strong>.</p><p>Login to Solopad to view the details.</p>`,
         });
       } catch {
         // Email failure is non-fatal

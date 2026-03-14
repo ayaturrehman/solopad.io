@@ -15,13 +15,13 @@ export default async function EditInvoicePage({ params }) {
     db.invoice.findFirst({
       where: { id, project: filter },
       include: {
-        project: { select: { id: true, title: true, clientName: true, clientEmail: true, userId: true, businessId: true } },
+        project: { select: { id: true, title: true, userId: true, businessId: true, contact: { select: { name: true, email: true } } } },
         paymentPlans: { orderBy: { createdAt: "asc" } },
       },
     }),
     db.project.findMany({
       where: { ...filter, archived: false },
-      select: { id: true, title: true, clientName: true, clientEmail: true },
+      select: { id: true, title: true, contact: { select: { name: true, email: true } } },
       orderBy: { updatedAt: "desc" },
     }),
     db.service.findMany({

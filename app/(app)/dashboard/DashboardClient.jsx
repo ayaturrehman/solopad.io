@@ -210,7 +210,7 @@ export default function DashboardClient({
                       <Link href={`/projects/${project.id}`} className="block truncate text-sm font-medium text-zinc-900 hover:underline">
                         {project.title}
                       </Link>
-                      <p className="mt-0.5 text-xs text-zinc-400">{project.contact?.name || project.clientName}</p>
+                      <p className="mt-0.5 text-xs text-zinc-400">{project.contact?.name || "—"}</p>
                     </div>
                     <div className="flex items-center gap-3">
                       <StatusBadge className={STATUS_COLORS[project.status]}>{STATUS_LABELS[project.status]}</StatusBadge>

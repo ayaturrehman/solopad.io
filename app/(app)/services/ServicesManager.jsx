@@ -10,6 +10,7 @@ import { CollectionDataTable, CollectionEmptyState } from "@/components/shared/C
 import Modal from "@/components/shared/Modal";
 import Button from "@/components/ui/Button";
 import { cn, formatCurrency, formatDate } from "@/lib/utils";
+import { inputClassName, selectClassName, textareaClassName } from "@/components/ui/Input";
 import {
   SERVICE_FILTERS,
   SERVICE_STATUS_BADGES,
@@ -61,7 +62,7 @@ function ServiceFormModal({
           <input
             value={form.name}
             onChange={(event) => updateField("name", event.target.value)}
-            className="h-10 w-full rounded border border-zinc-200 px-3 text-sm outline-none focus:border-zinc-900"
+            className={inputClassName}
             placeholder="e.g. Website design"
           />
         </div>
@@ -71,7 +72,7 @@ function ServiceFormModal({
           <textarea
             value={form.description}
             onChange={(event) => updateField("description", event.target.value)}
-            className="min-h-24 w-full rounded border border-zinc-200 px-3 py-2 text-sm outline-none focus:border-zinc-900"
+            className={cn(textareaClassName, "min-h-24")}
             placeholder="Optional description shown when this service is reused"
           />
         </div>
@@ -85,7 +86,7 @@ function ServiceFormModal({
               step="0.01"
               value={form.defaultRate}
               onChange={(event) => updateField("defaultRate", event.target.value)}
-              className="h-10 w-full rounded border border-zinc-200 px-3 text-sm outline-none focus:border-zinc-900"
+              className={inputClassName}
               placeholder="0.00"
             />
           </div>
@@ -94,7 +95,7 @@ function ServiceFormModal({
             <select
               value={form.unit}
               onChange={(event) => updateField("unit", event.target.value)}
-              className="h-10 w-full rounded border border-zinc-200 px-3 text-sm outline-none focus:border-zinc-900"
+              className={selectClassName}
             >
               {Object.entries(SERVICE_UNIT_LABELS).map(([value, label]) => (
                 <option key={value} value={value}>{label}</option>
@@ -106,7 +107,7 @@ function ServiceFormModal({
             <select
               value={form.status}
               onChange={(event) => updateField("status", event.target.value)}
-              className="h-10 w-full rounded border border-zinc-200 px-3 text-sm outline-none focus:border-zinc-900"
+              className={selectClassName}
             >
               {SERVICE_STATUS_OPTIONS.map((option) => (
                 <option key={option.value} value={option.value}>{option.label}</option>

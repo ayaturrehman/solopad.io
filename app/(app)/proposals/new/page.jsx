@@ -11,7 +11,7 @@ export default async function NewProposalPage() {
   const [projects, user, defaultTemplate] = await Promise.all([
     db.project.findMany({
       where: { userId: session.user.id, archived: false },
-      select: { id: true, title: true, clientName: true, clientEmail: true },
+      select: { id: true, title: true, contact: { select: { name: true, email: true } } },
       orderBy: { createdAt: "desc" },
     }),
     db.user.findUnique({

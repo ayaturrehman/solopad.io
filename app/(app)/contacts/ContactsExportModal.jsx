@@ -5,6 +5,7 @@ import { Download, FileArchive, FileSpreadsheet, FileText, LockKeyhole } from "l
 import Modal from "@/components/shared/Modal";
 import Button from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
+import { inputClassName } from "@/components/ui/Input";
 
 function readErrorMessage(text) {
   if (!text) return "Export failed. Please try again.";
@@ -191,7 +192,7 @@ export default function ContactsExportModal({
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               placeholder="Leave blank for a regular download"
-              className="mt-3 h-10 w-full rounded border border-zinc-200 px-3 text-sm text-zinc-900 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              className={`mt-3 ${inputClassName}`}
             />
             <div className="mt-3 flex items-start gap-2 rounded bg-zinc-50 px-3 py-2 text-xs text-zinc-600">
               <FileArchive className="mt-0.5 h-3.5 w-3.5 shrink-0 text-zinc-400" />

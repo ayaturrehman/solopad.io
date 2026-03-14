@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Copy, Check, ExternalLink, MoreHorizontal, CalendarDays, Pencil } from "lucide-react";
 import Badge from "@/components/ui/Badge";
 import { STATUS_LABELS, STATUS_COLORS, formatDate } from "@/lib/utils";
+import { inputClassName } from "@/components/ui/Input";
 import ProjectFormModal from "../ProjectFormModal";
 
 export default function ProjectHeader({ project, portalUrl, contacts = [] }) {
@@ -89,7 +90,7 @@ export default function ProjectHeader({ project, portalUrl, contacts = [] }) {
                 defaultValue={endDate}
                 onBlur={(e) => saveDeadline(e.target.value)}
                 onKeyDown={(e) => { if (e.key === "Enter") saveDeadline(e.target.value); if (e.key === "Escape") setEditingDeadline(false); }}
-                className="rounded border border-zinc-300 px-2 py-0.5 text-sm text-zinc-900 outline-none focus:border-zinc-500"
+                className={inputClassName}
               />
             ) : endDate ? (
               (() => {

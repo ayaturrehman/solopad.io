@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { cn, formatCurrency } from "@/lib/utils";
 import Button from "@/components/ui/Button";
+import { inputClassName, selectClassName } from "@/components/ui/Input";
 import CollectionPageHeader, { collectionPageHeaderSecondaryActionClassName } from "@/components/shared/CollectionPageHeader";
 import { Play, Square, Plus, Trash2, ChevronDown, ChevronUp } from "lucide-react";
 
@@ -190,13 +191,13 @@ export default function TimeTrackerClient({ entries: initialEntries, projects })
                 value={timerDesc}
                 onChange={(e) => setTimerDesc(e.target.value)}
                 disabled={running}
-                className="flex-1 rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-900 outline-none transition-colors focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900 placeholder:text-zinc-400 disabled:bg-zinc-50"
+                className={cn(inputClassName, "flex-1")}
               />
               <select
                 value={timerProject}
                 onChange={(e) => setTimerProject(e.target.value)}
                 disabled={running}
-                className="rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-900 outline-none transition-colors focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900 disabled:bg-zinc-50"
+                className={selectClassName}
               >
                 <option value="">No project</option>
                 {projects.map((p) => (
@@ -264,12 +265,12 @@ export default function TimeTrackerClient({ entries: initialEntries, projects })
                   placeholder="Description"
                   value={manualForm.description}
                   onChange={(e) => setManualForm((d) => ({ ...d, description: e.target.value }))}
-                  className="flex-1 min-w-40 rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-900 outline-none transition-colors focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900"
+                  className={cn(inputClassName, "flex-1 min-w-40")}
                 />
                 <select
                   value={manualForm.projectId}
                   onChange={(e) => setManualForm((d) => ({ ...d, projectId: e.target.value }))}
-                  className="rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-900 outline-none transition-colors focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900"
+                  className={selectClassName}
                 >
                   <option value="">No project</option>
                   {projects.map((p) => (
@@ -282,20 +283,20 @@ export default function TimeTrackerClient({ entries: initialEntries, projects })
                   type="date"
                   value={manualForm.date}
                   onChange={(e) => setManualForm((d) => ({ ...d, date: e.target.value }))}
-                  className="rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-900 outline-none transition-colors focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900"
+                  className={inputClassName}
                 />
                 <input
                   type="time"
                   value={manualForm.startTime}
                   onChange={(e) => setManualForm((d) => ({ ...d, startTime: e.target.value }))}
-                  className="rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-900 outline-none transition-colors focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900"
+                  className={inputClassName}
                 />
                 <span className="flex items-center text-xs text-zinc-400">to</span>
                 <input
                   type="time"
                   value={manualForm.endTime}
                   onChange={(e) => setManualForm((d) => ({ ...d, endTime: e.target.value }))}
-                  className="rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-900 outline-none transition-colors focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900"
+                  className={inputClassName}
                 />
                 <input
                   type="number"
@@ -304,7 +305,7 @@ export default function TimeTrackerClient({ entries: initialEntries, projects })
                   placeholder="Rate/hr"
                   value={manualForm.hourlyRate}
                   onChange={(e) => setManualForm((d) => ({ ...d, hourlyRate: e.target.value }))}
-                  className="w-24 rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-900 outline-none transition-colors focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900"
+                  className={cn(inputClassName, "w-24")}
                 />
                 <button
                   type="button"

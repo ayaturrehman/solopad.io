@@ -7,7 +7,7 @@ import { useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Card, CardHeader, CardBody } from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
-import Input from "@/components/ui/Input";
+import Input, { selectClassName } from "@/components/ui/Input";
 import {
   TEAM_PERMISSION_OPTIONS,
   TEAM_ROLE_PRESETS,
@@ -448,7 +448,7 @@ function SettingsContent() {
                           <select
                             value={currency}
                             onChange={(e) => setCurrency(e.target.value)}
-                            className="h-10 w-full rounded border border-zinc-200 bg-white px-3 text-sm text-zinc-900 focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900"
+                            className={selectClassName}
                           >
                             <option value="USD">USD - US Dollar</option>
                             <option value="EUR">EUR - Euro</option>
@@ -632,7 +632,7 @@ function SettingsContent() {
                           value={inviteForm.role}
                           disabled={!teamEnabled}
                           onChange={(e) => updateInviteRole(e.target.value)}
-                          className="h-10 w-full rounded border border-zinc-200 bg-white px-3 text-sm text-zinc-900 focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900 disabled:bg-zinc-100"
+                          className={selectClassName}
                         >
                           <option value="collaborator">Collaborator</option>
                           <option value="admin">Admin</option>

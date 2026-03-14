@@ -7,6 +7,7 @@ import { Search, X } from "lucide-react";
 import Modal from "@/components/shared/Modal";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
+import { textareaClassName } from "@/components/ui/Input";
 import Select from "@/components/ui/Select";
 
 const STAGE_OPTIONS = [
@@ -313,7 +314,7 @@ export default function ProjectFormModal({ open, onClose, project = null, contac
             onChange={(e) => set("description", e.target.value)}
             rows={3}
             placeholder="Optional project description…"
-            className="min-h-[72px] resize-y rounded border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900"
+            className={cn(textareaClassName, "min-h-[72px]")}
           />
         </div>
 
