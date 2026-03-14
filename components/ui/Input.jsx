@@ -1,10 +1,10 @@
 import { cn } from "@/lib/utils";
 
 export const inputClassName =
-  "w-full rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-900 outline-none placeholder:text-zinc-400 focus:border-zinc-400 disabled:bg-zinc-50 disabled:text-zinc-400 transition-colors";
+  "w-full h-9 rounded border border-zinc-200 px-3 text-sm text-zinc-900 outline-none placeholder:text-zinc-400 focus:border-zinc-400 disabled:bg-zinc-50 disabled:text-zinc-400 transition-colors";
 
 export const selectClassName =
-  "w-full rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-900 outline-none focus:border-zinc-400 disabled:bg-zinc-50 disabled:text-zinc-400 transition-colors bg-white";
+  "w-full h-9 rounded border border-zinc-200 px-3 text-sm text-zinc-900 outline-none focus:border-zinc-400 disabled:bg-zinc-50 disabled:text-zinc-400 transition-colors bg-white";
 
 export const textareaClassName =
   "w-full rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-900 outline-none placeholder:text-zinc-400 focus:border-zinc-400 disabled:bg-zinc-50 disabled:text-zinc-400 transition-colors resize-none";
