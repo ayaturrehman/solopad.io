@@ -33,6 +33,18 @@ export async function POST(req) {
 
   try {
     const filter = await getTenantFilter(session);
+
+    // Soft uniqueness check for invoice number
+    const trimmedInvoiceNumber = invoiceNumber?.trim() || null;
+    if (trimmedInvoiceNumber) {
+      const existing = await db.invoice.findFirst({
+        where: { invoiceNumber: trimmedInvoiceNumber, project: filter },
+      });
+      if (existing) {
+        return NextResponse.json({ error: "Invoice number already exists" }, { status: 400 });
+      }
+    }
+
     const project = await db.project.findFirst({
       where: { id: projectId, ...filter },
     });
@@ -53,7 +65,7 @@ export async function POST(req) {
     const invoice = await db.invoice.create({
       data: {
         projectId,
-        invoiceNumber: invoiceNumber?.trim() || null,
+        invoiceNumber: trimmedInvoiceNumber,
         lineItems: JSON.stringify(parsedLines),
         subtotal,
         taxRate: parsedTaxRate,

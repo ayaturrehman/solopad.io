@@ -7,7 +7,7 @@ import {
   CircleDollarSign, UserRound, Sparkles, ChevronDown, Settings2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { selectClassName } from "@/components/ui/Input";
+import { selectClassName, textareaClassName } from "@/components/ui/Input";
 import ProposalRichTextEditor, { RichTextToolbar } from "../ProposalRichTextEditor";
 import { normalizeRichText } from "../richText";
 
@@ -451,7 +451,7 @@ export default function ProposalBuilderClient({
             {briefOpen && (
               <div className="px-4 pb-4 space-y-2 border-t border-zinc-100">
                 <textarea value={brief} onChange={(e) => setBrief(e.target.value)} rows={4}
-                  className="mt-3 w-full rounded border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-900 outline-none transition placeholder:text-zinc-400 focus:border-zinc-400 resize-none"
+                  className={cn(textareaClassName, "mt-3 bg-zinc-50 transition")}
                   placeholder="E.g. Brand identity for a cafe. Budget ~$2,500. Logo, guidelines, launch assets in 3 weeks." />
                 <button type="button" onClick={handleDraftFromBrief} disabled={drafting}
                   className="h-8 w-full rounded bg-blue-600 text-sm font-medium text-white transition hover:bg-blue-700 disabled:opacity-50">

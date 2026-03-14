@@ -6,7 +6,7 @@ import {
   Plus, Trash2, AlertCircle, FolderOpen, UserRound, Sparkles, ChevronDown, Settings2, Search, X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { selectClassName } from "@/components/ui/Input";
+import { selectClassName, textareaClassName } from "@/components/ui/Input";
 import ProposalRichTextEditor, { RichTextToolbar } from "../../proposals/ProposalRichTextEditor";
 import { normalizeRichText } from "../../proposals/richText";
 
@@ -508,7 +508,7 @@ export default function ContractBuilderClient({
                   value={brief}
                   onChange={(e) => setBrief(e.target.value)}
                   rows={4}
-                  className="mt-3 w-full rounded border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-900 outline-none transition placeholder:text-zinc-400 focus:border-zinc-400 resize-none"
+                  className={cn(textareaClassName, "mt-3 bg-zinc-50 transition")}
                   placeholder="E.g. Website design contract for a cafe. 6-week timeline, $3,500 fixed fee, 50% deposit."
                 />
                 <button

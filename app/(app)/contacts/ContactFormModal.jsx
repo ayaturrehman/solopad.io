@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Modal from "@/components/shared/Modal";
 import Button from "@/components/ui/Button";
-import Input from "@/components/ui/Input";
+import Input, { textareaClassName } from "@/components/ui/Input";
 import Select from "@/components/ui/Select";
 import {
   CONTACT_ENTITY_TYPE_OPTIONS,
@@ -44,11 +44,7 @@ function TextareaField({ label, value, onChange, placeholder, rows = 4, error, r
         onChange={onChange}
         rows={rows}
         placeholder={placeholder}
-        className={`min-h-[88px] resize-y rounded border bg-white px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-1 ${
-          error
-            ? "border-red-400 focus:border-red-400 focus:ring-red-400"
-            : "border-zinc-200 focus:border-zinc-900 focus:ring-zinc-900"
-        }`}
+        className={`${textareaClassName} min-h-[88px] resize-y${error ? " border-red-400 focus:border-red-400" : ""}`}
       />
       {error ? <p className="text-xs text-red-600">{error}</p> : null}
     </div>
