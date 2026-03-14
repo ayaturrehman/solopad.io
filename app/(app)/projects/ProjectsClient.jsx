@@ -252,37 +252,6 @@ export default function ProjectsClient({ projects, currency = "USD", contacts = 
         )}
       />
 
-      <CollectionTableFrame>
-        <div className="grid grid-cols-1 divide-y divide-zinc-100 sm:grid-cols-2 sm:divide-x sm:divide-y-0">
-          <div className="px-5 py-4 pb-4">
-            <p className="mb-3 text-[10px] font-semibold uppercase tracking-wider text-amber-600">Opportunities</p>
-            <div className="grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-3 lg:grid-cols-5">
-              <div className="text-center sm:text-left">
-                <p className="text-lg font-bold text-zinc-900">{filteredProjects.length}</p>
-                <p className="text-[10px] text-zinc-400">All</p>
-              </div>
-              {OPPORTUNITY_STAGES.map((s) => (
-                <div key={s} className="text-center sm:text-left">
-                  <p className="text-lg font-bold text-zinc-900">{countStage(s)}</p>
-                  <p className="text-[10px] text-zinc-400">{STAGE_LABELS[s]}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="px-5 py-4 pb-4">
-            <p className="mb-3 text-[10px] font-semibold uppercase tracking-wider text-blue-600">Active Projects</p>
-            <div className="grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-3 lg:grid-cols-5">
-              {PROJECT_STAGES.map((s) => (
-                <div key={s} className="text-center sm:text-left">
-                  <p className="text-lg font-bold text-zinc-900">{countStage(s)}</p>
-                  <p className="text-[10px] text-zinc-400">{STAGE_LABELS[s]}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </CollectionTableFrame>
-
       {filteredProjects.length === 0 ? (
         <CollectionEmptyState
           icon={Plus}
