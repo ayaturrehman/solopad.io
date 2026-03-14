@@ -4,8 +4,8 @@ import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
-  ArrowLeft, Plus, Trash2, ChevronDown, FileText, User, Calendar,
-  DollarSign, Percent, Tag, AlignLeft, Bell, Sparkles, CreditCard, Zap
+  ArrowLeft, Plus, Trash2, ChevronDown,
+  DollarSign, Percent, Tag, AlignLeft, Sparkles, CreditCard, Zap
 } from "lucide-react";
 import { cn, formatCurrency } from "@/lib/utils";
 import { inputClassName, selectClassName, textareaClassName } from "@/components/ui/Input";
@@ -206,24 +206,10 @@ export default function InvoiceBuilderClient({ projects, services, user }) {
 
       <div className="grid gap-6 lg:grid-cols-3">
         {/* ── Left: builder ── */}
-        <div className="space-y-6 lg:col-span-2">
+        <div className="space-y-4 lg:col-span-2">
 
-          {/* Header card */}
-          <div className="rounded border border-zinc-200 bg-white p-6">
-            <div className="flex items-start gap-4">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded bg-zinc-900">
-                <FileText className="h-6 w-6 text-white" />
-              </div>
-              <div className="flex-1">
-                <h1 className="text-xl font-bold text-zinc-900">New Invoice</h1>
-                <p className="text-sm text-zinc-500">Fill in the details below to generate a professional invoice</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Project & invoice number */}
-          <div className="rounded border border-zinc-200 bg-white p-6">
-            <SectionLabel icon={User}>Client & Project</SectionLabel>
+          {/* Details: project + dates merged */}
+          <div className="rounded border border-zinc-200 bg-white p-5">
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
                 <label className="mb-1.5 block text-xs font-medium text-zinc-700">Project *</label>
@@ -256,13 +242,6 @@ export default function InvoiceBuilderClient({ projects, services, user }) {
                   className={inputClassName}
                 />
               </div>
-            </div>
-          </div>
-
-          {/* Dates */}
-          <div className="rounded border border-zinc-200 bg-white p-6">
-            <SectionLabel icon={Calendar}>Dates & Currency</SectionLabel>
-            <div className="grid gap-4 sm:grid-cols-3">
               <div>
                 <label className="mb-1.5 block text-xs font-medium text-zinc-700">Issue date</label>
                 <input
@@ -300,7 +279,7 @@ export default function InvoiceBuilderClient({ projects, services, user }) {
           </div>
 
           {/* Line items */}
-          <div className="rounded border border-zinc-200 bg-white p-6">
+          <div className="rounded border border-zinc-200 bg-white p-5">
             <div className="mb-4 flex items-center justify-between">
               <SectionLabel icon={Tag}>Line Items</SectionLabel>
               {services.length > 0 && (
@@ -382,7 +361,7 @@ export default function InvoiceBuilderClient({ projects, services, user }) {
           </div>
 
           {/* ── Payment Schedule ── */}
-          <div className="rounded border border-zinc-200 bg-white p-6">
+          <div className="rounded border border-zinc-200 bg-white p-5">
             <SectionLabel icon={CreditCard}>Payment Schedule</SectionLabel>
 
             {/* Lump sum vs Installments toggle */}
@@ -517,12 +496,12 @@ export default function InvoiceBuilderClient({ projects, services, user }) {
           </div>
 
           {/* Notes */}
-          <div className="rounded border border-zinc-200 bg-white p-6">
+          <div className="rounded border border-zinc-200 bg-white p-5">
             <SectionLabel icon={AlignLeft}>Notes & Terms</SectionLabel>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              rows={4}
+              rows={3}
               placeholder="Payment terms, bank details, thank-you note, or any additional information for the client…"
               className={textareaClassName}
             />
@@ -530,8 +509,8 @@ export default function InvoiceBuilderClient({ projects, services, user }) {
         </div>
 
         {/* ── Right: summary ── */}
-        <div className="space-y-5">
-          {/* Totals */}
+        <div className="space-y-4">
+          {/* Totals + Settings merged */}
           <div className="rounded border border-zinc-200 bg-white p-5">
             <SectionLabel icon={DollarSign}>Summary</SectionLabel>
 
@@ -621,11 +600,8 @@ export default function InvoiceBuilderClient({ projects, services, user }) {
                 ))}
               </div>
             )}
-          </div>
-
-          {/* Settings */}
-          <div className="rounded border border-zinc-200 bg-white p-5">
-            <SectionLabel icon={Bell}>Settings</SectionLabel>
+          {/* Settings inline */}
+          <div className="mt-4 border-t border-zinc-100 pt-4">
             <label className="flex cursor-pointer items-start gap-3">
               <input
                 type="checkbox"
@@ -635,9 +611,10 @@ export default function InvoiceBuilderClient({ projects, services, user }) {
               />
               <div>
                 <span className="text-sm font-medium text-zinc-900">Auto payment reminders</span>
-                <p className="mt-0.5 text-xs text-zinc-400">Automatically remind the client before and after the due date.</p>
+                <p className="mt-0.5 text-xs text-zinc-400">Remind client before and after due date.</p>
               </div>
             </label>
+          </div>
           </div>
 
           {/* CTA */}
