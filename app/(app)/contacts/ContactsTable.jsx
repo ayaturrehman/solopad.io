@@ -292,7 +292,7 @@ export default function ContactsTable({
             <button
               type="button"
               onClick={() => setCreateOpen(true)}
-              className={cn(collectionPageHeaderPrimaryActionClassName, "px-2.5 py-1.5 text-sm")}
+              className={collectionPageHeaderPrimaryActionClassName}
             >
               <Plus className="h-4 w-4" />
               New contact
@@ -365,7 +365,7 @@ export default function ContactsTable({
                 <button
                   type="button"
                   onClick={() => setCreateOpen(true)}
-                  className="inline-flex items-center gap-2 rounded bg-blue-600 px-2.5 py-1.5 text-sm font-medium text-white hover:bg-blue-700"
+                  className={collectionPageHeaderPrimaryActionClassName}
                 >
                   <Plus className="h-4 w-4" />
                   Add first contact

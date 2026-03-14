@@ -3,9 +3,9 @@
 import { ChevronDown, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export const collectionPageHeaderPrimaryActionClassName = "inline-flex items-center gap-1.5 rounded bg-blue-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700";
-export const collectionPageHeaderSecondaryActionClassName = "inline-flex items-center gap-1.5 rounded border border-zinc-200 bg-white px-3 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50";
-export const collectionPageHeaderIconActionClassName = "inline-flex h-9 w-9 items-center justify-center rounded border border-zinc-200 bg-white text-zinc-500 transition-colors hover:bg-zinc-50 hover:text-zinc-900";
+export const collectionPageHeaderPrimaryActionClassName = "inline-flex items-center gap-1.5 rounded bg-blue-600 px-2.5 py-1.5 text-sm font-medium text-white transition-colors hover:bg-blue-700";
+export const collectionPageHeaderSecondaryActionClassName = "inline-flex items-center gap-1.5 rounded border border-zinc-200 bg-white px-2.5 py-1.5 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50";
+export const collectionPageHeaderIconActionClassName = "inline-flex h-8 w-8 items-center justify-center rounded border border-zinc-200 bg-white text-zinc-500 transition-colors hover:bg-zinc-50 hover:text-zinc-900";
 export const collectionPageHeaderSegmentedGroupClassName = "flex items-center rounded border border-zinc-200 bg-white";
 
 export function getCollectionPageHeaderSegmentedButtonClassName(active, edge = "middle") {

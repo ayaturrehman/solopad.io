@@ -43,7 +43,7 @@ export default async function FinancePage({ searchParams }) {
   const [invoices, expenses, projects, customExpenseCategories, recurringExpenses] = await Promise.all([
     db.invoice.findMany({
       where: { project: { userId }, createdAt: { gte: yearStart } },
-      include: { project: { select: { title: true, clientName: true } } },
+      include: { project: { select: { title: true, contact: { select: { name: true } } } } },
       orderBy: { createdAt: "desc" },
     }),
     db.expense.findMany({
@@ -188,7 +188,7 @@ export default async function FinancePage({ searchParams }) {
                         <p className="text-sm font-medium text-zinc-800">
                           {inv.invoiceNumber || `INV-${inv.id.slice(-6).toUpperCase()}`}
                         </p>
-                        <p className="text-xs text-zinc-400">{inv.project?.clientName}</p>
+                        <p className="text-xs text-zinc-400">{inv.project?.contact?.name}</p>
                       </div>
                       <span className="text-sm font-semibold text-zinc-700">{formatCurrency(inv.total, currency)}</span>
                     </div>
@@ -212,7 +212,7 @@ export default async function FinancePage({ searchParams }) {
                         <p className="text-sm font-medium text-zinc-800">
                           {inv.invoiceNumber || `INV-${inv.id.slice(-6).toUpperCase()}`}
                         </p>
-                        <p className="text-xs text-zinc-400">{inv.project?.clientName}</p>
+                        <p className="text-xs text-zinc-400">{inv.project?.contact?.name}</p>
                       </div>
                       <span className="text-sm font-semibold text-green-700">{formatCurrency(inv.total, currency)}</span>
                     </div>
@@ -269,7 +269,7 @@ export default async function FinancePage({ searchParams }) {
                     <td className="px-6 py-3 font-medium text-zinc-900">
                       {inv.invoiceNumber || `INV-${inv.id.slice(-6).toUpperCase()}`}
                     </td>
-                    <td className="px-6 py-3 text-zinc-500">{inv.project?.clientName || "—"}</td>
+                    <td className="px-6 py-3 text-zinc-500">{inv.project?.contact?.name ?? "—"}</td>
                     <td className="px-6 py-3 text-zinc-400">{new Date(inv.updatedAt).toLocaleDateString()}</td>
                     <td className="px-6 py-3 text-right font-semibold text-green-700">{formatCurrency(inv.total, currency)}</td>
                   </tr>
