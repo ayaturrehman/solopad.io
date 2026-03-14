@@ -419,7 +419,7 @@ export default function ServicesManager({ initialServices }) {
   }
 
   return (
-    <div className="px-4 py-4 md:px-6">
+    <div>
       <CollectionPageHeader
         title={getHeaderLabel(filter)}
         filterOpen={filterOpen}
@@ -435,9 +435,8 @@ export default function ServicesManager({ initialServices }) {
         }}
         actions={(
           
-          <Button
+          <button
             type="button"
-            variant="ghost"
             className={collectionPageHeaderPrimaryActionClassName}
             onClick={() => {
               resetMessages();
@@ -447,7 +446,7 @@ export default function ServicesManager({ initialServices }) {
           >
             <Plus className="h-4 w-4" />
             New service
-          </Button>
+          </button>
         )}
       />
 

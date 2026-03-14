@@ -67,7 +67,7 @@ export default function InvoicesClient({ invoices }) {
       list = list.filter((i) =>
         (i.invoiceNumber || "").toLowerCase().includes(q) ||
         (i.project?.title || "").toLowerCase().includes(q) ||
-        (i.project?.clientName || "").toLowerCase().includes(q)
+        (i.project?.contact?.name || "").toLowerCase().includes(q)
       );
     }
     return list;
