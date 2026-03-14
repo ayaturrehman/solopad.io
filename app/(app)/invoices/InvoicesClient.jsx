@@ -188,7 +188,7 @@ export default function InvoicesClient({ invoices }) {
 
       {/* Bulk action bar */}
       {showBulkBar && (
-        <div className="mb-3 flex items-center gap-3 rounded border border-zinc-900 bg-zinc-900 px-3 py-1.5.5 text-white">
+        <div className="mb-3 flex items-center gap-3 rounded border border-zinc-900 bg-zinc-900 px-3 py-2 text-white">
           <span className="text-sm font-medium">{selected.size} selected</span>
           {selected.size >= MAX_BULK && (
             <span className="text-xs text-zinc-400">(max {MAX_BULK})</span>
@@ -225,7 +225,7 @@ export default function InvoicesClient({ invoices }) {
       )}
 
       {bulkMsg && (
-        <div className="mb-3 rounded border border-green-200 bg-green-50 px-3 py-1.5.5 text-sm text-green-700">
+        <div className="mb-3 rounded border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-700">
           {bulkMsg}
         </div>
       )}

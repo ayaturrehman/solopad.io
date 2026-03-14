@@ -102,13 +102,13 @@ export default async function FinancePage({ searchParams }) {
   const maxBar = Math.max(...monthlyRevenue, ...monthlyExpenses, 1);
 
   return (
-    <div className="px-4 py-4 md:px-6">
-      <div>
+    <div>
+      <div className="px-4 py-4 md:px-6">
         <h1 className="text-2xl font-semibold tracking-tight text-zinc-900">Finance</h1>
       </div>
 
       {/* Tabs */}
-      <div className="border-b border-zinc-200 mt-4">
+      <div className="border-b border-zinc-200 px-4 md:px-6">
         {TABS.map((t) => (
           <Link
             key={t}
@@ -131,7 +131,7 @@ export default async function FinancePage({ searchParams }) {
 
       {/* Overview tab */}
       {tab === "overview" && (
-        <div className="flex flex-col gap-4 pt-4">
+        <div className="flex flex-col gap-4 px-4 py-4 md:px-6">
           {/* KPI strip */}
           <div className="overflow-hidden rounded border border-zinc-200 bg-white">
             <div className="grid sm:grid-cols-2 xl:grid-cols-4">
