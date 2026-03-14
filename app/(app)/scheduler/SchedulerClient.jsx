@@ -8,9 +8,10 @@ import CollectionPageHeader, {
   collectionPageHeaderSegmentedGroupClassName,
   getCollectionPageHeaderSegmentedButtonClassName,
 } from "@/components/shared/CollectionPageHeader";
-import { Copy, Check, X, ChevronDown, ChevronUp, Plus } from "lucide-react";
+import { Copy, Check, X, ChevronDown, ChevronUp, Plus, Search } from "lucide-react";
 import Modal from "@/components/shared/Modal";
 import Input from "@/components/ui/Input";
+import { useRef, useEffect } from "react";
 
 const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const FULL_DAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -47,11 +48,133 @@ function buildDayRules(savedRules) {
   });
 }
 
-const EMPTY_MEETING = { title: "", clientName: "", clientEmail: "", date: "", startTime: "09:00", endTime: "10:00", notes: "" };
+function ContactPicker({ contacts, value, onChange, onContactCreated, error }) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const [adding, setAdding] = useState(false);
+  const [newName, setNewName] = useState("");
+  const [newEmail, setNewEmail] = useState("");
+  const [newNameErr, setNewNameErr] = useState("");
+  const [creating, setCreating] = useState(false);
+  const wrapperRef = useRef(null);
+  const inputRef = useRef(null);
+  const selected = contacts.find((c) => c.id === value) || null;
+  const filtered = contacts.filter((c) => {
+    const q = search.toLowerCase();
+    return c.name.toLowerCase().includes(q) || (c.email || "").toLowerCase().includes(q) || (c.company || "").toLowerCase().includes(q);
+  });
 
-export default function SchedulerClient({ bookings: initialBookings, availabilityRules, bookingPageUrl }) {
+  useEffect(() => {
+    function onOut(e) {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
+        setOpen(false); setSearch(""); setAdding(false); setNewName(""); setNewEmail(""); setNewNameErr("");
+      }
+    }
+    document.addEventListener("mousedown", onOut);
+    return () => document.removeEventListener("mousedown", onOut);
+  }, []);
+
+  async function handleCreate(e) {
+    e?.preventDefault();
+    if (!newName.trim()) { setNewNameErr("Name is required."); return; }
+    setCreating(true);
+    try {
+      const res = await fetch("/api/contacts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: newName.trim(), email: newEmail.trim() || null, status: "lead", entityType: "individual" }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data?.error || "Failed to create contact.");
+      const created = data.contact || data;
+      onContactCreated(created);
+      onChange(created.id, created.name, created.email || "");
+      setOpen(false); setAdding(false); setSearch(""); setNewName(""); setNewEmail("");
+    } catch {
+      setNewNameErr("Failed to create. Try again.");
+    } finally {
+      setCreating(false);
+    }
+  }
+
+  return (
+    <div className="flex flex-col gap-1.5" ref={wrapperRef}>
+      <label className="text-xs font-medium text-zinc-700">Contact <span className="text-red-500">*</span></label>
+      <button
+        type="button"
+        onClick={() => { setOpen((v) => !v); setTimeout(() => inputRef.current?.focus(), 0); }}
+        className={cn(
+          "flex h-9 w-full items-center justify-between rounded border bg-white px-3 text-left text-sm focus:outline-none transition-colors",
+          error ? "border-red-400" : "border-zinc-200 focus:border-zinc-400"
+        )}
+      >
+        {selected ? (
+          <span className="flex-1 truncate text-zinc-900">
+            {selected.name}{selected.company && <span className="ml-1 text-zinc-400">· {selected.company}</span>}
+          </span>
+        ) : (
+          <span className="flex-1 text-zinc-400">Search or add a contact…</span>
+        )}
+        {selected ? (
+          <X className="ml-2 h-3.5 w-3.5 shrink-0 text-zinc-400 hover:text-zinc-700" onClick={(e) => { e.stopPropagation(); onChange(null, "", ""); }} />
+        ) : (
+          <Search className="ml-2 h-3.5 w-3.5 shrink-0 text-zinc-400" />
+        )}
+      </button>
+
+      {open && (
+        <div className="absolute z-50 w-full rounded border border-zinc-200 bg-white shadow-lg" style={{ marginTop: "2.5rem" }}>
+          {!adding ? (
+            <>
+              <div className="flex items-center gap-2 border-b border-zinc-100 px-3 py-2">
+                <Search className="h-3.5 w-3.5 shrink-0 text-zinc-400" />
+                <input ref={inputRef} type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search contacts…" className="flex-1 bg-transparent text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none" />
+              </div>
+              <div className="max-h-48 overflow-y-auto py-1">
+                {filtered.length === 0 ? (
+                  <p className="px-3 py-2 text-sm text-zinc-400">No contacts found.</p>
+                ) : filtered.map((c) => (
+                  <button key={c.id} type="button" onClick={() => { onChange(c.id, c.name, c.email || ""); setOpen(false); setSearch(""); }} className="w-full px-3 py-2 text-left hover:bg-zinc-50">
+                    <p className="text-sm font-medium text-zinc-900">{c.name}</p>
+                    <p className="text-xs text-zinc-400">{[c.email, c.company].filter(Boolean).join(" · ") || "No details"}</p>
+                  </button>
+                ))}
+              </div>
+              <div className="border-t border-zinc-100 px-3 py-2">
+                <button type="button" onClick={() => { setAdding(true); setNewName(search); }} className="flex items-center gap-1.5 text-xs font-medium text-blue-600 hover:text-blue-700">
+                  <Plus className="h-3 w-3" /> New contact
+                </button>
+              </div>
+            </>
+          ) : (
+            <div className="p-3 space-y-2">
+              <p className="text-xs font-semibold text-zinc-700">New contact</p>
+              <div>
+                <input autoFocus value={newName} onChange={(e) => { setNewName(e.target.value); setNewNameErr(""); }} onKeyDown={(e) => e.key === "Enter" && handleCreate(e)} placeholder="Full name *" className="w-full rounded border border-zinc-200 px-2.5 py-1.5 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-zinc-400 focus:outline-none" />
+                {newNameErr && <p className="mt-0.5 text-xs text-red-600">{newNameErr}</p>}
+              </div>
+              <input value={newEmail} onChange={(e) => setNewEmail(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleCreate(e)} placeholder="Email (optional)" className="w-full rounded border border-zinc-200 px-2.5 py-1.5 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-zinc-400 focus:outline-none" />
+              <div className="flex items-center justify-between gap-2 pt-1">
+                <button type="button" onClick={() => { setAdding(false); setNewName(""); setNewEmail(""); setNewNameErr(""); }} className="text-xs text-zinc-400 hover:text-zinc-600">Back</button>
+                <button type="button" disabled={creating} onClick={handleCreate} className="rounded bg-zinc-900 px-3 py-1 text-xs font-medium text-white hover:bg-zinc-700 disabled:opacity-50">
+                  {creating ? "Creating…" : "Create & select"}
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+      {error && <p className="text-xs text-red-600">{error}</p>}
+    </div>
+  );
+}
+
+const EMPTY_MEETING = { title: "", contactId: "", clientName: "", clientEmail: "", date: "", startTime: "09:00", endTime: "10:00", notes: "" };
+
+export default function SchedulerClient({ bookings: initialBookings, availabilityRules, bookingPageUrl, contacts: initialContacts = [] }) {
   const [tab, setTab] = useState("bookings");
   const [bookings, setBookings] = useState(initialBookings);
+  const [contacts, setContacts] = useState(initialContacts);
   const [dayRules, setDayRules] = useState(() => buildDayRules(availabilityRules));
   const [copied, setCopied] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -98,7 +221,7 @@ export default function SchedulerClient({ bookings: initialBookings, availabilit
     e.preventDefault();
     const errs = {};
     if (!meetingForm.title.trim()) errs.title = "Title is required.";
-    if (!meetingForm.clientName.trim()) errs.clientName = "Client name is required.";
+    if (!meetingForm.contactId) errs.contactId = "Select a contact.";
     if (!meetingForm.date) errs.date = "Date is required.";
     if (!meetingForm.startTime) errs.startTime = "Required.";
     if (!meetingForm.endTime) errs.endTime = "Required.";
@@ -390,23 +513,24 @@ export default function SchedulerClient({ bookings: initialBookings, availabilit
             placeholder="e.g. Discovery call"
             error={meetingErrors.title}
           />
-          <div className="grid grid-cols-2 gap-3">
-            <Input
-              label="Client name"
-              required
-              value={meetingForm.clientName}
-              onChange={(e) => setMeetingField("clientName", e.target.value)}
-              placeholder="Jane Smith"
-              error={meetingErrors.clientName}
-            />
-            <Input
-              label="Client email"
-              type="email"
-              value={meetingForm.clientEmail}
-              onChange={(e) => setMeetingField("clientEmail", e.target.value)}
-              placeholder="jane@example.com"
+          <div className="relative">
+            <ContactPicker
+              contacts={contacts}
+              value={meetingForm.contactId}
+              onChange={(id, name, email) => {
+                setMeetingForm((f) => ({ ...f, contactId: id || "", clientName: name, clientEmail: email }));
+                setMeetingErrors((e) => ({ ...e, contactId: "" }));
+              }}
+              onContactCreated={(c) => setContacts((prev) => [...prev, c].sort((a, b) => a.name.localeCompare(b.name)))}
+              error={meetingErrors.contactId}
             />
           </div>
+          {meetingForm.contactId && (
+            <div className="rounded bg-zinc-50 px-3 py-2 text-xs text-zinc-500">
+              <span className="font-medium text-zinc-700">{meetingForm.clientName}</span>
+              {meetingForm.clientEmail && <span className="ml-2">{meetingForm.clientEmail}</span>}
+            </div>
+          )}
           <Input
             label="Date"
             type="date"
