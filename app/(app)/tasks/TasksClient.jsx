@@ -23,11 +23,7 @@ import {
   X,
 } from "lucide-react";
 
-const PRIORITY_DOT = {
-  high: "bg-red-500",
-  medium: "bg-amber-400",
-  low: "bg-zinc-400",
-};
+import { PRIORITY_DOT, STATUS_OPTIONS, STATUS_PILL, makeSubtask, cleanSubtasks, isOverdue } from "./taskUtils";
 
 const FILTER_TABS = [
   { key: "all", label: "All", group: "Status" },
@@ -67,19 +63,6 @@ function endOfWeek(date) {
   return endOfDay(next);
 }
 
-function isOverdue(task) {
-  if (!task.dueDate || task.status === "done") return false;
-  return new Date(task.dueDate) < new Date();
-}
-
-function makeSubtask(title = "") {
-  return {
-    id: `subtask-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-    title,
-    done: false,
-  };
-}
-
 const emptyTaskForm = {
   title: "",
   projectId: "",
@@ -90,22 +73,6 @@ const emptyTaskForm = {
   description: "",
   subtasks: [makeSubtask("")],
 };
-
-const STATUS_OPTIONS = [
-  { value: "todo", label: "To Do" },
-  { value: "in_progress", label: "In Progress" },
-  { value: "done", label: "Done" },
-];
-
-const STATUS_PILL = {
-  todo: "bg-zinc-100 text-zinc-600",
-  in_progress: "bg-blue-50 text-blue-700",
-  done: "bg-green-50 text-green-700",
-};
-
-function cleanSubtasks(subtasks) {
-  return (subtasks || []).filter((subtask) => subtask.title.trim());
-}
 
 export default function TasksClient({ tasks: initialTasks, projects, teamMembers }) {
   const searchParams = useSearchParams();
@@ -126,6 +93,8 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
   const [aiError, setAiError] = useState("");
   const [aiSuccess, setAiSuccess] = useState(false);
   const [newTaskId, setNewTaskId] = useState(null);
+  const [togglingTaskId, setTogglingTaskId] = useState(null);
+  const [togglingSubtaskId, setTogglingSubtaskId] = useState(null);
   const newTaskTimerRef = useRef(null);
 
   function resetTaskForm() {
@@ -252,6 +221,21 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
 
   async function toggleDone(task) {
     const nextStatus = task.status === "done" ? "todo" : "done";
+    const hasSubtasks = (task.subtasks?.length ?? 0) > 0;
+
+    // If marking done and has subtasks — expand to show them first, don't mark done yet
+    if (nextStatus === "done" && hasSubtasks) {
+      setExpandedTaskIds((prev) => {
+        const next = new Set(prev);
+        next.add(task.id);
+        return next;
+      });
+      return;
+    }
+
+    // Show loading spinner on checkbox, disable it
+    setTogglingTaskId(task.id);
+
     const res = await fetch(`/api/tasks/${task.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -261,16 +245,23 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
       }),
     });
 
+    setTogglingTaskId(null);
+
     if (res.ok) {
       const { task: updatedTask } = await res.json();
       setTasks((prev) => prev.map((item) => (item.id === task.id ? updatedTask : item)));
     }
+    // On failure, do nothing — checkbox returns to original state automatically
   }
 
   async function toggleSubtask(task, subtaskId) {
+    if (togglingSubtaskId) return;
+
     const updatedSubtasks = task.subtasks.map((subtask) =>
       subtask.id === subtaskId ? { ...subtask, done: !subtask.done } : subtask
     );
+
+    setTogglingSubtaskId(subtaskId);
 
     const res = await fetch(`/api/tasks/${task.id}`, {
       method: "PATCH",
@@ -278,9 +269,27 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
       body: JSON.stringify({ subtasks: updatedSubtasks }),
     });
 
+    setTogglingSubtaskId(null);
+
     if (res.ok) {
       const { task: updatedTask } = await res.json();
       setTasks((prev) => prev.map((item) => (item.id === task.id ? updatedTask : item)));
+
+      // If all subtasks are now done, auto-complete the main task
+      const allDone = updatedSubtasks.every((s) => s.done);
+      if (allDone && task.status !== "done") {
+        setTogglingTaskId(task.id);
+        const mainRes = await fetch(`/api/tasks/${task.id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status: "done", completedAt: new Date().toISOString() }),
+        });
+        setTogglingTaskId(null);
+        if (mainRes.ok) {
+          const { task: completedTask } = await mainRes.json();
+          setTasks((prev) => prev.map((item) => (item.id === task.id ? completedTask : item)));
+        }
+      }
     }
   }
 
@@ -415,28 +424,37 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
           <div>
             <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-400">Subtasks</p>
             <div className="space-y-2">
-              {subtasks.map((subtask) => (
-                <button
-                  key={subtask.id}
-                  type="button"
-                  onClick={() => toggleSubtask(task, subtask.id)}
-                  className="flex w-full items-center gap-3 rounded border border-zinc-200 bg-white px-3 py-2 text-left transition-colors hover:border-zinc-300 hover:bg-zinc-50"
-                >
-                  <span
-                    className={cn(
-                      "flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2 transition-all duration-200",
-                      subtask.done
-                        ? "border-zinc-900 bg-zinc-900 text-white"
-                        : "border-zinc-300 bg-white text-transparent hover:border-zinc-500"
-                    )}
+              {subtasks.map((subtask) => {
+                const isSubtaskToggling = togglingSubtaskId === subtask.id;
+                return (
+                  <button
+                    key={subtask.id}
+                    type="button"
+                    disabled={isSubtaskToggling}
+                    onClick={() => !isSubtaskToggling && toggleSubtask(task, subtask.id)}
+                    className="flex w-full items-center gap-3 rounded border border-zinc-200 bg-white px-3 py-2 text-left transition-colors hover:border-zinc-300 hover:bg-zinc-50 disabled:cursor-wait"
                   >
-                    <Check className="h-3 w-3" strokeWidth={3} />
-                  </span>
-                  <span className={cn("text-sm transition-all duration-200", subtask.done ? "text-zinc-400 line-through" : "text-zinc-700")}>
-                    {subtask.title}
-                  </span>
-                </button>
-              ))}
+                    <span
+                      className={cn(
+                        "flex h-5 w-5 shrink-0 items-center justify-center border-2 transition-all duration-200",
+                        isSubtaskToggling
+                          ? "rounded-full border-blue-300 bg-white text-blue-400"
+                          : subtask.done
+                          ? "rounded-full border-blue-600 bg-blue-600 text-white"
+                          : "rounded-full border-zinc-300 bg-white text-transparent hover:border-blue-400"
+                      )}
+                    >
+                      {isSubtaskToggling
+                        ? <Loader2 className="h-3 w-3 animate-spin" />
+                        : <Check className="h-3 w-3" strokeWidth={3} />
+                      }
+                    </span>
+                    <span className={cn("text-sm transition-all duration-200", subtask.done ? "text-zinc-400 line-through" : "text-zinc-700")}>
+                      {subtask.title}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
           </div>
         )}
@@ -589,12 +607,13 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
   function TaskRow({ task }) {
     const overdue = isOverdue(task);
     const isDone = task.status === "done";
-    const hasDetails = Boolean(task.description) || (task.subtasks?.length ?? 0) > 0;
-    const isExpanded = expandedTaskIds.has(task.id) || editingId === task.id;
-    const isNew = newTaskId === task.id;
     const subtasks = task.subtasks || [];
     const subtaskDone = subtasks.filter((s) => s.done).length;
     const subtaskTotal = subtasks.length;
+    const hasSubtasks = subtaskTotal > 0;
+    const hasDetails = Boolean(task.description) || hasSubtasks;
+    const isExpanded = expandedTaskIds.has(task.id) || editingId === task.id;
+    const isNew = newTaskId === task.id;
     const subtaskRatio = subtaskTotal > 0 ? subtaskDone / subtaskTotal : 0;
 
     return (
@@ -602,25 +621,35 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
         className={cn(
           "group transition-all duration-300",
           isDone && "opacity-60",
-          isNew && "ring-2 ring-inset ring-blue-200",
-          "task-slide-down"
+          isNew && "ring-2 ring-inset ring-blue-200 task-slide-down"
         )}
       >
         <div className={cn("flex items-start gap-3 px-4 py-4 transition-colors duration-150", "hover:bg-zinc-50/80")}>
           {/* Checkbox */}
-          <button
-            type="button"
-            onClick={() => toggleDone(task)}
-            className={cn(
-              "mt-0.5 flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-md border-2 transition-all duration-200",
-              isDone
-                ? "border-zinc-900 bg-zinc-900 text-white"
-                : "border-zinc-300 bg-white text-transparent hover:border-zinc-500"
-            )}
-            aria-label={isDone ? "Mark task as incomplete" : "Mark task as complete"}
-          >
-            <Check className="h-3.5 w-3.5" strokeWidth={3} />
-          </button>
+          {(() => {
+            const isToggling = togglingTaskId === task.id;
+            return (
+              <button
+                type="button"
+                onClick={() => !isToggling && toggleDone(task)}
+                disabled={isToggling}
+                className={cn(
+                  "mt-0.5 flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-md border-2 transition-all duration-200",
+                  isToggling
+                    ? "border-blue-300 bg-white text-blue-400 cursor-wait"
+                    : isDone
+                    ? "border-blue-600 bg-blue-600 text-white"
+                    : "border-zinc-300 bg-white text-transparent hover:border-blue-400"
+                )}
+                aria-label={isDone ? "Mark task as incomplete" : "Mark task as complete"}
+              >
+                {isToggling
+                  ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  : <Check className="h-3.5 w-3.5" strokeWidth={3} />
+                }
+              </button>
+            );
+          })()}
 
           {/* Priority dot */}
           <span className={cn("mt-[9px] h-2.5 w-2.5 shrink-0 rounded-full", PRIORITY_DOT[task.priority])} />
@@ -675,6 +704,22 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
                 </div>
               </div>
 
+              {/* Expand arrow — sits between content and right controls, always accessible */}
+              {hasDetails && editingId !== task.id && (
+                <button
+                  type="button"
+                  onClick={() => toggleExpanded(task.id)}
+                  className={cn(
+                    "flex h-7 w-7 shrink-0 items-center justify-center rounded-md transition-colors",
+                    hasSubtasks
+                      ? "text-blue-500 hover:bg-blue-50 hover:text-blue-700"
+                      : "text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600"
+                  )}
+                >
+                  {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                </button>
+              )}
+
               {/* Right-side controls */}
               <div className="flex shrink-0 items-center gap-1.5">
                 {task.dueDate && (
@@ -685,16 +730,6 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
                   ) : (
                     <span className="text-xs text-zinc-400">{formatDate(task.dueDate)}</span>
                   )
-                )}
-
-                {hasDetails && editingId !== task.id && (
-                  <button
-                    type="button"
-                    onClick={() => toggleExpanded(task.id)}
-                    className="rounded p-1 text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-700"
-                  >
-                    {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-                  </button>
                 )}
 
                 <div className="relative">
@@ -735,7 +770,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
   }
 
   return (
-    <div className="space-y-4 px-4 py-4 md:px-6">
+    <div className="space-y-4">
       <CollectionPageHeader
         title={getFilterHeading(filter)}
         filterOpen={filterOpen}
@@ -760,25 +795,6 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
           </button>
         )}
       />
-
-      {/* Filter tabs — horizontal pill scroll */}
-      <div className="flex gap-1 overflow-x-auto pb-1" style={{ scrollbarWidth: "none" }}>
-        {FILTER_TABS.map((tab) => (
-          <button
-            key={tab.key}
-            type="button"
-            onClick={() => setFilter(tab.key)}
-            className={cn(
-              "shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-colors duration-150",
-              filter === tab.key
-                ? "bg-zinc-900 text-white"
-                : "border border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 hover:text-zinc-900"
-            )}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
 
       {/* Add Task Modal */}
       <Modal
@@ -1006,6 +1022,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
       </Modal>
 
       {/* Task list */}
+      <div className="px-4 pb-4 md:px-6">
       <div className="rounded border border-zinc-200 bg-white shadow-sm">
         {active.length === 0 && done.length === 0 && (
           <div className="flex flex-col items-center justify-center px-6 py-16 text-center">
@@ -1038,6 +1055,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
             </div>
           </>
         )}
+      </div>
       </div>
     </div>
   );

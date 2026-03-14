@@ -163,12 +163,11 @@ export default function TimeTrackerClient({ entries: initialEntries, projects })
   const groups = groupByDate(completedEntries);
 
   return (
-    <div className="px-4 py-4 md:px-6">
+    <div>
       <div className="w-full">
         <CollectionPageHeader
           title="Time Tracker"
           showFilter={false}
-          className="px-0 pb-6 pt-0"
           actions={(
             <button
               type="button"
@@ -181,6 +180,7 @@ export default function TimeTrackerClient({ entries: initialEntries, projects })
           )}
         />
 
+        <div className="px-4 pb-4 md:px-6">
         {/* Active Timer Card */}
         <div className="mb-6 rounded border border-zinc-200 bg-white p-6">
           <div className="flex flex-col gap-4">
@@ -399,6 +399,7 @@ export default function TimeTrackerClient({ entries: initialEntries, projects })
             ))}
           </div>
         )}
+      </div>
       </div>
     </div>
   );

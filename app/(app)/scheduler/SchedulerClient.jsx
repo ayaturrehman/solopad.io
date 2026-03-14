@@ -293,12 +293,11 @@ export default function SchedulerClient({ bookings: initialBookings, availabilit
   }
 
   return (
-    <div className="px-4 py-4 md:px-6">
+    <div>
       <div className="w-full">
         <CollectionPageHeader
           title="Scheduler"
           showFilter={false}
-          className="px-0 pb-6 pt-0"
           actions={(
             <div className="flex items-center gap-2">
               <Button size="sm" onClick={() => { setMeetingModal(true); setMeetingForm(EMPTY_MEETING); setMeetingErrors({}); setMeetingError(""); }}>
@@ -323,6 +322,7 @@ export default function SchedulerClient({ bookings: initialBookings, availabilit
           )}
         />
 
+        <div className="px-4 pb-4 md:px-6">
         {tab === "bookings" && (
           <div className="flex flex-col gap-5">
             {/* Booking link card */}
@@ -580,6 +580,7 @@ export default function SchedulerClient({ bookings: initialBookings, availabilit
           </div>
         </form>
       </Modal>
+      </div>
     </div>
   );
 }

@@ -4,14 +4,12 @@ import db from "@/lib/db";
 
 const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY) : null;
 
-const STRIPE_METHOD_MAP = {
-  card: "card",
-  paypal: "paypal",
-  klarna: "klarna",
-};
-
 export async function POST(req) {
   try {
+    if (!stripe) {
+      return NextResponse.json({ error: "Stripe is not configured." }, { status: 500 });
+    }
+
     const { invoiceId } = await req.json();
 
     const invoice = await db.invoice.findUnique({
@@ -20,7 +18,6 @@ export async function POST(req) {
     });
 
     if (!invoice) return NextResponse.json({ error: "Invoice not found" }, { status: 404 });
-    // Only allow checkout for invoices that have been sent — not drafts
     if (invoice.status === "paid") return NextResponse.json({ error: "Already paid" }, { status: 400 });
     if (invoice.status === "draft" || invoice.status === "cancelled") {
       return NextResponse.json({ error: "Invoice is not available for payment" }, { status: 400 });
@@ -31,25 +28,22 @@ export async function POST(req) {
       : invoice.lineItems;
 
     const freelancer = invoice.project?.user;
+    const currency = invoice.currency?.toLowerCase() || "usd";
 
-    // Payment methods
-    const rawMethods = freelancer?.paymentMethods || "card";
-    const paymentMethodTypes = rawMethods
-      .split(",")
-      .map((m) => STRIPE_METHOD_MAP[m.trim()])
-      .filter(Boolean);
-
-    // Build session options
+    // Build session options — use automatic_payment_methods (best practice)
     const sessionOptions = {
-      payment_method_types: paymentMethodTypes.length ? paymentMethodTypes : ["card"],
       mode: "payment",
+      automatic_payment_methods: { enabled: true },
       line_items: lineItems.map((item) => ({
         price_data: {
-          currency: invoice.currency.toLowerCase(),
-          product_data: { name: item.description },
-          unit_amount: Math.round(parseFloat(item.amount) * 100),
+          currency,
+          product_data: {
+            name: item.description || "Service",
+            metadata: { invoiceId },
+          },
+          unit_amount: Math.round(parseFloat(item.unitPrice ?? item.amount) * 100),
         },
-        quantity: 1,
+        quantity: parseInt(item.quantity, 10) || 1,
       })),
       customer_email: invoice.project?.clientEmail || undefined,
       metadata: { invoiceId },
@@ -57,17 +51,19 @@ export async function POST(req) {
       cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/payment/cancel`,
     };
 
-    // If the freelancer has connected their Stripe account, route payments to them
+    // Route payments to the freelancer's connected Stripe account
     if (freelancer?.stripeAccountId && freelancer?.stripeOnboarded) {
-      const totalAmount = lineItems.reduce(
-        (s, item) => s + Math.round(parseFloat(item.amount) * 100),
-        0
-      );
-      // 2% platform fee (adjust as needed)
-      const applicationFee = Math.round(totalAmount * 0.02);
+      const totalAmount = lineItems.reduce((sum, item) => {
+        const qty = parseInt(item.quantity, 10) || 1;
+        const price = parseFloat(item.unitPrice ?? item.amount) || 0;
+        return sum + Math.round(price * qty * 100);
+      }, 0);
+
+      // 2% platform fee
+      const applicationFeeAmount = Math.round(totalAmount * 0.02);
 
       sessionOptions.payment_intent_data = {
-        application_fee_amount: applicationFee,
+        application_fee_amount: applicationFeeAmount,
         transfer_data: { destination: freelancer.stripeAccountId },
       };
     }
@@ -81,6 +77,7 @@ export async function POST(req) {
 
     return NextResponse.json({ url: session.url });
   } catch (err) {
+    console.error("[Checkout]", err);
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }

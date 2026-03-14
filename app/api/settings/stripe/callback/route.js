@@ -21,12 +21,21 @@ export async function GET(req) {
 
   try {
     // Exchange code for access token + connected account ID
-    const response = await stripe.oauth.token({
-      grant_type: "authorization_code",
-      code,
+    // stripe.oauth was removed in SDK v10+; use the token endpoint directly
+    const tokenRes = await fetch("https://connect.stripe.com/oauth/token", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        grant_type: "authorization_code",
+        code,
+        client_secret: process.env.STRIPE_SECRET_KEY,
+      }),
     });
 
-    const accountId = response.stripe_user_id;
+    const tokenData = await tokenRes.json();
+    if (tokenData.error) throw new Error(tokenData.error_description || tokenData.error);
+
+    const accountId = tokenData.stripe_user_id;
 
     // Verify the account is charges_enabled
     const account = await stripe.accounts.retrieve(accountId);

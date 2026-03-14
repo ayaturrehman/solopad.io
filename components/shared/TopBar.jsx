@@ -31,12 +31,10 @@ const PAGE_ACTIONS = {
 const MODULE_SEARCH = {
   "/contracts": "Search contracts...",
   "/contacts": "Search contacts...",
-  "/finance": "Search...",
   "/projects": "Search projects...",
   "/proposals": "Search proposals...",
   "/services": "Search services...",
   "/tasks": "Search tasks...",
-  "/templates": "Search templates...",
 };
 
 export default function TopBar() {
@@ -65,6 +63,13 @@ export default function TopBar() {
     [pathname]
   );
   const financeTab = searchParams.get("tab");
+
+  // Only show search on pages that actually implement it
+  const showSearch = useMemo(() => {
+    if (pathname === "/finance") return financeTab === "invoices" || financeTab === "expenses";
+    return searchModuleKey !== null;
+  }, [pathname, financeTab, searchModuleKey]);
+
   const searchPlaceholder = useMemo(() => {
     if (pathname === "/finance" && financeTab === "invoices") return "Search invoices...";
     if (pathname === "/finance" && financeTab === "expenses") return "Search expenses...";
@@ -145,18 +150,22 @@ export default function TopBar() {
   return (
     <div className="flex h-12 shrink-0 items-center justify-between border-b border-zinc-100 bg-white px-6">
       <div className="relative w-64">
-        <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-400" />
-        <input
-          type="text"
-          value={searchValue}
-          onChange={(e) => setSearchValue(e.target.value)}
-          placeholder={searchPlaceholder}
-          className="w-full rounded border border-zinc-200 bg-zinc-50 py-1.5 pl-8 pr-10 text-sm text-zinc-700 placeholder-zinc-400 outline-none focus:border-zinc-400 focus:bg-white"
-        />
-        {isSearchPending && (
-          <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
-            <LoadingDots className="gap-1" dotClassName="h-1.5 w-1.5 bg-blue-500" />
-          </div>
+        {showSearch && (
+          <>
+            <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-400" />
+            <input
+              type="text"
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
+              placeholder={searchPlaceholder}
+              className="w-full rounded border border-zinc-200 bg-zinc-50 py-1.5 pl-8 pr-10 text-sm text-zinc-700 placeholder-zinc-400 outline-none focus:border-zinc-400 focus:bg-white"
+            />
+            {isSearchPending && (
+              <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
+                <LoadingDots className="gap-1" dotClassName="h-1.5 w-1.5 bg-blue-500" />
+              </div>
+            )}
+          </>
         )}
       </div>
 
