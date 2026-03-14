@@ -9,6 +9,10 @@ export const metadata = {
   description: "Send clients one link. They see everything. You stop chasing.",
 };
 
+export const viewport = {
+  width: 1280,
+};
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
