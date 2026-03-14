@@ -53,7 +53,7 @@ export async function POST(req) {
 
   try {
     const { object } = await generateObject({
-      model: openai("gpt-5-mini"),
+      model: openai("gpt-4o-mini"),
       schema: proposalDraftSchema,
       schemaName: "proposal_draft",
       schemaDescription:
