@@ -448,24 +448,6 @@ export default function LandingPage() {
                   <Link href="/signup" className="btn-primary">Start for free <ArrowRight size={15} /></Link>
                 </div>
 
-                <div className="pk-reveal pk-d2 pk-hero-proof">
-                  <div style={{ display:"flex" }}>
-                    {[
-                      "photo-1494790108377-be9c29b29330",
-                      "photo-1507003211169-0a1dd7228f2d",
-                      "photo-1438761681033-6461ffad8d80",
-                      "photo-1472099645785-5658abf4ff4e",
-                      "photo-1534528741775-53994a69daeb",
-                    ].map((id, i) => (
-                      <img
-                        key={id}
-                        src={`https://images.unsplash.com/${id}?w=64&h=64&q=80&auto=format&fit=crop&crop=face`}
-                        alt="Solopad user"
-                        style={{ width:38, height:38, borderRadius:"50%", border:"2.5px solid #fff", objectFit:"cover", marginLeft: i === 0 ? 0 : -10, boxShadow:"0 4px 12px rgba(0,0,0,.12)" }}
-                      />
-                    ))}
-                  </div>
-                </div>
 
               </div>
 

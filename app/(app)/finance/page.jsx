@@ -7,6 +7,7 @@ import Link from "next/link";
 import { cn, formatCurrency } from "@/lib/utils";
 import ExpensesClient from "./ExpensesClient";
 import InvoicesClient from "../invoices/InvoicesClient";
+import PaymentsClient from "./PaymentsClient";
 import MonthlyCashflowChart from "./MonthlyCashflowChart";
 import {
   DEFAULT_EXPENSE_CATEGORIES,
@@ -247,37 +248,9 @@ export default async function FinancePage({ searchParams }) {
 
       {/* Payments tab */}
       {tab === "payments" && (
-        <div className="rounded border border-zinc-200 bg-white">
-          <div className="border-b border-zinc-100 px-6 py-4">
-            <h2 className="font-semibold text-zinc-900">All Payments</h2>
-          </div>
-          {paid.length === 0 ? (
-            <p className="px-6 py-10 text-sm text-zinc-400">No payments collected yet this year.</p>
-          ) : (
-            <div className="overflow-x-auto"><table className="w-full min-w-[500px] text-sm">
-              <thead className="border-b border-zinc-100 bg-zinc-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-zinc-500">Invoice</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-zinc-500">Client</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-zinc-500">Date</th>
-                  <th className="px-6 py-3 text-right text-xs font-semibold text-zinc-500">Amount</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-zinc-50">
-                {paid.map((inv) => (
-                  <tr key={inv.id} className="hover:bg-zinc-50">
-                    <td className="px-6 py-3 font-medium text-zinc-900">
-                      {inv.invoiceNumber || `INV-${inv.id.slice(-6).toUpperCase()}`}
-                    </td>
-                    <td className="px-6 py-3 text-zinc-500">{inv.project?.contact?.name ?? "—"}</td>
-                    <td className="px-6 py-3 text-zinc-400">{new Date(inv.updatedAt).toLocaleDateString()}</td>
-                    <td className="px-6 py-3 text-right font-semibold text-green-700">{formatCurrency(inv.total, currency)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table></div>
-          )}
-        </div>
+        <Suspense fallback={null}>
+          <PaymentsClient payments={paid} currency={currency} />
+        </Suspense>
       )}
 
       {/* Expenses tab */}
