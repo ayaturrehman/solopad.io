@@ -107,7 +107,7 @@ export default async function FinancePage({ searchParams }) {
       </div>
 
       {/* Tabs */}
-      <div className="border-b border-zinc-200 px-4">
+      <div className="border-b border-zinc-200 mt-4">
         {TABS.map((t) => (
           <Link
             key={t}
@@ -130,7 +130,7 @@ export default async function FinancePage({ searchParams }) {
 
       {/* Overview tab */}
       {tab === "overview" && (
-        <>
+        <div className="flex flex-col gap-4 pt-4">
           {/* KPI strip */}
           <div className="overflow-hidden rounded border border-zinc-200 bg-white">
             <div className="grid sm:grid-cols-2 xl:grid-cols-4">
@@ -172,7 +172,7 @@ export default async function FinancePage({ searchParams }) {
           </div>
 
           {/* Recent paid + expenses side by side */}
-          <div className="grid gap-6 lg:grid-cols-2">
+          <div className="grid gap-4 lg:grid-cols-2">
             <div className="rounded border border-zinc-200 bg-white px-4 py-4">
               <div className="mb-4 flex items-center justify-between">
                 <h2 className="font-semibold text-zinc-900">Invoices</h2>
@@ -183,7 +183,7 @@ export default async function FinancePage({ searchParams }) {
               ) : (
                 <div className="space-y-2">
                   {invoices.slice(0, 6).map((inv) => (
-                    <div key={inv.id} className="flex items-center justify-between rounded bg-zinc-50 px-3 py-1.5.5">
+                    <div key={inv.id} className="flex items-center justify-between rounded bg-zinc-50 px-3 py-2">
                       <div>
                         <p className="text-sm font-medium text-zinc-800">
                           {inv.invoiceNumber || `INV-${inv.id.slice(-6).toUpperCase()}`}
@@ -207,7 +207,7 @@ export default async function FinancePage({ searchParams }) {
               ) : (
                 <div className="space-y-2">
                   {paid.slice(0, 6).map((inv) => (
-                    <div key={inv.id} className="flex items-center justify-between rounded bg-zinc-50 px-3 py-1.5.5">
+                    <div key={inv.id} className="flex items-center justify-between rounded bg-zinc-50 px-3 py-2">
                       <div>
                         <p className="text-sm font-medium text-zinc-800">
                           {inv.invoiceNumber || `INV-${inv.id.slice(-6).toUpperCase()}`}
@@ -227,7 +227,7 @@ export default async function FinancePage({ searchParams }) {
                 <Link href="/finance?tab=expenses" className="text-xs text-zinc-400 hover:text-zinc-700">View all</Link>
               </div>
               {expenses.slice(0, 6).map((exp) => (
-                <div key={exp.id} className="flex items-center justify-between rounded bg-zinc-50 px-3 py-1.5.5 mb-2">
+                <div key={exp.id} className="flex items-center justify-between rounded bg-zinc-50 px-3 py-2 mb-2">
                   <div>
                     <p className="text-sm font-medium text-zinc-800">{exp.description}</p>
                     <p className="text-xs capitalize text-zinc-400">{exp.category}</p>
@@ -238,7 +238,7 @@ export default async function FinancePage({ searchParams }) {
               {expenses.length === 0 && <p className="text-sm text-zinc-400">No expenses recorded yet.</p>}
             </div>
           </div>
-        </>
+        </div>
       )}
 
       {tab === "invoices" && (
