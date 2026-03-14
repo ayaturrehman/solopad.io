@@ -11,7 +11,7 @@ export const textareaClassName =
 
 export function FormLabel({ children, required, htmlFor }) {
   return (
-    <label htmlFor={htmlFor} className="mb-1.5 block text-xs font-medium text-zinc-700">
+    <label htmlFor={htmlFor} className="mb-1 block text-xs font-medium text-zinc-700">
       {children}
       {required && <span className="ml-0.5 text-red-500">*</span>}
     </label>
@@ -20,7 +20,7 @@ export function FormLabel({ children, required, htmlFor }) {
 
 export function FormField({ label, required, htmlFor, error, children, className }) {
   return (
-    <div className={cn("flex flex-col gap-1.5", className)}>
+    <div className={cn("flex flex-col", className)}>
       {label && <FormLabel required={required} htmlFor={htmlFor}>{label}</FormLabel>}
       {children}
       {error && <p className="text-xs text-red-600">{error}</p>}
@@ -30,7 +30,7 @@ export function FormField({ label, required, htmlFor, error, children, className
 
 export default function Input({ label, error, className, required = false, id, ...props }) {
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className="flex flex-col">
       {label && <FormLabel required={required} htmlFor={id}>{label}</FormLabel>}
       <input
         id={id}
@@ -44,7 +44,7 @@ export default function Input({ label, error, className, required = false, id, .
 
 export function Select({ label, error, className, required = false, id, children, ...props }) {
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className="flex flex-col">
       {label && <FormLabel required={required} htmlFor={id}>{label}</FormLabel>}
       <select
         id={id}
@@ -60,7 +60,7 @@ export function Select({ label, error, className, required = false, id, children
 
 export function Textarea({ label, error, className, required = false, id, ...props }) {
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className="flex flex-col">
       {label && <FormLabel required={required} htmlFor={id}>{label}</FormLabel>}
       <textarea
         id={id}
