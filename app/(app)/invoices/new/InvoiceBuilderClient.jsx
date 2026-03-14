@@ -179,7 +179,7 @@ export default function InvoiceBuilderClient({ projects, services, user }) {
   const selectedProject = projects.find((p) => p.id === projectId);
 
   return (
-    <div className="mx-auto max-w-5xl">
+    <div className="mx-auto max-w-5xl px-4 py-4 md:px-6">
       {/* Top bar */}
       <div className="mb-6 flex items-center justify-between">
         <Link href="/finance?tab=invoices" className="inline-flex items-center gap-2 text-sm text-zinc-500 hover:text-zinc-900">
