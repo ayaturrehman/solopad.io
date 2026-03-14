@@ -137,6 +137,25 @@ html[data-theme="dark"] .focus\:bg-white:focus {
   animation: countUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.task-slide-down {
+  animation: slideDown 0.3s ease forwards;
+}
+
+@keyframes flashGreen {
+  0%   { opacity: 1; }
+  80%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.ai-success-flash {
+  animation: flashGreen 2s ease forwards;
+}
+
 .proposal-rich-text-view {
   line-height: 2rem;
 }

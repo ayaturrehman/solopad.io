@@ -1,9 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useRef, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { cn, formatDate } from "@/lib/utils";
-import { inputClassName, selectClassName, textareaClassName } from "@/components/ui/Input";
+import { inputClassName, selectClassName, textareaClassName, FormLabel } from "@/components/ui/Input";
 import Modal from "@/components/shared/Modal";
 import Button from "@/components/ui/Button";
 import CollectionPageHeader, { collectionPageHeaderPrimaryActionClassName } from "@/components/shared/CollectionPageHeader";
@@ -19,6 +19,8 @@ import {
   FileText,
   Sparkles,
   Loader2,
+  CheckSquare,
+  X,
 } from "lucide-react";
 
 const PRIORITY_DOT = {
@@ -122,12 +124,16 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
   const [aiPrompt, setAiPrompt] = useState("");
   const [aiLoading, setAiLoading] = useState(false);
   const [aiError, setAiError] = useState("");
+  const [aiSuccess, setAiSuccess] = useState(false);
+  const [newTaskId, setNewTaskId] = useState(null);
+  const newTaskTimerRef = useRef(null);
 
   function resetTaskForm() {
     setFormData({ ...emptyTaskForm, subtasks: [makeSubtask("")] });
     setAiOpen(false);
     setAiPrompt("");
     setAiError("");
+    setAiSuccess(false);
   }
 
   async function handleAiGenerate() {
@@ -153,6 +159,8 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
       }));
       setAiOpen(false);
       setAiPrompt("");
+      setAiSuccess(true);
+      setTimeout(() => setAiSuccess(false), 2000);
     } catch (err) {
       setAiError(err.message);
     } finally {
@@ -233,6 +241,10 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
       if (task.description || task.subtasks?.length) {
         setExpandedTaskIds((prev) => new Set(prev).add(task.id));
       }
+      // Highlight the new task row briefly
+      setNewTaskId(task.id);
+      if (newTaskTimerRef.current) clearTimeout(newTaskTimerRef.current);
+      newTaskTimerRef.current = setTimeout(() => setNewTaskId(null), 1500);
     }
 
     setSubmitting(false);
@@ -408,17 +420,19 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
                   key={subtask.id}
                   type="button"
                   onClick={() => toggleSubtask(task, subtask.id)}
-                  className="flex w-full items-center gap-3 rounded border border-zinc-200 bg-white px-3 py-1.5 text-left hover:border-zinc-300"
+                  className="flex w-full items-center gap-3 rounded border border-zinc-200 bg-white px-3 py-2 text-left transition-colors hover:border-zinc-300 hover:bg-zinc-50"
                 >
                   <span
                     className={cn(
-                      "flex h-5 w-5 shrink-0 items-center justify-center rounded border transition-colors",
-                      subtask.done ? "border-zinc-900 bg-zinc-900 text-white" : "border-zinc-300 bg-white text-transparent"
+                      "flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2 transition-all duration-200",
+                      subtask.done
+                        ? "border-zinc-900 bg-zinc-900 text-white"
+                        : "border-zinc-300 bg-white text-transparent hover:border-zinc-500"
                     )}
                   >
-                    <Check className="h-3.5 w-3.5" />
+                    <Check className="h-3 w-3" strokeWidth={3} />
                   </span>
-                  <span className={cn("text-sm text-zinc-700", subtask.done && "text-zinc-400 line-through")}>
+                  <span className={cn("text-sm transition-all duration-200", subtask.done ? "text-zinc-400 line-through" : "text-zinc-700")}>
                     {subtask.title}
                   </span>
                 </button>
@@ -432,82 +446,117 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
 
   function TaskEditor({ taskId }) {
     return (
-      <div className="space-y-4 bg-zinc-50 px-4 py-4">
-        <input
-          className={inputClassName}
-          value={editData.title}
-          onChange={(e) => setEditData((data) => ({ ...data, title: e.target.value }))}
-          placeholder="Task title"
-        />
-
-        <div className="grid gap-3 md:grid-cols-5">
-          <select
-            className={selectClassName}
-            value={editData.projectId}
-            onChange={(e) => setEditData((data) => ({ ...data, projectId: e.target.value }))}
-          >
-            <option value="">No project</option>
-            {projects.map((project) => (
-              <option key={project.id} value={project.id}>{project.title}</option>
-            ))}
-          </select>
-          <select
-            className={selectClassName}
-            value={editData.assigneeMemberId}
-            onChange={(e) => setEditData((data) => ({ ...data, assigneeMemberId: e.target.value }))}
-          >
-            <option value="">Me</option>
-            {teamMembers.map((member) => (
-              <option key={member.id} value={member.id}>
-                {member.name} {member.status === "pending" ? "(Pending)" : ""}
-              </option>
-            ))}
-          </select>
-          <select
-            className={selectClassName}
-            value={editData.status}
-            onChange={(e) => setEditData((data) => ({ ...data, status: e.target.value }))}
-          >
-            {STATUS_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-          <select
-            className={selectClassName}
-            value={editData.priority}
-            onChange={(e) => setEditData((data) => ({ ...data, priority: e.target.value }))}
-          >
-            <option value="low">Low priority</option>
-            <option value="medium">Medium priority</option>
-            <option value="high">High priority</option>
-          </select>
+      <div className="space-y-4 border-t border-zinc-100 bg-zinc-50/60 px-5 py-5">
+        {/* Title */}
+        <div>
+          <FormLabel htmlFor={`edit-title-${taskId}`}>Task title</FormLabel>
           <input
-            type="date"
+            id={`edit-title-${taskId}`}
             className={inputClassName}
-            value={editData.dueDate}
-            onChange={(e) => setEditData((data) => ({ ...data, dueDate: e.target.value }))}
+            value={editData.title}
+            onChange={(e) => setEditData((data) => ({ ...data, title: e.target.value }))}
+            placeholder="Task title"
           />
         </div>
 
-        <textarea
-          rows={3}
-          value={editData.description}
-          onChange={(e) => setEditData((data) => ({ ...data, description: e.target.value }))}
-          placeholder="Add notes for this task"
-          className={textareaClassName}
-        />
+        {/* Project + Assignee */}
+        <div className="grid gap-3 sm:grid-cols-2">
+          <div>
+            <FormLabel htmlFor={`edit-project-${taskId}`}>Project</FormLabel>
+            <select
+              id={`edit-project-${taskId}`}
+              className={selectClassName}
+              value={editData.projectId}
+              onChange={(e) => setEditData((data) => ({ ...data, projectId: e.target.value }))}
+            >
+              <option value="">No project</option>
+              {projects.map((project) => (
+                <option key={project.id} value={project.id}>{project.title}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <FormLabel htmlFor={`edit-assignee-${taskId}`}>Assignee</FormLabel>
+            <select
+              id={`edit-assignee-${taskId}`}
+              className={selectClassName}
+              value={editData.assigneeMemberId}
+              onChange={(e) => setEditData((data) => ({ ...data, assigneeMemberId: e.target.value }))}
+            >
+              <option value="">Me</option>
+              {teamMembers.map((member) => (
+                <option key={member.id} value={member.id}>
+                  {member.name} {member.status === "pending" ? "(Pending)" : ""}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
 
+        {/* Priority + Due Date + Status */}
+        <div className="grid gap-3 sm:grid-cols-3">
+          <div>
+            <FormLabel htmlFor={`edit-priority-${taskId}`}>Priority</FormLabel>
+            <select
+              id={`edit-priority-${taskId}`}
+              className={selectClassName}
+              value={editData.priority}
+              onChange={(e) => setEditData((data) => ({ ...data, priority: e.target.value }))}
+            >
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </select>
+          </div>
+          <div>
+            <FormLabel htmlFor={`edit-due-${taskId}`}>Due date</FormLabel>
+            <input
+              id={`edit-due-${taskId}`}
+              type="date"
+              className={inputClassName}
+              value={editData.dueDate}
+              onChange={(e) => setEditData((data) => ({ ...data, dueDate: e.target.value }))}
+            />
+          </div>
+          <div>
+            <FormLabel htmlFor={`edit-status-${taskId}`}>Status</FormLabel>
+            <select
+              id={`edit-status-${taskId}`}
+              className={selectClassName}
+              value={editData.status}
+              onChange={(e) => setEditData((data) => ({ ...data, status: e.target.value }))}
+            >
+              {STATUS_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>{option.label}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {/* Description */}
+        <div>
+          <FormLabel htmlFor={`edit-desc-${taskId}`}>Notes</FormLabel>
+          <textarea
+            id={`edit-desc-${taskId}`}
+            rows={3}
+            value={editData.description}
+            onChange={(e) => setEditData((data) => ({ ...data, description: e.target.value }))}
+            placeholder="Add notes for this task"
+            className={textareaClassName}
+          />
+        </div>
+
+        {/* Subtasks */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <p className="text-sm font-medium text-zinc-900">Subtasks</p>
-            <button type="button" onClick={addEditSubtask} className="text-xs font-medium text-zinc-500 hover:text-zinc-900">
-              Add subtask
+            <p className="text-xs font-semibold uppercase tracking-[0.15em] text-zinc-400">Subtasks</p>
+            <button type="button" onClick={addEditSubtask} className="text-xs font-medium text-zinc-500 hover:text-zinc-900 transition-colors">
+              + Add subtask
             </button>
           </div>
           {editData.subtasks.map((subtask) => (
             <div key={subtask.id} className="flex items-center gap-2">
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2 border-zinc-200" />
               <input
                 value={subtask.title}
                 onChange={(e) => updateEditSubtask(subtask.id, e.target.value)}
@@ -517,29 +566,19 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
               <button
                 type="button"
                 onClick={() => removeEditSubtask(subtask.id)}
-                className="rounded border border-zinc-200 px-3 py-1.5 text-xs text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded border border-zinc-200 text-zinc-400 transition-colors hover:border-zinc-300 hover:bg-zinc-100 hover:text-zinc-700"
               >
-                Remove
+                <X className="h-3.5 w-3.5" />
               </button>
             </div>
           ))}
         </div>
 
-        <div className="flex justify-end gap-2">
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={() => setEditingId(null)}
-          >
+        <div className="flex justify-end gap-2 border-t border-zinc-100 pt-4">
+          <Button type="button" variant="ghost" size="sm" onClick={() => setEditingId(null)}>
             Cancel
           </Button>
-          <Button
-            type="button"
-            variant="primary"
-            size="sm"
-            onClick={() => saveEdit(taskId)}
-          >
+          <Button type="button" variant="primary" size="sm" onClick={() => saveEdit(taskId)}>
             Save task
           </Button>
         </div>
@@ -552,38 +591,77 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
     const isDone = task.status === "done";
     const hasDetails = Boolean(task.description) || (task.subtasks?.length ?? 0) > 0;
     const isExpanded = expandedTaskIds.has(task.id) || editingId === task.id;
+    const isNew = newTaskId === task.id;
+    const subtasks = task.subtasks || [];
+    const subtaskDone = subtasks.filter((s) => s.done).length;
+    const subtaskTotal = subtasks.length;
+    const subtaskRatio = subtaskTotal > 0 ? subtaskDone / subtaskTotal : 0;
 
     return (
-      <div className={cn("group transition-colors", isDone && "opacity-70")}>
-        <div className="flex items-start gap-3 px-4 py-4 hover:bg-zinc-50">
+      <div
+        className={cn(
+          "group transition-all duration-300",
+          isDone && "opacity-60",
+          isNew && "ring-2 ring-inset ring-blue-200",
+          "task-slide-down"
+        )}
+      >
+        <div className={cn("flex items-start gap-3 px-4 py-4 transition-colors duration-150", "hover:bg-zinc-50/80")}>
+          {/* Checkbox */}
           <button
             type="button"
             onClick={() => toggleDone(task)}
             className={cn(
-              "mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded border-2 transition-colors",
-              isDone ? "border-zinc-900 bg-zinc-900 text-white" : "border-zinc-300 bg-white text-transparent hover:border-zinc-500"
+              "mt-0.5 flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-md border-2 transition-all duration-200",
+              isDone
+                ? "border-zinc-900 bg-zinc-900 text-white"
+                : "border-zinc-300 bg-white text-transparent hover:border-zinc-500"
             )}
             aria-label={isDone ? "Mark task as incomplete" : "Mark task as complete"}
           >
-            <Check className="h-4 w-4" />
+            <Check className="h-3.5 w-3.5" strokeWidth={3} />
           </button>
 
-          <span className={cn("mt-2 h-2.5 w-2.5 shrink-0 rounded-full", PRIORITY_DOT[task.priority])} />
+          {/* Priority dot */}
+          <span className={cn("mt-[9px] h-2.5 w-2.5 shrink-0 rounded-full", PRIORITY_DOT[task.priority])} />
 
+          {/* Content */}
           <div className="min-w-0 flex-1">
             <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0">
-                <p className={cn("text-sm font-medium text-zinc-800", isDone && "line-through text-zinc-400")}>
+              <div className="min-w-0 flex-1">
+                <p
+                  className={cn(
+                    "text-sm font-medium transition-all duration-300",
+                    isDone ? "text-zinc-400 line-through" : "text-zinc-800"
+                  )}
+                >
                   {task.title}
                 </p>
-                <div className="mt-2 flex flex-wrap items-center gap-2">
+
+                {/* Subtask progress bar */}
+                {subtaskTotal > 0 && (
+                  <div className="mt-2 flex items-center gap-2">
+                    <div className="h-1 flex-1 overflow-hidden rounded-full bg-zinc-100">
+                      <div
+                        className="h-full rounded-full bg-zinc-900 transition-all duration-500"
+                        style={{ width: `${subtaskRatio * 100}%` }}
+                      />
+                    </div>
+                    <span className="shrink-0 text-[11px] tabular-nums text-zinc-400">
+                      {subtaskDone}/{subtaskTotal}
+                    </span>
+                  </div>
+                )}
+
+                {/* Badges row */}
+                <div className="mt-2 flex flex-wrap items-center gap-1.5">
                   {task.project && (
                     <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-[11px] text-zinc-500">
                       {task.project.title}
                     </span>
                   )}
                   <span className={cn("rounded-full px-2 py-0.5 text-[11px] font-medium", STATUS_PILL[task.status] || STATUS_PILL.todo)}>
-                    {STATUS_OPTIONS.find((option) => option.value === task.status)?.label || "To Do"}
+                    {STATUS_OPTIONS.find((o) => o.value === task.status)?.label || "To Do"}
                   </span>
                   {task.assigneeMember && (
                     <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2 py-0.5 text-[11px] text-blue-700">
@@ -591,31 +669,29 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
                       {task.assigneeMember.name}
                     </span>
                   )}
-                  {task.subtasks?.length > 0 && (
-                    <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-[11px] text-zinc-500">
-                      {task.subtasks.filter((subtask) => subtask.done).length}/{task.subtasks.length} subtasks
-                    </span>
-                  )}
-                  {task.description && (
-                    <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-[11px] text-zinc-500">
-                      Notes
-                    </span>
+                  {task.description && !subtaskTotal && (
+                    <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-[11px] text-zinc-500">Notes</span>
                   )}
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
+              {/* Right-side controls */}
+              <div className="flex shrink-0 items-center gap-1.5">
                 {task.dueDate && (
-                  <span className={cn("text-xs", overdue ? "font-medium text-red-500" : "text-zinc-400")}>
-                    {formatDate(task.dueDate)}
-                  </span>
+                  overdue ? (
+                    <span className="rounded-full bg-red-50 px-2 py-0.5 text-[11px] font-medium text-red-600">
+                      {formatDate(task.dueDate)}
+                    </span>
+                  ) : (
+                    <span className="text-xs text-zinc-400">{formatDate(task.dueDate)}</span>
+                  )
                 )}
 
                 {hasDetails && editingId !== task.id && (
                   <button
                     type="button"
                     onClick={() => toggleExpanded(task.id)}
-                    className="rounded p-1 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700"
+                    className="rounded p-1 text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-700"
                   >
                     {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
                   </button>
@@ -625,7 +701,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
                   <button
                     type="button"
                     onClick={() => setOpenMenu(openMenu === task.id ? null : task.id)}
-                    className="rounded p-1 text-zinc-300 opacity-0 transition-opacity group-hover:opacity-100 hover:bg-zinc-100 hover:text-zinc-600"
+                    className="rounded p-1 text-zinc-300 opacity-0 transition-all duration-150 group-hover:opacity-100 hover:bg-zinc-100 hover:text-zinc-600"
                   >
                     <MoreHorizontal className="h-4 w-4" />
                   </button>
@@ -634,14 +710,14 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
                       <button
                         type="button"
                         onClick={() => startEdit(task)}
-                        className="flex w-full items-center gap-2 px-3 py-1.5 text-xs text-zinc-700 hover:bg-zinc-50"
+                        className="flex w-full items-center gap-2 px-3 py-1.5 text-xs text-zinc-700 transition-colors hover:bg-zinc-50"
                       >
                         <Pencil className="h-3 w-3" /> Edit
                       </button>
                       <button
                         type="button"
                         onClick={() => handleDelete(task.id)}
-                        className="flex w-full items-center gap-2 px-3 py-1.5 text-xs text-red-600 hover:bg-red-50"
+                        className="flex w-full items-center gap-2 px-3 py-1.5 text-xs text-red-600 transition-colors hover:bg-red-50"
                       >
                         <Trash2 className="h-3 w-3" /> Delete
                       </button>
@@ -685,6 +761,26 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
         )}
       />
 
+      {/* Filter tabs — horizontal pill scroll */}
+      <div className="flex gap-1 overflow-x-auto pb-1" style={{ scrollbarWidth: "none" }}>
+        {FILTER_TABS.map((tab) => (
+          <button
+            key={tab.key}
+            type="button"
+            onClick={() => setFilter(tab.key)}
+            className={cn(
+              "shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-colors duration-150",
+              filter === tab.key
+                ? "bg-zinc-900 text-white"
+                : "border border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 hover:text-zinc-900"
+            )}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Add Task Modal */}
       <Modal
         open={showForm}
         onClose={() => {
@@ -694,24 +790,47 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
         title="Add Task"
         className="w-full max-w-3xl"
       >
-          <form onSubmit={handleAddTask} className="flex flex-col gap-4">
+        <form onSubmit={handleAddTask} className="flex flex-col gap-5">
 
-            {/* AI generate panel */}
+          {/* AI success flash */}
+          {aiSuccess && (
+            <div className="ai-success-flash flex items-center gap-2 rounded border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-700">
+              <Check className="h-4 w-4" strokeWidth={2.5} />
+              Form filled by AI
+            </div>
+          )}
+
+          {/* AI generate panel */}
+          <div
+            className={cn(
+              "overflow-hidden rounded border transition-all duration-300",
+              aiOpen
+                ? "border-purple-200 bg-gradient-to-br from-purple-50 to-white"
+                : "border-dashed border-zinc-300"
+            )}
+            style={{ maxHeight: aiOpen ? "320px" : "44px" }}
+          >
             {!aiOpen ? (
               <button
                 type="button"
                 onClick={() => setAiOpen(true)}
-                className="flex items-center gap-2 rounded border border-dashed border-zinc-300 px-3 py-2 text-sm text-zinc-500 transition-colors hover:border-zinc-400 hover:bg-zinc-50 hover:text-zinc-700"
+                className="flex w-full items-center gap-2 px-3 py-2.5 text-sm text-zinc-500 transition-colors hover:bg-zinc-50 hover:text-zinc-700"
               >
                 <Sparkles className="h-4 w-4 text-purple-500" />
                 Describe your milestone — AI will generate tasks &amp; subtasks
               </button>
             ) : (
-              <div className="rounded border border-purple-200 bg-purple-50 p-3 space-y-2">
+              <div className="space-y-3 p-4">
                 <div className="flex items-center gap-2">
                   <Sparkles className="h-4 w-4 shrink-0 text-purple-500" />
                   <span className="text-xs font-semibold text-purple-700">AI Task Generator</span>
-                  <button type="button" onClick={() => { setAiOpen(false); setAiPrompt(""); setAiError(""); }} className="ml-auto text-xs text-purple-400 hover:text-purple-600">✕</button>
+                  <button
+                    type="button"
+                    onClick={() => { setAiOpen(false); setAiPrompt(""); setAiError(""); }}
+                    className="ml-auto flex h-6 w-6 items-center justify-center rounded text-purple-400 transition-colors hover:bg-purple-100 hover:text-purple-700"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
                 </div>
                 <textarea
                   autoFocus
@@ -719,7 +838,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
                   value={aiPrompt}
                   onChange={(e) => { setAiPrompt(e.target.value); setAiError(""); }}
                   placeholder="e.g. Build a landing page for a SaaS product — design, copywriting, development and deployment by end of month"
-                  className="w-full rounded border border-purple-200 bg-white px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-purple-400 focus:outline-none resize-none"
+                  className="w-full resize-none rounded border border-purple-200 bg-white px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-purple-400 focus:outline-none"
                 />
                 {aiError && <p className="text-xs text-red-600">{aiError}</p>}
                 <div className="flex items-center justify-between">
@@ -728,7 +847,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
                     type="button"
                     disabled={aiLoading || !aiPrompt.trim()}
                     onClick={handleAiGenerate}
-                    className="flex items-center gap-1.5 rounded bg-purple-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-purple-700 disabled:opacity-50"
+                    className="flex items-center gap-1.5 rounded bg-purple-600 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-purple-700 disabled:opacity-50"
                   >
                     {aiLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
                     {aiLoading ? "Generating…" : "Generate"}
@@ -736,18 +855,28 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
                 </div>
               </div>
             )}
+          </div>
 
+          {/* Task title — prominent */}
+          <div>
+            <FormLabel htmlFor="new-task-title" required>Task title</FormLabel>
             <input
+              id="new-task-title"
               type="text"
               required
-              placeholder="Task title"
+              placeholder="What needs to be done?"
               value={formData.title}
               onChange={(e) => setFormData((data) => ({ ...data, title: e.target.value }))}
-              className={inputClassName}
+              className={cn(inputClassName, "h-10 text-base font-medium")}
             />
+          </div>
 
-            <div className="grid gap-3 md:grid-cols-5">
+          {/* Project + Assignee */}
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div>
+              <FormLabel htmlFor="new-task-project">Project</FormLabel>
               <select
+                id="new-task-project"
                 value={formData.projectId}
                 onChange={(e) => setFormData((data) => ({ ...data, projectId: e.target.value }))}
                 className={selectClassName}
@@ -757,7 +886,11 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
                   <option key={project.id} value={project.id}>{project.title}</option>
                 ))}
               </select>
+            </div>
+            <div>
+              <FormLabel htmlFor="new-task-assignee">Assignee</FormLabel>
               <select
+                id="new-task-assignee"
                 value={formData.assigneeMemberId}
                 onChange={(e) => setFormData((data) => ({ ...data, assigneeMemberId: e.target.value }))}
                 className={selectClassName}
@@ -769,95 +902,117 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
                   </option>
                 ))}
               </select>
+            </div>
+          </div>
+
+          {/* Priority + Due Date + Status */}
+          <div className="grid gap-3 sm:grid-cols-3">
+            <div>
+              <FormLabel htmlFor="new-task-priority">Priority</FormLabel>
               <select
-                value={formData.status}
-                onChange={(e) => setFormData((data) => ({ ...data, status: e.target.value }))}
-                className={selectClassName}
-              >
-                {STATUS_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-              <select
+                id="new-task-priority"
                 value={formData.priority}
                 onChange={(e) => setFormData((data) => ({ ...data, priority: e.target.value }))}
                 className={selectClassName}
               >
-                <option value="low">Low priority</option>
-                <option value="medium">Medium priority</option>
-                <option value="high">High priority</option>
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
               </select>
+            </div>
+            <div>
+              <FormLabel htmlFor="new-task-due">Due date</FormLabel>
               <input
+                id="new-task-due"
                 type="date"
                 value={formData.dueDate}
                 onChange={(e) => setFormData((data) => ({ ...data, dueDate: e.target.value }))}
                 className={inputClassName}
               />
             </div>
+            <div>
+              <FormLabel htmlFor="new-task-status">Status</FormLabel>
+              <select
+                id="new-task-status"
+                value={formData.status}
+                onChange={(e) => setFormData((data) => ({ ...data, status: e.target.value }))}
+                className={selectClassName}
+              >
+                {STATUS_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>{option.label}</option>
+                ))}
+              </select>
+            </div>
+          </div>
 
+          {/* Description */}
+          <div>
+            <FormLabel htmlFor="new-task-desc">Notes</FormLabel>
             <textarea
-              rows={4}
+              id="new-task-desc"
+              rows={3}
               value={formData.description}
               onChange={(e) => setFormData((data) => ({ ...data, description: e.target.value }))}
-              placeholder="Add notes for this task"
+              placeholder="Add any notes or context for this task"
               className={textareaClassName}
             />
+          </div>
 
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <p className="text-sm font-medium text-zinc-900">Subtasks</p>
-                <button type="button" onClick={addFormSubtask} className="text-xs font-medium text-zinc-500 hover:text-zinc-900">
-                  Add subtask
+          {/* Subtasks */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-semibold uppercase tracking-[0.15em] text-zinc-400">Subtasks</p>
+              <button type="button" onClick={addFormSubtask} className="text-xs font-medium text-zinc-500 transition-colors hover:text-zinc-900">
+                + Add subtask
+              </button>
+            </div>
+            {formData.subtasks.map((subtask) => (
+              <div key={subtask.id} className="flex items-center gap-2">
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2 border-zinc-200" />
+                <input
+                  value={subtask.title}
+                  onChange={(e) => updateFormSubtask(subtask.id, e.target.value)}
+                  placeholder="Subtask title"
+                  className={inputClassName}
+                />
+                <button
+                  type="button"
+                  onClick={() => removeFormSubtask(subtask.id)}
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded border border-zinc-200 text-zinc-400 transition-colors hover:border-zinc-300 hover:bg-zinc-100 hover:text-zinc-700"
+                >
+                  <X className="h-3.5 w-3.5" />
                 </button>
               </div>
-              {formData.subtasks.map((subtask) => (
-                <div key={subtask.id} className="flex items-center gap-2">
-                  <input
-                    value={subtask.title}
-                    onChange={(e) => updateFormSubtask(subtask.id, e.target.value)}
-                    placeholder="Subtask title"
-                    className={inputClassName}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => removeFormSubtask(subtask.id)}
-                    className="rounded border border-zinc-200 px-3 py-2 text-xs text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900"
-                  >
-                    Remove
-                  </button>
-                </div>
-              ))}
-            </div>
+            ))}
+          </div>
 
-            <div className="flex justify-end gap-2 border-t border-zinc-100 pt-4">
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={() => {
-                  setShowForm(false);
-                  resetTaskForm();
-                }}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                variant="primary"
-                loading={submitting}
-              >
-                {submitting ? "Adding..." : "Add task"}
-              </Button>
-            </div>
-          </form>
+          {/* Footer */}
+          <div className="flex justify-end gap-2 border-t border-zinc-100 pt-4">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => {
+                setShowForm(false);
+                resetTaskForm();
+              }}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" variant="primary" loading={submitting}>
+              {submitting ? "Adding..." : "Add task"}
+            </Button>
+          </div>
+        </form>
       </Modal>
 
+      {/* Task list */}
       <div className="rounded border border-zinc-200 bg-white shadow-sm">
         {active.length === 0 && done.length === 0 && (
-          <p className="px-6 py-12 text-center text-sm text-zinc-400">
-            No tasks yet. Add your first task above.
-          </p>
+          <div className="flex flex-col items-center justify-center px-6 py-16 text-center">
+            <CheckSquare className="mb-4 h-12 w-12 text-zinc-200" strokeWidth={1.5} />
+            <p className="text-sm font-medium text-zinc-700">No tasks yet</p>
+            <p className="mt-1 text-xs text-zinc-400">Add your first task or let AI break down a milestone</p>
+          </div>
         )}
 
         {active.length > 0 && (
@@ -871,7 +1026,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
         {done.length > 0 && (
           <>
             {active.length > 0 && <div className="border-t border-zinc-100" />}
-            <div className="px-3 py-1.5">
+            <div className="px-4 py-2">
               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-400">
                 Completed ({done.length})
               </p>
