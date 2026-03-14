@@ -465,7 +465,6 @@ export default function LandingPage() {
                       />
                     ))}
                   </div>
-                  <span style={{ fontSize:14, color:CMute, fontWeight:500 }}>Trusted by <strong style={{ color:CDk }}>500+</strong> freelancers worldwide</span>
                 </div>
 
               </div>

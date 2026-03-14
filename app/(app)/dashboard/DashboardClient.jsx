@@ -31,140 +31,6 @@ const QUICK_ACTIONS = [
   { href: "/time-tracker", label: "Time entry", Icon: Clock3 },
 ];
 
-/* ─── Revenue sparkline (SVG polyline) ────────────────────────────────────── */
-function RevenueSparkline({ monthlyRevenue, monthlyExpenses, monthNames, currency }) {
-  const [hovered, setHovered] = useState(null);
-  const W = 100, H = 60;
-  const maxVal = Math.max(...monthlyRevenue, ...monthlyExpenses, 1);
-  const n = monthlyRevenue.length;
-
-  function pts(data) {
-    return data
-      .map((v, i) => `${(i / (n - 1)) * W},${H - (v / maxVal) * H * 0.9}`)
-      .join(" ");
-  }
-
-  const revPts = monthlyRevenue.map((v, i) => ({
-    x: (i / (n - 1)) * W,
-    y: H - (v / maxVal) * H * 0.9,
-  }));
-  const expPts = monthlyExpenses.map((v, i) => ({
-    x: (i / (n - 1)) * W,
-    y: H - (v / maxVal) * H * 0.9,
-  }));
-
-  return (
-    <div>
-      <div className="relative" style={{ paddingBottom: "0" }}>
-        {hovered !== null && (
-          <div className="pointer-events-none absolute left-1/2 top-0 z-10 -translate-x-1/2 rounded border border-zinc-200 bg-white px-2.5 py-1.5 text-xs shadow-sm">
-            <p className="font-semibold text-zinc-900">{monthNames[hovered]}</p>
-            <p className="text-green-600">Rev: {formatCurrency(monthlyRevenue[hovered], currency)}</p>
-            <p className="text-red-500">Exp: {formatCurrency(monthlyExpenses[hovered], currency)}</p>
-          </div>
-        )}
-        <svg
-          viewBox={`0 0 ${W} ${H}`}
-          className="w-full overflow-visible"
-          style={{ height: 80 }}
-          preserveAspectRatio="none"
-        >
-          {/* area fills */}
-          <defs>
-            <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#4ade80" stopOpacity="0.25" />
-              <stop offset="100%" stopColor="#4ade80" stopOpacity="0" />
-            </linearGradient>
-            <linearGradient id="expGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#f87171" stopOpacity="0.18" />
-              <stop offset="100%" stopColor="#f87171" stopOpacity="0" />
-            </linearGradient>
-          </defs>
-          <polygon
-            points={`0,${H} ${pts(monthlyRevenue)} ${W},${H}`}
-            fill="url(#revGrad)"
-          />
-          <polygon
-            points={`0,${H} ${pts(monthlyExpenses)} ${W},${H}`}
-            fill="url(#expGrad)"
-          />
-          {/* lines */}
-          <polyline
-            points={pts(monthlyRevenue)}
-            fill="none"
-            stroke="#4ade80"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <polyline
-            points={pts(monthlyExpenses)}
-            fill="none"
-            stroke="#f87171"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          {/* hover dots */}
-          {revPts.map((pt, i) => (
-            <circle
-              key={i}
-              cx={pt.x} cy={pt.y} r="3"
-              fill="white"
-              stroke="#4ade80"
-              strokeWidth="1.5"
-              className="cursor-pointer transition-opacity"
-              opacity={hovered === i ? 1 : 0}
-              onMouseEnter={() => setHovered(i)}
-              onMouseLeave={() => setHovered(null)}
-            />
-          ))}
-          {expPts.map((pt, i) => (
-            <circle
-              key={i}
-              cx={pt.x} cy={pt.y} r="3"
-              fill="white"
-              stroke="#f87171"
-              strokeWidth="1.5"
-              className="cursor-pointer transition-opacity"
-              opacity={hovered === i ? 1 : 0}
-              onMouseEnter={() => setHovered(i)}
-              onMouseLeave={() => setHovered(null)}
-            />
-          ))}
-          {/* invisible hit targets */}
-          {monthlyRevenue.map((_, i) => (
-            <rect
-              key={i}
-              x={(i / (n - 1)) * W - W / (n * 2)}
-              y={0}
-              width={W / n}
-              height={H}
-              fill="transparent"
-              onMouseEnter={() => setHovered(i)}
-              onMouseLeave={() => setHovered(null)}
-            />
-          ))}
-        </svg>
-        {/* x axis labels */}
-        <div className="flex justify-between mt-1">
-          {monthNames.map((m) => (
-            <span key={m} className="text-[10px] text-zinc-400">{m}</span>
-          ))}
-        </div>
-      </div>
-      <div className="mt-3 flex gap-4 text-xs text-zinc-500">
-        <span className="flex items-center gap-1.5">
-          <span className="inline-block h-2 w-2 rounded-full bg-green-400" />Revenue
-        </span>
-        <span className="flex items-center gap-1.5">
-          <span className="inline-block h-2 w-2 rounded-full bg-red-400" />Expenses
-        </span>
-      </div>
-    </div>
-  );
-}
-
 /* ─── Task donut ───────────────────────────────────────────────────────────── */
 function TaskDonut({ open, done }) {
   const total = open + done;
@@ -253,7 +119,6 @@ export default function DashboardClient({
   activeProjects, openTasks, contacts, proposals, contracts,
   proposalStatus, contractStatus,
   currency, now,
-  monthlyRevenue, monthlyExpenses, monthNames,
   taskOpen, taskDone,
   statusCounts,
 }) {
@@ -286,33 +151,14 @@ export default function DashboardClient({
       </div>
 
       {/* Charts row */}
-      <div className="grid gap-4 lg:grid-cols-3" style={delay(360)}>
-        {/* Revenue sparkline */}
-        <div className="dash-fade-up col-span-2 rounded border border-zinc-200 bg-white px-4 py-4" style={delay(340)}>
-          <div className="mb-4 flex items-center justify-between">
-            <div>
-              <p className="text-sm font-semibold text-zinc-900">Revenue vs Expenses</p>
-              <p className="mt-0.5 text-xs text-zinc-400">Last 6 months</p>
-            </div>
-          </div>
-          <RevenueSparkline
-            monthlyRevenue={monthlyRevenue}
-            monthlyExpenses={monthlyExpenses}
-            monthNames={monthNames}
-            currency={currency}
-          />
+      <div className="grid gap-4 sm:grid-cols-2" style={delay(360)}>
+        <div className="dash-fade-up rounded border border-zinc-200 bg-white px-4 py-4" style={delay(340)}>
+          <p className="mb-4 text-sm font-semibold text-zinc-900">Tasks</p>
+          <TaskDonut open={taskOpen} done={taskDone} />
         </div>
-
-        {/* Task donut + project bars */}
-        <div className="dash-fade-up flex flex-col gap-4" style={delay(380)}>
-          <div className="rounded border border-zinc-200 bg-white px-4 py-4">
-            <p className="mb-4 text-sm font-semibold text-zinc-900">Tasks</p>
-            <TaskDonut open={taskOpen} done={taskDone} />
-          </div>
-          <div className="rounded border border-zinc-200 bg-white px-4 py-4">
-            <p className="mb-4 text-sm font-semibold text-zinc-900">Project Status</p>
-            <ProjectStatusBars statusCounts={statusCounts} />
-          </div>
+        <div className="dash-fade-up rounded border border-zinc-200 bg-white px-4 py-4" style={delay(380)}>
+          <p className="mb-4 text-sm font-semibold text-zinc-900">Project Status</p>
+          <ProjectStatusBars statusCounts={statusCounts} />
         </div>
       </div>
 

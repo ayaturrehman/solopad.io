@@ -74,25 +74,6 @@ export default async function DashboardPage() {
     .filter((p) => p.endDate)
     .sort((a, b) => new Date(a.endDate) - new Date(b.endDate))[0];
 
-  // Monthly revenue for sparkline (last 6 months)
-  const monthlyRevenue = Array(6).fill(0);
-  const monthlyExpenses = Array(6).fill(0);
-  const monthNames = [];
-  for (let i = 5; i >= 0; i--) {
-    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    monthNames.push(d.toLocaleString("en-US", { month: "short" }));
-    const mi = 5 - i;
-    invoices
-      .filter((inv) => {
-        const invDate = new Date(inv.createdAt);
-        return invDate.getFullYear() === d.getFullYear() && invDate.getMonth() === d.getMonth();
-      })
-      .forEach((inv) => {
-        if (inv.status === "paid") monthlyRevenue[mi] += inv.total;
-        else if (inv.status !== "cancelled") monthlyExpenses[mi] += inv.total;
-      });
-  }
-
   // Task breakdown
   const taskDone = tasks.filter((t) => t.status === "done").length;
   const taskOpen = openTasks.length;
@@ -146,9 +127,6 @@ export default async function DashboardPage() {
       contractStatus={contractStatus}
       currency={currency}
       now={now.toISOString()}
-      monthlyRevenue={monthlyRevenue}
-      monthlyExpenses={monthlyExpenses}
-      monthNames={monthNames}
       taskOpen={taskOpen}
       taskDone={taskDone}
       statusCounts={statusCounts}
