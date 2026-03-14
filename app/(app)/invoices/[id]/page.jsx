@@ -46,7 +46,7 @@ export default async function InvoiceDetailPage({ params }) {
   const StatusIcon = status.icon;
 
   return (
-    <div className="px-4 py-4 md:px-6 mx-auto max-w-4xl">
+    <div className="px-4 py-4 md:px-6">
       <div className="mb-6 flex items-center justify-between">
         <Link href="/finance?tab=invoices" className="inline-flex items-center gap-1.5 text-sm text-zinc-500 transition-colors hover:text-zinc-900">
           <ArrowLeft className="h-4 w-4" /> All invoices
