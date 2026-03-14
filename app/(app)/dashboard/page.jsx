@@ -2,7 +2,6 @@
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/session";
 import db from "@/lib/db";
-import { CheckSquare, Briefcase, UserPlus, FileText, FileSignature, Clock3 } from "lucide-react";
 import { formatDate, formatCurrency } from "@/lib/utils";
 import DashboardClient from "./DashboardClient";
 
@@ -62,18 +61,49 @@ export default async function DashboardPage() {
   const greeting = now.getHours() < 12 ? "Good morning" : now.getHours() < 17 ? "Good afternoon" : "Good evening";
   const dateLabel = now.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" });
 
-  const activeProjects = projects.filter((project) => project.status !== "complete");
-  const openTasks = tasks.filter((task) => task.status !== "done");
-  const sentProposals = proposals.filter((proposal) => proposal.status === "sent").length;
-  const unsignedContracts = contracts.filter((contract) => contract.status !== "signed").length;
-  const openInvoices = invoices.filter((invoice) => invoice.status !== "paid" && invoice.status !== "cancelled");
-  const outstanding = sum(openInvoices.map((invoice) => invoice.total));
+  const activeProjects = projects.filter((p) => p.status !== "complete");
+  const openTasks = tasks.filter((t) => t.status !== "done");
+  const sentProposals = proposals.filter((p) => p.status === "sent").length;
+  const unsignedContracts = contracts.filter((c) => c.status !== "signed").length;
+  const openInvoices = invoices.filter((i) => i.status !== "paid" && i.status !== "cancelled");
+  const outstanding = sum(openInvoices.map((i) => i.total));
   const urgentTasks = openTasks.filter(
-    (task) => task.dueDate && new Date(task.dueDate) <= new Date(now.getTime() + 1000 * 60 * 60 * 24 * 3)
+    (t) => t.dueDate && new Date(t.dueDate) <= new Date(now.getTime() + 1000 * 60 * 60 * 24 * 3)
   ).length;
   const nextProjectDeadline = activeProjects
-    .filter((project) => project.endDate)
+    .filter((p) => p.endDate)
     .sort((a, b) => new Date(a.endDate) - new Date(b.endDate))[0];
+
+  // Monthly revenue for sparkline (last 6 months)
+  const monthlyRevenue = Array(6).fill(0);
+  const monthlyExpenses = Array(6).fill(0);
+  const monthNames = [];
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    monthNames.push(d.toLocaleString("en-US", { month: "short" }));
+    const mi = 5 - i;
+    invoices
+      .filter((inv) => {
+        const invDate = new Date(inv.createdAt);
+        return invDate.getFullYear() === d.getFullYear() && invDate.getMonth() === d.getMonth();
+      })
+      .forEach((inv) => {
+        if (inv.status === "paid") monthlyRevenue[mi] += inv.total;
+        else if (inv.status !== "cancelled") monthlyExpenses[mi] += inv.total;
+      });
+  }
+
+  // Task breakdown
+  const taskDone = tasks.filter((t) => t.status === "done").length;
+  const taskOpen = openTasks.length;
+
+  // Project status breakdown
+  const statusCounts = {
+    not_started: projects.filter((p) => p.status === "not_started").length,
+    in_progress: projects.filter((p) => p.status === "in_progress").length,
+    in_review: projects.filter((p) => p.status === "in_review").length,
+    complete: projects.filter((p) => p.status === "complete").length,
+  };
 
   const kpis = [
     { label: "Active projects", value: activeProjects.length, note: `${projects.length} total` },
@@ -82,17 +112,10 @@ export default async function DashboardPage() {
     {
       label: "Outstanding",
       value: formatCurrency(outstanding, currency),
-      note: nextProjectDeadline ? `Next due ${formatDate(nextProjectDeadline.endDate)}` : `${openInvoices.length} unpaid invoices`,
+      note: nextProjectDeadline
+        ? `Next due ${formatDate(nextProjectDeadline.endDate)}`
+        : `${openInvoices.length} unpaid invoices`,
     },
-  ];
-
-  const quickActions = [
-    { href: "/contacts/new", label: "Contact", icon: UserPlus },
-    { href: "/projects/new", label: "Project", icon: Briefcase },
-    { href: "/proposals/new", label: "Proposal", icon: FileText },
-    { href: "/contracts", label: "Contract", icon: FileSignature },
-    { href: "/tasks", label: "Task", icon: CheckSquare },
-    { href: "/time-tracker", label: "Time entry", icon: Clock3 },
   ];
 
   const proposalStatus = {
@@ -114,7 +137,6 @@ export default async function DashboardPage() {
       firstName={firstName}
       dateLabel={dateLabel}
       kpis={kpis}
-      quickActions={quickActions}
       activeProjects={activeProjects}
       openTasks={openTasks}
       contacts={contacts}
@@ -124,6 +146,12 @@ export default async function DashboardPage() {
       contractStatus={contractStatus}
       currency={currency}
       now={now.toISOString()}
+      monthlyRevenue={monthlyRevenue}
+      monthlyExpenses={monthlyExpenses}
+      monthNames={monthNames}
+      taskOpen={taskOpen}
+      taskDone={taskDone}
+      statusCounts={statusCounts}
     />
   );
 }

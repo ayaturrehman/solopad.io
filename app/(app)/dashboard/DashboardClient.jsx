@@ -1,8 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronRight, Plus, CheckSquare, Briefcase, UserPlus, FileText, FileSignature, Clock3 } from "lucide-react";
+import { useState } from "react";
+import {
+  ChevronRight, Plus,
+  CheckSquare, Briefcase, UserPlus, FileText, FileSignature, Clock3,
+} from "lucide-react";
 import { STATUS_LABELS, STATUS_COLORS, formatDate, formatCurrency, cn } from "@/lib/utils";
+
+/* ─── helpers ─────────────────────────────────────────────────────────────── */
 
 function StatusBadge({ className, children }) {
   return (
@@ -16,30 +22,248 @@ function delay(n) {
   return { animationDelay: `${n}ms` };
 }
 
+const QUICK_ACTIONS = [
+  { href: "/contacts/new", label: "Contact",    Icon: UserPlus },
+  { href: "/projects/new", label: "Project",    Icon: Briefcase },
+  { href: "/proposals/new", label: "Proposal",  Icon: FileText },
+  { href: "/contracts",    label: "Contract",   Icon: FileSignature },
+  { href: "/tasks",        label: "Task",        Icon: CheckSquare },
+  { href: "/time-tracker", label: "Time entry", Icon: Clock3 },
+];
+
+/* ─── Revenue sparkline (SVG polyline) ────────────────────────────────────── */
+function RevenueSparkline({ monthlyRevenue, monthlyExpenses, monthNames, currency }) {
+  const [hovered, setHovered] = useState(null);
+  const W = 100, H = 60;
+  const maxVal = Math.max(...monthlyRevenue, ...monthlyExpenses, 1);
+  const n = monthlyRevenue.length;
+
+  function pts(data) {
+    return data
+      .map((v, i) => `${(i / (n - 1)) * W},${H - (v / maxVal) * H * 0.9}`)
+      .join(" ");
+  }
+
+  const revPts = monthlyRevenue.map((v, i) => ({
+    x: (i / (n - 1)) * W,
+    y: H - (v / maxVal) * H * 0.9,
+  }));
+  const expPts = monthlyExpenses.map((v, i) => ({
+    x: (i / (n - 1)) * W,
+    y: H - (v / maxVal) * H * 0.9,
+  }));
+
+  return (
+    <div>
+      <div className="relative" style={{ paddingBottom: "0" }}>
+        {hovered !== null && (
+          <div className="pointer-events-none absolute left-1/2 top-0 z-10 -translate-x-1/2 rounded border border-zinc-200 bg-white px-2.5 py-1.5 text-xs shadow-sm">
+            <p className="font-semibold text-zinc-900">{monthNames[hovered]}</p>
+            <p className="text-green-600">Rev: {formatCurrency(monthlyRevenue[hovered], currency)}</p>
+            <p className="text-red-500">Exp: {formatCurrency(monthlyExpenses[hovered], currency)}</p>
+          </div>
+        )}
+        <svg
+          viewBox={`0 0 ${W} ${H}`}
+          className="w-full overflow-visible"
+          style={{ height: 80 }}
+          preserveAspectRatio="none"
+        >
+          {/* area fills */}
+          <defs>
+            <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#4ade80" stopOpacity="0.25" />
+              <stop offset="100%" stopColor="#4ade80" stopOpacity="0" />
+            </linearGradient>
+            <linearGradient id="expGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#f87171" stopOpacity="0.18" />
+              <stop offset="100%" stopColor="#f87171" stopOpacity="0" />
+            </linearGradient>
+          </defs>
+          <polygon
+            points={`0,${H} ${pts(monthlyRevenue)} ${W},${H}`}
+            fill="url(#revGrad)"
+          />
+          <polygon
+            points={`0,${H} ${pts(monthlyExpenses)} ${W},${H}`}
+            fill="url(#expGrad)"
+          />
+          {/* lines */}
+          <polyline
+            points={pts(monthlyRevenue)}
+            fill="none"
+            stroke="#4ade80"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <polyline
+            points={pts(monthlyExpenses)}
+            fill="none"
+            stroke="#f87171"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          {/* hover dots */}
+          {revPts.map((pt, i) => (
+            <circle
+              key={i}
+              cx={pt.x} cy={pt.y} r="3"
+              fill="white"
+              stroke="#4ade80"
+              strokeWidth="1.5"
+              className="cursor-pointer transition-opacity"
+              opacity={hovered === i ? 1 : 0}
+              onMouseEnter={() => setHovered(i)}
+              onMouseLeave={() => setHovered(null)}
+            />
+          ))}
+          {expPts.map((pt, i) => (
+            <circle
+              key={i}
+              cx={pt.x} cy={pt.y} r="3"
+              fill="white"
+              stroke="#f87171"
+              strokeWidth="1.5"
+              className="cursor-pointer transition-opacity"
+              opacity={hovered === i ? 1 : 0}
+              onMouseEnter={() => setHovered(i)}
+              onMouseLeave={() => setHovered(null)}
+            />
+          ))}
+          {/* invisible hit targets */}
+          {monthlyRevenue.map((_, i) => (
+            <rect
+              key={i}
+              x={(i / (n - 1)) * W - W / (n * 2)}
+              y={0}
+              width={W / n}
+              height={H}
+              fill="transparent"
+              onMouseEnter={() => setHovered(i)}
+              onMouseLeave={() => setHovered(null)}
+            />
+          ))}
+        </svg>
+        {/* x axis labels */}
+        <div className="flex justify-between mt-1">
+          {monthNames.map((m) => (
+            <span key={m} className="text-[10px] text-zinc-400">{m}</span>
+          ))}
+        </div>
+      </div>
+      <div className="mt-3 flex gap-4 text-xs text-zinc-500">
+        <span className="flex items-center gap-1.5">
+          <span className="inline-block h-2 w-2 rounded-full bg-green-400" />Revenue
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span className="inline-block h-2 w-2 rounded-full bg-red-400" />Expenses
+        </span>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Task donut ───────────────────────────────────────────────────────────── */
+function TaskDonut({ open, done }) {
+  const total = open + done;
+  const r = 30, cx = 40, cy = 40, stroke = 8;
+  const circ = 2 * Math.PI * r;
+  const doneFrac = total === 0 ? 0 : done / total;
+  const dashArr = `${doneFrac * circ} ${circ}`;
+  const pct = total === 0 ? 0 : Math.round((done / total) * 100);
+
+  return (
+    <div className="flex items-center gap-5">
+      <div className="relative" style={{ width: 80, height: 80 }}>
+        <svg width="80" height="80">
+          <circle cx={cx} cy={cy} r={r} fill="none" stroke="#f4f4f5" strokeWidth={stroke} />
+          <circle
+            cx={cx} cy={cy} r={r}
+            fill="none"
+            stroke="#22c55e"
+            strokeWidth={stroke}
+            strokeDasharray={dashArr}
+            strokeDashoffset={circ / 4}
+            strokeLinecap="round"
+            style={{ transition: "stroke-dasharray 0.8s cubic-bezier(0.22,1,0.36,1)" }}
+          />
+        </svg>
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <span className="text-lg font-bold text-zinc-900 leading-none">{pct}%</span>
+          <span className="text-[10px] text-zinc-400">done</span>
+        </div>
+      </div>
+      <div className="space-y-1.5">
+        <div className="flex items-center gap-2">
+          <span className="h-2 w-2 rounded-full bg-green-500" />
+          <span className="text-xs text-zinc-600">{done} completed</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="h-2 w-2 rounded-full bg-zinc-200" />
+          <span className="text-xs text-zinc-600">{open} open</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Project status bars ──────────────────────────────────────────────────── */
+function ProjectStatusBars({ statusCounts }) {
+  const items = [
+    { key: "not_started", label: "Not started", color: "bg-zinc-300" },
+    { key: "in_progress", label: "In progress", color: "bg-blue-500" },
+    { key: "in_review",   label: "In review",   color: "bg-amber-400" },
+    { key: "complete",    label: "Complete",     color: "bg-green-500" },
+  ];
+  const total = Object.values(statusCounts).reduce((s, v) => s + v, 0) || 1;
+
+  return (
+    <div className="space-y-2.5">
+      {items.map(({ key, label, color }) => {
+        const count = statusCounts[key] || 0;
+        const pct = (count / total) * 100;
+        return (
+          <div key={key}>
+            <div className="mb-1 flex justify-between">
+              <span className="text-xs text-zinc-500">{label}</span>
+              <span className="text-xs font-medium text-zinc-700">{count}</span>
+            </div>
+            <div className="h-1.5 w-full overflow-hidden rounded-full bg-zinc-100">
+              <div
+                className={cn("h-full rounded-full transition-all", color)}
+                style={{
+                  width: `${pct}%`,
+                  transition: "width 0.8s cubic-bezier(0.22,1,0.36,1)",
+                }}
+              />
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+/* ─── Main component ───────────────────────────────────────────────────────── */
 export default function DashboardClient({
-  greeting,
-  firstName,
-  dateLabel,
+  greeting, firstName, dateLabel,
   kpis,
-  quickActions,
-  activeProjects,
-  openTasks,
-  contacts,
-  proposals,
-  contracts,
-  proposalStatus,
-  contractStatus,
-  currency,
-  now,
+  activeProjects, openTasks, contacts, proposals, contracts,
+  proposalStatus, contractStatus,
+  currency, now,
+  monthlyRevenue, monthlyExpenses, monthNames,
+  taskOpen, taskDone,
+  statusCounts,
 }) {
   return (
     <div className="space-y-5 px-4 py-4 md:px-6">
+
       {/* Greeting */}
       <div className="dash-fade-in flex items-center justify-between" style={delay(0)}>
         <div>
-          <p className="text-2xl tracking-tight text-zinc-900">
-            {greeting}, {firstName}
-          </p>
+          <p className="text-2xl tracking-tight text-zinc-900">{greeting}, {firstName}</p>
           <p className="mt-1 text-sm text-zinc-400">{dateLabel}</p>
         </div>
       </div>
@@ -61,23 +285,52 @@ export default function DashboardClient({
         ))}
       </div>
 
+      {/* Charts row */}
+      <div className="grid gap-4 lg:grid-cols-3" style={delay(360)}>
+        {/* Revenue sparkline */}
+        <div className="dash-fade-up col-span-2 rounded border border-zinc-200 bg-white px-4 py-4" style={delay(340)}>
+          <div className="mb-4 flex items-center justify-between">
+            <div>
+              <p className="text-sm font-semibold text-zinc-900">Revenue vs Expenses</p>
+              <p className="mt-0.5 text-xs text-zinc-400">Last 6 months</p>
+            </div>
+          </div>
+          <RevenueSparkline
+            monthlyRevenue={monthlyRevenue}
+            monthlyExpenses={monthlyExpenses}
+            monthNames={monthNames}
+            currency={currency}
+          />
+        </div>
+
+        {/* Task donut + project bars */}
+        <div className="dash-fade-up flex flex-col gap-4" style={delay(380)}>
+          <div className="rounded border border-zinc-200 bg-white px-4 py-4">
+            <p className="mb-4 text-sm font-semibold text-zinc-900">Tasks</p>
+            <TaskDonut open={taskOpen} done={taskDone} />
+          </div>
+          <div className="rounded border border-zinc-200 bg-white px-4 py-4">
+            <p className="mb-4 text-sm font-semibold text-zinc-900">Project Status</p>
+            <ProjectStatusBars statusCounts={statusCounts} />
+          </div>
+        </div>
+      </div>
+
       {/* Main panels */}
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-[220px_minmax(0,1.2fr)_minmax(0,0.9fr)_minmax(0,0.9fr)]">
+
         {/* Quick actions */}
-        <div
-          className="dash-fade-up rounded border border-zinc-200 bg-white px-4 py-4"
-          style={delay(320)}
-        >
+        <div className="dash-fade-up rounded border border-zinc-200 bg-white px-4 py-4" style={delay(420)}>
           <div className="mb-4 flex items-center justify-between">
             <p className="text-sm font-semibold text-zinc-900">Create new</p>
           </div>
           <div className="space-y-2">
-            {quickActions.map(({ href, label, icon: Icon }, i) => (
+            {QUICK_ACTIONS.map(({ href, label, Icon }, i) => (
               <Link
                 key={label}
                 href={href}
                 className="dash-fade-up flex items-center justify-between rounded border border-zinc-200 px-4 py-3 text-sm text-zinc-700 transition-colors hover:bg-zinc-50"
-                style={delay(360 + i * 40)}
+                style={delay(460 + i * 35)}
               >
                 <span className="inline-flex items-center gap-2">
                   <Icon className="h-4 w-4 text-zinc-400" />
@@ -90,18 +343,13 @@ export default function DashboardClient({
         </div>
 
         {/* Projects */}
-        <div
-          className="dash-fade-up rounded border border-zinc-200 bg-white px-4 py-4"
-          style={delay(360)}
-        >
+        <div className="dash-fade-up rounded border border-zinc-200 bg-white px-4 py-4" style={delay(440)}>
           <div className="mb-4 flex items-center justify-between">
             <div>
               <p className="text-sm font-semibold text-zinc-900">Projects</p>
               <p className="mt-1 text-xs text-zinc-400">Current work with status and nearest due date</p>
             </div>
-            <Link href="/projects" className="text-xs text-zinc-400 hover:text-zinc-700 transition-colors">
-              View all
-            </Link>
+            <Link href="/projects" className="text-xs text-zinc-400 transition-colors hover:text-zinc-700">View all</Link>
           </div>
           {activeProjects.length === 0 ? (
             <p className="py-10 text-center text-sm text-zinc-400">No active projects yet.</p>
@@ -111,11 +359,7 @@ export default function DashboardClient({
                 const dueDate = project.endDate ? new Date(project.endDate) : null;
                 const overdue = dueDate && dueDate < new Date(now) && project.status !== "complete";
                 return (
-                  <div
-                    key={project.id}
-                    className="dash-fade-up flex items-center justify-between gap-3 py-3"
-                    style={delay(400 + i * 40)}
-                  >
+                  <div key={project.id} className="dash-fade-up flex items-center justify-between gap-3 py-3" style={delay(480 + i * 40)}>
                     <div className="min-w-0">
                       <Link href={`/projects/${project.id}`} className="block truncate text-sm font-medium text-zinc-900 hover:underline">
                         {project.title}
@@ -136,18 +380,13 @@ export default function DashboardClient({
         </div>
 
         {/* Tasks */}
-        <div
-          className="dash-fade-up rounded border border-zinc-200 bg-white px-4 py-4"
-          style={delay(400)}
-        >
+        <div className="dash-fade-up rounded border border-zinc-200 bg-white px-4 py-4" style={delay(460)}>
           <div className="mb-4 flex items-center justify-between">
             <div>
               <p className="text-sm font-semibold text-zinc-900">Tasks</p>
               <p className="mt-1 text-xs text-zinc-400">What needs attention today</p>
             </div>
-            <Link href="/tasks" className="text-xs text-zinc-400 hover:text-zinc-700 transition-colors">
-              View all
-            </Link>
+            <Link href="/tasks" className="text-xs text-zinc-400 transition-colors hover:text-zinc-700">View all</Link>
           </div>
           {openTasks.length === 0 ? (
             <p className="py-10 text-center text-sm text-zinc-400">All clear. No open tasks.</p>
@@ -156,11 +395,7 @@ export default function DashboardClient({
               {openTasks.slice(0, 4).map((task, i) => {
                 const overdue = task.dueDate && new Date(task.dueDate) < new Date(now);
                 return (
-                  <div
-                    key={task.id}
-                    className="dash-fade-up flex items-start justify-between gap-3 py-3"
-                    style={delay(440 + i * 40)}
-                  >
+                  <div key={task.id} className="dash-fade-up flex items-start justify-between gap-3 py-3" style={delay(500 + i * 40)}>
                     <div className="min-w-0">
                       <p className="truncate text-sm font-medium text-zinc-900">{task.title}</p>
                       <p className="mt-0.5 text-xs text-zinc-400">{task.project?.title || "General task"}</p>
@@ -178,29 +413,20 @@ export default function DashboardClient({
         </div>
 
         {/* Contacts */}
-        <div
-          className="dash-fade-up rounded border border-zinc-200 bg-white px-4 py-4"
-          style={delay(440)}
-        >
+        <div className="dash-fade-up rounded border border-zinc-200 bg-white px-4 py-4" style={delay(480)}>
           <div className="mb-4 flex items-center justify-between">
             <div>
               <p className="text-sm font-semibold text-zinc-900">Contacts</p>
               <p className="mt-1 text-xs text-zinc-400">Recently added contacts</p>
             </div>
-            <Link href="/contacts" className="text-xs text-zinc-400 hover:text-zinc-700 transition-colors">
-              View all
-            </Link>
+            <Link href="/contacts" className="text-xs text-zinc-400 transition-colors hover:text-zinc-700">View all</Link>
           </div>
           {contacts.length === 0 ? (
             <p className="py-10 text-center text-sm text-zinc-400">No contacts yet.</p>
           ) : (
             <div className="divide-y divide-zinc-100">
               {contacts.map((contact, i) => (
-                <div
-                  key={contact.id}
-                  className="dash-fade-up flex items-center justify-between gap-3 py-3"
-                  style={delay(480 + i * 30)}
-                >
+                <div key={contact.id} className="dash-fade-up flex items-center gap-3 py-3" style={delay(520 + i * 30)}>
                   <div className="min-w-0">
                     <Link href={`/contacts/${contact.id}`} className="block truncate text-sm font-medium text-zinc-900 hover:underline">
                       {contact.name}
@@ -215,10 +441,7 @@ export default function DashboardClient({
       </div>
 
       {/* Documents */}
-      <div
-        className="dash-fade-up rounded border border-zinc-200 bg-white px-4 py-4"
-        style={delay(520)}
-      >
+      <div className="dash-fade-up rounded border border-zinc-200 bg-white px-4 py-4" style={delay(560)}>
         <div className="mb-4 flex items-center justify-between">
           <div>
             <p className="text-sm font-semibold text-zinc-900">Documents</p>
@@ -236,7 +459,7 @@ export default function DashboardClient({
                   <div
                     key={proposal.id}
                     className="dash-fade-up flex items-center justify-between gap-2 rounded border border-zinc-100 px-3 py-1.5 transition-colors hover:bg-zinc-50"
-                    style={delay(560 + i * 40)}
+                    style={delay(580 + i * 40)}
                   >
                     <div className="min-w-0">
                       <p className="truncate text-sm font-medium text-zinc-900">{proposal.title}</p>
@@ -260,7 +483,7 @@ export default function DashboardClient({
                   <div
                     key={contract.id}
                     className="dash-fade-up flex items-center justify-between gap-2 rounded border border-zinc-100 px-3 py-1.5 transition-colors hover:bg-zinc-50"
-                    style={delay(560 + i * 40)}
+                    style={delay(580 + i * 40)}
                   >
                     <div className="min-w-0">
                       <p className="truncate text-sm font-medium text-zinc-900">{contract.title}</p>
