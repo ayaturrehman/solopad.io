@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   FileText, CheckCircle2, Send, Clock, XCircle, ArrowRight,
-  X, Trash2, Mail, Printer,
+  X, Trash2, Mail,
   Square, CheckSquare, Plus,
 } from "lucide-react";
 import CollectionPageHeader, { collectionPageHeaderPrimaryActionClassName } from "@/components/shared/CollectionPageHeader";
@@ -121,37 +121,45 @@ export default function InvoicesClient({ invoices }) {
     setBulkMsg("");
     try {
       const ids = Array.from(selected);
-      await fetch("/api/invoices/bulk-send", {
+      const res = await fetch("/api/invoices/bulk-send", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ids }),
       });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setBulkMsg(`Error: ${data.error || "Could not send invoices."}`);
+        return;
+      }
       setBulkMsg(`${ids.length} invoice${ids.length > 1 ? "s" : ""} sent.`);
       setSelected(new Set());
       router.refresh();
+    } catch {
+      setBulkMsg("Network error. Please try again.");
     } finally {
       setBulkLoading(false);
     }
-  }
-
-  function bulkPrint() {
-    // Open each selected invoice in a new print tab — simplified: just window.print current view
-    const ids = Array.from(selected);
-    if (ids.length === 0) return;
-    // For now, open first invoice in print view; a full solution would require a print layout
-    ids.forEach((id) => window.open(`/invoices/${id}?print=1`, "_blank"));
   }
 
   async function bulkDelete() {
     if (selected.size === 0) return;
     if (!confirm(`Delete ${selected.size} invoice${selected.size > 1 ? "s" : ""}? This cannot be undone.`)) return;
     setBulkLoading(true);
+    setBulkMsg("");
     const ids = Array.from(selected);
-    await Promise.all(ids.map((id) =>
-      fetch(`/api/invoices/${id}`, { method: "DELETE" })
+    const results = await Promise.allSettled(ids.map((id) =>
+      fetch(`/api/invoices/${id}`, { method: "DELETE" }).then((res) => {
+        if (!res.ok) throw new Error(`Failed to delete ${id}`);
+        return res;
+      })
     ));
+    const failed = results.filter((r) => r.status === "rejected").length;
+    const succeeded = results.length - failed;
     setSelected(new Set());
     setBulkLoading(false);
+    if (failed > 0) {
+      setBulkMsg(`${succeeded} deleted, ${failed} failed.`);
+    }
     router.refresh();
   }
 
@@ -202,12 +210,6 @@ export default function InvoicesClient({ invoices }) {
               <Mail className="h-3.5 w-3.5" /> Send email
             </button>
             <button
-              onClick={bulkPrint}
-              className="inline-flex items-center gap-1.5 rounded-md border border-zinc-700 px-3 py-1.5 text-xs font-medium hover:bg-zinc-700"
-            >
-              <Printer className="h-3.5 w-3.5" /> Print
-            </button>
-            <button
               onClick={bulkDelete}
               disabled={bulkLoading}
               className="inline-flex items-center gap-1.5 rounded-md border border-red-500 px-3 py-1.5 text-xs font-medium text-red-400 hover:bg-red-900/30 disabled:opacity-50"
@@ -225,12 +227,19 @@ export default function InvoicesClient({ invoices }) {
       )}
 
       {bulkMsg && (
-        <div className="mb-3 rounded border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-700">
-          {bulkMsg}
+        <div className={`mb-3 flex items-center justify-between rounded border px-3 py-2 text-sm ${bulkMsg.startsWith("Error") || bulkMsg.includes("failed") ? "border-red-200 bg-red-50 text-red-700" : "border-green-200 bg-green-50 text-green-700"}`}>
+          <span>{bulkMsg}</span>
+          <button
+            onClick={() => { setBulkMsg(""); router.refresh(); }}
+            className="ml-4 text-xs underline hover:no-underline"
+          >
+            Try again
+          </button>
         </div>
       )}
 
       {/* Table */}
+      <div className={bulkLoading ? "pointer-events-none opacity-60" : undefined}>
       {filtered.length === 0 ? (
         <CollectionEmptyState
           icon={FileText}
@@ -324,6 +333,8 @@ export default function InvoicesClient({ invoices }) {
           </table>
         </CollectionTableFrame>
       )}
+
+      </div>
 
       {/* Pagination */}
       {totalPages > 1 && (

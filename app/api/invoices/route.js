@@ -22,6 +22,15 @@ export async function POST(req) {
 
   if (!projectId) return NextResponse.json({ error: "projectId is required" }, { status: 400 });
 
+  const parsedTaxRate = parseFloat(taxRate) || 0;
+  if (parsedTaxRate < 0 || parsedTaxRate > 100) {
+    return NextResponse.json({ error: "taxRate must be between 0 and 100." }, { status: 400 });
+  }
+  const parsedDiscountValue = parseFloat(discountValue) || 0;
+  if (parsedDiscountValue < 0) {
+    return NextResponse.json({ error: "discountValue must be 0 or greater." }, { status: 400 });
+  }
+
   try {
     const filter = await getTenantFilter(session);
     const project = await db.project.findFirst({
@@ -30,15 +39,16 @@ export async function POST(req) {
     if (!project) return NextResponse.json({ error: "Project not found" }, { status: 404 });
 
     // Compute amounts
+    const round2 = (v) => Math.round(v * 100) / 100;
     const parsedLines = Array.isArray(lineItems) ? lineItems : [];
-    const subtotal = parsedLines.reduce((s, l) => s + (parseFloat(l.amount) || 0), 0);
-    const taxAmt = subtotal * ((parseFloat(taxRate) || 0) / 100);
+    const subtotal = round2(parsedLines.reduce((s, l) => s + (parseFloat(l.amount) || 0), 0));
+    const taxAmt = round2(subtotal * (parsedTaxRate / 100));
     let discountAmt = 0;
     const dtype = discountType || "none";
-    const dval = parseFloat(discountValue) || 0;
-    if (dtype === "percent") discountAmt = subtotal * (dval / 100);
-    else if (dtype === "fixed") discountAmt = Math.min(dval, subtotal);
-    const total = Math.max(0, subtotal + taxAmt - discountAmt);
+    const dval = parsedDiscountValue;
+    if (dtype === "percent") discountAmt = round2(subtotal * (dval / 100));
+    else if (dtype === "fixed") discountAmt = round2(Math.min(dval, subtotal));
+    const total = round2(Math.max(0, subtotal + taxAmt - discountAmt));
 
     const invoice = await db.invoice.create({
       data: {
@@ -46,7 +56,7 @@ export async function POST(req) {
         invoiceNumber: invoiceNumber?.trim() || null,
         lineItems: JSON.stringify(parsedLines),
         subtotal,
-        taxRate: parseFloat(taxRate) || 0,
+        taxRate: parsedTaxRate,
         taxAmount: taxAmt,
         discountType: dtype,
         discountValue: dval,

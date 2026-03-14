@@ -34,8 +34,9 @@ export async function POST(req) {
   }
 
   if (assigneeMemberId) {
+    const tenantFilterForAssignee = await getTenantFilter(session);
     const member = await db.teamMember.findFirst({
-      where: { id: assigneeMemberId, userId: session.user.id },
+      where: { id: assigneeMemberId, ...tenantFilterForAssignee },
     });
     if (!member) {
       return NextResponse.json({ error: "Invalid assignee." }, { status: 400 });

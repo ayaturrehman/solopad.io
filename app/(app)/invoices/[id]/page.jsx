@@ -1,5 +1,6 @@
 
 import { getSession } from "@/lib/session";
+import { getTenantFilter } from "@/lib/tenant";
 import db from "@/lib/db";
 import { redirect } from "next/navigation";
 import Link from "next/link";
@@ -23,8 +24,10 @@ export default async function InvoiceDetailPage({ params }) {
   const session = await getSession();
   if (!session?.user) redirect("/login");
 
+  const tenantFilter = await getTenantFilter(session);
+
   const invoice = await db.invoice.findFirst({
-    where: { id },
+    where: { id, project: tenantFilter },
     include: {
       project: {
         select: {
@@ -36,11 +39,16 @@ export default async function InvoiceDetailPage({ params }) {
     },
   });
 
-  if (!invoice || invoice.project.userId !== session.user.id) redirect("/finance?tab=invoices");
+  if (!invoice) redirect("/finance?tab=invoices");
 
-  const lineItems = typeof invoice.lineItems === "string"
-    ? JSON.parse(invoice.lineItems)
-    : invoice.lineItems || [];
+  let lineItems = [];
+  try {
+    lineItems = typeof invoice.lineItems === "string"
+      ? JSON.parse(invoice.lineItems)
+      : invoice.lineItems || [];
+  } catch {
+    lineItems = [];
+  }
 
   const status = STATUS_CONFIG[invoice.status] || STATUS_CONFIG.draft;
   const StatusIcon = status.icon;
@@ -191,11 +199,11 @@ export default async function InvoiceDetailPage({ params }) {
               <table className="w-full text-sm">
                 <thead className="bg-zinc-50 border-b border-zinc-100">
                   <tr>
-                    <th className="px-3 py-1.5.5 text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-400">#</th>
-                    <th className="px-3 py-1.5.5 text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Milestone</th>
-                    <th className="px-3 py-1.5.5 text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Due Date</th>
-                    <th className="px-3 py-1.5.5 text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Status</th>
-                    <th className="px-3 py-1.5.5 text-right text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Amount</th>
+                    <th className="px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-400">#</th>
+                    <th className="px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Milestone</th>
+                    <th className="px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Due Date</th>
+                    <th className="px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Status</th>
+                    <th className="px-3 py-2 text-right text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Amount</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-zinc-50">

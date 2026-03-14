@@ -15,13 +15,23 @@ export default function InvoiceActions({ invoice }) {
   async function patch(body) {
     setLoading(true);
     setOpen(false);
-    await fetch(`/api/invoices`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: invoice.id, ...body }),
-    });
-    setLoading(false);
-    router.refresh();
+    try {
+      const res = await fetch(`/api/invoices/${invoice.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        alert(data.error || "Failed to update invoice.");
+        return;
+      }
+      router.refresh();
+    } catch {
+      alert("Network error. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function downloadPdf() {
@@ -39,12 +49,21 @@ export default function InvoiceActions({ invoice }) {
   async function del() {
     if (!confirm("Delete this invoice? This cannot be undone.")) return;
     setLoading(true);
-    await fetch(`/api/invoices`, {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: invoice.id }),
-    });
-    router.push("/finance?tab=invoices");
+    try {
+      const res = await fetch(`/api/invoices/${invoice.id}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        alert(data.error || "Failed to delete invoice.");
+        setLoading(false);
+        return;
+      }
+      router.push("/finance?tab=invoices");
+    } catch {
+      alert("Network error. Please try again.");
+      setLoading(false);
+    }
   }
 
   const { status } = invoice;
@@ -97,7 +116,7 @@ export default function InvoiceActions({ invoice }) {
             {!canEdit && status !== "cancelled" && (
               <Link
                 href={`/invoices/${invoice.id}/edit`}
-                className="flex w-full items-center gap-2.5 px-3 py-1.5.5 text-sm text-zinc-600 hover:bg-zinc-50"
+                className="flex w-full items-center gap-2.5 px-3 py-2 text-sm text-zinc-600 hover:bg-zinc-50"
                 onClick={() => setOpen(false)}
               >
                 <Pencil className="h-4 w-4" /> Edit invoice
@@ -108,14 +127,14 @@ export default function InvoiceActions({ invoice }) {
                 navigator.clipboard.writeText(window.location.href);
                 setOpen(false);
               }}
-              className="flex w-full items-center gap-2.5 px-3 py-1.5.5 text-sm text-zinc-600 hover:bg-zinc-50"
+              className="flex w-full items-center gap-2.5 px-3 py-2 text-sm text-zinc-600 hover:bg-zinc-50"
             >
               <LinkIcon className="h-4 w-4" /> Copy link
             </button>
             {status !== "cancelled" && (
               <button
                 onClick={() => patch({ status: "cancelled" })}
-                className="flex w-full items-center gap-2.5 px-3 py-1.5.5 text-sm text-zinc-600 hover:bg-zinc-50"
+                className="flex w-full items-center gap-2.5 px-3 py-2 text-sm text-zinc-600 hover:bg-zinc-50"
               >
                 <XCircle className="h-4 w-4" /> Cancel invoice
               </button>
@@ -123,7 +142,7 @@ export default function InvoiceActions({ invoice }) {
             <div className="border-t border-zinc-100" />
             <button
               onClick={del}
-              className="flex w-full items-center gap-2.5 px-3 py-1.5.5 text-sm text-red-600 hover:bg-red-50"
+              className="flex w-full items-center gap-2.5 px-3 py-2 text-sm text-red-600 hover:bg-red-50"
             >
               <Trash2 className="h-4 w-4" /> Delete invoice
             </button>

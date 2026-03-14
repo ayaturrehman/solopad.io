@@ -282,7 +282,7 @@ export default function BookingForm({ userId, userName, rules, existingBookings 
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="rounded bg-zinc-900 px-3 py-1.5.5 text-sm font-semibold text-white hover:bg-zinc-700 disabled:opacity-50"
+                  className="rounded bg-zinc-900 px-3 py-2 text-sm font-semibold text-white hover:bg-zinc-700 disabled:opacity-50"
                 >
                   {submitting ? "Booking…" : "Confirm booking"}
                 </button>

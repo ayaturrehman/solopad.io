@@ -223,7 +223,7 @@ export default function AddExpenseForm({
             maxLength={100}
           />
         </div>
-        <label className="flex items-center gap-2 rounded border border-zinc-200 px-3 py-1.5.5 text-sm text-zinc-700">
+        <label className="flex items-center gap-2 rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-700">
           <input
             type="checkbox"
             checked={form.isRecurring}
@@ -251,7 +251,7 @@ export default function AddExpenseForm({
           <button type="submit" disabled={loading} className="flex-1 rounded bg-zinc-900 py-2.5 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50">
             {loading ? "Saving…" : isEdit ? "Save changes" : "Save expense"}
           </button>
-          <button type="button" onClick={() => setOpen(false)} className="rounded border border-zinc-200 px-3 py-1.5.5 text-sm text-zinc-600 hover:bg-zinc-50">
+          <button type="button" onClick={() => setOpen(false)} className="rounded border border-zinc-200 px-3 py-2 text-sm text-zinc-600 hover:bg-zinc-50">
             Cancel
           </button>
         </div>

@@ -679,7 +679,7 @@ function SettingsContent() {
                   <CardBody>
                     {stripe.connected ? (
                       <div className="space-y-3">
-                        <div className="flex items-center gap-2 rounded border border-green-200 bg-green-50 px-3 py-1.5.5">
+                        <div className="flex items-center gap-2 rounded border border-green-200 bg-green-50 px-3 py-2">
                           <div className="h-2 w-2 rounded-full bg-green-500" />
                           <span className="text-sm font-medium text-green-700">
                             {stripe.onboarded ? "Connected and active" : "Connected - finish onboarding in Stripe"}
@@ -718,7 +718,7 @@ function SettingsContent() {
                   </CardHeader>
                   <CardBody className="space-y-3">
                     {!stripe.connected && (
-                      <div className="flex items-start gap-2 rounded border border-amber-200 bg-amber-50 px-3 py-1.5.5 text-xs text-amber-700">
+                      <div className="flex items-start gap-2 rounded border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700">
                         <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                         Connect your Stripe account above before enabling payment methods.
                       </div>

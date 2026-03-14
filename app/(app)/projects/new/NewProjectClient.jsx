@@ -158,7 +158,7 @@ export default function NewProjectClient({ contacts }) {
                           key={c.id}
                           type="button"
                           onClick={() => selectContact(c)}
-                          className="flex w-full items-center gap-3 px-3 py-1.5.5 text-left hover:bg-zinc-50"
+                          className="flex w-full items-center gap-3 px-3 py-2 text-left hover:bg-zinc-50"
                         >
                           <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-zinc-100 text-xs font-semibold text-zinc-600">
                             {c.name[0].toUpperCase()}

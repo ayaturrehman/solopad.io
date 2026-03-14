@@ -200,7 +200,7 @@ export default function TopBar() {
             <>
               <div className="fixed inset-0 z-30" onClick={() => setShowBell(false)} />
               <div className="absolute right-0 top-11 z-40 w-80 rounded border border-zinc-200 bg-white shadow-lg">
-                <div className="flex items-center justify-between border-b border-zinc-100 px-3 py-1.5.5">
+                <div className="flex items-center justify-between border-b border-zinc-100 px-3 py-2">
                   <span className="text-xs font-semibold text-zinc-900">Notifications</span>
                   {unread > 0 && (
                     <button onClick={markAllRead} className="text-[10px] text-zinc-400 hover:text-zinc-700">
@@ -215,7 +215,7 @@ export default function TopBar() {
                     notifications.map((n) => (
                       <div
                         key={n.id}
-                        className={cn("border-b border-zinc-50 px-3 py-1.5.5 last:border-0", !n.read && "bg-blue-50")}
+                        className={cn("border-b border-zinc-50 px-3 py-2 last:border-0", !n.read && "bg-blue-50")}
                       >
                         <p className="text-xs font-medium text-zinc-800">{n.title}</p>
                         <p className="mt-0.5 text-[11px] text-zinc-500">{n.body}</p>
