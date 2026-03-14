@@ -22,7 +22,6 @@ export default function Modal({
         "fixed inset-0 z-50 overflow-y-auto bg-black/30 transition-opacity duration-150",
         isSide ? "p-0" : "p-4"
       )}
-      onClick={onClose}
     >
       <div
         className={cn(
