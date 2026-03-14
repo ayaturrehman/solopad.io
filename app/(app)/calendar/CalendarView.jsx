@@ -17,6 +17,7 @@ const EVENT_COLORS = {
   paid: "bg-green-100 text-green-700",
   overdue: "bg-red-100 text-red-700",
   meeting: "bg-purple-100 text-purple-700",
+  task:    "bg-orange-100 text-orange-700",
 };
 
 export default function CalendarView({ events }) {
@@ -117,6 +118,7 @@ export default function CalendarView({ events }) {
         <span className="flex items-center gap-1.5"><span className="inline-block h-2.5 w-2.5 rounded bg-green-200" />Paid</span>
         <span className="flex items-center gap-1.5"><span className="inline-block h-2.5 w-2.5 rounded bg-red-200" />Overdue</span>
         <span className="flex items-center gap-1.5"><span className="inline-block h-2.5 w-2.5 rounded bg-purple-200" />Meeting</span>
+        <span className="flex items-center gap-1.5"><span className="inline-block h-2.5 w-2.5 rounded bg-orange-200" />Task due</span>
       </div>
     </div>
   );

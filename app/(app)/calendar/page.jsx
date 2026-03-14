@@ -10,7 +10,7 @@ export default async function CalendarPage() {
 
   const userId = session.user.id;
 
-  const [projects, invoices, bookings] = await Promise.all([
+  const [projects, invoices, bookings, tasks] = await Promise.all([
     db.project.findMany({
       where: { userId },
       select: { id: true, title: true, status: true, endDate: true },
@@ -23,6 +23,11 @@ export default async function CalendarPage() {
       where: { userId, status: { not: "cancelled" } },
       select: { id: true, title: true, clientName: true, startAt: true, endAt: true, status: true },
       orderBy: { startAt: "asc" },
+    }),
+    db.task.findMany({
+      where: { userId, dueDate: { not: null }, status: { not: "done" } },
+      select: { id: true, title: true, status: true, priority: true, dueDate: true },
+      orderBy: { dueDate: "asc" },
     }),
   ]);
 
@@ -60,6 +65,16 @@ export default async function CalendarPage() {
       label: `${b.title} · ${b.clientName}`,
       status: b.status,
       href: "/scheduler",
+    });
+  });
+
+  tasks.forEach((t) => {
+    events.push({
+      date: new Date(t.dueDate).toISOString().split("T")[0],
+      type: "task",
+      label: t.title,
+      status: t.status,
+      href: "/tasks",
     });
   });
 
