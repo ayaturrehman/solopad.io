@@ -346,19 +346,25 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
   );
 
   const query = (searchParams.get("q") || "").trim().toLowerCase();
-  const now = new Date();
-  const todayStart = startOfDay(now);
-  const todayEnd = endOfDay(now);
-  const tomorrowStart = startOfDay(new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1));
-  const tomorrowEnd = endOfDay(tomorrowStart);
-  const yesterdayStart = startOfDay(new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1));
-  const yesterdayEnd = endOfDay(yesterdayStart);
-  const thisWeekStart = startOfWeek(now);
-  const thisWeekEnd = endOfWeek(now);
-  const lastWeekStart = startOfWeek(new Date(thisWeekStart.getFullYear(), thisWeekStart.getMonth(), thisWeekStart.getDate() - 7));
-  const lastWeekEnd = endOfWeek(lastWeekStart);
 
-  const filtered = tasks.filter((task) => {
+  const dateRanges = useMemo(() => {
+    const now = new Date();
+    const todayStart = startOfDay(now);
+    const todayEnd = endOfDay(now);
+    const tomorrowStart = startOfDay(new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1));
+    const tomorrowEnd = endOfDay(tomorrowStart);
+    const yesterdayStart = startOfDay(new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1));
+    const yesterdayEnd = endOfDay(yesterdayStart);
+    const thisWeekStart = startOfWeek(now);
+    const thisWeekEnd = endOfWeek(now);
+    const lastWeekStart = startOfWeek(new Date(thisWeekStart.getFullYear(), thisWeekStart.getMonth(), thisWeekStart.getDate() - 7));
+    const lastWeekEnd = endOfWeek(lastWeekStart);
+    return { todayStart, todayEnd, tomorrowStart, tomorrowEnd, yesterdayStart, yesterdayEnd, thisWeekStart, thisWeekEnd, lastWeekStart, lastWeekEnd };
+  }, []);
+
+  const { todayStart, todayEnd, tomorrowStart, tomorrowEnd, yesterdayStart, yesterdayEnd, thisWeekStart, thisWeekEnd, lastWeekStart, lastWeekEnd } = dateRanges;
+
+  const filtered = useMemo(() => tasks.filter((task) => {
     const taskDueDate = task.dueDate ? new Date(task.dueDate) : null;
     const matchesFilter =
       filter === "all"
@@ -386,10 +392,10 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
         (task.assigneeMember?.name || "").toLowerCase().includes(query);
 
     return matchesFilter && matchesQuery;
-  });
+  }), [tasks, filter, query, todayStart, todayEnd, tomorrowStart, tomorrowEnd, yesterdayStart, yesterdayEnd, thisWeekStart, thisWeekEnd, lastWeekStart, lastWeekEnd]);
 
-  const active = filtered.filter((task) => task.status !== "done");
-  const done = filtered.filter((task) => task.status === "done");
+  const active = useMemo(() => filtered.filter((task) => task.status !== "done"), [filtered]);
+  const done = useMemo(() => filtered.filter((task) => task.status === "done"), [filtered]);
 
   function getFilterHeading(filterKey) {
     if (filterKey === "all") return "Tasks";

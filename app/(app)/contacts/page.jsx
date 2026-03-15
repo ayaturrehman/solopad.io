@@ -48,13 +48,14 @@ export default async function ContactsPage({ searchParams }) {
     ...(status !== "all" ? { status } : {}),
   };
 
-  const [totalCount, allCount, leadCount, activeCount, archivedCount] = await Promise.all([
+  const [totalCount, statusGroups] = await Promise.all([
     db.contact.count({ where }),
-    db.contact.count({ where: filter }),
-    db.contact.count({ where: { ...filter, status: "lead" } }),
-    db.contact.count({ where: { ...filter, status: "active" } }),
-    db.contact.count({ where: { ...filter, status: "archived" } }),
+    db.contact.groupBy({ by: ["status"], where: filter, _count: { _all: true } }),
   ]);
+  const allCount = statusGroups.reduce((s, g) => s + g._count._all, 0);
+  const leadCount = statusGroups.find((g) => g.status === "lead")?._count._all ?? 0;
+  const activeCount = statusGroups.find((g) => g.status === "active")?._count._all ?? 0;
+  const archivedCount = statusGroups.find((g) => g.status === "archived")?._count._all ?? 0;
 
   const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
   const currentPage = Math.min(page, totalPages);

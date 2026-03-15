@@ -114,6 +114,8 @@ model Contact {
 
   @@index([userId])
   @@index([businessId])
+  @@index([userId, status])
+  @@index([userId, createdAt])
 }
 
 // ─── Project ──────────────────────────────────────────────────────────────────
@@ -152,6 +154,8 @@ model Project {
 
   @@index([userId])
   @@index([businessId])
+  @@index([userId, archived])
+  @@index([userId, status])
 }
 
 // ─── File ─────────────────────────────────────────────────────────────────────
@@ -227,6 +231,10 @@ model Invoice {
   sentAt                DateTime?
   paidAt                DateTime?
   paymentPlans          PaymentPlan[]
+
+  @@index([projectId])
+  @@index([projectId, status])
+  @@index([projectId, createdAt])
 }
 
 // ─── PaymentPlan ──────────────────────────────────────────────────────────────
@@ -286,6 +294,7 @@ model Expense {
 
   @@index([userId])
   @@index([businessId])
+  @@index([userId, date])
 }
 
 // ─── ExpenseCategory ──────────────────────────────────────────────────────────
@@ -372,6 +381,8 @@ model Task {
 
   @@index([userId])
   @@index([businessId])
+  @@index([userId, status])
+  @@index([userId, dueDate])
 }
 
 // ─── TeamMember ───────────────────────────────────────────────────────────────

@@ -51,7 +51,7 @@ export default async function DashboardPage() {
       take: 5,
     }),
     db.invoice.findMany({
-      where: { project: { userId } },
+      where: { project: { userId }, status: { notIn: ["paid", "cancelled"] } },
       orderBy: { createdAt: "desc" },
       take: 20,
     }),
@@ -65,8 +65,8 @@ export default async function DashboardPage() {
   const openTasks = tasks.filter((t) => t.status !== "done");
   const sentProposals = proposals.filter((p) => p.status === "sent").length;
   const unsignedContracts = contracts.filter((c) => c.status !== "signed").length;
-  const openInvoices = invoices.filter((i) => i.status !== "paid" && i.status !== "cancelled");
-  const outstanding = sum(openInvoices.map((i) => i.total));
+  const openInvoices = invoices; // already filtered at DB level
+  const outstanding = sum(invoices.map((i) => i.total));
   const urgentTasks = openTasks.filter(
     (t) => t.dueDate && new Date(t.dueDate) <= new Date(now.getTime() + 1000 * 60 * 60 * 24 * 3)
   ).length;

@@ -134,46 +134,31 @@ function SettingsContent() {
   const teamEnabled = canManageTeam(plan);
 
   useEffect(() => {
-    fetch("/api/settings/profile")
-      .then((response) => response.json())
-      .then((data) => {
-        if (!data.user) return;
-        setName(data.user.name ?? "");
-        setCompanyName(data.user.companyName ?? "");
-        setCompanyLogo(data.user.companyLogo ?? "");
-        setTimezone(data.user.timezone ?? "UTC");
-      });
-
-    fetch("/api/settings/business")
-      .then((response) => response.json())
-      .then((data) => {
-        if (!data.business) return;
-        setBizName(data.business.name ?? "");
-        setBizLogo(data.business.logoUrl ?? "");
-        setBizTimezone(data.business.timezone ?? "UTC");
-        setCurrency(data.business.currency ?? "USD");
-      });
-
-    fetch("/api/settings/payments")
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.paymentMethods) setMethods(data.paymentMethods);
-      });
-
-    fetch("/api/settings/stripe/status")
-      .then((response) => response.json())
-      .then((data) => setStripe(data));
-
-    fetch("/api/settings/team")
-      .then((response) => response.json())
-      .then((data) => setMembers(data.members ?? []));
-
-    fetch("/api/settings/plan")
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.plan) setCurrentPlan(data.plan);
-      });
-
+    Promise.all([
+      fetch("/api/settings/profile").then((r) => r.json()),
+      fetch("/api/settings/business").then((r) => r.json()),
+      fetch("/api/settings/payments").then((r) => r.json()),
+      fetch("/api/settings/stripe/status").then((r) => r.json()),
+      fetch("/api/settings/team").then((r) => r.json()),
+      fetch("/api/settings/plan").then((r) => r.json()),
+    ]).then(([profile, business, payments, stripeData, team, planData]) => {
+      if (profile.user) {
+        setName(profile.user.name ?? "");
+        setCompanyName(profile.user.companyName ?? "");
+        setCompanyLogo(profile.user.companyLogo ?? "");
+        setTimezone(profile.user.timezone ?? "UTC");
+      }
+      if (business.business) {
+        setBizName(business.business.name ?? "");
+        setBizLogo(business.business.logoUrl ?? "");
+        setBizTimezone(business.business.timezone ?? "UTC");
+        setCurrency(business.business.currency ?? "USD");
+      }
+      if (payments.paymentMethods) setMethods(payments.paymentMethods);
+      setStripe(stripeData);
+      setMembers(team.members ?? []);
+      if (planData.plan) setCurrentPlan(planData.plan);
+    });
   }, []);
 
   const planColors = {

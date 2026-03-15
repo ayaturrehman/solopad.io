@@ -8,7 +8,9 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { selectClassName, textareaClassName } from "@/components/ui/Input";
-import ProposalRichTextEditor, { RichTextToolbar } from "../ProposalRichTextEditor";
+import dynamic from "next/dynamic";
+const ProposalRichTextEditor = dynamic(() => import("../ProposalRichTextEditor"), { ssr: false, loading: () => <div className="min-h-[160px] animate-pulse rounded bg-zinc-100" /> });
+const RichTextToolbar = dynamic(() => import("../ProposalRichTextEditor").then((m) => ({ default: m.RichTextToolbar })), { ssr: false, loading: () => null });
 import { normalizeRichText } from "../richText";
 
 // A4 at 96dpi
