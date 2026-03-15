@@ -37,11 +37,21 @@ export default async function PortalPage({ params }) {
     });
   }
 
-  const [files, comments, invoices, notes] = await Promise.all([
+  const [files, comments, invoices, notes, contracts, proposals] = await Promise.all([
     db.file.findMany({ where: { projectId: project.id, visibleToClient: true }, orderBy: { createdAt: "desc" } }),
     db.comment.findMany({ where: { projectId: project.id }, orderBy: { createdAt: "asc" } }),
     db.invoice.findMany({ where: { projectId: project.id }, orderBy: { createdAt: "desc" } }),
     db.note.findMany({ where: { projectId: project.id, visibleToClient: true }, orderBy: { createdAt: "desc" } }),
+    db.contract.findMany({
+      where: { projectId: project.id, status: { in: ["sent", "signed"] } },
+      select: { id: true, title: true, status: true, sentAt: true, signedAt: true, signingToken: true, clientName: true },
+      orderBy: { createdAt: "desc" },
+    }),
+    db.proposal.findMany({
+      where: { projectId: project.id, status: { in: ["sent", "accepted", "declined"] } },
+      select: { id: true, title: true, status: true, total: true, currency: true, validUntil: true, createdAt: true },
+      orderBy: { createdAt: "desc" },
+    }),
   ]);
 
   const parsedInvoices = invoices.map((inv) => ({
@@ -56,6 +66,8 @@ export default async function PortalPage({ params }) {
       comments={comments}
       invoices={parsedInvoices}
       notes={notes}
+      contracts={contracts}
+      proposals={proposals}
     />
   );
 }

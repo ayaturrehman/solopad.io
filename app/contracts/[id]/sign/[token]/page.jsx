@@ -33,6 +33,8 @@ export default async function ContractSignPage({ params }) {
       status={contract.status}
       signedAt={contract.signedAt?.toISOString() || null}
       signatureName={contract.signatureName || null}
+      providerSignatureName={contract.providerSignatureName || null}
+      providerSignedAt={contract.providerSignedAt?.toISOString() || null}
     />
   );
 }

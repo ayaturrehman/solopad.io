@@ -25,9 +25,15 @@ const DEFAULT_SECTIONS = [
   { heading: "Timeline", body: "Explain phases, milestones, and the target delivery window." },
 ];
 const DEFAULT_PRICING = [
-  { description: "Discovery and planning", amount: "" },
-  { description: "Delivery and implementation", amount: "" },
+  { description: "Discovery and planning", qty: "", rate: "", amount: "" },
+  { description: "Delivery and implementation", qty: "", rate: "", amount: "" },
 ];
+
+function fmtAmount(val) {
+  const n = parseFloat(val);
+  if (isNaN(n)) return "0.00";
+  return n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
 const CURRENCIES = ["USD", "GBP", "EUR", "CAD", "AUD"];
 
 function parseJsonArray(value, fallback) {
@@ -51,6 +57,7 @@ export default function ProposalBuilderClient({
   const router = useRouter();
   const isEdit = mode === "edit" || Boolean(initialProposal);
   const paperRef = useRef(null);
+  const pricingRef = useRef(null);
 
   // Use template margins (same as ProposalPreview / print page)
   const tpl = defaultTemplate || {};
@@ -82,7 +89,12 @@ export default function ProposalBuilderClient({
   const [pricing, setPricing] = useState(() => parseJsonArray(initialProposal?.pricing, DEFAULT_PRICING));
   const [taxRate, setTaxRate] = useState(0);
 
-  const subtotal = pricing.reduce((sum, row) => sum + (parseFloat(row.amount) || 0), 0);
+  const subtotal = pricing.reduce((sum, row) => {
+    const qty = parseFloat(row.qty) || 0;
+    const rate = parseFloat(row.rate) || 0;
+    const amount = parseFloat(row.amount) || 0;
+    return sum + (qty && rate ? qty * rate : amount);
+  }, 0);
   const taxAmount = subtotal * ((parseFloat(taxRate) || 0) / 100);
   const total = subtotal + taxAmount;
   const symbol = { USD: "$", GBP: "£", EUR: "€", CAD: "CA$", AUD: "A$" }[currency] || "$";
@@ -113,7 +125,7 @@ export default function ProposalBuilderClient({
   function addSection() { setSections((c) => [...c, { heading: "New section", body: "" }]); }
   function removeSection(i) { setSections((c) => c.filter((_, idx) => idx !== i)); }
   function updateSection(i, field, value) { setSections((c) => c.map((s, idx) => idx === i ? { ...s, [field]: value } : s)); }
-  function addPricingRow() { setPricing((c) => [...c, { description: "", amount: "" }]); }
+  function addPricingRow() { setPricing((c) => [...c, { description: "", qty: "", rate: "", amount: "" }]); }
   function removePricingRow(i) { setPricing((c) => c.filter((_, idx) => idx !== i)); }
   function updatePricingRow(i, field, value) { setPricing((c) => c.map((r, idx) => idx === i ? { ...r, [field]: value } : r)); }
 
@@ -167,6 +179,30 @@ export default function ProposalBuilderClient({
     } catch { setError("Failed to draft proposal."); }
     finally { setDrafting(false); }
   }
+
+  // Push pricing section below any page break it would cross
+  useEffect(() => {
+    if (!pricingRef.current || !paperRef.current) return;
+    const recalc = () => {
+      if (!pricingRef.current) return;
+      const pricingTop = pricingRef.current.offsetTop;
+      const pricingHeight = pricingRef.current.offsetHeight;
+      const pricingBottom = pricingTop + pricingHeight;
+      for (let page = 1; page < 20; page++) {
+        const breakPoint = PAGE_H * page;
+        if (pricingTop < breakPoint && pricingBottom > breakPoint) {
+          const pushDown = breakPoint - pricingTop + PAGE_PAD_H;
+          pricingRef.current.style.marginTop = `${pushDown}px`;
+          return;
+        }
+      }
+      pricingRef.current.style.marginTop = "0px";
+    };
+    const ro = new ResizeObserver(recalc);
+    ro.observe(paperRef.current);
+    recalc();
+    return () => ro.disconnect();
+  }, [pricing, sections, intro]);
 
   // Page break separator positions
   const pageBreaks = Array.from({ length: pageCount - 1 }, (_, i) => PAGE_H * (i + 1));
@@ -273,12 +309,13 @@ export default function ProposalBuilderClient({
             {/* Page break lines */}
             {pageBreaks.map((top, i) => (
               <div key={i} className="proposal-print-pagebreak" style={{ position: "absolute", top, left: 0, right: 0, zIndex: 10, pointerEvents: "none" }}>
-                {/* bottom of page n */}
-                <div style={{ height: 1, backgroundColor: "#d1d5db", marginBottom: 20 }} />
-                {/* top of page n+1 */}
+                {/* top border line over paper */}
+                <div style={{ height: 1, backgroundColor: "#d1d5db" }} />
+                {/* bottom border line over paper */}
                 <div style={{ position: "absolute", top: 20, left: 0, right: 0, height: 1, backgroundColor: "#d1d5db" }} />
-                {/* gray gap between pages */}
-                <div style={{ position: "absolute", top: 1, left: -100, right: -100, height: 18, backgroundColor: "#d1d5db" }} />
+                {/* gray gap — only in the gutters, not over paper content */}
+                <div style={{ position: "absolute", top: 1, left: -200, right: PAGE_W, height: 18, backgroundColor: "#d4d4d8" }} />
+                <div style={{ position: "absolute", top: 1, left: PAGE_W, right: -200, height: 18, backgroundColor: "#d4d4d8" }} />
                 <span style={{ position: "absolute", top: 3, right: 8, fontSize: 9, color: "#9ca3af", fontFamily: "Arial, sans-serif", fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", userSelect: "none" }}>
                   Page {i + 2}
                 </span>
@@ -328,7 +365,7 @@ export default function ProposalBuilderClient({
                 <div style={{ fontSize: 10, fontWeight: 600, color: "#9ca3af", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 14 }}>Scope of Work</div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
                   {sections.map((section, i) => (
-                    <div key={`section-${i}`} className="proposal-print-section" style={{ paddingBottom: 20 }}>
+                    <div key={`section-${i}`} className="proposal-print-section group" style={{ paddingBottom: 20 }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
                         <input
                           value={section.heading}
@@ -337,7 +374,7 @@ export default function ProposalBuilderClient({
                           placeholder="Section heading"
                         />
                         {sections.length > 1 && (
-                          <button type="button" onClick={() => removeSection(i)} className="h-6 w-6 inline-flex items-center justify-center rounded text-zinc-200 hover:text-red-400 transition-colors">
+                          <button type="button" onClick={() => removeSection(i)} className="h-6 w-6 inline-flex items-center justify-center rounded text-zinc-200 opacity-0 group-hover:opacity-100 hover:text-red-400 transition-all">
                             <Trash2 className="h-3.5 w-3.5" />
                           </button>
                         )}
@@ -360,8 +397,11 @@ export default function ProposalBuilderClient({
                 </button>
               </div>
 
+              {/* Divider between scope and investment */}
+              <div style={{ borderTop: "1px solid #e5e7eb", margin: "32px 0 24px" }} />
+
               {/* Pricing */}
-              <div className="proposal-print-section">
+              <div className="proposal-print-section" ref={pricingRef}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
                   <div style={{ fontSize: 10, fontWeight: 600, color: "#9ca3af", letterSpacing: "0.14em", textTransform: "uppercase" }}>Investment</div>
                   <button type="button" onClick={addPricingRow} className="inline-flex items-center gap-1 text-xs text-zinc-400 hover:text-zinc-700 transition-colors">
@@ -372,49 +412,78 @@ export default function ProposalBuilderClient({
                   <thead>
                     <tr style={{ borderBottom: "2px solid #111827" }}>
                       <th style={{ textAlign: "left", fontSize: 10, fontWeight: 600, color: "#9ca3af", letterSpacing: "0.1em", textTransform: "uppercase", paddingBottom: 6 }}>Description</th>
-                      <th style={{ textAlign: "right", fontSize: 10, fontWeight: 600, color: "#9ca3af", letterSpacing: "0.1em", textTransform: "uppercase", paddingBottom: 6, width: 120 }}>Amount</th>
+                      <th style={{ textAlign: "right", fontSize: 10, fontWeight: 600, color: "#9ca3af", letterSpacing: "0.1em", textTransform: "uppercase", paddingBottom: 6, width: 60 }}>Qty</th>
+                      <th style={{ textAlign: "right", fontSize: 10, fontWeight: 600, color: "#9ca3af", letterSpacing: "0.1em", textTransform: "uppercase", paddingBottom: 6, width: 80 }}>Rate</th>
+                      <th style={{ textAlign: "right", fontSize: 10, fontWeight: 600, color: "#9ca3af", letterSpacing: "0.1em", textTransform: "uppercase", paddingBottom: 6, width: 100 }}>Amount</th>
                       <th style={{ width: 28 }} />
                     </tr>
                   </thead>
                   <tbody>
-                    {pricing.map((row, i) => (
-                      <tr key={`pricing-${i}`} style={{ borderBottom: "1px solid #f3f4f6" }}>
-                        <td style={{ padding: "7px 0" }}>
-                          <input value={row.description} onChange={(e) => updatePricingRow(i, "description", e.target.value)}
-                            style={{ width: "100%", border: 0, background: "transparent", fontSize: 13, color: "#374151", outline: "none" }}
-                            placeholder="Description" />
-                        </td>
-                        <td style={{ padding: "7px 0", textAlign: "right" }}>
-                          <input type="number" min="0" step="0.01" value={row.amount} onChange={(e) => updatePricingRow(i, "amount", e.target.value)}
-                            style={{ width: "100%", border: 0, background: "transparent", fontSize: 13, fontWeight: 600, color: "#111827", outline: "none", textAlign: "right" }}
-                            placeholder="0.00" />
-                        </td>
-                        <td style={{ padding: "7px 0 7px 8px" }}>
-                          {pricing.length > 1 && (
-                            <button type="button" onClick={() => removePricingRow(i)} className="h-5 w-5 inline-flex items-center justify-center text-zinc-200 hover:text-red-400 transition-colors">
-                              <Trash2 className="h-3.5 w-3.5" />
-                            </button>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
+                    {pricing.map((row, i) => {
+                      const qty = parseFloat(row.qty) || 0;
+                      const rate = parseFloat(row.rate) || 0;
+                      const rowAmount = qty && rate ? qty * rate : parseFloat(row.amount) || 0;
+                      return (
+                        <tr key={`pricing-${i}`} style={{ borderBottom: "1px solid #f3f4f6" }} className="group">
+                          <td style={{ padding: "7px 0" }}>
+                            <input value={row.description} onChange={(e) => updatePricingRow(i, "description", e.target.value)}
+                              style={{ width: "100%", border: 0, background: "transparent", fontSize: 13, color: "#374151", outline: "none" }}
+                              placeholder="Line item description" />
+                          </td>
+                          <td style={{ padding: "7px 0", textAlign: "right" }}>
+                            <input type="number" min="0" step="1" value={row.qty} onChange={(e) => updatePricingRow(i, "qty", e.target.value)}
+                              style={{ width: "100%", border: 0, background: "transparent", fontSize: 13, color: "#374151", outline: "none", textAlign: "right" }}
+                              placeholder="-" />
+                          </td>
+                          <td style={{ padding: "7px 0", textAlign: "right" }}>
+                            <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 2 }}>
+                              {row.rate && <span style={{ fontSize: 12, color: "#9ca3af" }}>{symbol}</span>}
+                              <input type="number" min="0" step="0.01" value={row.rate} onChange={(e) => updatePricingRow(i, "rate", e.target.value)}
+                                style={{ width: 60, border: 0, background: "transparent", fontSize: 13, color: "#374151", outline: "none", textAlign: "right" }}
+                                placeholder="-" />
+                            </div>
+                          </td>
+                          <td style={{ padding: "7px 0", textAlign: "right" }}>
+                            <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 2 }}>
+                              <span style={{ fontSize: 13, fontWeight: 600, color: "#9ca3af", userSelect: "none" }}>{symbol}</span>
+                              {qty && rate ? (
+                                <span style={{ fontSize: 13, fontWeight: 600, color: "#111827" }}>{fmtAmount(rowAmount)}</span>
+                              ) : (
+                                <input type="number" min="0" step="0.01" value={row.amount} onChange={(e) => updatePricingRow(i, "amount", e.target.value)}
+                                  style={{ width: 80, border: 0, background: "transparent", fontSize: 13, fontWeight: 600, color: "#111827", outline: "none", textAlign: "right" }}
+                                  placeholder="0.00" />
+                              )}
+                            </div>
+                          </td>
+                          <td style={{ padding: "7px 0 7px 8px" }}>
+                            {pricing.length > 1 && (
+                              <button type="button" onClick={() => removePricingRow(i)}
+                                className="h-5 w-5 inline-flex items-center justify-center text-zinc-200 opacity-0 group-hover:opacity-100 hover:text-red-400 transition-all">
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                   <tfoot>
                     {taxAmount > 0 && (
                       <tr>
-                        <td colSpan={2} style={{ paddingTop: 8, fontSize: 12, color: "#6b7280", textAlign: "right" }}>Subtotal: {symbol}{subtotal.toFixed(2)}</td>
+                        <td colSpan={3} style={{ paddingTop: 8, fontSize: 12, color: "#6b7280", textAlign: "right" }}>Subtotal: {symbol}{fmtAmount(subtotal)}</td>
                         <td />
                       </tr>
                     )}
                     {taxAmount > 0 && (
                       <tr>
-                        <td colSpan={2} style={{ fontSize: 12, color: "#6b7280", textAlign: "right" }}>Tax ({taxRate}%): +{symbol}{taxAmount.toFixed(2)}</td>
+                        <td colSpan={3} style={{ fontSize: 12, color: "#6b7280", textAlign: "right" }}>Tax ({taxRate}%): +{symbol}{fmtAmount(taxAmount)}</td>
                         <td />
                       </tr>
                     )}
                     <tr style={{ borderTop: "2px solid #111827" }}>
                       <td style={{ paddingTop: 8, fontSize: 13, fontWeight: 700, color: "#111827" }}>Total</td>
-                      <td style={{ paddingTop: 8, fontSize: 15, fontWeight: 700, color: "#111827", textAlign: "right" }}>{symbol}{total.toFixed(2)}</td>
+                      <td colSpan={2} />
+                      <td style={{ paddingTop: 8, fontSize: 15, fontWeight: 700, color: "#111827", textAlign: "right" }}>{symbol}{fmtAmount(total)}</td>
                       <td />
                     </tr>
                   </tfoot>

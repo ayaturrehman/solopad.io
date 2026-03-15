@@ -34,7 +34,7 @@ export async function POST(request, { params }) {
 
   const contract = await db.contract.findFirst({
     where: { id, userId: session.user.id },
-    include: { project: { select: { id: true, title: true } } },
+    include: { project: { select: { id: true, title: true, portalToken: true } } },
   });
 
   if (!contract) return NextResponse.json({ error: "Contract not found." }, { status: 404 });
@@ -42,19 +42,22 @@ export async function POST(request, { params }) {
   const fromEmail =
     process.env.RESEND_FROM_EMAIL ||
     process.env.FROM_EMAIL ||
-    "noreply@solopad.app";
+    "onboarding@resend.dev";
 
   // Build the signing URL using the contract's signingToken
-  const baseUrl = process.env.NEXTAUTH_URL || process.env.VERCEL_URL
-    ? `https://${process.env.VERCEL_URL}`
-    : "http://localhost:3000";
+  const baseUrl = process.env.NEXTAUTH_URL ||
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
   const signingUrl = `${process.env.NEXTAUTH_URL || baseUrl}/contracts/${contract.id}/sign/${contract.signingToken}`;
+  const portalUrl = contract.project?.portalToken
+    ? `${process.env.NEXTAUTH_URL || baseUrl}/p/${contract.project.portalToken}`
+    : null;
 
   try {
-    await resend.emails.send({
+    const result = await resend.emails.send({
       from: fromEmail,
       to: email,
       subject,
+      replyTo: session.user.email || undefined,
       html: `
         <div style="font-family:Inter,Arial,sans-serif;line-height:1.6;color:#18181b;max-width:600px">
           <p>Hi ${contract.clientName || "there"},</p>
@@ -65,10 +68,18 @@ export async function POST(request, { params }) {
             </a>
           </p>
           <p style="color:#71717a;font-size:12px">Or copy this link: <a href="${signingUrl}" style="color:#3b82f6">${signingUrl}</a></p>
+          ${portalUrl ? `
+          <div style="margin-top:24px;padding:16px;background:#f9fafb;border-radius:8px;border:1px solid #e5e7eb">
+            <p style="margin:0 0 6px;font-size:13px;font-weight:600;color:#111827">Your client portal</p>
+            <p style="margin:0 0 10px;font-size:12px;color:#6b7280">View all files, invoices, messages and more in your project portal.</p>
+            <a href="${portalUrl}" style="font-size:12px;color:#3b82f6">${portalUrl}</a>
+          </div>` : ""}
           <p style="color:#71717a;font-size:12px;margin-top:24px;border-top:1px solid #e5e7eb;padding-top:16px">Sent from SoloPad</p>
         </div>
       `,
     });
+
+    console.log("[send-contract] Resend result:", JSON.stringify(result));
 
     await db.contract.update({
       where: { id: contract.id },
@@ -81,6 +92,7 @@ export async function POST(request, { params }) {
 
     return NextResponse.json({ ok: true });
   } catch (error) {
+    console.error("[send-contract] Error:", error);
     return NextResponse.json(
       { error: error.message || "Could not send contract." },
       { status: 500 }

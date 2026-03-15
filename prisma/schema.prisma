@@ -569,11 +569,13 @@ model Contract {
   clauses        String
   status         String    @default("draft")
   sentAt         DateTime?
-  signedAt       DateTime?
-  signatureName  String?
-  signingToken   String?   @unique @default(cuid())
-  signatureIp    String?
-  signatureDate  DateTime?
+  signedAt               DateTime?
+  signatureName          String?
+  signingToken           String?   @unique @default(cuid())
+  signatureIp            String?
+  signatureDate          DateTime?
+  providerSignatureName  String?
+  providerSignedAt       DateTime?
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 

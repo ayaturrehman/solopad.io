@@ -329,8 +329,12 @@ export function ContractPDF({ contract, template, style }) {
                 <View style={styles.signatureLine} />
                 {tpl?.businessName ? (
                   <Text style={styles.signatureName}>{tpl.businessName}</Text>
+                ) : contract.providerSignatureName ? (
+                  <Text style={styles.signatureName}>{contract.providerSignatureName}</Text>
                 ) : null}
-                <Text style={styles.signatureDate}>Date: _______________</Text>
+                <Text style={styles.signatureDate}>
+                  {contract.providerSignedAt ? `Signed: ${formatDateStr(contract.providerSignedAt)}` : "Date: _______________"}
+                </Text>
               </View>
               <View style={styles.signatureSide}>
                 <Text style={styles.signatureLabel}>Client Signature</Text>

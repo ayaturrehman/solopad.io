@@ -490,30 +490,53 @@ export function ProposalPDF({ proposal, template, style }) {
           ) : null}
 
           {/* Pricing table */}
-          <Text style={[styles.sectionLabel, { marginBottom: 8 }]}>Pricing</Text>
-          <View style={styles.tableWrapper}>
-            <View style={styles.tableHeader}>
-              <Text style={[styles.tableHeaderText, { flex: 1 }]}>Description</Text>
-              <Text style={[styles.tableHeaderText, { width: 90, textAlign: "right" }]}>Amount</Text>
-            </View>
-            {pricing.map((item, i) => (
-              <View
-                key={i}
-                style={[styles.tableRow, i % 2 === 1 ? styles.tableRowAlt : {}]}
-              >
-                <Text style={styles.tableDesc}>{item.description || `Item ${i + 1}`}</Text>
-                <Text style={styles.tableAmt}>
-                  {formatMoney(item.amount || 0, proposal.currency)}
-                </Text>
-              </View>
-            ))}
-            <View style={styles.tableTotalRow}>
-              <Text style={styles.tableTotalLabel}>Total</Text>
-              <Text style={styles.tableTotalValue}>
-                {formatMoney(proposal.total, proposal.currency)}
-              </Text>
-            </View>
-          </View>
+          {(() => {
+            const hasQtyRate = pricing.some((r) => r.qty || r.rate);
+            return (
+              <>
+                <Text style={[styles.sectionLabel, { marginBottom: 8 }]}>Pricing</Text>
+                <View style={styles.tableWrapper}>
+                  <View style={styles.tableHeader}>
+                    <Text style={[styles.tableHeaderText, { flex: 1 }]}>Description</Text>
+                    {hasQtyRate && (
+                      <>
+                        <Text style={[styles.tableHeaderText, { width: 40, textAlign: "right" }]}>Qty</Text>
+                        <Text style={[styles.tableHeaderText, { width: 70, textAlign: "right" }]}>Rate</Text>
+                      </>
+                    )}
+                    <Text style={[styles.tableHeaderText, { width: 90, textAlign: "right" }]}>Amount</Text>
+                  </View>
+                  {pricing.map((item, i) => {
+                    const qty = parseFloat(item.qty) || 0;
+                    const rate = parseFloat(item.rate) || 0;
+                    const rowAmt = qty && rate ? qty * rate : parseFloat(item.amount) || 0;
+                    return (
+                      <View key={i} style={[styles.tableRow, i % 2 === 1 ? styles.tableRowAlt : {}]}>
+                        <Text style={styles.tableDesc}>{item.description || `Item ${i + 1}`}</Text>
+                        {hasQtyRate && (
+                          <>
+                            <Text style={[styles.tableAmt, { width: 40 }]}>{item.qty || "-"}</Text>
+                            <Text style={[styles.tableAmt, { width: 70 }]}>
+                              {item.rate ? formatMoney(item.rate, proposal.currency) : "-"}
+                            </Text>
+                          </>
+                        )}
+                        <Text style={styles.tableAmt}>
+                          {formatMoney(rowAmt, proposal.currency)}
+                        </Text>
+                      </View>
+                    );
+                  })}
+                  <View style={styles.tableTotalRow}>
+                    <Text style={styles.tableTotalLabel}>Total</Text>
+                    <Text style={styles.tableTotalValue}>
+                      {formatMoney(proposal.total, proposal.currency)}
+                    </Text>
+                  </View>
+                </View>
+              </>
+            );
+          })()}
 
           {/* Terms */}
           {tpl?.showTerms && tpl?.termsText ? (

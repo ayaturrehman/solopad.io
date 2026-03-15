@@ -127,7 +127,7 @@ export default function ContractBuilderClient({
   forceAIBrief = false,
 }) {
   const router = useRouter();
-  const isEdit = mode === "edit" || Boolean(initialContract);
+  const isEdit = mode === "edit" || Boolean(initialContract?.id);
   const paperRef = useRef(null);
 
   const [saving, setSaving] = useState(false);
@@ -381,9 +381,13 @@ export default function ContractBuilderClient({
             {/* Page break lines */}
             {pageBreaks.map((top, i) => (
               <div key={i} style={{ position: "absolute", top, left: 0, right: 0, zIndex: 10, pointerEvents: "none" }}>
-                <div style={{ height: 1, backgroundColor: "#d1d5db", marginBottom: 20 }} />
+                {/* top border line over paper */}
+                <div style={{ height: 1, backgroundColor: "#d1d5db" }} />
+                {/* bottom border line over paper */}
                 <div style={{ position: "absolute", top: 20, left: 0, right: 0, height: 1, backgroundColor: "#d1d5db" }} />
-                <div style={{ position: "absolute", top: 1, left: -100, right: -100, height: 18, backgroundColor: "#d1d5db" }} />
+                {/* gray gap — only in the gutters, not over paper content */}
+                <div style={{ position: "absolute", top: 1, left: -200, right: PAGE_W, height: 18, backgroundColor: "#d4d4d8" }} />
+                <div style={{ position: "absolute", top: 1, left: PAGE_W, right: -200, height: 18, backgroundColor: "#d4d4d8" }} />
                 <span style={{ position: "absolute", top: 3, right: 8, fontSize: 9, color: "#9ca3af", fontFamily: "Arial, sans-serif", fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", userSelect: "none" }}>
                   Page {i + 2}
                 </span>
