@@ -5,8 +5,20 @@ import "./globals.css";
 const kumbhSans = Kumbh_Sans({ subsets: ["latin"], variable: "--font-kumbh-sans" });
 
 export const metadata = {
-  title: "Solopad — The One-Link Client Portal for Freelancers",
-  description: "Send clients one link. They see everything. You stop chasing.",
+  title: "SoloPad — The All-in-One Freelance Workspace",
+  description: "Proposals, contracts, invoices, CRM, time tracking, scheduling, and a client portal — everything freelancers need to manage clients and get paid. Starting at $9/mo.",
+  openGraph: {
+    title: "SoloPad — The All-in-One Freelance Workspace",
+    description: "Proposals, contracts, invoices, CRM, time tracking, and a client portal for freelancers. Starting at $9/mo.",
+    url: "https://solopad.io",
+    siteName: "SoloPad",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "SoloPad — The All-in-One Freelance Workspace",
+    description: "Everything freelancers need to manage clients and get paid. Starting at $9/mo.",
+  },
 };
 
 export const viewport = {

@@ -7,6 +7,8 @@ import BrandLogo from "@/components/shared/BrandLogo";
 import {
   Zap, ArrowRight, Check, FileText,
   CreditCard, Clock, Users, Menu, X,
+  Link2, PenTool, CheckSquare, Calendar,
+  DollarSign, UserPlus, Printer, TrendingUp,
 } from "lucide-react";
 import { PLAN_ORDER, getPlan } from "@/lib/plans";
 
@@ -427,20 +429,20 @@ export default function LandingPage() {
                       <span className="pk-ping" style={{ position:"absolute", inset:0, borderRadius:"50%", background:C }} />
                       <span style={{ width:8, height:8, borderRadius:"50%", background:C, display:"block", position:"relative" }} />
                     </span>
-                    <span style={{ fontSize:13, fontWeight:600, color:C }}>Client portals for freelancers</span>
+                    <span style={{ fontSize:13, fontWeight:600, color:C }}>The all-in-one freelance workspace</span>
                   </div>
                 </div>
 
                 <div className="pk-reveal pk-d1">
                   <h1 style={{ fontSize:"clamp(48px, 6.4vw, 88px)", fontWeight:700, lineHeight:0.98, letterSpacing:"-2.8px", color:CDk, marginBottom:22, maxWidth:760 }}>
-                    One link.
+                    Run your freelance
                     <br />
-                    Your client sees
+                    business from
                     <br />
-                    <span style={{ color:C }}>everything.</span>
+                    <span style={{ color:C }}>one place.</span>
                   </h1>
                   <p style={{ fontSize:19, color:"#52525B", lineHeight:1.74, maxWidth:560, marginBottom:32 }}>
-                    Send one clean link. Your client sees files, feedback, invoices, and progress in one place, without logging in or asking what happens next.
+                    Proposals, contracts, invoices, time tracking, scheduling, and a client portal — everything you need to manage clients and get paid. Starting at $9/mo.
                   </p>
                 </div>
 
@@ -524,6 +526,36 @@ export default function LandingPage() {
           </div>
         </section>
 
+        {/* ── Competitor Comparison ────────────────────── */}
+        <section style={{ background:"#fff", padding:"56px 0", borderBottom:`1px solid #F0F0F0` }}>
+          <div className="pk-shell pk-section-stage" data-pk-section-drift>
+            <div className="pk-reveal" style={{ textAlign:"center", marginBottom:36 }}>
+              <p style={{ fontSize:12, fontWeight:700, color:C, textTransform:"uppercase", letterSpacing:1.5, marginBottom:10 }}>Why freelancers switch to SoloPad</p>
+              <p style={{ fontSize:18, fontWeight:600, color:CDk }}>Same features. Lower price. Zero bloat.</p>
+            </div>
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(260px, 1fr))", gap:18 }}>
+              {[
+                { competitor:"HoneyBook", pain:"charges $36/mo", fix:"SoloPad starts at $9/mo", accent:O },
+                { competitor:"Dubsado",   pain:"takes hours to set up", fix:"SoloPad is ready in 10 minutes", accent:C },
+                { competitor:"Bonsai",    pain:"is US-only for tax features", fix:"SoloPad works globally", accent:"#7C3AED" },
+              ].map(({ competitor, pain, fix, accent }) => (
+                <div key={competitor} className="pk-reveal" style={{ background:"#FAFAFA", border:"1px solid #EBEBEB", borderRadius:18, padding:"24px 26px", boxShadow:"0 4px 16px rgba(0,0,0,.04)" }}>
+                  <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:14 }}>
+                    <div style={{ width:8, height:8, borderRadius:"50%", background:accent, flexShrink:0 }} />
+                    <span style={{ fontSize:13, fontWeight:700, color:"#94A3B8", textDecoration:"line-through" }}>{competitor} {pain}</span>
+                  </div>
+                  <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+                    <div style={{ width:20, height:20, borderRadius:"50%", background:C, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                      <Check size={10} color="#fff" strokeWidth={3} />
+                    </div>
+                    <span style={{ fontSize:15, fontWeight:700, color:CDk }}>{fix}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* ── Problem ──────────────────────────────────── */}
         <section style={{ background:"#F8FAFC", padding:"96px 0" }}>
           <div className="pk-shell pk-section-stage" data-pk-section-drift>
@@ -569,6 +601,7 @@ export default function LandingPage() {
                 { icon:Clock,       p:"Chasing feedback via email",    f:"One portal link — clients comment directly. No hunting inboxes." },
                 { icon:FileText,    p:"Files scattered everywhere",     f:"Upload once. Latest version always there. Zero version confusion." },
                 { icon:CreditCard,  p:"Awkward invoice follow-ups",     f:"Client pays on the portal. Stripe handles it. You get notified." },
+                { icon:Users,       p:"No CRM — leads tracked on sticky notes", f:"SoloPad's built-in CRM tracks every lead, client, and deal. CSV import included." },
               ].map(({ icon:Icon, p, f }, i) => (
                 <div
                   key={p}
@@ -902,6 +935,45 @@ export default function LandingPage() {
           </div>
         </section>
 
+        {/* ── Everything You Need ──────────────────────── */}
+        <section style={{ background:"#F8FAFC", padding:"96px 0" }}>
+          <div className="pk-shell pk-section-stage" data-pk-section-drift>
+            <div className="pk-reveal" style={{ textAlign:"center", marginBottom:52 }}>
+              <p style={{ fontSize:12, fontWeight:700, color:C, textTransform:"uppercase", letterSpacing:1.5, marginBottom:12 }}>Everything you need</p>
+              <h2 style={{ fontSize:"clamp(28px, 3.8vw, 52px)", fontWeight:700, color:CDk, letterSpacing:"-1px", lineHeight:1.08, marginBottom:14 }}>One tool. Not ten.</h2>
+              <p style={{ fontSize:16, color:CMute, maxWidth:480, margin:"0 auto", lineHeight:1.72 }}>Stop juggling apps. SoloPad handles your entire client workflow.</p>
+            </div>
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(240px, 1fr))", gap:18 }}>
+              {[
+                { Icon:Link2,        title:"Client Portal",          desc:"Share one link. Clients see files, progress, and invoices." },
+                { Icon:FileText,     title:"Proposals",              desc:"AI-drafted proposals that clients accept with one click." },
+                { Icon:PenTool,      title:"Contracts & E-sign",     desc:"Legally binding contracts with built-in e-signature." },
+                { Icon:CreditCard,   title:"Invoices & Payments",    desc:"Line-item invoices with Stripe. Clients pay online." },
+                { Icon:Users,        title:"CRM & Contacts",         desc:"Track leads, active clients, and archived contacts." },
+                { Icon:CheckSquare,  title:"Projects & Tasks",       desc:"Milestones, subtasks, and AI-generated task lists." },
+                { Icon:Clock,        title:"Time Tracking",          desc:"Log billable hours per project. Know your true hourly rate." },
+                { Icon:Calendar,     title:"Scheduler & Bookings",   desc:"Share a booking page. Clients book meetings themselves." },
+                { Icon:TrendingUp,   title:"Finance & Expenses",     desc:"Revenue, expenses, and profit at a glance." },
+                { Icon:UserPlus,     title:"Team Collaboration",     desc:"Invite teammates with role-based permissions." },
+                { Icon:Printer,      title:"PDF Templates",          desc:"Customizable PDFs for invoices, proposals, and contracts." },
+                { Icon:Zap,          title:"AI Assistant",           desc:"AI drafts proposals, contracts, and task lists from a brief." },
+              ].map(({ Icon, title, desc }, i) => (
+                <div
+                  key={title}
+                  className={`pk-reveal pk-d${(i % 4) + 1}`}
+                  style={{ background:"#fff", border:"1px solid #E5E7EB", borderRadius:18, padding:"24px 22px", boxShadow:"0 4px 18px rgba(15,23,42,.05)" }}
+                >
+                  <div style={{ width:42, height:42, borderRadius:12, background:CLt, display:"flex", alignItems:"center", justifyContent:"center", marginBottom:16 }}>
+                    <Icon size={18} color={C} />
+                  </div>
+                  <p style={{ fontSize:15, fontWeight:700, color:CDk, marginBottom:6 }}>{title}</p>
+                  <p style={{ fontSize:13, color:CMute, lineHeight:1.65 }}>{desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* ── How it works ─────────────────────────────── */}
         <section id="how-it-works" style={{ background:PRT, padding:"96px 0", position:"relative", overflow:"hidden" }}>
           <ParallaxImageCard
@@ -989,6 +1061,61 @@ export default function LandingPage() {
           </div>
         </section>
 
+        {/* ── Testimonials ─────────────────────────────── */}
+        {/* TODO: Replace with real testimonials */}
+        <section style={{ background:"#fff", padding:"96px 0" }}>
+          <div className="pk-shell pk-section-stage" data-pk-section-drift>
+            <div className="pk-reveal" style={{ textAlign:"center", marginBottom:52 }}>
+              <p style={{ fontSize:12, fontWeight:700, color:C, textTransform:"uppercase", letterSpacing:1.5, marginBottom:12 }}>What freelancers say</p>
+              <h2 style={{ fontSize:"clamp(26px, 3.4vw, 44px)", fontWeight:700, color:CDk, letterSpacing:"-0.8px" }}>Built by a freelancer. Loved by freelancers.</h2>
+            </div>
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(280px, 1fr))", gap:22 }}>
+              {[
+                {
+                  quote:"I was paying $36/mo for HoneyBook and using maybe 20% of it. SoloPad gives me everything I need for $9.",
+                  name:"Alex R.",
+                  role:"Freelance Designer",
+                  avatar:"photo-1573496359142-b8d87734a5a2",
+                },
+                {
+                  quote:"I set it up in 10 minutes and sent my first client portal the same day. My clients love it.",
+                  name:"James K.",
+                  role:"Web Developer",
+                  avatar:"photo-1552058544-f2b08422138a",
+                },
+                {
+                  quote:"My clients pay faster now because the invoice is right there in the portal. No more chasing.",
+                  name:"Sarah M.",
+                  role:"Marketing Consultant",
+                  avatar:"photo-1580489944761-15a19d654956",
+                },
+              ].map(({ quote, name, role, avatar }, i) => (
+                <div
+                  key={name}
+                  className={`pk-reveal pk-d${i + 1}`}
+                  style={{ background:"#FAFAFA", border:"1px solid #EBEBEB", borderRadius:20, padding:"28px 26px", boxShadow:"0 4px 18px rgba(15,23,42,.05)" }}
+                >
+                  <div style={{ display:"flex", gap:4, marginBottom:16 }}>
+                    {[1,2,3,4,5].map(s => <span key={s} style={{ color:"#F59E0B", fontSize:14 }}>★</span>)}
+                  </div>
+                  <p style={{ fontSize:15, color:"#334155", lineHeight:1.72, marginBottom:22 }}>&ldquo;{quote}&rdquo;</p>
+                  <div style={{ display:"flex", alignItems:"center", gap:12 }}>
+                    <img
+                      src={`https://images.unsplash.com/${avatar}?w=64&h=64&q=80&auto=format&fit=crop&crop=face`}
+                      alt={name}
+                      style={{ width:40, height:40, borderRadius:"50%", objectFit:"cover", border:"2px solid #E2E8F0" }}
+                    />
+                    <div>
+                      <p style={{ fontSize:14, fontWeight:700, color:CDk, marginBottom:2 }}>{name}</p>
+                      <p style={{ fontSize:12, color:CMute }}>{role}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* ── Pricing ──────────────────────────────────── */}
         <section id="pricing" style={{ background:"#FFF7ED", padding:"96px 0", position:"relative", overflow:"hidden" }}>
           <div className="pk-shell pk-section-stage" data-pk-section-drift>
@@ -1033,6 +1160,32 @@ export default function LandingPage() {
           </div>
         </section>
 
+        {/* ── Email Capture ────────────────────────────── */}
+        {/* TODO: Connect to ConvertKit/Mailchimp */}
+        <section style={{ background:"#F8FAFC", padding:"64px 0", borderTop:"1px solid #EBEBEB", borderBottom:"1px solid #EBEBEB" }}>
+          <div className="pk-shell">
+            <div className="pk-reveal" style={{ maxWidth:520, margin:"0 auto", textAlign:"center" }}>
+              <p style={{ fontSize:20, fontWeight:700, color:CDk, marginBottom:8 }}>Get freelancer tips &amp; product updates</p>
+              <p style={{ fontSize:14, color:CMute, marginBottom:28 }}>No spam. Unsubscribe anytime.</p>
+              <form
+                onSubmit={(e) => { e.preventDefault(); const email = e.target.email.value; if (email) { fetch("/api/newsletter/subscribe", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ email }) }).catch(() => {}); e.target.reset(); } }}
+                style={{ display:"flex", gap:10, flexWrap:"wrap", justifyContent:"center" }}
+              >
+                <input
+                  type="email"
+                  name="email"
+                  required
+                  placeholder="your@email.com"
+                  style={{ flex:"1 1 240px", minWidth:0, border:"1.5px solid #D1D5DB", borderRadius:10, padding:"12px 16px", fontSize:15, outline:"none", color:CDk, background:"#fff" }}
+                />
+                <button type="submit" className="btn-primary" style={{ flexShrink:0 }}>
+                  Subscribe <ArrowRight size={14} />
+                </button>
+              </form>
+            </div>
+          </div>
+        </section>
+
         {/* ── Final CTA ────────────────────────────────── */}
         <section style={{ background:"#fff", padding:"80px 0" }}>
           <div className="pk-shell">
@@ -1065,7 +1218,7 @@ export default function LandingPage() {
                   Ready to stop chasing?
                 </h2>
                 <p style={{ fontSize:17, color:"rgba(255,255,255,.8)", maxWidth:460, margin:"0 auto 36px", lineHeight:1.65 }}>
-                  Set up your first client portal in 10 minutes. Free forever on one project.
+                  Set up your freelance workspace in 10 minutes. Proposals, contracts, invoicing, CRM, and a client portal — free forever on one project.
                 </p>
                 <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:14, flexWrap:"wrap" }}>
                   <Link href="/signup" style={{ background:"#fff", color:C, borderRadius:12, padding:"14px 30px", fontSize:16, fontWeight:700, textDecoration:"none", display:"inline-flex", alignItems:"center", gap:8, boxShadow:"0 8px 28px rgba(0,0,0,.18)", transition:"transform .15s" }}>
@@ -1081,16 +1234,59 @@ export default function LandingPage() {
         </section>
 
         {/* ── Footer ───────────────────────────────────── */}
-        <footer style={{ borderTop:"1px solid #EBEBEB", background:"#fff", padding:"32px 0" }}>
-          <div className="pk-shell pk-footer-inner">
-            <div style={{ display:"flex", alignItems:"center", gap:9 }}>
-              <BrandLogo markClassName="h-7 w-7" textClassName="text-[15px] font-black text-[#111111]" />
-              <span style={{ fontSize:13, color:"#CCCCCC" }}>— Built for freelancers who want to get paid.</span>
+        <footer style={{ borderTop:"1px solid #EBEBEB", background:"#fff", padding:"56px 0 32px" }}>
+          <div className="pk-shell">
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(160px, 1fr))", gap:40, marginBottom:48 }}>
+              {/* Col 1 — Brand */}
+              <div>
+                <BrandLogo markClassName="h-7 w-7" textClassName="text-[15px] font-black text-[#111111]" />
+                <p style={{ fontSize:13, color:"#AAAAAA", marginTop:12, lineHeight:1.65 }}>Built for freelancers who want to get paid.</p>
+              </div>
+              {/* Col 2 — Product */}
+              <div>
+                <p style={{ fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1.2, color:"#94A3B8", marginBottom:16 }}>Product</p>
+                <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+                  {[
+                    { label:"Features",      href:"#features" },
+                    { label:"Pricing",       href:"#pricing" },
+                    { label:"How it works",  href:"#how-it-works" },
+                  ].map(({ label, href }) => (
+                    <Link key={label} href={href} style={{ fontSize:14, color:"#555", textDecoration:"none" }}>{label}</Link>
+                  ))}
+                </div>
+              </div>
+              {/* Col 3 — Resources */}
+              <div>
+                <p style={{ fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1.2, color:"#94A3B8", marginBottom:16 }}>Resources</p>
+                <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+                  {[
+                    { label:"Blog",         href:"/blog" },
+                    { label:"Help Center",  href:"#" },
+                    { label:"Contact",      href:"mailto:ayaturrehman2050@gmail.com" },
+                  ].map(({ label, href }) => (
+                    <Link key={label} href={href} style={{ fontSize:14, color:"#555", textDecoration:"none" }}>{label}</Link>
+                  ))}
+                </div>
+              </div>
+              {/* Col 4 — Legal */}
+              <div>
+                <p style={{ fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1.2, color:"#94A3B8", marginBottom:16 }}>Legal</p>
+                <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+                  {[
+                    { label:"Privacy Policy",    href:"#" },
+                    { label:"Terms of Service",  href:"#" },
+                  ].map(({ label, href }) => (
+                    <Link key={label} href={href} style={{ fontSize:14, color:"#555", textDecoration:"none" }}>{label}</Link>
+                  ))}
+                </div>
+              </div>
             </div>
-            <div className="pk-footer-links">
-              <Link href={authHref} style={{ color:"#AAAAAA", textDecoration:"none" }}>Log in</Link>
-              <Link href="/signup" style={{ color:"#AAAAAA", textDecoration:"none" }}>Sign up</Link>
-              <span>© 2026 Solopad</span>
+            <div style={{ borderTop:"1px solid #F0F0F0", paddingTop:24, display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:12 }}>
+              <span style={{ fontSize:13, color:"#AAAAAA" }}>© 2026 SoloPad. All rights reserved.</span>
+              <div style={{ display:"flex", gap:20 }}>
+                <Link href={authHref} style={{ fontSize:13, color:"#AAAAAA", textDecoration:"none" }}>Log in</Link>
+                <Link href="/signup" style={{ fontSize:13, color:"#AAAAAA", textDecoration:"none" }}>Sign up</Link>
+              </div>
             </div>
           </div>
         </footer>
