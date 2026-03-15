@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { sanitizeHtml } from "@/lib/sanitize";
 
 // Paper dimensions in px at 96dpi
 const PAPER_SIZES = {
@@ -213,7 +214,7 @@ export default function ContractPreview({ contract, template, noScale = false })
                   </div>
                   {clause.body ? (
                     <div
-                      dangerouslySetInnerHTML={{ __html: clause.body }}
+                      dangerouslySetInnerHTML={{ __html: sanitizeHtml(clause.body) }}
                       style={{ paddingLeft: pt(16), fontSize: pt(baseFontSize - 1), color: "#6b7280", lineHeight: 1.7, marginTop: pt(4) }}
                     />
                   ) : null}

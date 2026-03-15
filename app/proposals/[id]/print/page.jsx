@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/session";
 import db from "@/lib/db";
+import AutoPrint from "@/components/AutoPrint";
+import { sanitizeHtml } from "@/lib/sanitize";
 
 const PAPER_SIZES = {
   A4:     { width: 794,  height: 1123, css: "210mm 297mm" },
@@ -121,7 +123,7 @@ export default async function ProposalPrintPage({ params }) {
         .pb { break-inside: avoid; }
       `}</style>
 
-      <script dangerouslySetInnerHTML={{ __html: `window.onload=function(){window.print();}` }} />
+      <AutoPrint />
 
       <div className="pp">
 
@@ -184,7 +186,7 @@ export default async function ProposalPrintPage({ params }) {
           {proposal.intro && (
             <div className="pb" style={{ marginBottom: pt(24) }}>
               <div style={lbl}>Introduction</div>
-              <div dangerouslySetInnerHTML={{ __html: proposal.intro }} style={{ fontSize: pt(base - 0.5), color: "#6b7280", lineHeight: 1.7 }} />
+              <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(proposal.intro) }} style={{ fontSize: pt(base - 0.5), color: "#6b7280", lineHeight: 1.7 }} />
             </div>
           )}
 
@@ -196,7 +198,7 @@ export default async function ProposalPrintPage({ params }) {
                   <div style={{ marginBottom: pt(4) }}>
                     <span style={{ fontSize: pt(base + 1), fontWeight: 700, color: "#111827" }}>{sec.heading || `Section ${i + 1}`}</span>
                   </div>
-                  {sec.body && <div dangerouslySetInnerHTML={{ __html: sec.body }} style={{ fontSize: pt(base - 1), color: "#6b7280", lineHeight: 1.6 }} />}
+                  {sec.body && <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(sec.body) }} style={{ fontSize: pt(base - 1), color: "#6b7280", lineHeight: 1.6 }} />}
                 </div>
               ))}
             </div>

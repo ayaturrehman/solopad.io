@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/session";
 import db from "@/lib/db";
+import AutoPrint from "@/components/AutoPrint";
+import { sanitizeHtml } from "@/lib/sanitize";
 
 const PAPER_SIZES = {
   A4:     { width: 794,  height: 1123, css: "210mm 297mm" },
@@ -97,7 +99,7 @@ export default async function ContractPrintPage({ params }) {
         .pb { break-inside: avoid; }
       `}</style>
 
-      <script dangerouslySetInnerHTML={{ __html: `window.onload=function(){window.print();}` }} />
+      <AutoPrint />
 
       <div className="pp">
 
@@ -169,7 +171,7 @@ export default async function ContractPrintPage({ params }) {
                   </div>
                   {clause.body && (
                     <div
-                      dangerouslySetInnerHTML={{ __html: clause.body }}
+                      dangerouslySetInnerHTML={{ __html: sanitizeHtml(clause.body) }}
                       style={{ paddingLeft: pt(16), fontSize: pt(base - 1), color: "#6b7280", lineHeight: 1.7, marginTop: pt(4) }}
                     />
                   )}

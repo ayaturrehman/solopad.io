@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { readFile } from "fs/promises";
 import path from "path";
 import db from "@/lib/db";
+import { safePath } from "@/lib/safeFilePath";
 import { getSession } from "@/lib/session";
 
 export async function GET(req, { params }) {
@@ -24,13 +25,19 @@ export async function GET(req, { params }) {
     if (!project) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  const filepath = path.join(process.cwd(), "uploads", projectId, filename);
+  let filepath;
+  try {
+    filepath = safePath(projectId, filename).full;
+  } catch {
+    return NextResponse.json({ error: "Invalid file path" }, { status: 400 });
+  }
 
   try {
     const file = await readFile(filepath);
+    const safeName = filename.replace(/^\d+-/, "").replace(/[^a-zA-Z0-9._\- ]/g, "_");
     return new NextResponse(file, {
       headers: {
-        "Content-Disposition": `attachment; filename="${filename.replace(/^\d+-/, "")}"`,
+        "Content-Disposition": `attachment; filename="${safeName}"`,
         "Content-Type": "application/octet-stream",
       },
     });

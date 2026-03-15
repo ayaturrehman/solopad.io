@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { sanitizeHtml } from "@/lib/sanitize";
 
 // Paper dimensions in px at 96dpi
 const PAPER_SIZES = {
@@ -224,7 +225,7 @@ export default function ProposalPreview({ proposal, template, noScale = false })
           {proposal.intro ? (
             <div style={{ marginBottom: pt(24) }}>
               <div style={s.sectionLabel}>Introduction</div>
-              <div dangerouslySetInnerHTML={{ __html: proposal.intro }} style={{ fontSize: pt(baseFontSize - 0.5), color: "#6b7280", lineHeight: 1.7 }} />
+              <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(proposal.intro) }} style={{ fontSize: pt(baseFontSize - 0.5), color: "#6b7280", lineHeight: 1.7 }} />
             </div>
           ) : null}
 
@@ -237,7 +238,7 @@ export default function ProposalPreview({ proposal, template, noScale = false })
                   <div style={{ marginBottom: pt(4) }}>
                     <span style={{ fontSize: pt(baseFontSize + 1), fontWeight: 700, color: "#111827" }}>{sec.heading || `Section ${i + 1}`}</span>
                   </div>
-                  {sec.body ? <div dangerouslySetInnerHTML={{ __html: sec.body }} style={{ fontSize: pt(baseFontSize - 1), color: "#6b7280", lineHeight: 1.6, marginTop: pt(4) }} /> : null}
+                  {sec.body ? <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(sec.body) }} style={{ fontSize: pt(baseFontSize - 1), color: "#6b7280", lineHeight: 1.6, marginTop: pt(4) }} /> : null}
                 </div>
               ))}
             </div>

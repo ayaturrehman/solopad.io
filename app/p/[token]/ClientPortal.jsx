@@ -9,6 +9,7 @@ import {
   FileSignature, FileCheck2, ExternalLink,
 } from "lucide-react";
 import { formatCurrency, formatDate, formatBytes } from "@/lib/utils";
+import { sanitizeHtml } from "@/lib/sanitize";
 
 const STATUS_LABELS_MAP = {
   not_started: "Not Started",
@@ -65,7 +66,19 @@ function InvoiceCard({ invoice }) {
       body: JSON.stringify({ invoiceId: invoice.id }),
     });
     const { url } = await res.json();
-    if (url) window.location.href = url;
+    if (url) {
+      try {
+        const checkoutUrl = new URL(url);
+        if (checkoutUrl.hostname !== "checkout.stripe.com") {
+          console.error("Unexpected checkout URL:", url);
+          setLoading(false);
+          return;
+        }
+        window.location.href = url;
+      } catch {
+        console.error("Invalid checkout URL");
+      }
+    }
     setLoading(false);
   }
 
@@ -489,7 +502,7 @@ export default function ClientPortal({ project, files, comments: initialComments
                     {note.title && <p className="mb-2 font-semibold text-zinc-900">{note.title}</p>}
                     <div
                       className={`prose prose-sm max-w-none text-sm text-zinc-600 ${!isExpanded && isLong ? "max-h-32 overflow-hidden" : ""}`}
-                      dangerouslySetInnerHTML={{ __html: note.body }}
+                      dangerouslySetInnerHTML={{ __html: sanitizeHtml(note.body) }}
                     />
                     {isLong && (
                       <button onClick={() => setExpandedNoteId(isExpanded ? null : note.id)} className="mt-2 flex items-center gap-1 text-xs text-blue-600 hover:underline">

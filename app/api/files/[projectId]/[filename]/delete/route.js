@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 import db from "@/lib/db";
 import { unlink } from "fs/promises";
-import path from "path";
+import { safePath } from "@/lib/safeFilePath";
 
 export async function DELETE(req, { params }) {
   const session = await getSession();
@@ -19,8 +19,15 @@ export async function DELETE(req, { params }) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
+  let filepath;
   try {
-    await unlink(path.join(process.cwd(), "uploads", projectId, filename));
+    filepath = safePath(projectId, filename).full;
+  } catch {
+    return NextResponse.json({ error: "Invalid file path" }, { status: 400 });
+  }
+
+  try {
+    await unlink(filepath);
   } catch {}
 
   await db.file.delete({ where: { id: file.id } });

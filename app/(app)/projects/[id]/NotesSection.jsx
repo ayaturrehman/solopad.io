@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { sanitizeHtml } from "@/lib/sanitize";
 import { useRouter } from "next/navigation";
 import { Plus, Trash2, X, Check, Eye, EyeOff, ChevronDown, ChevronUp } from "lucide-react";
 import { formatDate } from "@/lib/utils";
@@ -190,7 +191,7 @@ export default function NotesSection({ projectId, notes: initialNotes }) {
                 className={`px-4 pb-3 prose prose-sm max-w-none text-sm text-zinc-600 ${
                   !isExpanded && isLong ? "max-h-32 overflow-hidden" : ""
                 }`}
-                dangerouslySetInnerHTML={{ __html: note.body }}
+                dangerouslySetInnerHTML={{ __html: sanitizeHtml(note.body) }}
               />
 
               {/* show more / less */}

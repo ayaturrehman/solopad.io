@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import db from "@/lib/db";
+import { validatePassword } from "@/lib/passwordValidation";
 
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
@@ -40,8 +41,9 @@ export async function POST(req) {
     return NextResponse.json({ error: "All fields are required." }, { status: 400 });
   }
 
-  if (password.length < 8) {
-    return NextResponse.json({ error: "Password must be at least 8 characters." }, { status: 400 });
+  const passwordError = validatePassword(password);
+  if (passwordError) {
+    return NextResponse.json({ error: passwordError }, { status: 400 });
   }
 
   const teamMember = await db.teamMember.findUnique({ where: { inviteToken: token } });

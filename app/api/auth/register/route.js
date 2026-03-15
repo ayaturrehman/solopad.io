@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import db from "@/lib/db";
 import { isValidPlan } from "@/lib/plans";
+import { validatePassword } from "@/lib/passwordValidation";
 
 export async function POST(req) {
   try {
@@ -9,6 +10,11 @@ export async function POST(req) {
 
     if (!name || !email || !password) {
       return NextResponse.json({ error: "All fields required" }, { status: 400 });
+    }
+
+    const passwordError = validatePassword(password);
+    if (passwordError) {
+      return NextResponse.json({ error: passwordError }, { status: 400 });
     }
 
     const existing = await db.user.findUnique({ where: { email } });
