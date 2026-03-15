@@ -6,10 +6,10 @@ const kumbhSans = Kumbh_Sans({ subsets: ["latin"], variable: "--font-kumbh-sans"
 
 export const metadata = {
   title: "SoloPad — The All-in-One Freelance Workspace",
-  description: "Proposals, contracts, invoices, CRM, time tracking, scheduling, and a client portal — everything freelancers need to manage clients and get paid. Starting at $9/mo.",
+  description: "Proposals, contracts, invoices, CRM, time tracking, scheduling, and a client portal — everything freelancers need to manage clients and get paid. Starting at $12/mo.",
   openGraph: {
     title: "SoloPad — The All-in-One Freelance Workspace",
-    description: "Proposals, contracts, invoices, CRM, time tracking, and a client portal for freelancers. Starting at $9/mo.",
+    description: "Proposals, contracts, invoices, CRM, time tracking, and a client portal for freelancers. Starting at $12/mo.",
     url: "https://solopad.io",
     siteName: "SoloPad",
     type: "website",
@@ -17,7 +17,7 @@ export const metadata = {
   twitter: {
     card: "summary_large_image",
     title: "SoloPad — The All-in-One Freelance Workspace",
-    description: "Everything freelancers need to manage clients and get paid. Starting at $9/mo.",
+    description: "Everything freelancers need to manage clients and get paid. Starting at $12/mo.",
   },
 };
 

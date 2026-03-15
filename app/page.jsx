@@ -442,7 +442,7 @@ export default function LandingPage() {
                     <span style={{ color:C }}>one place.</span>
                   </h1>
                   <p style={{ fontSize:19, color:"#52525B", lineHeight:1.74, maxWidth:560, marginBottom:32 }}>
-                    Proposals, contracts, invoices, time tracking, scheduling, and a client portal — everything you need to manage clients and get paid. Starting at $9/mo.
+                    Proposals, contracts, invoices, time tracking, scheduling, and a client portal — everything you need to manage clients and get paid. Starting at $12/mo.
                   </p>
                 </div>
 
@@ -535,7 +535,7 @@ export default function LandingPage() {
             </div>
             <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(260px, 1fr))", gap:18 }}>
               {[
-                { competitor:"HoneyBook", pain:"charges $36/mo", fix:"SoloPad starts at $9/mo", accent:O },
+                { competitor:"HoneyBook", pain:"charges $36/mo", fix:"SoloPad starts at $12/mo", accent:O },
                 { competitor:"Dubsado",   pain:"takes hours to set up", fix:"SoloPad is ready in 10 minutes", accent:C },
                 { competitor:"Bonsai",    pain:"is US-only for tax features", fix:"SoloPad works globally", accent:"#7C3AED" },
               ].map(({ competitor, pain, fix, accent }) => (
@@ -1072,7 +1072,7 @@ export default function LandingPage() {
             <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(280px, 1fr))", gap:22 }}>
               {[
                 {
-                  quote:"I was paying $36/mo for HoneyBook and using maybe 20% of it. SoloPad gives me everything I need for $9.",
+                  quote:"I was paying $36/mo for HoneyBook and using maybe 20% of it. SoloPad gives me everything I need for $12.",
                   name:"Alex R.",
                   role:"Freelance Designer",
                   avatar:"photo-1573496359142-b8d87734a5a2",
