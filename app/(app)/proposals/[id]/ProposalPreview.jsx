@@ -279,23 +279,6 @@ export default function ProposalPreview({ proposal, template, noScale = false })
             </div>
           ) : null}
 
-          {/* Signature block */}
-          {tpl.showSignatureBlock !== false ? (
-            <div style={{ display: "flex", gap: pt(32), marginTop: pt(32), paddingTop: pt(20), borderTop: "1px solid #e5e7eb" }}>
-              <div style={{ flex: 1 }}>
-                <div style={{ ...s.sectionLabel, marginBottom: pt(24) }}>Service Provider</div>
-                <div style={{ height: 1, backgroundColor: "#374151", marginBottom: pt(4) }} />
-                {tpl.businessName && <div style={{ fontSize: pt(baseFontSize - 1), color: "#374151" }}>{tpl.businessName}</div>}
-                <div style={{ fontSize: pt(baseFontSize - 2), color: "#9ca3af", marginTop: pt(2) }}>Date: _______________</div>
-              </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ ...s.sectionLabel, marginBottom: pt(24) }}>Client Signature</div>
-                <div style={{ height: 1, backgroundColor: "#374151", marginBottom: pt(4) }} />
-                <div style={{ fontSize: pt(baseFontSize - 1), color: "#374151" }}>{proposal.clientName}</div>
-                <div style={{ fontSize: pt(baseFontSize - 2), color: "#9ca3af", marginTop: pt(2) }}>Date: _______________</div>
-              </div>
-            </div>
-          ) : null}
 
           {/* Footer space */}
           <div style={{ height: marginBotPx }} />

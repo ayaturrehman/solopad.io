@@ -420,23 +420,6 @@ export default function ProposalBuilderClient({
                 </table>
               </div>
 
-              {/* Signature block */}
-              {tpl.showSignatureBlock !== false && (
-                <div className="proposal-print-section" style={{ display: "flex", gap: 40, marginTop: 40, paddingTop: 24, borderTop: "1px solid #e5e7eb" }}>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 10, fontWeight: 600, color: "#9ca3af", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 28 }}>Service Provider</div>
-                    <div style={{ height: 1, backgroundColor: "#374151", marginBottom: 6 }} />
-                    {tpl.businessName && <div style={{ fontSize: 12, color: "#374151" }}>{tpl.businessName}</div>}
-                    <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 4 }}>Date: _______________</div>
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 10, fontWeight: 600, color: "#9ca3af", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 28 }}>Client Signature</div>
-                    <div style={{ height: 1, backgroundColor: "#374151", marginBottom: 6 }} />
-                    {clientName && <div style={{ fontSize: 12, color: "#374151" }}>{clientName}</div>}
-                    <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 4 }}>Date: _______________</div>
-                  </div>
-                </div>
-              )}
 
             </div>{/* end paper */}
           </div>{/* end relative wrapper */}
