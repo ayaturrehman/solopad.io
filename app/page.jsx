@@ -455,74 +455,162 @@ export default function LandingPage() {
 
               </div>
 
-              <div className="pk-hero-panel pk-reveal pk-d3 pk-browser-shell">
-                <div style={{ position:"absolute", inset:"10% -8% auto auto", width:180, height:180, background:"#FFFFFFA8", filter:"blur(24px)", borderRadius:"50%" }} />
-                <div style={{ borderRadius:24, overflow:"hidden", border:"1px solid #DCE7FF", boxShadow:"0 36px 100px rgba(15,23,42,.15)", background:"#fff", position:"relative" }}>
-                {/* Browser bar */}
-                  <div style={{ background:"#F8FAFC", borderBottom:"1px solid #E8EEF9", padding:"11px 16px", display:"flex", alignItems:"center", gap:12 }}>
-                  <div style={{ display:"flex", gap:6 }}>
-                    {["#FF6058","#FFC130","#27C840"].map(bg => <div key={bg} style={{ width:11, height:11, borderRadius:"50%", background:bg }} />)}
-                  </div>
-                    <div style={{ flex:1, background:"#fff", border:"1px solid #E2E8F0", borderRadius:8, padding:"5px 12px", display:"flex", alignItems:"center", gap:6, maxWidth:320, margin:"0 auto", fontSize:12, color:"#94A3B8" }}>
-                    🔒 solopad.io/p/acme-co
-                  </div>
-                </div>
-                {/* Portal content */}
-                  <div className="pk-browser-body">
-                  <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:22 }}>
-                    <div>
-                      <div style={{ fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:1, color:C, marginBottom:4 }}>Brand Refresh</div>
-                      <div style={{ fontSize:20, fontWeight:700, color:CDk }}>Website Redesign — Acme Co.</div>
-                      <div style={{ fontSize:13, color:CMute, marginTop:5 }}>Due March 28 · In progress</div>
-                    </div>
-                    <span style={{ background:CLt, color:C, borderRadius:8, padding:"5px 14px", fontSize:12, fontWeight:700 }}>Active</span>
-                  </div>
-                  <div className="pk-browser-stats">
-                    {[
-                      { e:"📁", label:"Files",    value:"3 deliverables" },
-                      { e:"💬", label:"Feedback", value:"2 threads" },
-                      { e:"💳", label:"Invoice",  value:"$2,400 due" },
-                    ].map(({ e, label, value }) => (
-                      <div key={label} style={{ background:"#F9F9F9", border:"1px solid #EDEDED", borderRadius:14, padding:"16px 18px" }}>
-                        <div style={{ fontSize:20, marginBottom:6 }}>{e}</div>
-                        <div style={{ fontSize:11, color:CMute }}>{label}</div>
-                        <div style={{ fontSize:14, fontWeight:700, color:CDk }}>{value}</div>
-                      </div>
-                    ))}
-                  </div>
-                  {/* Progress bar */}
-                  <div style={{ marginTop:20, background:"#F5F5F5", borderRadius:100, height:7, overflow:"hidden" }}>
-                    <div style={{ width:"60%", height:"100%", background:C, borderRadius:100 }} />
-                  </div>
-                  <div style={{ display:"flex", justifyContent:"space-between", fontSize:12, color:CMute, marginTop:6 }}>
-                    <span>60% complete</span><span>Due in 12 days</span>
-                  </div>
-                  </div>
-                </div>
-                <div className="pk-float" style={{ position:"absolute", top:34, right:-24, background:"#fff", borderRadius:16, padding:"14px 16px", boxShadow:"0 18px 44px rgba(15,23,42,.14)", display:"flex", alignItems:"center", gap:12, border:"1px solid #EEF2F7" }}>
-                  <div style={{ width:36, height:36, borderRadius:"50%", background:"#ECFDF5", display:"flex", alignItems:"center", justifyContent:"center", fontSize:16 }}>✓</div>
-                  <div>
-                    <div style={{ fontSize:13, fontWeight:700, color:"#059669" }}>Invoice paid</div>
-                    <div style={{ fontSize:11, color:CMute }}>$2,400 received today</div>
-                  </div>
-                </div>
-                <div className="pk-float" style={{ position:"absolute", bottom:26, left:-24, background:"#fff", borderRadius:16, padding:"14px 16px", boxShadow:"0 18px 44px rgba(15,23,42,.14)", border:"1px solid #EEF2F7", minWidth:190 }}>
-                  <div style={{ fontSize:11, fontWeight:700, letterSpacing:1, textTransform:"uppercase", color:"#94A3B8", marginBottom:8 }}>Client timeline</div>
-                  <div style={{ display:"grid", gap:8 }}>
-                    {[
-                      { label:"Proposal sent", done:true },
-                      { label:"Contract signed", done:true },
-                      { label:"Final delivery", done:false },
-                    ].map((item) => (
-                      <div key={item.label} style={{ display:"flex", alignItems:"center", gap:8 }}>
-                        <div style={{ width:16, height:16, borderRadius:"50%", background:item.done ? C : "#E2E8F0", color:"#fff", display:"flex", alignItems:"center", justifyContent:"center", fontSize:10, fontWeight:700 }}>
-                          {item.done ? "✓" : ""}
-                        </div>
-                        <span style={{ fontSize:12, color:item.done ? "#475569" : CDk, fontWeight:600 }}>{item.label}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+              <div className="pk-hero-panel pk-reveal pk-d3" style={{ position:"relative", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                {/* Soft glow behind animation */}
+                <div style={{ position:"absolute", inset:"5% -5% 5% -5%", background:"radial-gradient(ellipse at center, rgba(29,78,216,0.06) 0%, transparent 70%)", borderRadius:"50%", pointerEvents:"none" }} />
+                {/* Animated inline SVG hero mockup */}
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 580 460" style={{ width:"100%", maxWidth:580, height:"auto", position:"relative" }}>
+                  <defs>
+                    <style>{`
+                      .hk-state { opacity: 0 }
+                      .hk-s0 { animation: hkShow 8s ease infinite 0s }
+                      .hk-s1 { animation: hkShow 8s ease infinite 2s }
+                      .hk-s2 { animation: hkShow 8s ease infinite 4s }
+                      .hk-s3 { animation: hkShow 8s ease infinite 6s }
+                      @keyframes hkShow { 0%{opacity:0} 5%{opacity:1} 20%{opacity:1} 25%{opacity:0} 100%{opacity:0} }
+                      .hk-particle { animation: hkFloat 12s ease-in-out infinite alternate }
+                      .hk-p1{animation-delay:0s} .hk-p2{animation-delay:-2s} .hk-p3{animation-delay:-4s} .hk-p4{animation-delay:-6s} .hk-p5{animation-delay:-8s}
+                      .hk-p6{animation-delay:-10s} .hk-p7{animation-delay:-1s} .hk-p8{animation-delay:-3s} .hk-p9{animation-delay:-5s} .hk-p10{animation-delay:-7s}
+                      @keyframes hkFloat { 0%{transform:translate(0,0);opacity:.04} 25%{opacity:.07} 50%{transform:translate(8px,-6px);opacity:.04} 75%{opacity:.06} 100%{transform:translate(-4px,5px);opacity:.03} }
+                      .hk-draft { stroke-dasharray:420; stroke-dashoffset:420; animation: hkDraw 8s ease-in-out infinite }
+                      .hk-dl1{animation-delay:0s} .hk-dl2{animation-delay:2.7s} .hk-dl3{animation-delay:5.3s}
+                      @keyframes hkDraw { 0%{stroke-dashoffset:420;opacity:0} 10%{stroke-dashoffset:210;opacity:.04} 20%{stroke-dashoffset:0;opacity:.03} 30%{opacity:0} 100%{opacity:0} }
+                      .hk-dot { animation: hkDot 8s ease infinite }
+                      .hk-d0{animation-delay:0s} .hk-d1{animation-delay:2s} .hk-d2{animation-delay:4s} .hk-d3{animation-delay:6s}
+                      @keyframes hkDot { 0%{r:2.5;opacity:.35} 5%{r:4;opacity:1} 20%{r:4;opacity:1} 25%{r:2.5;opacity:.35} 100%{r:2.5;opacity:.35} }
+                      .hk-check { stroke-dasharray:40; stroke-dashoffset:40; animation: hkCheck 8s ease infinite 6s }
+                      @keyframes hkCheck { 0%{stroke-dashoffset:40} 8%{stroke-dashoffset:0} 20%{stroke-dashoffset:0} 25%{stroke-dashoffset:40} 100%{stroke-dashoffset:40} }
+                      .hk-ring { opacity:0; animation: hkRing 8s ease infinite 6s }
+                      @keyframes hkRing { 0%{r:30;opacity:0} 8%{r:36;opacity:.15} 12%{r:44;opacity:0} 15%{r:36;opacity:.1} 20%{r:50;opacity:0} 100%{opacity:0} }
+                    `}</style>
+                  </defs>
+                  {/* Background */}
+                  <rect width="580" height="460" fill="#EEF2FF"/>
+                  {/* Ambient Particles */}
+                  <circle className="hk-particle hk-p1" cx="45" cy="38" r="3.5" fill="#2563EB"/>
+                  <circle className="hk-particle hk-p2" cx="520" cy="72" r="2.5" fill="#2563EB"/>
+                  <circle className="hk-particle hk-p3" cx="90" cy="410" r="4" fill="#2563EB"/>
+                  <circle className="hk-particle hk-p4" cx="510" cy="390" r="3" fill="#2563EB"/>
+                  <circle className="hk-particle hk-p5" cx="280" cy="22" r="2" fill="#2563EB"/>
+                  <circle className="hk-particle hk-p6" cx="30" cy="230" r="3" fill="#2563EB"/>
+                  <circle className="hk-particle hk-p7" cx="555" cy="210" r="2.5" fill="#2563EB"/>
+                  <circle className="hk-particle hk-p8" cx="160" cy="445" r="3" fill="#2563EB"/>
+                  <circle className="hk-particle hk-p9" cx="440" cy="30" r="2" fill="#2563EB"/>
+                  <circle className="hk-particle hk-p10" cx="350" cy="440" r="2.5" fill="#2563EB"/>
+                  {/* Card Shadow */}
+                  <rect x="54" y="63" width="460" height="350" rx="18" fill="#0F172A" opacity="0.04"/>
+                  <rect x="52" y="59" width="460" height="350" rx="18" fill="#0F172A" opacity="0.03"/>
+                  <rect x="51" y="57" width="460" height="350" rx="18" fill="#0F172A" opacity="0.02"/>
+                  {/* Card Body */}
+                  <rect x="50" y="55" width="460" height="350" rx="18" fill="#fff"/>
+                  <rect x="50" y="55" width="460" height="350" rx="18" fill="none" stroke="#E2E8F0" strokeWidth="0.5"/>
+                  {/* Progress Bar */}
+                  <rect x="68" y="69" width="408" height="3" rx="1.5" fill="#F1F5F9"/>
+                  <rect x="68" y="69" height="3" rx="1.5" fill="#2563EB" opacity="0.7">
+                    <animate attributeName="width" values="0;100;210;320;408" keyTimes="0;0.25;0.5;0.75;1" dur="8s" repeatCount="indefinite"/>
+                  </rect>
+                  {/* Drafting Lines */}
+                  <line className="hk-draft hk-dl1" x1="68" y1="150" x2="488" y2="150" stroke="#2563EB" strokeWidth="0.5"/>
+                  <line className="hk-draft hk-dl2" x1="68" y1="230" x2="488" y2="230" stroke="#7C3AED" strokeWidth="0.5"/>
+                  <line className="hk-draft hk-dl3" x1="68" y1="310" x2="488" y2="310" stroke="#EA580C" strokeWidth="0.5"/>
+
+                  {/* STATE 0: PROPOSAL */}
+                  <g className="hk-state hk-s0">
+                    <rect x="86" y="91" width="40" height="40" rx="10" fill="#EFF6FF"/>
+                    <g transform="translate(106,111)">
+                      <rect x="-7" y="-9" width="14" height="18" rx="2" fill="none" stroke="#2563EB" strokeWidth="1.3"/>
+                      <line x1="-4" y1="-3" x2="4" y2="-3" stroke="#2563EB" strokeWidth="1" strokeLinecap="round"/>
+                      <line x1="-4" y1="1" x2="4" y2="1" stroke="#2563EB" strokeWidth="1" strokeLinecap="round"/>
+                      <line x1="-4" y1="5" x2="1" y2="5" stroke="#2563EB" strokeWidth="1" strokeLinecap="round"/>
+                    </g>
+                    <text x="138" y="105" fontSize="10" fontWeight="700" fill="#2563EB" letterSpacing="1">NEW PROPOSAL</text>
+                    <text x="138" y="125" fontSize="19" fontWeight="700" fill="#1E293B">Website Redesign</text>
+                    <line x1="86" y1="147" x2="474" y2="147" stroke="#F1F5F9" strokeWidth="1"/>
+                    <text x="86" y="171" fontSize="12" fill="#94A3B8">Client</text>
+                    <text x="176" y="171" fontSize="13" fontWeight="500" fill="#1E293B">Acme Co.</text>
+                    <text x="86" y="197" fontSize="12" fill="#94A3B8">Scope</text>
+                    <text x="176" y="197" fontSize="13" fontWeight="500" fill="#1E293B">Full redesign + development</text>
+                    <text x="86" y="223" fontSize="12" fill="#94A3B8">Timeline</text>
+                    <text x="176" y="223" fontSize="13" fontWeight="500" fill="#1E293B">4 weeks</text>
+                    <line x1="86" y1="241" x2="474" y2="241" stroke="#F1F5F9" strokeWidth="1"/>
+                    <text x="86" y="265" fontSize="13" fill="#64748B">Total</text>
+                    <text x="474" y="265" fontSize="22" fontWeight="700" fill="#1E293B" textAnchor="end">$4,800</text>
+                    <rect x="338" y="281" width="136" height="38" rx="9" fill="#2563EB"/>
+                    <text x="406" y="305" fontSize="13" fontWeight="600" fill="#fff" textAnchor="middle">Send proposal</text>
+                  </g>
+
+                  {/* STATE 1: CONTRACT */}
+                  <g className="hk-state hk-s1">
+                    <rect x="86" y="91" width="40" height="40" rx="10" fill="#F5F3FF"/>
+                    <g transform="translate(106,111)">
+                      <rect x="-7" y="-9" width="14" height="18" rx="2" fill="none" stroke="#7C3AED" strokeWidth="1.3"/>
+                      <path d="M-3 2 l2.5 2.5 l5-5.5" stroke="#7C3AED" strokeWidth="1.3" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+                    </g>
+                    <text x="138" y="105" fontSize="10" fontWeight="700" fill="#7C3AED" letterSpacing="1">CONTRACT</text>
+                    <rect x="220" y="93" width="72" height="22" rx="11" fill="#ECFDF5"/>
+                    <circle cx="234" cy="104" r="5" fill="#059669"/>
+                    <path d="M231 104 l2 2 l3.5-4" stroke="#fff" strokeWidth="1.1" fill="none" strokeLinecap="round"/>
+                    <text x="244" y="108" fontSize="10" fontWeight="600" fill="#059669">Signed</text>
+                    <text x="138" y="125" fontSize="17" fontWeight="700" fill="#1E293B">Website Redesign — Acme Co.</text>
+                    <line x1="86" y1="147" x2="474" y2="147" stroke="#F1F5F9" strokeWidth="1"/>
+                    <text x="86" y="169" fontSize="13" fontWeight="600" fill="#1E293B">Terms</text>
+                    <circle cx="92" cy="188" r="2.5" fill="#7C3AED" opacity="0.5"/>
+                    <text x="104" y="191" fontSize="12" fill="#64748B">Full website redesign + development</text>
+                    <circle cx="92" cy="210" r="2.5" fill="#7C3AED" opacity="0.5"/>
+                    <text x="104" y="213" fontSize="12" fill="#64748B">4-week delivery timeline</text>
+                    <circle cx="92" cy="232" r="2.5" fill="#7C3AED" opacity="0.5"/>
+                    <text x="104" y="235" fontSize="12" fill="#64748B">2 rounds of revisions included</text>
+                    <circle cx="92" cy="254" r="2.5" fill="#7C3AED" opacity="0.5"/>
+                    <text x="104" y="257" fontSize="12" fill="#64748B">50% upfront, 50% on completion</text>
+                    <rect x="86" y="275" width="388" height="46" rx="8" fill="#F1F5F9" opacity="0.5"/>
+                    <path d="M110 298 c8 -12 16 8 28 -4 c8 -8 12 4 24 0" stroke="#1E293B" strokeWidth="1.2" fill="none" strokeLinecap="round" opacity="0.6"/>
+                    <text x="110" y="313" fontSize="9" fill="#94A3B8">Sarah Chen, Acme Co. — Mar 15, 2026</text>
+                  </g>
+
+                  {/* STATE 2: INVOICE */}
+                  <g className="hk-state hk-s2">
+                    <rect x="86" y="91" width="40" height="40" rx="10" fill="#FFF7ED"/>
+                    <g transform="translate(106,111)">
+                      <rect x="-7" y="-9" width="14" height="18" rx="2" fill="none" stroke="#EA580C" strokeWidth="1.3"/>
+                      <text x="0" y="4" fontSize="11" fontWeight="700" fill="#EA580C" textAnchor="middle">$</text>
+                    </g>
+                    <text x="138" y="105" fontSize="10" fontWeight="700" fill="#EA580C" letterSpacing="1">INVOICE #1042</text>
+                    <text x="138" y="125" fontSize="19" fontWeight="700" fill="#1E293B">Acme Co. — Milestone 1</text>
+                    <rect x="416" y="93" width="58" height="26" rx="13" fill="#FFF7ED"/>
+                    <text x="445" y="110" fontSize="11" fontWeight="600" fill="#EA580C" textAnchor="middle">Sent</text>
+                    <line x1="86" y1="147" x2="474" y2="147" stroke="#F1F5F9" strokeWidth="1"/>
+                    <text x="86" y="167" fontSize="10" fontWeight="600" fill="#94A3B8" letterSpacing="0.8">DESCRIPTION</text>
+                    <text x="474" y="167" fontSize="10" fontWeight="600" fill="#94A3B8" letterSpacing="0.8" textAnchor="end">AMOUNT</text>
+                    <line x1="86" y1="175" x2="474" y2="175" stroke="#F1F5F9" strokeWidth="1"/>
+                    <text x="86" y="201" fontSize="13" fill="#1E293B">Design mockups</text>
+                    <text x="474" y="201" fontSize="13" fill="#1E293B" textAnchor="end">$1,200</text>
+                    <text x="86" y="227" fontSize="13" fill="#1E293B">Frontend development</text>
+                    <text x="474" y="227" fontSize="13" fill="#1E293B" textAnchor="end">$1,800</text>
+                    <text x="86" y="253" fontSize="13" fill="#1E293B">Content migration</text>
+                    <text x="474" y="253" fontSize="13" fill="#1E293B" textAnchor="end">$400</text>
+                    <line x1="86" y1="271" x2="474" y2="271" stroke="#E2E8F0" strokeWidth="1.5"/>
+                    <text x="86" y="297" fontSize="13" fontWeight="600" fill="#1E293B">Total due</text>
+                    <text x="474" y="297" fontSize="22" fontWeight="700" fill="#1E293B" textAnchor="end">$3,400</text>
+                  </g>
+
+                  {/* STATE 3: PAID */}
+                  <g className="hk-state hk-s3">
+                    <circle cx="290" cy="195" r="56" fill="#ECFDF5" opacity="0.4"/>
+                    <circle className="hk-ring" cx="290" cy="195" fill="none" stroke="#059669" strokeWidth="1.5"/>
+                    <circle cx="290" cy="195" r="40" fill="#ECFDF5" opacity="0.7"/>
+                    <circle cx="290" cy="195" r="30" fill="#059669"/>
+                    <path className="hk-check" d="M278 196 l7 7 l13 -15" stroke="#fff" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+                    <text x="290" y="257" fontSize="20" fontWeight="700" fill="#1E293B" textAnchor="middle">Payment received</text>
+                    <text x="290" y="287" fontSize="30" fontWeight="700" fill="#059669" textAnchor="middle">$3,400.00</text>
+                    <text x="290" y="309" fontSize="12" fill="#94A3B8" textAnchor="middle">Acme Co. · Just now</text>
+                  </g>
+
+                  {/* Stage Dots */}
+                  <circle className="hk-dot hk-d0" cx="263" cy="388" r="2.5" fill="#2563EB"/>
+                  <circle className="hk-dot hk-d1" cx="281" cy="388" r="2.5" fill="#7C3AED"/>
+                  <circle className="hk-dot hk-d2" cx="299" cy="388" r="2.5" fill="#EA580C"/>
+                  <circle className="hk-dot hk-d3" cx="317" cy="388" r="2.5" fill="#059669"/>
+                </svg>
               </div>
             </div>
           </div>

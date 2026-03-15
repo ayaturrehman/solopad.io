@@ -1,0 +1,330 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 580 460" width="580" height="460">
+<defs>
+  <style>
+    /* ── Base ── */
+    text, tspan { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; }
+
+    /* ── State fade animation ── */
+    .state { opacity: 0; }
+    .state-0 { animation: showState 8s ease infinite 0s; }
+    .state-1 { animation: showState 8s ease infinite 2s; }
+    .state-2 { animation: showState 8s ease infinite 4s; }
+    .state-3 { animation: showState 8s ease infinite 6s; }
+
+    @keyframes showState {
+      0%   { opacity: 0 }
+      5%   { opacity: 1 }
+      20%  { opacity: 1 }
+      25%  { opacity: 0 }
+      100% { opacity: 0 }
+    }
+
+    /* ── Progress bar sweep ── */
+    .progress-fill {
+      animation: progressSweep 8s linear infinite;
+    }
+    @keyframes progressSweep {
+      0%   { width: 0 }
+      25%  { width: 100 }
+      50%  { width: 210 }
+      75%  { width: 320 }
+      100% { width: 408 }
+    }
+
+    /* ── Progress glow dot ── */
+    .progress-dot {
+      animation: dotMove 8s linear infinite;
+    }
+    @keyframes dotMove {
+      0%   { cx: 68 }
+      25%  { cx: 168 }
+      50%  { cx: 278 }
+      75%  { cx: 388 }
+      100% { cx: 476 }
+    }
+
+    /* ── Stage dots ── */
+    .dot-active {
+      animation: dotPulse 8s ease infinite;
+    }
+    .dot-0 { animation-delay: 0s; }
+    .dot-1 { animation-delay: 2s; }
+    .dot-2 { animation-delay: 4s; }
+    .dot-3 { animation-delay: 6s; }
+
+    @keyframes dotPulse {
+      0%   { r: 2.5; opacity: 0.35 }
+      5%   { r: 4; opacity: 1 }
+      20%  { r: 4; opacity: 1 }
+      25%  { r: 2.5; opacity: 0.35 }
+      100% { r: 2.5; opacity: 0.35 }
+    }
+
+    /* ── Ambient particles ── */
+    .particle {
+      animation: float 12s ease-in-out infinite alternate;
+    }
+    .p1 { animation-delay: 0s; }
+    .p2 { animation-delay: -2s; }
+    .p3 { animation-delay: -4s; }
+    .p4 { animation-delay: -6s; }
+    .p5 { animation-delay: -8s; }
+    .p6 { animation-delay: -10s; }
+    .p7 { animation-delay: -1s; }
+    .p8 { animation-delay: -3s; }
+    .p9 { animation-delay: -5s; }
+    .p10 { animation-delay: -7s; }
+
+    @keyframes float {
+      0%   { transform: translate(0, 0); opacity: 0.04 }
+      25%  { opacity: 0.07 }
+      50%  { transform: translate(8px, -6px); opacity: 0.04 }
+      75%  { opacity: 0.06 }
+      100% { transform: translate(-4px, 5px); opacity: 0.03 }
+    }
+
+    /* ── Drafting lines ── */
+    .draft-line {
+      stroke-dasharray: 420;
+      stroke-dashoffset: 420;
+      animation: drawLine 8s ease-in-out infinite;
+    }
+    .dl-1 { animation-delay: 0s; }
+    .dl-2 { animation-delay: 2.7s; }
+    .dl-3 { animation-delay: 5.3s; }
+
+    @keyframes drawLine {
+      0%   { stroke-dashoffset: 420; opacity: 0 }
+      10%  { stroke-dashoffset: 210; opacity: 0.04 }
+      20%  { stroke-dashoffset: 0; opacity: 0.03 }
+      30%  { opacity: 0 }
+      100% { opacity: 0 }
+    }
+
+    /* ── Paid checkmark draw-in ── */
+    .check-draw {
+      stroke-dasharray: 40;
+      stroke-dashoffset: 40;
+      animation: drawCheck 8s ease infinite 6s;
+    }
+    @keyframes drawCheck {
+      0%   { stroke-dashoffset: 40 }
+      8%   { stroke-dashoffset: 0 }
+      20%  { stroke-dashoffset: 0 }
+      25%  { stroke-dashoffset: 40 }
+      100% { stroke-dashoffset: 40 }
+    }
+
+    /* ── Paid pulse ring ── */
+    .paid-ring {
+      opacity: 0;
+      animation: ringPulse 8s ease infinite 6s;
+    }
+    @keyframes ringPulse {
+      0%   { r: 30; opacity: 0 }
+      8%   { r: 36; opacity: 0.15 }
+      12%  { r: 44; opacity: 0 }
+      15%  { r: 36; opacity: 0.1 }
+      20%  { r: 50; opacity: 0 }
+      100% { opacity: 0 }
+    }
+  </style>
+</defs>
+
+<!-- ════ Background ════ -->
+<rect width="580" height="460" fill="#EEF2FF" rx="0"/>
+
+<!-- ════ Ambient Particles ════ -->
+<g>
+  <circle class="particle p1"  cx="45"  cy="38"  r="3.5" fill="#2563EB"/>
+  <circle class="particle p2"  cx="520" cy="72"  r="2.5" fill="#2563EB"/>
+  <circle class="particle p3"  cx="90"  cy="410" r="4"   fill="#2563EB"/>
+  <circle class="particle p4"  cx="510" cy="390" r="3"   fill="#2563EB"/>
+  <circle class="particle p5"  cx="280" cy="22"  r="2"   fill="#2563EB"/>
+  <circle class="particle p6"  cx="30"  cy="230" r="3"   fill="#2563EB"/>
+  <circle class="particle p7"  cx="555" cy="210" r="2.5" fill="#2563EB"/>
+  <circle class="particle p8"  cx="160" cy="445" r="3"   fill="#2563EB"/>
+  <circle class="particle p9"  cx="440" cy="30"  r="2"   fill="#2563EB"/>
+  <circle class="particle p10" cx="350" cy="440" r="2.5" fill="#2563EB"/>
+</g>
+
+<!-- ════ Card Shadow (3 layers) ════ -->
+<rect x="54" y="63" width="460" height="350" rx="18" fill="#0F172A" opacity="0.04"/>
+<rect x="52" y="59" width="460" height="350" rx="18" fill="#0F172A" opacity="0.03"/>
+<rect x="51" y="57" width="460" height="350" rx="18" fill="#0F172A" opacity="0.02"/>
+
+<!-- ════ Card Body ════ -->
+<rect x="50" y="55" width="460" height="350" rx="18" fill="#fff"/>
+<rect x="50" y="55" width="460" height="350" rx="18" fill="none" stroke="#E2E8F0" stroke-width="0.5"/>
+
+<!-- ════ Progress Bar Track ════ -->
+<rect x="68" y="69" width="408" height="3" rx="1.5" fill="#F1F5F9"/>
+
+<!-- ════ Progress Bar Fill (animated) ════ -->
+<rect x="68" y="69" height="3" rx="1.5" fill="#2563EB" opacity="0.7">
+  <animate attributeName="width" values="0;100;210;320;408" keyTimes="0;0.25;0.5;0.75;1" dur="8s" repeatCount="indefinite"/>
+</rect>
+
+<!-- ════ Drafting Lines (subtle) ════ -->
+<line class="draft-line dl-1" x1="68" y1="150" x2="488" y2="150" stroke="#2563EB" stroke-width="0.5"/>
+<line class="draft-line dl-2" x1="68" y1="230" x2="488" y2="230" stroke="#7C3AED" stroke-width="0.5"/>
+<line class="draft-line dl-3" x1="68" y1="310" x2="488" y2="310" stroke="#EA580C" stroke-width="0.5"/>
+
+<!-- ════════════════════════════════════════════════ -->
+<!-- STATE 0: PROPOSAL                                -->
+<!-- ════════════════════════════════════════════════ -->
+<g class="state state-0">
+  <!-- Icon badge -->
+  <rect x="86" y="91" width="40" height="40" rx="10" fill="#EFF6FF"/>
+  <g transform="translate(106,111)">
+    <rect x="-7" y="-9" width="14" height="18" rx="2" fill="none" stroke="#2563EB" stroke-width="1.3"/>
+    <line x1="-4" y1="-3" x2="4" y2="-3" stroke="#2563EB" stroke-width="1" stroke-linecap="round"/>
+    <line x1="-4" y1="1"  x2="4" y2="1"  stroke="#2563EB" stroke-width="1" stroke-linecap="round"/>
+    <line x1="-4" y1="5"  x2="1" y2="5"  stroke="#2563EB" stroke-width="1" stroke-linecap="round"/>
+  </g>
+
+  <!-- Title -->
+  <text x="138" y="105" font-size="10" font-weight="700" fill="#2563EB" letter-spacing="1">NEW PROPOSAL</text>
+  <text x="138" y="125" font-size="19" font-weight="700" fill="#1E293B">Website Redesign</text>
+
+  <!-- Divider -->
+  <line x1="86" y1="147" x2="474" y2="147" stroke="#F1F5F9" stroke-width="1"/>
+
+  <!-- Detail rows -->
+  <text x="86"  y="171" font-size="12" fill="#94A3B8">Client</text>
+  <text x="176" y="171" font-size="13" font-weight="500" fill="#1E293B">Acme Co.</text>
+
+  <text x="86"  y="197" font-size="12" fill="#94A3B8">Scope</text>
+  <text x="176" y="197" font-size="13" font-weight="500" fill="#1E293B">Full redesign + development</text>
+
+  <text x="86"  y="223" font-size="12" fill="#94A3B8">Timeline</text>
+  <text x="176" y="223" font-size="13" font-weight="500" fill="#1E293B">4 weeks</text>
+
+  <!-- Total divider -->
+  <line x1="86" y1="241" x2="474" y2="241" stroke="#F1F5F9" stroke-width="1"/>
+
+  <!-- Total -->
+  <text x="86"  y="265" font-size="13" fill="#64748B">Total</text>
+  <text x="474" y="265" font-size="22" font-weight="700" fill="#1E293B" text-anchor="end">$4,800</text>
+
+  <!-- CTA Button -->
+  <rect x="338" y="281" width="136" height="38" rx="9" fill="#2563EB"/>
+  <text x="406" y="305" font-size="13" font-weight="600" fill="#fff" text-anchor="middle">Send proposal</text>
+</g>
+
+<!-- ════════════════════════════════════════════════ -->
+<!-- STATE 1: CONTRACT                                -->
+<!-- ════════════════════════════════════════════════ -->
+<g class="state state-1">
+  <!-- Icon badge -->
+  <rect x="86" y="91" width="40" height="40" rx="10" fill="#F5F3FF"/>
+  <g transform="translate(106,111)">
+    <rect x="-7" y="-9" width="14" height="18" rx="2" fill="none" stroke="#7C3AED" stroke-width="1.3"/>
+    <path d="M-3 2 l2.5 2.5 l5-5.5" stroke="#7C3AED" stroke-width="1.3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Label + Signed badge -->
+  <text x="138" y="105" font-size="10" font-weight="700" fill="#7C3AED" letter-spacing="1">CONTRACT</text>
+  <rect x="220" y="93" width="72" height="22" rx="11" fill="#ECFDF5"/>
+  <circle cx="234" cy="104" r="5" fill="#059669"/>
+  <path d="M231 104 l2 2 l3.5-4" stroke="#fff" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+  <text x="244" y="108" font-size="10" font-weight="600" fill="#059669">Signed</text>
+
+  <!-- Title -->
+  <text x="138" y="125" font-size="17" font-weight="700" fill="#1E293B">Website Redesign — Acme Co.</text>
+
+  <!-- Divider -->
+  <line x1="86" y1="147" x2="474" y2="147" stroke="#F1F5F9" stroke-width="1"/>
+
+  <!-- Terms -->
+  <text x="86" y="169" font-size="13" font-weight="600" fill="#1E293B">Terms</text>
+
+  <circle cx="92" cy="188" r="2.5" fill="#7C3AED" opacity="0.5"/>
+  <text x="104" y="191" font-size="12" fill="#64748B">Full website redesign + development</text>
+
+  <circle cx="92" cy="210" r="2.5" fill="#7C3AED" opacity="0.5"/>
+  <text x="104" y="213" font-size="12" fill="#64748B">4-week delivery timeline</text>
+
+  <circle cx="92" cy="232" r="2.5" fill="#7C3AED" opacity="0.5"/>
+  <text x="104" y="235" font-size="12" fill="#64748B">2 rounds of revisions included</text>
+
+  <circle cx="92" cy="254" r="2.5" fill="#7C3AED" opacity="0.5"/>
+  <text x="104" y="257" font-size="12" fill="#64748B">50% upfront, 50% on completion</text>
+
+  <!-- Signature area -->
+  <rect x="86" y="275" width="388" height="46" rx="8" fill="#F1F5F9" opacity="0.5"/>
+  <path d="M110 298 c8 -12 16 8 28 -4 c8 -8 12 4 24 0" stroke="#1E293B" stroke-width="1.2" fill="none" stroke-linecap="round" opacity="0.6"/>
+  <text x="110" y="313" font-size="9" fill="#94A3B8">Sarah Chen, Acme Co. — Mar 15, 2026</text>
+</g>
+
+<!-- ════════════════════════════════════════════════ -->
+<!-- STATE 2: INVOICE                                 -->
+<!-- ════════════════════════════════════════════════ -->
+<g class="state state-2">
+  <!-- Icon badge -->
+  <rect x="86" y="91" width="40" height="40" rx="10" fill="#FFF7ED"/>
+  <g transform="translate(106,111)">
+    <rect x="-7" y="-9" width="14" height="18" rx="2" fill="none" stroke="#EA580C" stroke-width="1.3"/>
+    <text x="0" y="4" font-size="11" font-weight="700" fill="#EA580C" text-anchor="middle">$</text>
+  </g>
+
+  <!-- Title -->
+  <text x="138" y="105" font-size="10" font-weight="700" fill="#EA580C" letter-spacing="1">INVOICE #1042</text>
+  <text x="138" y="125" font-size="19" font-weight="700" fill="#1E293B">Acme Co. — Milestone 1</text>
+
+  <!-- Sent badge -->
+  <rect x="416" y="93" width="58" height="26" rx="13" fill="#FFF7ED"/>
+  <text x="445" y="110" font-size="11" font-weight="600" fill="#EA580C" text-anchor="middle">Sent</text>
+
+  <!-- Divider -->
+  <line x1="86" y1="147" x2="474" y2="147" stroke="#F1F5F9" stroke-width="1"/>
+
+  <!-- Table header -->
+  <text x="86"  y="167" font-size="10" font-weight="600" fill="#94A3B8" letter-spacing="0.8">DESCRIPTION</text>
+  <text x="474" y="167" font-size="10" font-weight="600" fill="#94A3B8" letter-spacing="0.8" text-anchor="end">AMOUNT</text>
+  <line x1="86" y1="175" x2="474" y2="175" stroke="#F1F5F9" stroke-width="1"/>
+
+  <!-- Line items -->
+  <text x="86"  y="201" font-size="13" fill="#1E293B">Design mockups</text>
+  <text x="474" y="201" font-size="13" fill="#1E293B" text-anchor="end">$1,200</text>
+
+  <text x="86"  y="227" font-size="13" fill="#1E293B">Frontend development</text>
+  <text x="474" y="227" font-size="13" fill="#1E293B" text-anchor="end">$1,800</text>
+
+  <text x="86"  y="253" font-size="13" fill="#1E293B">Content migration</text>
+  <text x="474" y="253" font-size="13" fill="#1E293B" text-anchor="end">$400</text>
+
+  <!-- Total -->
+  <line x1="86" y1="271" x2="474" y2="271" stroke="#E2E8F0" stroke-width="1.5"/>
+  <text x="86"  y="297" font-size="13" font-weight="600" fill="#1E293B">Total due</text>
+  <text x="474" y="297" font-size="22" font-weight="700" fill="#1E293B" text-anchor="end">$3,400</text>
+</g>
+
+<!-- ════════════════════════════════════════════════ -->
+<!-- STATE 3: PAID                                    -->
+<!-- ════════════════════════════════════════════════ -->
+<g class="state state-3">
+  <!-- Soft glow rings -->
+  <circle cx="290" cy="195" r="56" fill="#ECFDF5" opacity="0.4"/>
+  <circle class="paid-ring" cx="290" cy="195" fill="none" stroke="#059669" stroke-width="1.5"/>
+  <circle cx="290" cy="195" r="40" fill="#ECFDF5" opacity="0.7"/>
+  <circle cx="290" cy="195" r="30" fill="#059669"/>
+
+  <!-- Animated checkmark -->
+  <path class="check-draw" d="M278 196 l7 7 l13 -15" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Text -->
+  <text x="290" y="257" font-size="20" font-weight="700" fill="#1E293B" text-anchor="middle">Payment received</text>
+  <text x="290" y="287" font-size="30" font-weight="700" fill="#059669" text-anchor="middle">$3,400.00</text>
+  <text x="290" y="309" font-size="12" fill="#94A3B8" text-anchor="middle">Acme Co. · Just now</text>
+</g>
+
+<!-- ════ Stage Dots (bottom center) ════ -->
+<g>
+  <circle class="dot-active dot-0" cx="263" cy="388" r="2.5" fill="#2563EB"/>
+  <circle class="dot-active dot-1" cx="281" cy="388" r="2.5" fill="#7C3AED"/>
+  <circle class="dot-active dot-2" cx="299" cy="388" r="2.5" fill="#EA580C"/>
+  <circle class="dot-active dot-3" cx="317" cy="388" r="2.5" fill="#059669"/>
+</g>
+
+</svg>
