@@ -69,8 +69,8 @@ export default function Navbar() {
       {/* ── Desktop sidebar (hidden on mobile) ── */}
       <aside className="hidden md:flex relative h-screen w-52 flex-col border-r border-zinc-800 bg-zinc-900 text-white">
         {/* Logo */}
-        <Link href="/dashboard" className="flex items-center gap-2 px-2 bg-black/40 p-2">
-          <BrandLogo dark markClassName="h-7 w-7" textClassName="text-base text-white/90" />
+        <Link href="/dashboard" className="flex items-center bg-black/40 px-3 py-2">
+          <BrandLogo dark markClassName="h-5 w-5" textClassName="text-sm text-white/90" />
         </Link>
 
         {/* Nav groups */}

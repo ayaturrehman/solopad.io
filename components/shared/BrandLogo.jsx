@@ -1,36 +1,58 @@
 import { cn } from "@/lib/utils";
 
-const BRAND_NAVY = "#155DFC";
-
 export function BrandMark({ className, dark = false }) {
   return (
-    <svg
-      viewBox="12 4 40 52"
-      aria-hidden="true"
-      className={cn("h-8 w-8", className)}
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <rect x="14" y="10" width="36" height="44" rx="9" fill={dark ? "white" : BRAND_NAVY} />
-      <rect x="22" y="6" width="20" height="6" rx="3" fill="#F05A37" />
-      <rect x="20" y="20" width="24" height="3.25" rx="1.625" fill={dark ? "rgba(23,32,45,0.2)" : "rgba(255,255,255,0.78)"} />
-      <rect x="20" y="29" width="24" height="3.25" rx="1.625" fill={dark ? "rgba(23,32,45,0.2)" : "rgba(255,255,255,0.78)"} />
-      <rect x="20" y="38" width="15" height="3.25" rx="1.625" fill="#F05A37" />
-    </svg>
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={dark ? "/logo-icon-white.webp" : "/logo-icon.webp"}
+      alt="SoloPad"
+      className={cn("h-8 w-8 object-contain", className)}
+      draggable={false}
+    />
   );
 }
 
-export default function BrandLogo({ 
+// Map icon height classes to lockup height classes
+// Lockup image aspect ratio is ~3.9:1, icon is ~85% of lockup height
+const LOCKUP_HEIGHT_MAP = {
+  "h-5": "h-6",
+  "h-6": "h-7",
+  "h-7": "h-8",
+  "h-8": "h-9",
+};
+
+function extractHeightClass(classStr) {
+  if (!classStr) return null;
+  const match = classStr.match(/h-\[?\d+(?:px)?\]?/);
+  return match ? match[0] : null;
+}
+
+export default function BrandLogo({
   className,
   markClassName,
   textClassName,
   dark = false,
-  label = "SoloPad",
 }) {
+  const markHeight = extractHeightClass(markClassName);
+  const lockupHeight = markHeight
+    ? LOCKUP_HEIGHT_MAP[markHeight] || markHeight
+    : "h-8";
+
+  const src = dark ? "/logo-white@2x.webp" : "/logo@2x.webp";
+  const srcSet = dark
+    ? "/logo-white.webp 1x, /logo-white@2x.webp 2x, /logo-white@3x.webp 3x"
+    : "/logo.webp 1x, /logo@2x.webp 2x, /logo@3x.webp 3x";
+
   return (
-    <div className={cn("flex items-center gap-1.5", className)}>
-      <BrandMark className={markClassName} dark={dark} />
-      <span className={cn("font-semibold tracking-tight", textClassName)}>{label}</span>
+    <div className={cn("flex items-center", className)}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={src}
+        srcSet={srcSet}
+        alt="SoloPad."
+        className={cn(lockupHeight, "w-auto object-contain")}
+        draggable={false}
+      />
     </div>
   );
 }
