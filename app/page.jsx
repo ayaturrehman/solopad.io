@@ -464,7 +464,7 @@ export default function LandingPage() {
                     {["#FF6058","#FFC130","#27C840"].map(bg => <div key={bg} style={{ width:11, height:11, borderRadius:"50%", background:bg }} />)}
                   </div>
                     <div style={{ flex:1, background:"#fff", border:"1px solid #E2E8F0", borderRadius:8, padding:"5px 12px", display:"flex", alignItems:"center", gap:6, maxWidth:320, margin:"0 auto", fontSize:12, color:"#94A3B8" }}>
-                    🔒 solopad.app/p/acme-co
+                    🔒 solopad.io/p/acme-co
                   </div>
                 </div>
                 {/* Portal content */}
