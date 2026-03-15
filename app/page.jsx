@@ -197,6 +197,8 @@ export default function LandingPage() {
   const { data: session } = useSession();
   const authHref = session ? "/dashboard" : "/login";
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [annual, setAnnual] = useState(false);
+  const [openFaq, setOpenFaq] = useState(null);
   useFadeIn();
   useParallaxCards();
   useSectionDrift();
@@ -1119,44 +1121,102 @@ export default function LandingPage() {
         {/* ── Pricing ──────────────────────────────────── */}
         <section id="pricing" style={{ background:"#FFF7ED", padding:"96px 0", position:"relative", overflow:"hidden" }}>
           <div className="pk-shell pk-section-stage" data-pk-section-drift>
-            <div className="pk-reveal" style={{ textAlign:"center", marginBottom:52 }}>
+            <div className="pk-reveal" style={{ textAlign:"center", marginBottom:40 }}>
               <p style={{ fontSize:12, fontWeight:700, color:C, textTransform:"uppercase", letterSpacing:1.5, marginBottom:12 }}>Pricing</p>
               <h2 style={{ fontSize:"clamp(28px, 3.5vw, 46px)", fontWeight:900, color:CDk, letterSpacing:"-0.8px" }}>Simple, honest pricing.</h2>
               <p style={{ fontSize:16, color:CMute, marginTop:12 }}>No transaction fees. No hidden costs. No surprises.</p>
             </div>
+
+            {/* Annual / Monthly toggle */}
+            <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:12, marginBottom:44 }}>
+              <span style={{ fontSize:14, fontWeight:600, color:annual ? CMute : CDk }}>Monthly</span>
+              <button
+                type="button"
+                onClick={() => setAnnual(a => !a)}
+                style={{ position:"relative", width:48, height:26, borderRadius:100, background:annual ? C : "#D1D5DB", border:"none", cursor:"pointer", transition:"background .2s", flexShrink:0 }}
+                aria-label="Toggle annual billing"
+              >
+                <span style={{ position:"absolute", top:3, left: annual ? 25 : 3, width:20, height:20, borderRadius:"50%", background:"#fff", transition:"left .2s", boxShadow:"0 1px 4px rgba(0,0,0,.2)" }} />
+              </button>
+              <span style={{ fontSize:14, fontWeight:600, color:annual ? CDk : CMute }}>Annual</span>
+              <span style={{ fontSize:11, fontWeight:700, background:"#DCFCE7", color:"#16A34A", borderRadius:100, padding:"3px 10px" }}>Save 17%</span>
+            </div>
+
             <div className="pk-price-grid">
-              {plans.map((plan, i) => (
-                <div key={plan.name} className={`pk-reveal pk-d${i+1} ${plan.highlight ? "pk-price-card-highlight" : ""}`} style={{ borderRadius:22, padding:32, border:plan.highlight?`2px solid ${C}`:"1px solid #EBEBEB", background:plan.highlight?CLt:"#fff", boxShadow:plan.highlight?`0 24px 64px ${C}22`:"0 2px 12px rgba(0,0,0,.04)", position:"relative" }}>
-                  {plan.highlight && (
-                    <div style={{ position:"absolute", top:-14, left:"50%", transform:"translateX(-50%)", background:O, color:"#fff", borderRadius:100, padding:"5px 16px", fontSize:12, fontWeight:700, whiteSpace:"nowrap" }}>
-                      Most popular
+              {plans.map((plan, i) => {
+                const displayPrice  = annual && plan.annualPrice  ? plan.annualPrice  : plan.price;
+                const displayPeriod = annual && plan.annualPeriod ? plan.annualPeriod : plan.period;
+                return (
+                  <div key={plan.name} className={`pk-reveal pk-d${i+1} ${plan.highlight ? "pk-price-card-highlight" : ""}`} style={{ borderRadius:22, padding:32, border:plan.highlight?`2px solid ${C}`:"1px solid #EBEBEB", background:plan.highlight?CLt:"#fff", boxShadow:plan.highlight?`0 24px 64px ${C}22`:"0 2px 12px rgba(0,0,0,.04)", position:"relative" }}>
+                    {plan.highlight && (
+                      <div style={{ position:"absolute", top:-14, left:"50%", transform:"translateX(-50%)", background:O, color:"#fff", borderRadius:100, padding:"5px 16px", fontSize:12, fontWeight:700, whiteSpace:"nowrap" }}>
+                        Most popular
+                      </div>
+                    )}
+                    <p style={{ fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:1.2, color:CMute, marginBottom:8 }}>{plan.name}</p>
+                    <div style={{ display:"flex", alignItems:"flex-end", gap:4, marginBottom:8 }}>
+                      <span style={{ fontSize:52, fontWeight:900, color:plan.highlight?C:CDk, lineHeight:1, letterSpacing:"-1px" }}>{displayPrice}</span>
+                      <span style={{ fontSize:13, color:CMute, marginBottom:8, maxWidth:120, lineHeight:1.3 }}>{displayPeriod}</span>
                     </div>
-                  )}
-                  <p style={{ fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:1.2, color:CMute, marginBottom:8 }}>{plan.name}</p>
-                  <div style={{ display:"flex", alignItems:"flex-end", gap:4, marginBottom:8 }}>
-                    <span style={{ fontSize:52, fontWeight:900, color:plan.highlight?C:CDk, lineHeight:1, letterSpacing:"-1px" }}>{plan.price}</span>
-                    <span style={{ fontSize:14, color:CMute, marginBottom:8 }}>{plan.period}</span>
+                    <p style={{ fontSize:14, color:CMute, lineHeight:1.6, marginBottom:24 }}>{plan.description}</p>
+                    <ul style={{ marginBottom:28, display:"flex", flexDirection:"column", gap:10 }}>
+                      {plan.features.map(f => (
+                        <li key={f} style={{ display:"flex", alignItems:"center", gap:9, fontSize:14 }}>
+                          <div style={{ width:19, height:19, borderRadius:"50%", background:`${C}15`, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                            <Check size={10} color={C} strokeWidth={3} />
+                          </div>
+                          <span style={{ color:"#444" }}>{f}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <Link href={plan.href} className={plan.highlight?"btn-primary":"btn-outline"} style={{ display:"block", textAlign:"center", justifyContent:"center" }}>
+                      {plan.cta}
+                    </Link>
                   </div>
-                  <p style={{ fontSize:14, color:CMute, lineHeight:1.6, marginBottom:24 }}>{plan.description}</p>
-                  <ul style={{ marginBottom:28, display:"flex", flexDirection:"column", gap:10 }}>
-                    {plan.features.map(f => (
-                      <li key={f} style={{ display:"flex", alignItems:"center", gap:9, fontSize:14 }}>
-                        <div style={{ width:19, height:19, borderRadius:"50%", background:`${C}15`, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
-                          <Check size={10} color={C} strokeWidth={3} />
-                        </div>
-                        <span style={{ color:"#444" }}>{f}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <Link href={plan.href} className={plan.highlight?"btn-primary":"btn-outline"} style={{ display:"block", textAlign:"center", justifyContent:"center" }}>
-                    {plan.cta}
-                  </Link>
+                );
+              })}
+            </div>
+            <p style={{ textAlign:"center", fontSize:13, color:"#AAAAAA", marginTop:28 }}>
+              No credit card required · Cancel anytime · Upgrade when you&apos;re ready
+            </p>
+          </div>
+        </section>
+
+        {/* ── FAQ ──────────────────────────────────────── */}
+        <section style={{ background:"#fff", padding:"96px 0" }}>
+          <div className="pk-shell pk-section-stage" data-pk-section-drift>
+            <div className="pk-reveal" style={{ textAlign:"center", marginBottom:52 }}>
+              <p style={{ fontSize:12, fontWeight:700, color:C, textTransform:"uppercase", letterSpacing:1.5, marginBottom:12 }}>Frequently asked questions</p>
+              <h2 style={{ fontSize:"clamp(26px, 3.4vw, 42px)", fontWeight:700, color:CDk, letterSpacing:"-0.8px" }}>Everything you need to know.</h2>
+            </div>
+            <div style={{ maxWidth:720, margin:"0 auto", display:"flex", flexDirection:"column", gap:2 }}>
+              {[
+                { q:"Is there really a free plan?", a:"Yes. SoloPad Free gives you 1 active project, 100MB storage, a client portal link, and 1 invoice with Stripe — forever. No credit card required." },
+                { q:"What payment methods can my clients use?", a:"Clients pay through Stripe, which supports all major credit/debit cards, Apple Pay, Google Pay, and bank transfers in supported countries." },
+                { q:"Can I migrate from HoneyBook or Dubsado?", a:"Yes. You can import your contacts via CSV and be up and running in under 10 minutes. We're adding direct migration tools soon." },
+                { q:"Do I need a Stripe account?", a:"Yes, you'll connect your own Stripe account (free to create). This means you get paid directly — SoloPad never touches your money and charges zero transaction fees." },
+                { q:"Is my data secure?", a:"Your data is encrypted in transit and at rest. We use PostgreSQL on secure infrastructure with daily backups. Your files are stored with enterprise-grade encryption." },
+                { q:"Can I cancel anytime?", a:"Yes. No contracts, no cancellation fees. Downgrade to Free anytime and keep your data." },
+              ].map(({ q, a }, i) => (
+                <div
+                  key={q}
+                  className="pk-reveal"
+                  style={{ borderBottom:"1px solid #F0F0F0" }}
+                >
+                  <button
+                    type="button"
+                    onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                    style={{ width:"100%", background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"space-between", gap:16, padding:"20px 0", textAlign:"left" }}
+                  >
+                    <span style={{ fontSize:16, fontWeight:600, color:CDk, lineHeight:1.4 }}>{q}</span>
+                    <span style={{ fontSize:20, color:CMute, flexShrink:0, transition:"transform .2s", transform: openFaq === i ? "rotate(45deg)" : "rotate(0deg)" }}>+</span>
+                  </button>
+                  {openFaq === i && (
+                    <p style={{ fontSize:15, color:"#475569", lineHeight:1.75, paddingBottom:20, marginTop:-4 }}>{a}</p>
+                  )}
                 </div>
               ))}
             </div>
-            <p style={{ textAlign:"center", fontSize:13, color:"#AAAAAA", marginTop:28 }}>
-              All plans include a 14-day free trial of the next tier · Cancel anytime
-            </p>
           </div>
         </section>
 
@@ -1211,7 +1271,7 @@ export default function LandingPage() {
                   </div>
                   <div style={{ display:"inline-flex", alignItems:"center", gap:8, background:"rgba(255,255,255,.15)", borderRadius:100, padding:"6px 16px" }}>
                     <Users size={13} color="#fff" />
-                    <span style={{ fontSize:13, fontWeight:600, color:"#fff" }}>Join freelancers who work smarter</span>
+                    <span style={{ fontSize:13, fontWeight:600, color:"#fff" }}>Join 100+ freelancers who work smarter</span>
                   </div>
                 </div>
                 <h2 style={{ fontSize:"clamp(28px, 4vw, 52px)", fontWeight:900, color:"#fff", letterSpacing:"-1px", marginBottom:16, lineHeight:1.1 }}>
@@ -1241,6 +1301,16 @@ export default function LandingPage() {
               <div>
                 <BrandLogo markClassName="h-7 w-7" textClassName="text-[15px] font-black text-[#111111]" />
                 <p style={{ fontSize:13, color:"#AAAAAA", marginTop:12, lineHeight:1.65 }}>Built for freelancers who want to get paid.</p>
+                <p style={{ fontSize:12, color:"#C0C0C0", marginTop:10, lineHeight:1.65, fontStyle:"italic" }}>Built by a freelancer who got tired of paying $36/mo for tools he barely used.</p>
+                {/* Social links */}
+                <div style={{ display:"flex", gap:12, marginTop:16 }}>
+                  <a href="https://twitter.com/solopadio" target="_blank" rel="noopener noreferrer" aria-label="Twitter / X" style={{ color:"#AAAAAA", display:"inline-flex", alignItems:"center", justifyContent:"center", width:32, height:32, borderRadius:8, border:"1px solid #EBEBEB", background:"#FAFAFA", transition:"color .15s" }}>
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.259 5.63 5.905-5.63zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                  </a>
+                  <a href="https://linkedin.com/company/solopad" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" style={{ color:"#AAAAAA", display:"inline-flex", alignItems:"center", justifyContent:"center", width:32, height:32, borderRadius:8, border:"1px solid #EBEBEB", background:"#FAFAFA", transition:"color .15s" }}>
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                  </a>
+                </div>
               </div>
               {/* Col 2 — Product */}
               <div>
@@ -1261,7 +1331,7 @@ export default function LandingPage() {
                 <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
                   {[
                     { label:"Blog",         href:"/blog" },
-                    { label:"Help Center",  href:"#" },
+                    { label:"Help & Support", href:"mailto:ayaturrehman2050@gmail.com" },
                     { label:"Contact",      href:"mailto:ayaturrehman2050@gmail.com" },
                   ].map(({ label, href }) => (
                     <Link key={label} href={href} style={{ fontSize:14, color:"#555", textDecoration:"none" }}>{label}</Link>
@@ -1273,8 +1343,8 @@ export default function LandingPage() {
                 <p style={{ fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1.2, color:"#94A3B8", marginBottom:16 }}>Legal</p>
                 <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
                   {[
-                    { label:"Privacy Policy",    href:"#" },
-                    { label:"Terms of Service",  href:"#" },
+                    { label:"Privacy Policy",    href:"/privacy" },
+                    { label:"Terms of Service",  href:"/terms" },
                   ].map(({ label, href }) => (
                     <Link key={label} href={href} style={{ fontSize:14, color:"#555", textDecoration:"none" }}>{label}</Link>
                   ))}
