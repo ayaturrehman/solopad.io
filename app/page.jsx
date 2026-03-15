@@ -421,7 +421,7 @@ export default function LandingPage() {
         </header>
 
         {/* ── Hero ────────────────────────────────────── */}
-        <section style={{ background:BLt, overflow:"hidden", padding:"96px 0 28px", position:"relative" }}>
+        <section style={{ background:BLt, overflow:"hidden", padding:"120px 0 48px", position:"relative" }}>
           <div className="pk-hero-shell pk-section-stage" data-pk-section-drift>
             <div className="pk-hero-grid">
               <div className="pk-hero-copy">
@@ -529,7 +529,7 @@ export default function LandingPage() {
         </section>
 
         {/* ── Competitor Comparison ────────────────────── */}
-        <section style={{ background:"#fff", padding:"56px 0", borderBottom:`1px solid #F0F0F0` }}>
+        <section style={{ background:"#fff", padding:"72px 0", borderBottom:`1px solid #F0F0F0` }}>
           <div className="pk-shell pk-section-stage" data-pk-section-drift>
             <div className="pk-reveal" style={{ textAlign:"center", marginBottom:36 }}>
               <p style={{ fontSize:12, fontWeight:700, color:C, textTransform:"uppercase", letterSpacing:1.5, marginBottom:10 }}>Why freelancers switch to SoloPad</p>
@@ -559,7 +559,7 @@ export default function LandingPage() {
         </section>
 
         {/* ── Problem ──────────────────────────────────── */}
-        <section style={{ background:"#F8FAFC", padding:"96px 0" }}>
+        <section style={{ background:"#F8FAFC", padding:"120px 0" }}>
           <div className="pk-shell pk-section-stage" data-pk-section-drift>
             <div className="pk-reveal pk-split-intro pk-split-intro-problem" style={{ marginBottom:44 }}>
               <div>
@@ -643,7 +643,7 @@ export default function LandingPage() {
         </section>
 
         {/* ── Feature 1 — Proposals ────────────────────── */}
-        <section id="features" style={{ background:PLt, padding:"96px 0", position:"relative", overflow:"hidden" }}>
+        <section id="features" style={{ background:PLt, padding:"120px 0", position:"relative", overflow:"hidden" }}>
           <ParallaxImageCard
             src="https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=720&h=960&q=80&auto=format&fit=crop"
             alt="Creative team reviewing proposal work"
@@ -705,7 +705,7 @@ export default function LandingPage() {
         </section>
 
         {/* ── Feature 2 — Contracts ────────────────────── */}
-        <section style={{ background:"#FFF7ED", padding:"96px 0", position:"relative", overflow:"hidden" }}>
+        <section style={{ background:"#FFF7ED", padding:"120px 0", position:"relative", overflow:"hidden" }}>
           <ParallaxImageCard
             src="https://images.unsplash.com/photo-1521791136064-7986c2920216?w=720&h=960&q=80&auto=format&fit=crop"
             alt="Client meeting and agreement discussion"
@@ -771,7 +771,7 @@ export default function LandingPage() {
         </section>
 
         {/* ── Feature 3 — Tasks ────────────────────────── */}
-        <section style={{ background:BLt, padding:"96px 0", position:"relative", overflow:"hidden" }}>
+        <section style={{ background:BLt, padding:"120px 0", position:"relative", overflow:"hidden" }}>
           <ParallaxImageCard
             src="https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?w=720&h=960&q=80&auto=format&fit=crop"
             alt="Project planning notes and laptop"
@@ -845,7 +845,7 @@ export default function LandingPage() {
         </section>
 
         {/* ── Feature 4 — AI ───────────────────────────── */}
-        <section style={{ background:"#F5F0E8", padding:"104px 0", position:"relative", overflow:"hidden" }}>
+        <section style={{ background:"#F5F0E8", padding:"128px 0", position:"relative", overflow:"hidden" }}>
           <ParallaxImageCard
             src="https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=720&h=960&q=80&auto=format&fit=crop"
             alt="Creative brief workspace with laptop, notebook, and coffee"
@@ -938,7 +938,7 @@ export default function LandingPage() {
         </section>
 
         {/* ── Everything You Need ──────────────────────── */}
-        <section style={{ background:"#F8FAFC", padding:"96px 0" }}>
+        <section style={{ background:"#F8FAFC", padding:"120px 0" }}>
           <div className="pk-shell pk-section-stage" data-pk-section-drift>
             <div className="pk-reveal" style={{ textAlign:"center", marginBottom:52 }}>
               <p style={{ fontSize:12, fontWeight:700, color:C, textTransform:"uppercase", letterSpacing:1.5, marginBottom:12 }}>Everything you need</p>
@@ -977,7 +977,7 @@ export default function LandingPage() {
         </section>
 
         {/* ── How it works ─────────────────────────────── */}
-        <section id="how-it-works" style={{ background:PRT, padding:"96px 0", position:"relative", overflow:"hidden" }}>
+        <section id="how-it-works" style={{ background:PRT, padding:"120px 0", position:"relative", overflow:"hidden" }}>
           <ParallaxImageCard
             src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=720&h=960&q=80&auto=format&fit=crop"
             alt="Freelancer setting up a digital workflow"
@@ -1041,7 +1041,7 @@ export default function LandingPage() {
         </section>
 
         {/* ── Photo strip ──────────────────────────────── */}
-        <section style={{ background:"#F3F4F6", padding:"64px 0" }}>
+        <section style={{ background:"#F3F4F6", padding:"80px 0" }}>
           <div className="pk-shell pk-section-stage" data-pk-section-drift>
             <div className="pk-reveal pk-photo-strip">
               <img
@@ -1065,7 +1065,7 @@ export default function LandingPage() {
 
         {/* ── Testimonials ─────────────────────────────── */}
         {/* TODO: Replace with real testimonials */}
-        <section style={{ background:"#fff", padding:"96px 0" }}>
+        <section style={{ background:"#fff", padding:"120px 0" }}>
           <div className="pk-shell pk-section-stage" data-pk-section-drift>
             <div className="pk-reveal" style={{ textAlign:"center", marginBottom:52 }}>
               <p style={{ fontSize:12, fontWeight:700, color:C, textTransform:"uppercase", letterSpacing:1.5, marginBottom:12 }}>What freelancers say</p>
@@ -1119,7 +1119,7 @@ export default function LandingPage() {
         </section>
 
         {/* ── Pricing ──────────────────────────────────── */}
-        <section id="pricing" style={{ background:"#FFF7ED", padding:"96px 0", position:"relative", overflow:"hidden" }}>
+        <section id="pricing" style={{ background:"#FFF7ED", padding:"120px 0", position:"relative", overflow:"hidden" }}>
           <div className="pk-shell pk-section-stage" data-pk-section-drift>
             <div className="pk-reveal" style={{ textAlign:"center", marginBottom:40 }}>
               <p style={{ fontSize:12, fontWeight:700, color:C, textTransform:"uppercase", letterSpacing:1.5, marginBottom:12 }}>Pricing</p>
@@ -1183,7 +1183,7 @@ export default function LandingPage() {
         </section>
 
         {/* ── FAQ ──────────────────────────────────────── */}
-        <section style={{ background:"#fff", padding:"96px 0" }}>
+        <section style={{ background:"#fff", padding:"120px 0" }}>
           <div className="pk-shell pk-section-stage" data-pk-section-drift>
             <div className="pk-reveal" style={{ textAlign:"center", marginBottom:52 }}>
               <p style={{ fontSize:12, fontWeight:700, color:C, textTransform:"uppercase", letterSpacing:1.5, marginBottom:12 }}>Frequently asked questions</p>
@@ -1222,7 +1222,7 @@ export default function LandingPage() {
 
         {/* ── Email Capture ────────────────────────────── */}
         {/* TODO: Connect to ConvertKit/Mailchimp */}
-        <section style={{ background:"#F8FAFC", padding:"64px 0", borderTop:"1px solid #EBEBEB", borderBottom:"1px solid #EBEBEB" }}>
+        <section style={{ background:"#F8FAFC", padding:"80px 0", borderTop:"1px solid #EBEBEB", borderBottom:"1px solid #EBEBEB" }}>
           <div className="pk-shell">
             <div className="pk-reveal" style={{ maxWidth:520, margin:"0 auto", textAlign:"center" }}>
               <p style={{ fontSize:20, fontWeight:700, color:CDk, marginBottom:8 }}>Get freelancer tips &amp; product updates</p>
@@ -1247,7 +1247,7 @@ export default function LandingPage() {
         </section>
 
         {/* ── Final CTA ────────────────────────────────── */}
-        <section style={{ background:"#fff", padding:"80px 0" }}>
+        <section style={{ background:"#fff", padding:"100px 0" }}>
           <div className="pk-shell">
             <div className="pk-reveal pk-final-cta pk-section-stage" data-pk-section-drift>
               <div style={{ position:"absolute", top:-70, right:-70, width:240, height:240, borderRadius:"50%", background:"rgba(255,255,255,.08)" }} />

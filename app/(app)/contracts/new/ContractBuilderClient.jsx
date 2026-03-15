@@ -124,6 +124,7 @@ export default function ContractBuilderClient({
   user,
   initialContract = null,
   mode = "create",
+  forceAIBrief = false,
 }) {
   const router = useRouter();
   const isEdit = mode === "edit" || Boolean(initialContract);
@@ -134,7 +135,7 @@ export default function ContractBuilderClient({
   const [error, setError] = useState("");
   const [brief, setBrief] = useState("");
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [briefOpen, setBriefOpen] = useState(false);
+  const [briefOpen, setBriefOpen] = useState(forceAIBrief);
   const [activeEditor, setActiveEditor] = useState(null);
   const [pageCount, setPageCount] = useState(1);
 

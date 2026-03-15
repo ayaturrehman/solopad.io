@@ -44,6 +44,12 @@ export async function POST(request, { params }) {
     process.env.FROM_EMAIL ||
     "noreply@solopad.app";
 
+  // Build the signing URL using the contract's signingToken
+  const baseUrl = process.env.NEXTAUTH_URL || process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : "http://localhost:3000";
+  const signingUrl = `${process.env.NEXTAUTH_URL || baseUrl}/contracts/${contract.id}/sign/${contract.signingToken}`;
+
   try {
     await resend.emails.send({
       from: fromEmail,
@@ -52,8 +58,14 @@ export async function POST(request, { params }) {
       html: `
         <div style="font-family:Inter,Arial,sans-serif;line-height:1.6;color:#18181b;max-width:600px">
           <p>Hi ${contract.clientName || "there"},</p>
-          <p>${message ? message.replace(/\n/g, "<br />") : "Please find the attached contract for your review and signature."}</p>
-          <p style="color:#71717a;font-size:12px;margin-top:24px">Sent from Solopad</p>
+          <p>${message ? message.replace(/\n/g, "<br />") : "Please find the contract below for your review and signature."}</p>
+          <p style="margin:28px 0">
+            <a href="${signingUrl}" style="display:inline-block;background:#18181b;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px">
+              Review &amp; Sign Contract →
+            </a>
+          </p>
+          <p style="color:#71717a;font-size:12px">Or copy this link: <a href="${signingUrl}" style="color:#3b82f6">${signingUrl}</a></p>
+          <p style="color:#71717a;font-size:12px;margin-top:24px;border-top:1px solid #e5e7eb;padding-top:16px">Sent from SoloPad</p>
         </div>
       `,
     });

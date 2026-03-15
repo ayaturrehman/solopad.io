@@ -144,6 +144,8 @@ export default async function ProposalDetailPage({ params }) {
           title={proposal.title}
           clientName={proposal.clientName}
           clientEmail={proposal.clientEmail}
+          status={proposal.status}
+          proposal={proposal}
         />
       </div>
 

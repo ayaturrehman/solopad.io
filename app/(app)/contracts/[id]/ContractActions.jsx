@@ -3,12 +3,13 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Mail, Pencil, Trash2 } from "lucide-react";
+import { ChevronRight, Mail, Pencil, Receipt, Trash2 } from "lucide-react";
 import Button from "@/components/ui/Button";
 import Modal from "@/components/shared/Modal";
 import DownloadPdfButton from "./DownloadPdfButton";
+import SaveAsTemplateButton from "@/components/templates/SaveAsTemplateButton";
 
-export default function ContractActions({ contractId, title, clientName, clientEmail }) {
+export default function ContractActions({ contractId, title, clientName, clientEmail, status, contract }) {
   const router = useRouter();
   const [sendOpen, setSendOpen] = useState(false);
   const [email, setEmail] = useState(clientEmail || "");
@@ -19,6 +20,7 @@ export default function ContractActions({ contractId, title, clientName, clientE
   const [sending, setSending] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState("");
+  const [converting, setConverting] = useState(false);
 
   const defaultSubject = useMemo(() => `${title || "Contract"} — Signature Required`, [title]);
 
@@ -83,9 +85,37 @@ export default function ContractActions({ contractId, title, clientName, clientE
     }
   }
 
+  async function handleConvertToInvoice() {
+    setConverting(true);
+    try {
+      const res = await fetch(`/api/contracts/${contractId}/to-invoice`, { method: "POST" });
+      const data = await res.json();
+      if (!res.ok) { alert(data.error || "Failed to create invoice."); return; }
+      router.push(`/invoices/${data.invoice.id}/edit`);
+    } catch {
+      alert("Failed to create invoice.");
+    } finally {
+      setConverting(false);
+    }
+  }
+
   return (
     <>
       <div>
+        {status === "signed" && (
+          <div className="mb-2">
+            <button
+              type="button"
+              onClick={handleConvertToInvoice}
+              disabled={converting}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-900 bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-zinc-700 disabled:opacity-50"
+            >
+              <Receipt className="h-3.5 w-3.5" />
+              Create Invoice
+              <ChevronRight className="h-3 w-3" />
+            </button>
+          </div>
+        )}
         <div className="flex flex-wrap items-center rounded border border-zinc-200 bg-zinc-50 px-1">
           <Link
             href={`/contracts/${contractId}/edit`}
@@ -105,6 +135,12 @@ export default function ContractActions({ contractId, title, clientName, clientE
           </button>
           <div className="mx-0.5 h-4 w-px bg-zinc-200" />
           <DownloadPdfButton contractId={contractId} title={title} />
+          {contract && (
+            <>
+              <div className="mx-0.5 h-4 w-px bg-zinc-200" />
+              <SaveAsTemplateButton type="contract" document={contract} />
+            </>
+          )}
           <div className="mx-0.5 h-4 w-px bg-zinc-200" />
           <button
             type="button"

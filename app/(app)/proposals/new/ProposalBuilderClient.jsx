@@ -46,6 +46,7 @@ export default function ProposalBuilderClient({
   initialProposal = null,
   defaultTemplate = null,
   mode = "create",
+  forceAIBrief = false,
 }) {
   const router = useRouter();
   const isEdit = mode === "edit" || Boolean(initialProposal);
@@ -62,7 +63,7 @@ export default function ProposalBuilderClient({
   const [error, setError] = useState("");
   const [brief, setBrief] = useState("");
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [briefOpen, setBriefOpen] = useState(false);
+  const [briefOpen, setBriefOpen] = useState(forceAIBrief);
   const [activeEditor, setActiveEditor] = useState(null);
   const [pageCount, setPageCount] = useState(1);
 

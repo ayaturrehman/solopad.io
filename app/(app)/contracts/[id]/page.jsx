@@ -87,6 +87,8 @@ export default async function ContractDetailPage({ params }) {
           title={contract.title}
           clientName={contract.clientName}
           clientEmail={contract.clientEmail}
+          status={contract.status}
+          contract={contract}
         />
       </div>
 

@@ -40,6 +40,7 @@ model Business {
   availabilityRules AvailabilityRule[]
   proposals         Proposal[]
   contracts         Contract[]
+  contentTemplates  ContentTemplate[]
 }
 
 // ─── User ─────────────────────────────────────────────────────────────────────
@@ -79,9 +80,10 @@ model User {
   timeEntries       TimeEntry[]
   bookings          Booking[]
   availabilityRules AvailabilityRule[]
-  proposals     Proposal[]
-  contracts     Contract[]
-  pdfTemplates  PdfTemplate[]
+  proposals        Proposal[]
+  contracts        Contract[]
+  pdfTemplates     PdfTemplate[]
+  contentTemplates ContentTemplate[]
 }
 
 // ─── Contact ──────────────────────────────────────────────────────────────────
@@ -564,14 +566,45 @@ model Contract {
   title         String
   clientName    String
   clientEmail   String?
-  clauses       String
-  status        String    @default("draft")
-  sentAt        DateTime?
-  signedAt      DateTime?
-  signatureName String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  clauses        String
+  status         String    @default("draft")
+  sentAt         DateTime?
+  signedAt       DateTime?
+  signatureName  String?
+  signingToken   String?   @unique @default(cuid())
+  signatureIp    String?
+  signatureDate  DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
   @@index([userId])
   @@index([businessId])
+}
+
+// ─── ContentTemplate ──────────────────────────────────────────────────────────
+
+model ContentTemplate {
+  id          String   @id @default(cuid())
+  userId      String?
+  businessId  String?
+
+  type        String   // "proposal" | "contract" | "invoice"
+  name        String
+  description String?
+  category    String?  // "Design" | "Development" | "Marketing" | "Consulting" | "Photography" | "Writing" | "General"
+
+  content     Json
+
+  isSystem    Boolean  @default(false)
+  isDefault   Boolean  @default(false)
+  usageCount  Int      @default(0)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user     User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  business Business? @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@index([type, isSystem])
+  @@index([userId, type])
 }

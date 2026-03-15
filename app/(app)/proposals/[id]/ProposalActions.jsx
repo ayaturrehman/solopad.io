@@ -3,16 +3,19 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Mail, Pencil, Trash2 } from "lucide-react";
+import { ChevronRight, Copy, FileSignature, Mail, Pencil, Receipt, Trash2 } from "lucide-react";
 import Button from "@/components/ui/Button";
 import Modal from "@/components/shared/Modal";
 import DownloadPdfButton from "./DownloadPdfButton";
+import SaveAsTemplateButton from "@/components/templates/SaveAsTemplateButton";
 
 export default function ProposalActions({
   proposalId,
   title,
   clientName,
   clientEmail,
+  status,
+  proposal,
   className = "",
 }) {
   const router = useRouter();
@@ -25,6 +28,7 @@ export default function ProposalActions({
   const [sendSuccess, setSendSuccess] = useState("");
   const [sending, setSending] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [converting, setConverting] = useState(false);
 
   const defaultSubject = useMemo(
     () => `${title || "Proposal"} from Solopad`,
@@ -115,9 +119,61 @@ export default function ProposalActions({
     }
   }
 
+  async function handleConvertToContract() {
+    setConverting(true);
+    try {
+      const res = await fetch(`/api/proposals/${proposalId}/to-contract`, { method: "POST" });
+      const data = await res.json();
+      if (!res.ok) { alert(data.error || "Failed to create contract."); return; }
+      router.push(`/contracts/${data.contract.id}/edit`);
+    } catch {
+      alert("Failed to create contract.");
+    } finally {
+      setConverting(false);
+    }
+  }
+
+  async function handleConvertToInvoice() {
+    setConverting(true);
+    try {
+      const res = await fetch(`/api/proposals/${proposalId}/to-invoice`, { method: "POST" });
+      const data = await res.json();
+      if (!res.ok) { alert(data.error || "Failed to create invoice."); return; }
+      router.push(`/invoices/${data.invoice.id}/edit`);
+    } catch {
+      alert("Failed to create invoice.");
+    } finally {
+      setConverting(false);
+    }
+  }
+
   return (
     <>
       <div className={`w-full ${className}`.trim()}>
+        {status === "accepted" && (
+          <div className="mb-2 flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={handleConvertToContract}
+              disabled={converting}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-900 bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-zinc-700 disabled:opacity-50"
+            >
+              <FileSignature className="h-3.5 w-3.5" />
+              Create Contract
+              <ChevronRight className="h-3 w-3" />
+            </button>
+            <button
+              type="button"
+              onClick={handleConvertToInvoice}
+              disabled={converting}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-xs font-semibold text-zinc-700 transition-colors hover:border-zinc-400 disabled:opacity-50"
+            >
+              <Receipt className="h-3.5 w-3.5" />
+              Create Invoice
+              <ChevronRight className="h-3 w-3" />
+            </button>
+          </div>
+        )}
         <div className="flex flex-wrap items-center w-full rounded border border-zinc-200 bg-zinc-100 px-1">
           <Link
             href={`/proposals/${proposalId}/edit`}
@@ -137,6 +193,12 @@ export default function ProposalActions({
           </button>
           <div className="h-4 w-px bg-zinc-200 mx-0.5 shrink-0" />
           <DownloadPdfButton proposalId={proposalId} title={title} />
+          {proposal && (
+            <>
+              <div className="h-4 w-px bg-zinc-200 mx-0.5 shrink-0" />
+              <SaveAsTemplateButton type="proposal" document={proposal} />
+            </>
+          )}
           <div className="h-4 w-px bg-zinc-200 mx-0.5 shrink-0" />
           <button
             type="button"
