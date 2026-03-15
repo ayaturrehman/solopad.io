@@ -1253,25 +1253,10 @@ export default function LandingPage() {
               <div style={{ position:"absolute", top:-70, right:-70, width:240, height:240, borderRadius:"50%", background:"rgba(255,255,255,.08)" }} />
               <div style={{ position:"absolute", bottom:-60, left:-60, width:200, height:200, borderRadius:"50%", background:"rgba(255,255,255,.05)" }} />
               <div style={{ position:"relative" }}>
-                <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:10, marginBottom:24 }}>
-                  <div style={{ display:"flex" }}>
-                    {[
-                      "photo-1573496359142-b8d87734a5a2",
-                      "photo-1552058544-f2b08422138a",
-                      "photo-1580489944761-15a19d654956",
-                      "photo-1542909168-82c3e7fdca5c",
-                    ].map((id, i) => (
-                      <img
-                        key={id}
-                        src={`https://images.unsplash.com/${id}?w=64&h=64&q=80&auto=format&fit=crop&crop=face`}
-                        alt="user"
-                        style={{ width:32, height:32, borderRadius:"50%", border:"2px solid rgba(255,255,255,.5)", objectFit:"cover", marginLeft: i === 0 ? 0 : -8 }}
-                      />
-                    ))}
-                  </div>
+                <div style={{ display:"flex", alignItems:"center", justifyContent:"center", marginBottom:24 }}>
                   <div style={{ display:"inline-flex", alignItems:"center", gap:8, background:"rgba(255,255,255,.15)", borderRadius:100, padding:"6px 16px" }}>
                     <Users size={13} color="#fff" />
-                    <span style={{ fontSize:13, fontWeight:600, color:"#fff" }}>Join 100+ freelancers who work smarter</span>
+                    <span style={{ fontSize:13, fontWeight:600, color:"#fff" }}>Early access — free forever on one project</span>
                   </div>
                 </div>
                 <h2 style={{ fontSize:"clamp(28px, 4vw, 52px)", fontWeight:900, color:"#fff", letterSpacing:"-1px", marginBottom:16, lineHeight:1.1 }}>
