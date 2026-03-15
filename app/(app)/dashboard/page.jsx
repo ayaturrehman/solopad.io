@@ -16,13 +16,8 @@ export default async function DashboardPage() {
   const userId = session.user.id;
   const now = new Date();
 
-  const user = await db.user.findUnique({ where: { id: userId }, select: { businessId: true } });
-  const business = user?.businessId
-    ? await db.business.findUnique({ where: { id: user.businessId }, select: { currency: true } })
-    : null;
-  const currency = business?.currency || "USD";
-
-  const [projects, tasks, proposals, contracts, contacts, invoices] = await Promise.all([
+  const [userWithBusiness, projects, tasks, proposals, contracts, contacts, invoices] = await Promise.all([
+    db.user.findUnique({ where: { id: userId }, select: { business: { select: { currency: true } } } }),
     db.project.findMany({
       where: { userId, archived: false },
       orderBy: { updatedAt: "desc" },
@@ -57,6 +52,7 @@ export default async function DashboardPage() {
     }),
   ]);
 
+  const currency = userWithBusiness?.business?.currency || "USD";
   const firstName = session.user.name?.split(" ")[0] || "there";
   const greeting = now.getHours() < 12 ? "Good morning" : now.getHours() < 17 ? "Good afternoon" : "Good evening";
   const dateLabel = now.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" });
