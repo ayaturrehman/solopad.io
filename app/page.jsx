@@ -616,36 +616,6 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* ── Competitor Comparison ────────────────────── */}
-        <section style={{ background:"#fff", padding:"72px 0", borderBottom:`1px solid #F0F0F0` }}>
-          <div className="pk-shell pk-section-stage" data-pk-section-drift>
-            <div className="pk-reveal" style={{ textAlign:"center", marginBottom:36 }}>
-              <p style={{ fontSize:12, fontWeight:700, color:C, textTransform:"uppercase", letterSpacing:1.5, marginBottom:10 }}>Why freelancers switch to SoloPad</p>
-              <p style={{ fontSize:18, fontWeight:600, color:CDk }}>Same features. Lower price. Zero bloat.</p>
-            </div>
-            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(260px, 1fr))", gap:18 }}>
-              {[
-                { competitor:"HoneyBook", pain:"charges $36/mo", fix:"SoloPad starts at $12/mo", accent:O },
-                { competitor:"Dubsado",   pain:"takes hours to set up", fix:"SoloPad is ready in 10 minutes", accent:C },
-                { competitor:"Bonsai",    pain:"is US-only for tax features", fix:"SoloPad works globally", accent:"#7C3AED" },
-              ].map(({ competitor, pain, fix, accent }) => (
-                <div key={competitor} className="pk-reveal" style={{ background:"#FAFAFA", border:"1px solid #EBEBEB", borderRadius:18, padding:"24px 26px", boxShadow:"0 4px 16px rgba(0,0,0,.04)" }}>
-                  <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:14 }}>
-                    <div style={{ width:8, height:8, borderRadius:"50%", background:accent, flexShrink:0 }} />
-                    <span style={{ fontSize:13, fontWeight:700, color:"#94A3B8", textDecoration:"line-through" }}>{competitor} {pain}</span>
-                  </div>
-                  <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-                    <div style={{ width:20, height:20, borderRadius:"50%", background:C, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
-                      <Check size={10} color="#fff" strokeWidth={3} />
-                    </div>
-                    <span style={{ fontSize:15, fontWeight:700, color:CDk }}>{fix}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
         {/* ── Problem ──────────────────────────────────── */}
         <section style={{ background:"#F8FAFC", padding:"120px 0" }}>
           <div className="pk-shell pk-section-stage" data-pk-section-drift>
