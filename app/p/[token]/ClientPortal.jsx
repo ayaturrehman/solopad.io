@@ -57,29 +57,49 @@ function FileRow({ file }) {
 function InvoiceCard({ invoice }) {
   const [loading, setLoading] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const [error, setError] = useState(null);
 
   async function handlePay() {
     setLoading(true);
-    const res = await fetch("/api/invoices/checkout", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ invoiceId: invoice.id }),
-    });
-    const { url } = await res.json();
-    if (url) {
+    setError(null);
+    try {
+      const res = await fetch("/api/invoices/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ invoiceId: invoice.id }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || "Could not start payment. Please try again.");
+        setLoading(false);
+        return;
+      }
+
+      const { url } = data;
+      if (!url) {
+        setError("No payment link received. Please try again.");
+        setLoading(false);
+        return;
+      }
+
       try {
         const checkoutUrl = new URL(url);
         if (checkoutUrl.hostname !== "checkout.stripe.com") {
           console.error("Unexpected checkout URL:", url);
+          setError("Invalid payment link. Please contact support.");
           setLoading(false);
           return;
         }
         window.location.href = url;
       } catch {
-        console.error("Invalid checkout URL");
+        setError("Invalid payment link. Please try again.");
+        setLoading(false);
       }
+    } catch {
+      setError("Connection error. Check your internet and try again.");
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   const isPaid = invoice.status === "paid";
@@ -171,12 +191,30 @@ function InvoiceCard({ invoice }) {
         </div>
       )}
 
-      {/* Pay button */}
-      {!isPaid && !isCancelled && (
-        <div className="border-t border-zinc-100 flex justify-end px-5 pb-5 pt-4">
-          <button onClick={handlePay} disabled={loading} className="rounded bg-zinc-900 px-5 py-2 text-sm font-semibold text-white hover:bg-zinc-700 disabled:opacity-50">
-            {loading ? "Redirecting…" : `Pay ${formatCurrency(invoice.total, invoice.currency)}`}
-          </button>
+      {/* Milestone payments */}
+      {invoice.paymentPlans?.length > 0 && !isCancelled && (
+        <MilestoneList milestones={invoice.paymentPlans} invoiceId={invoice.id} currency={invoice.currency} />
+      )}
+
+      {/* Pay button — only show for non-milestone invoices */}
+      {!isPaid && !isCancelled && (!invoice.paymentPlans || invoice.paymentPlans.length === 0) && (
+        <div className="border-t border-zinc-100 px-5 pb-5 pt-4">
+          {error && (
+            <div className="mb-3 flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+              <svg className="mt-0.5 h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <span>{error}</span>
+            </div>
+          )}
+          <div className="flex justify-end gap-2">
+            {error && (
+              <button onClick={() => setError(null)} className="rounded border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-600 hover:bg-zinc-50">
+                Dismiss
+              </button>
+            )}
+            <button onClick={handlePay} disabled={loading} className="rounded bg-zinc-900 px-5 py-2 text-sm font-semibold text-white hover:bg-zinc-700 disabled:opacity-50">
+              {loading ? "Redirecting…" : error ? "Try again" : `Pay ${formatCurrency(invoice.total, invoice.currency)}`}
+            </button>
+          </div>
         </div>
       )}
       {isPaid && (
@@ -186,6 +224,85 @@ function InvoiceCard({ invoice }) {
           </p>
         </div>
       )}
+    </div>
+  );
+}
+
+function MilestoneList({ milestones, invoiceId, currency }) {
+  const [loadingId, setLoadingId] = useState(null);
+  const [error, setError] = useState(null);
+
+  async function handlePayMilestone(milestoneId) {
+    setLoadingId(milestoneId);
+    setError(null);
+    try {
+      const res = await fetch(`/api/invoices/${invoiceId}/milestones/checkout`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ milestoneId }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || "Could not start payment.");
+        setLoadingId(null);
+        return;
+      }
+      if (data.url) {
+        window.location.href = data.url;
+        return;
+      }
+      setError("No payment link received.");
+    } catch {
+      setError("Connection error. Please try again.");
+    }
+    setLoadingId(null);
+  }
+
+  const paidCount = milestones.filter((m) => m.status === "paid").length;
+
+  return (
+    <div className="border-t border-zinc-100 px-5 pb-4 pt-3">
+      <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-zinc-400">
+        Payment milestones ({paidCount}/{milestones.length} paid)
+      </p>
+      {error && (
+        <div className="mb-2 rounded border border-red-200 bg-red-50 p-2 text-xs text-red-700">{error}</div>
+      )}
+      <div className="space-y-2">
+        {milestones.map((m) => {
+          const isPaid = m.status === "paid";
+          const isOverdue = !isPaid && m.dueDate && new Date(m.dueDate) < new Date();
+          return (
+            <div key={m.id} className={`flex items-center justify-between rounded border p-3 ${isPaid ? "border-green-200 bg-green-50" : isOverdue ? "border-red-200 bg-red-50" : "border-zinc-200"}`}>
+              <div>
+                <p className={`text-sm font-medium ${isPaid ? "text-green-700" : "text-zinc-900"}`}>
+                  {isPaid && <CheckCircle className="mr-1 inline h-3.5 w-3.5" />}
+                  {m.label || "Milestone"}
+                </p>
+                {m.dueDate && (
+                  <p className={`text-xs ${isOverdue ? "text-red-500 font-medium" : "text-zinc-400"}`}>
+                    {isOverdue ? "Overdue — " : ""}Due {formatDate(m.dueDate)}
+                  </p>
+                )}
+              </div>
+              <div className="flex items-center gap-3">
+                <span className={`text-sm font-semibold ${isPaid ? "text-green-600" : "text-zinc-900"}`}>
+                  {formatCurrency(m.amount, currency)}
+                </span>
+                {!isPaid && (
+                  <button
+                    onClick={() => handlePayMilestone(m.id)}
+                    disabled={loadingId === m.id}
+                    className="rounded bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-zinc-700 disabled:opacity-50"
+                  >
+                    {loadingId === m.id ? "..." : "Pay"}
+                  </button>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }

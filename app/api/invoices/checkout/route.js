@@ -1,20 +1,15 @@
 import { NextResponse } from "next/server";
-import Stripe from "stripe";
+import { requireStripe, calculatePlatformFee } from "@/lib/stripe";
 import db from "@/lib/db";
-
-const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY) : null;
 
 export async function POST(req) {
   try {
-    if (!stripe) {
-      return NextResponse.json({ error: "Stripe is not configured." }, { status: 500 });
-    }
-
+    const stripe = requireStripe();
     const { invoiceId } = await req.json();
 
     const invoice = await db.invoice.findUnique({
       where: { id: invoiceId },
-      include: { project: { include: { user: true } } },
+      include: { project: { include: { user: { select: { id: true, stripeAccountId: true, stripeOnboarded: true, plan: true } } } } },
     });
 
     if (!invoice) return NextResponse.json({ error: "Invoice not found" }, { status: 404 });
@@ -53,14 +48,14 @@ export async function POST(req) {
 
     // Route payments to the freelancer's connected Stripe account
     if (freelancer?.stripeAccountId && freelancer?.stripeOnboarded) {
-      const totalAmount = lineItems.reduce((sum, item) => {
+      const totalAmountCents = lineItems.reduce((sum, item) => {
         const qty = parseInt(item.quantity, 10) || 1;
         const price = parseFloat(item.unitPrice ?? item.amount) || 0;
         return sum + Math.round(price * qty * 100);
       }, 0);
 
-      // 2% platform fee
-      const applicationFeeAmount = Math.round(totalAmount * 0.02);
+      // Platform fee based on freelancer's plan tier
+      const applicationFeeAmount = calculatePlatformFee(totalAmountCents, freelancer.plan);
 
       sessionOptions.payment_intent_data = {
         application_fee_amount: applicationFeeAmount,

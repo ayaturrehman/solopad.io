@@ -41,6 +41,28 @@ model Business {
   proposals         Proposal[]
   contracts         Contract[]
   contentTemplates  ContentTemplate[]
+  subscription      Subscription?
+}
+
+// ─── Subscription (SaaS billing via Stripe) ─────────────────────────────────
+
+model Subscription {
+  id                     String    @id @default(cuid())
+  businessId             String    @unique
+  business               Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  stripeCustomerId       String    @unique
+  stripeSubscriptionId   String?   @unique
+  stripePriceId          String?
+  plan                   String    @default("free")   // free | solo | pro | enterprise
+  status                 String    @default("active")  // active | past_due | canceled | trialing | incomplete
+  currentPeriodStart     DateTime?
+  currentPeriodEnd       DateTime?
+  cancelAtPeriodEnd      Boolean   @default(false)
+  trialEnd               DateTime?
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+
+  @@index([stripeCustomerId])
 }
 
 // ─── User ─────────────────────────────────────────────────────────────────────
