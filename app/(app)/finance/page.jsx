@@ -1,8 +1,9 @@
-
 import { Suspense } from "react";
 import { getSession } from "@/lib/session";
 import db from "@/lib/db";
 import { redirect } from "next/navigation";
+
+export const revalidate = 60;
 import Link from "next/link";
 import { formatCurrency } from "@/lib/utils";
 import ExpensesClient from "./ExpensesClient";
@@ -44,6 +45,7 @@ export default async function FinancePage({ searchParams }) {
       where: { project: { userId }, createdAt: { gte: yearStart } },
       include: { project: { select: { title: true, contact: { select: { name: true } } } } },
       orderBy: { createdAt: "desc" },
+      take: 200,
     }),
     db.expense.findMany({
       where: { userId, date: { gte: yearStart } },
@@ -51,11 +53,13 @@ export default async function FinancePage({ searchParams }) {
         project: { select: { id: true, title: true } },
       },
       orderBy: { date: "desc" },
+      take: 200,
     }),
     db.project.findMany({
       where: { userId, archived: false },
       select: { id: true, title: true },
       orderBy: { title: "asc" },
+      take: 100,
     }),
     hasExtendedExpenseModels
       ? db.expenseCategory.findMany({
@@ -70,6 +74,7 @@ export default async function FinancePage({ searchParams }) {
           project: { select: { id: true, title: true } },
         },
         orderBy: [{ active: "desc" }, { nextDate: "asc" }],
+        take: 100,
       })
       : Promise.resolve([]),
   ]);

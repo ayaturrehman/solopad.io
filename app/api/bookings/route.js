@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import db from "@/lib/db";
 
 // Public booking endpoint — userId comes from the URL/booking page (not from session)
@@ -69,6 +70,8 @@ export async function POST(req) {
       notes: notes || null,
     },
   });
+
+  revalidatePath("/calendar");
 
   return NextResponse.json({ booking }, { status: 201 });
 }

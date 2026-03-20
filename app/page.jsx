@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
@@ -177,14 +178,13 @@ function ParallaxImageCard({
         >
           {label}
         </div>
-        <img
+        <Image
           src={src}
           alt={alt}
+          width={width}
+          height={height}
           style={{
-            width,
-            height,
             display: "block",
-            objectFit: "cover",
             borderRadius: 14,
           }}
         />
@@ -1102,20 +1102,26 @@ export default function LandingPage() {
         <section style={{ background:"#F3F4F6", padding:"80px 0" }}>
           <div className="pk-shell pk-section-stage" data-pk-section-drift>
             <div className="pk-reveal pk-photo-strip">
-              <img
+              <Image
                 src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=700&h=500&q=80&auto=format&fit=crop"
                 alt="Freelancer working"
-                style={{ width:"100%", height:280, objectFit:"cover", borderRadius:0, display:"block" }}
+                width={600}
+                height={280}
+                style={{ width:"100%", height:"auto", borderRadius:0, display:"block" }}
               />
-              <img
+              <Image
                 src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=500&h=500&q=80&auto=format&fit=crop"
                 alt="Client collaboration"
-                style={{ width:"100%", height:280, objectFit:"cover", borderRadius:0, display:"block" }}
+                width={600}
+                height={280}
+                style={{ width:"100%", height:"auto", borderRadius:0, display:"block" }}
               />
-              <img
+              <Image
                 src="https://images.unsplash.com/photo-1556761175-b413da4baf72?w=500&h=500&q=80&auto=format&fit=crop"
                 alt="Remote team"
-                style={{ width:"100%", height:280, objectFit:"cover", borderRadius:0, display:"block" }}
+                width={600}
+                height={280}
+                style={{ width:"100%", height:"auto", borderRadius:0, display:"block" }}
               />
             </div>
           </div>
@@ -1160,10 +1166,12 @@ export default function LandingPage() {
                   </div>
                   <p style={{ fontSize:15, color:"#334155", lineHeight:1.72, marginBottom:22 }}>&ldquo;{quote}&rdquo;</p>
                   <div style={{ display:"flex", alignItems:"center", gap:12 }}>
-                    <img
+                    <Image
                       src={`https://images.unsplash.com/${avatar}?w=64&h=64&q=80&auto=format&fit=crop&crop=face`}
                       alt={name}
-                      style={{ width:40, height:40, borderRadius:"50%", objectFit:"cover", border:"2px solid #E2E8F0" }}
+                      width={40}
+                      height={40}
+                      style={{ borderRadius:"50%", border:"2px solid #E2E8F0" }}
                     />
                     <div>
                       <p style={{ fontSize:14, fontWeight:700, color:CDk, marginBottom:2 }}>{name}</p>

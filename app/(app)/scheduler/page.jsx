@@ -14,6 +14,7 @@ export default async function SchedulerPage() {
     db.booking.findMany({
       where: { userId },
       orderBy: { startAt: "asc" },
+      take: 200,
     }),
     db.availabilityRule.findMany({
       where: { userId },

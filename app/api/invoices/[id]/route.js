@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { getSession } from "@/lib/session";
 import { getTenantFilter } from "@/lib/tenant";
 import db from "@/lib/db";
@@ -37,6 +38,11 @@ export async function PATCH(req, { params }) {
           status: body.status ?? invoice.status,
         },
       });
+
+      revalidatePath("/dashboard");
+      revalidatePath("/finance");
+      revalidatePath("/calendar");
+
       return NextResponse.json(updated);
     }
 
@@ -96,6 +102,10 @@ export async function PATCH(req, { params }) {
       await db.paymentPlan.deleteMany({ where: { invoiceId: id } });
     }
 
+    revalidatePath("/dashboard");
+    revalidatePath("/finance");
+    revalidatePath("/calendar");
+
     return NextResponse.json(updated);
   } catch (err) {
     console.error("[PATCH /api/invoices/[id]]", err);
@@ -122,5 +132,10 @@ export async function DELETE(req, { params }) {
   }
 
   await db.invoice.delete({ where: { id } });
+
+  revalidatePath("/dashboard");
+  revalidatePath("/finance");
+  revalidatePath("/calendar");
+
   return NextResponse.json({ success: true });
 }

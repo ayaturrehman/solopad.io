@@ -14,20 +14,24 @@ export default async function CalendarPage() {
     db.project.findMany({
       where: { userId },
       select: { id: true, title: true, status: true, endDate: true },
+      take: 100,
     }),
     db.invoice.findMany({
       where: { project: { userId } },
       select: { id: true, total: true, status: true, dueDate: true },
+      take: 200,
     }),
     db.booking.findMany({
       where: { userId, status: { not: "cancelled" } },
       select: { id: true, title: true, clientName: true, startAt: true, endAt: true, status: true },
       orderBy: { startAt: "asc" },
+      take: 200,
     }),
     db.task.findMany({
       where: { userId, dueDate: { not: null }, status: { not: "done" } },
       select: { id: true, title: true, status: true, priority: true, dueDate: true },
       orderBy: { dueDate: "asc" },
+      take: 200,
     }),
   ]);
 

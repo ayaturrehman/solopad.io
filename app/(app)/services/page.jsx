@@ -1,4 +1,3 @@
-
 import { Suspense } from "react";
 import { getSession } from "@/lib/session";
 import { redirect } from "next/navigation";
@@ -6,6 +5,8 @@ import ServicesManager from "./ServicesManager";
 import db from "@/lib/db";
 import { getTenantFilter } from "@/lib/tenant";
 import { buildServiceUsageMap } from "@/lib/services";
+
+export const revalidate = 120;
 
 export default async function ServicesPage() {
   const session = await getSession();
@@ -16,10 +17,12 @@ export default async function ServicesPage() {
     db.service.findMany({
       where: filter,
       orderBy: { createdAt: "desc" },
+      take: 100,
     }),
     db.invoice.findMany({
       where: { project: filter },
       select: { id: true, lineItems: true },
+      take: 200,
     }),
   ]);
 

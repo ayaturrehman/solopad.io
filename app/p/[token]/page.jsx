@@ -29,6 +29,7 @@ export default async function PortalPage({ params }) {
     await db.notification.create({
       data: {
         userId: project.userId,
+        businessId: project.businessId,
         type: "portal_viewed",
         title: "Client viewed your portal",
         body: `${project.contact?.name || "Client"} viewed the portal for "${project.title}"`,

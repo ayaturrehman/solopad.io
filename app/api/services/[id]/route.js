@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { getSession } from "@/lib/session";
 import { getTenantFilter } from "@/lib/tenant";
 import db from "@/lib/db";
@@ -42,6 +43,8 @@ export async function PATCH(req, { params }) {
   });
   const usageMap = buildServiceUsageMap([updated], invoices);
 
+  revalidatePath("/services");
+
   return NextResponse.json({ ...updated, usageCount: usageMap[updated.id] || 0 });
 }
 
@@ -70,6 +73,8 @@ export async function DELETE(req, { params }) {
   }
 
   await db.service.delete({ where: { id } });
+
+  revalidatePath("/services");
 
   return NextResponse.json({ success: true });
 }

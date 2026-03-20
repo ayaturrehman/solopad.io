@@ -1,12 +1,14 @@
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 export function BrandMark({ className, dark = false }) {
   return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
+    <Image
       src={dark ? "/logo-icon-white.webp" : "/logo-icon.webp"}
       alt="SoloPad"
-      className={cn("h-8 w-8 object-contain", className)}
+      width={32}
+      height={32}
+      className={cn("object-contain", className)}
       draggable={false}
     />
   );
@@ -45,11 +47,11 @@ export default function BrandLogo({
 
   return (
     <div className={cn("flex items-center", className)}>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
+      <Image
         src={src}
-        srcSet={srcSet}
         alt="SoloPad."
+        width={144}
+        height={36}
         className={cn(lockupHeight, "w-auto object-contain")}
         draggable={false}
       />

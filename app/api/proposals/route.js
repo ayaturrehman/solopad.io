@@ -2,6 +2,7 @@ import { getSession } from "@/lib/session";
 import { getTenantFilter, getTenantData } from "@/lib/tenant";
 import db from "@/lib/db";
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 
 export async function GET() {
   const session = await getSession();
@@ -51,6 +52,9 @@ export async function POST(req) {
       sentAt: status === "sent" ? new Date() : null,
     },
   });
+
+  revalidatePath("/proposals");
+  revalidatePath("/dashboard");
 
   return NextResponse.json({ proposal }, { status: 201 });
 }

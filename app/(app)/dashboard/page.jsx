@@ -1,9 +1,10 @@
-
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/session";
 import db from "@/lib/db";
 import { formatDate, formatCurrency } from "@/lib/utils";
 import DashboardClient from "./DashboardClient";
+
+export const revalidate = 60;
 
 function sum(values) {
   return values.reduce((total, value) => total + value, 0);

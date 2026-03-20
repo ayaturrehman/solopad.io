@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { getSession } from "@/lib/session";
 import { getTenantFilter, getTenantData } from "@/lib/tenant";
 import db from "@/lib/db";
@@ -51,6 +52,8 @@ export async function POST(req) {
     },
     include: { project: { select: { id: true, title: true } } },
   });
+
+  revalidatePath("/time-tracker");
 
   return NextResponse.json({ entry }, { status: 201 });
 }

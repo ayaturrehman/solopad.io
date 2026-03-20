@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { getSession } from "@/lib/session";
 import db from "@/lib/db";
 
@@ -19,6 +20,8 @@ export async function PATCH(req, { params }) {
     data: { ...(status !== undefined && { status }) },
   });
 
+  revalidatePath("/calendar");
+
   return NextResponse.json({ booking: updated });
 }
 
@@ -32,5 +35,8 @@ export async function DELETE(req, { params }) {
   }
 
   await db.booking.delete({ where: { id: params.id } });
+
+  revalidatePath("/calendar");
+
   return NextResponse.json({ success: true });
 }

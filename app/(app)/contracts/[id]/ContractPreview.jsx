@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { sanitizeHtml } from "@/lib/sanitize";
 
@@ -93,7 +94,7 @@ export default function ContractPreview({ contract, template, noScale = false })
       return (
         <div style={{ backgroundColor: accent, display: "flex", justifyContent: "space-between", alignItems: "flex-end", padding: `${marginTopPx}px ${marginPx}px ${pt(30)}px`, marginBottom: pt(32) }}>
           <div style={{ flex: 1 }}>
-            {showLogo && <img src={tpl.logoUrl} alt="" style={{ width: pt(40), height: pt(40), objectFit: "contain", marginBottom: pt(6) }} />}
+            {showLogo && <Image src={tpl.logoUrl} alt="" width={0} height={0} sizes="100vw" style={{ width: pt(40), height: "auto", marginBottom: pt(6) }} />}
             {biz && <div style={{ fontSize: pt(baseFontSize + 6), fontWeight: 700, color: "#fff" }}>{biz}</div>}
             {tpl.businessAddress && <div style={{ fontSize: pt(baseFontSize - 1.5), color: "rgba(255,255,255,0.55)", marginTop: pt(2) }}>{tpl.businessAddress}</div>}
             <div style={{ marginTop: pt(12), fontSize: pt(baseFontSize + 8), fontWeight: 700, color: "#fff", lineHeight: 1.2 }}>{contract.title}</div>
@@ -109,7 +110,7 @@ export default function ContractPreview({ contract, template, noScale = false })
       return (
         <div style={{ marginBottom: pt(28) }}>
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: `${marginTopPx}px ${marginPx}px ${pt(16)}px` }}>
-            {showLogo && <img src={tpl.logoUrl} alt="" style={{ width: pt(40), height: pt(40), objectFit: "contain", marginBottom: pt(6) }} />}
+            {showLogo && <Image src={tpl.logoUrl} alt="" width={0} height={0} sizes="100vw" style={{ width: pt(40), height: "auto", marginBottom: pt(6) }} />}
             {biz && <div style={{ fontSize: pt(baseFontSize + 6), fontWeight: 700, color: "#111827", textAlign: "center" }}>{biz}</div>}
           </div>
           <div style={{ height: 1, backgroundColor: "#e5e7eb", marginBottom: pt(20) }} />
@@ -125,7 +126,7 @@ export default function ContractPreview({ contract, template, noScale = false })
     return (
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", padding: `${marginTopPx}px ${marginPx}px ${pt(28)}px`, borderBottom: "1px solid #e5e7eb", marginBottom: pt(32) }}>
         <div>
-          {showLogo && <img src={tpl.logoUrl} alt="" style={{ width: pt(40), height: pt(40), objectFit: "contain", marginBottom: pt(6) }} />}
+          {showLogo && <Image src={tpl.logoUrl} alt="" width={0} height={0} sizes="100vw" style={{ width: pt(40), height: "auto", marginBottom: pt(6) }} />}
           {biz && <div style={{ fontSize: pt(baseFontSize + 6), fontWeight: 700, color: "#111827" }}>{biz}</div>}
           {tpl.businessAddress && <div style={{ fontSize: pt(baseFontSize - 1.5), color: "#9ca3af", marginTop: pt(2) }}>{tpl.businessAddress}</div>}
           {tpl.businessEmail && <div style={{ fontSize: pt(baseFontSize - 1.5), color: "#9ca3af", marginTop: pt(1) }}>{tpl.businessEmail}</div>}

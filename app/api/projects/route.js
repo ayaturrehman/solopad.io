@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { getSession } from "@/lib/session";
 import { getTenantData } from "@/lib/tenant";
 import db from "@/lib/db";
@@ -33,6 +34,10 @@ export async function POST(req) {
       portalToken: nanoid(12),
     },
   });
+
+  revalidatePath("/dashboard");
+  revalidatePath("/projects");
+  revalidatePath("/calendar");
 
   return NextResponse.json(project);
 }

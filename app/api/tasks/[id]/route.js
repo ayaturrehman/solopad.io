@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { getSession } from "@/lib/session";
 import { getTenantFilter } from "@/lib/tenant";
 import db from "@/lib/db";
@@ -46,6 +47,10 @@ export async function PATCH(req, { params }) {
     },
   });
 
+  revalidatePath("/tasks");
+  revalidatePath("/dashboard");
+  revalidatePath("/calendar");
+
   return NextResponse.json({ task: normalizeTask(updated) });
 }
 
@@ -61,5 +66,10 @@ export async function DELETE(req, { params }) {
   }
 
   await db.task.delete({ where: { id } });
+
+  revalidatePath("/tasks");
+  revalidatePath("/dashboard");
+  revalidatePath("/calendar");
+
   return NextResponse.json({ success: true });
 }

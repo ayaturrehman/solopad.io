@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { getSession } from "@/lib/session";
 import { getTenantFilter, getTenantData } from "@/lib/tenant";
 import db from "@/lib/db";
@@ -56,6 +57,9 @@ export async function POST(req) {
         ...normalized.data,
       },
     });
+
+    revalidatePath("/contacts");
+    revalidatePath("/dashboard");
 
     return NextResponse.json(contact, { status: 201 });
   } catch (error) {

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { selectClassName } from "@/components/ui/Input";
@@ -292,7 +293,7 @@ function DocumentPreview({ template }) {
       return (
         <div className="flex justify-between items-end py-5 mb-5" style={{ backgroundColor: accent, paddingLeft: marginPx, paddingRight: marginPx }}>
           <div className="flex-1">
-            {showLogo && <img src={template.logoUrl} alt="" className="w-7 h-7 object-contain mb-1.5" />}
+            {showLogo && <Image src={template.logoUrl} alt="" width={0} height={0} sizes="100vw" className="w-7 object-contain mb-1.5" style={{ height: "auto" }} />}
             {biz && <div className="font-bold text-white" style={{ fontSize: fontSize + 4 }}>{biz}</div>}
             {bizAddr && <div className="text-white opacity-60" style={{ fontSize: fontSize - 1 }}>{bizAddr}</div>}
             <div className="font-bold text-white mt-3" style={{ fontSize: fontSize + 6 }}>{sample.title || `#${sample.number}`}</div>
@@ -308,7 +309,7 @@ function DocumentPreview({ template }) {
       return (
         <div className="mb-5">
           <div className="flex flex-col items-center py-4" style={{ paddingLeft: marginPx, paddingRight: marginPx }}>
-            {showLogo && <img src={template.logoUrl} alt="" className="w-7 h-7 object-contain mb-1" />}
+            {showLogo && <Image src={template.logoUrl} alt="" width={0} height={0} sizes="100vw" className="w-7 object-contain mb-1" style={{ height: "auto" }} />}
             {biz && <div className="font-bold text-zinc-900" style={{ fontSize: fontSize + 3 }}>{biz}</div>}
           </div>
           <div className="h-px mb-4" style={{ backgroundColor: "#e5e7eb" }} />
@@ -333,7 +334,7 @@ function DocumentPreview({ template }) {
     return (
       <div className="flex justify-between items-start pb-4 mb-5 border-b" style={{ borderColor: "#e5e7eb", paddingLeft: marginPx, paddingRight: marginPx, paddingTop: "1.5rem" }}>
         <div>
-          {showLogo && <img src={template.logoUrl} alt="" className="w-7 h-7 object-contain mb-1.5" />}
+          {showLogo && <Image src={template.logoUrl} alt="" width={0} height={0} sizes="100vw" className="w-7 object-contain mb-1.5" style={{ height: "auto" }} />}
           {biz && <div className="font-bold text-zinc-900" style={{ fontSize: fontSize + 4 }}>{biz}</div>}
           {bizAddr && <div className="text-zinc-400" style={{ fontSize: fontSize - 1.5 }}>{bizAddr}</div>}
           {bizEmail && <div className="text-zinc-400" style={{ fontSize: fontSize - 1.5 }}>{bizEmail}</div>}

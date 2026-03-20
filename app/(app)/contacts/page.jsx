@@ -5,6 +5,8 @@ import { redirect } from "next/navigation";
 import ContactsTable from "./ContactsTable";
 import { getTenantFilter } from "@/lib/tenant";
 
+export const revalidate = 30;
+
 const DEFAULT_PAGE_SIZE = 10;
 const VALID_PAGE_SIZES = new Set([10, 25, 50]);
 const VALID_STATUS = new Set(["lead", "active", "archived"]);

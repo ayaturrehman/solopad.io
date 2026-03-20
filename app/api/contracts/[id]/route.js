@@ -2,6 +2,7 @@ import { getSession } from "@/lib/session";
 import { getTenantFilter } from "@/lib/tenant";
 import db from "@/lib/db";
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 
 export async function GET(req, { params }) {
   const { id } = await params;
@@ -61,6 +62,10 @@ export async function PATCH(req, { params }) {
   }
 
   const updated = await db.contract.update({ where: { id }, data: updateData });
+
+  revalidatePath("/contracts");
+  revalidatePath("/dashboard");
+
   return NextResponse.json({ contract: updated });
 }
 
@@ -76,5 +81,9 @@ export async function DELETE(req, { params }) {
   }
 
   await db.contract.delete({ where: { id } });
+
+  revalidatePath("/contracts");
+  revalidatePath("/dashboard");
+
   return NextResponse.json({ ok: true });
 }

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { getSession } from "@/lib/session";
 import { getTenantFilter } from "@/lib/tenant";
 import db from "@/lib/db";
@@ -95,6 +96,10 @@ export async function POST(req) {
       });
     }
 
+    revalidatePath("/dashboard");
+    revalidatePath("/finance");
+    revalidatePath("/calendar");
+
     return NextResponse.json(invoice, { status: 201 });
   } catch (err) {
     console.error("[POST /api/invoices]", err);
@@ -130,6 +135,10 @@ export async function PATCH(req) {
     },
   });
 
+  revalidatePath("/dashboard");
+  revalidatePath("/finance");
+  revalidatePath("/calendar");
+
   return NextResponse.json(updated);
 }
 
@@ -150,5 +159,10 @@ export async function DELETE(req) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   await db.invoice.delete({ where: { id } });
+
+  revalidatePath("/dashboard");
+  revalidatePath("/finance");
+  revalidatePath("/calendar");
+
   return NextResponse.json({ ok: true });
 }

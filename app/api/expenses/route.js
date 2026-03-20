@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { getSession } from "@/lib/session";
 import { getTenantFilter, getTenantData } from "@/lib/tenant";
 import db from "@/lib/db";
@@ -62,6 +63,8 @@ export async function POST(req) {
       date: date ? new Date(date) : new Date(),
     },
   });
+
+  revalidatePath("/finance");
 
   return NextResponse.json(expense, { status: 201 });
 }

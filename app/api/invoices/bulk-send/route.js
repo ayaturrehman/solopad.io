@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { getSession } from "@/lib/session";
 import db from "@/lib/db";
 import { Resend } from "resend";
@@ -74,6 +75,8 @@ export async function POST(req) {
       results.errors.push({ id: inv.id, error: err.message });
     }
   }
+
+  revalidatePath("/finance");
 
   return NextResponse.json(results);
 }

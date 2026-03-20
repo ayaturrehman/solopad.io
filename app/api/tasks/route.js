@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { getSession } from "@/lib/session";
 import { getTenantFilter, getTenantData } from "@/lib/tenant";
 import db from "@/lib/db";
@@ -62,6 +63,10 @@ export async function POST(req) {
       assigneeMember: { select: { id: true, name: true, email: true, role: true } },
     },
   });
+
+  revalidatePath("/tasks");
+  revalidatePath("/dashboard");
+  revalidatePath("/calendar");
 
   return NextResponse.json({ task: normalizeTask(task) }, { status: 201 });
 }

@@ -1,9 +1,10 @@
-
 import { Suspense } from "react";
 import { getSession } from "@/lib/session";
 import db from "@/lib/db";
 import { redirect } from "next/navigation";
 import ProposalsClient from "./ProposalsClient";
+
+export const revalidate = 30;
 
 export default async function ProposalsPage() {
   const session = await getSession();
@@ -13,6 +14,7 @@ export default async function ProposalsPage() {
     where: { userId: session.user.id },
     include: { project: { select: { id: true, title: true } } },
     orderBy: { createdAt: "desc" },
+    take: 100,
   });
 
   return <Suspense fallback={null}><ProposalsClient proposals={proposals} /></Suspense>;

@@ -598,16 +598,17 @@ export default async function ProjectPage({ params, searchParams }) {
   if (!project) redirect("/dashboard");
 
   const [files, comments, notes, invoices, rawTasks, timeEntries, teamMembers, contacts, proposals, contracts] = await Promise.all([
-    db.file.findMany({ where: { projectId: id }, orderBy: { createdAt: "desc" } }),
-    db.comment.findMany({ where: { projectId: id }, orderBy: { createdAt: "asc" } }),
-    db.note.findMany({ where: { projectId: id }, orderBy: { createdAt: "desc" } }),
-    db.invoice.findMany({ where: { projectId: id }, orderBy: { createdAt: "desc" } }),
+    db.file.findMany({ where: { projectId: id }, orderBy: { createdAt: "desc" }, take: 50 }),
+    db.comment.findMany({ where: { projectId: id }, orderBy: { createdAt: "asc" }, take: 50 }),
+    db.note.findMany({ where: { projectId: id }, orderBy: { createdAt: "desc" }, take: 50 }),
+    db.invoice.findMany({ where: { projectId: id }, orderBy: { createdAt: "desc" }, take: 50 }),
     db.task.findMany({
       where: { projectId: id },
       orderBy: [{ dueDate: "asc" }, { createdAt: "desc" }],
       include: { assigneeMember: { select: { name: true } } },
+      take: 100,
     }),
-    db.timeEntry.findMany({ where: { projectId: id }, orderBy: { startedAt: "desc" } }),
+    db.timeEntry.findMany({ where: { projectId: id }, orderBy: { startedAt: "desc" }, take: 100 }),
     db.teamMember.findMany({
       where: { userId: session.user.id },
       select: { id: true, name: true, status: true },
@@ -622,11 +623,13 @@ export default async function ProjectPage({ params, searchParams }) {
       where: { projectId: id },
       select: { id: true, title: true, status: true, total: true, currency: true, sentAt: true, createdAt: true },
       orderBy: { createdAt: "desc" },
+      take: 50,
     }),
     db.contract.findMany({
       where: { projectId: id },
       select: { id: true, title: true, status: true, sentAt: true, signedAt: true, createdAt: true },
       orderBy: { createdAt: "desc" },
+      take: 50,
     }),
   ]);
 

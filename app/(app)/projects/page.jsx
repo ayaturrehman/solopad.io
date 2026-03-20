@@ -1,9 +1,10 @@
-
 import { Suspense } from "react";
 import { getSession } from "@/lib/session";
 import db from "@/lib/db";
 import { redirect } from "next/navigation";
 import ProjectsClient from "./ProjectsClient";
+
+export const revalidate = 30;
 
 export default async function ProjectsPage() {
   const session = await getSession();
@@ -24,6 +25,7 @@ export default async function ProjectsPage() {
         _count: { select: { files: true, comments: true } },
       },
       orderBy: { updatedAt: "desc" },
+      take: 100,
     }),
     db.contact.findMany({
       where: { userId: session.user.id },
