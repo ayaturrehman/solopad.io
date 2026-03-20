@@ -17,14 +17,13 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
+    site: "@solopad_io",
+    creator: "@solopad_io",
     title: "SoloPad — The All-in-One Freelance Workspace",
     description: "Everything freelancers need to manage clients and get paid. Starting at $12/mo.",
   },
 };
 
-export const viewport = {
-  width: 1280,
-};
 
 export default function RootLayout({ children }) {
   return (

@@ -1347,7 +1347,7 @@ export default function LandingPage() {
                 <p style={{ fontSize:12, color:"#C0C0C0", marginTop:10, lineHeight:1.65, fontStyle:"italic" }}>Built by a freelancer who got tired of paying $36/mo for tools he barely used.</p>
                 {/* Social links */}
                 <div style={{ display:"flex", gap:12, marginTop:16 }}>
-                  <a href="https://twitter.com/solopadio" target="_blank" rel="noopener noreferrer" aria-label="Twitter / X" style={{ color:"#AAAAAA", display:"inline-flex", alignItems:"center", justifyContent:"center", width:32, height:32, borderRadius:8, border:"1px solid #EBEBEB", background:"#FAFAFA", transition:"color .15s" }}>
+                  <a href="https://x.com/solopad_io" target="_blank" rel="noopener noreferrer" aria-label="Twitter / X" style={{ color:"#AAAAAA", display:"inline-flex", alignItems:"center", justifyContent:"center", width:32, height:32, borderRadius:8, border:"1px solid #EBEBEB", background:"#FAFAFA", transition:"color .15s" }}>
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.259 5.63 5.905-5.63zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
                   </a>
                   <a href="https://linkedin.com/company/solopad" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" style={{ color:"#AAAAAA", display:"inline-flex", alignItems:"center", justifyContent:"center", width:32, height:32, borderRadius:8, border:"1px solid #EBEBEB", background:"#FAFAFA", transition:"color .15s" }}>
