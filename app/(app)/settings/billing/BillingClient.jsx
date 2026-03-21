@@ -41,6 +41,7 @@ function BillingContent({ plan: initialPlan, billingStatus: initialBillingStatus
       if (statusData) {
         setBillingStatus(statusData);
         if (statusData.plan) setPlan(statusData.plan);
+        if (statusData.interval) setInterval(statusData.interval);
       }
       if (invoiceData) setBillingData(invoiceData);
     });
@@ -50,6 +51,9 @@ function BillingContent({ plan: initialPlan, billingStatus: initialBillingStatus
   const isTrialing = billingStatus?.status === "trialing" || trialDaysLeft > 0;
   const hasSubscription = !!billingStatus?.subscription;
   const planInfo = getPlan(plan);
+  const isCurrentYearly = billingStatus?.interval === "yearly";
+  const displayPrice = isCurrentYearly ? (planInfo.annualPrice || planInfo.price) : planInfo.price;
+  const displayPeriod = isCurrentYearly ? "/yr" : planInfo.period;
 
   async function changePlan(nextPlan) {
     if (nextPlan === plan) return;
@@ -126,12 +130,15 @@ function BillingContent({ plan: initialPlan, billingStatus: initialBillingStatus
             <div className="flex-1">
               <div className="flex items-center gap-2.5">
                 <h3 className="text-lg font-semibold text-zinc-900 capitalize">{plan} Plan</h3>
-                <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${planColors[plan]}`}>
-                  {isTrialing ? "Trial" : billingStatus.status === "active" ? "Active" : billingStatus.status === "past_due" ? "Past due" : billingStatus.status === "canceled" ? "Cancelled" : billingStatus.status || "Active"}
+                <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${isTrialing ? "bg-blue-100 text-blue-700" : planColors[plan]}`}>
+                  {isTrialing ? "Free trial" : billingStatus.status === "active" ? "Active" : billingStatus.status === "past_due" ? "Past due" : billingStatus.status === "canceled" ? "Cancelled" : billingStatus.status || "Active"}
                 </span>
               </div>
               <p className="mt-1 text-sm text-zinc-500">{planInfo.description}</p>
-              <p className="mt-2 text-xl font-bold text-zinc-900">{planInfo.price}<span className="text-sm font-normal text-zinc-400">{planInfo.period}</span></p>
+              <p className="mt-2 text-xl font-bold text-zinc-900">{displayPrice}<span className="text-sm font-normal text-zinc-400">{displayPeriod}</span></p>
+              {isCurrentYearly && planInfo.annualMonthly && (
+                <p className="text-xs text-zinc-400">{planInfo.annualMonthly}/mo · billed yearly</p>
+              )}
             </div>
             {hasSubscription && (
               <Button size="sm" variant="secondary" loading={portalLoading} onClick={openBillingPortal}>
