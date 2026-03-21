@@ -1190,7 +1190,10 @@ export default function LandingPage() {
             <div className="pk-reveal" style={{ textAlign:"center", marginBottom:40 }}>
               <p style={{ fontSize:12, fontWeight:700, color:C, textTransform:"uppercase", letterSpacing:1.5, marginBottom:12 }}>Pricing</p>
               <h2 style={{ fontSize:"clamp(28px, 3.5vw, 46px)", fontWeight:900, color:CDk, letterSpacing:"-0.8px" }}>Simple, honest pricing.</h2>
-              <p style={{ fontSize:16, color:CMute, marginTop:12 }}>No transaction fees. No hidden costs. Start from $5/mo.</p>
+              <p style={{ fontSize:16, color:CMute, marginTop:12 }}>No transaction fees. No hidden costs. Start from £5/mo.</p>
+              <div style={{ marginTop:16, display:"inline-flex", alignItems:"center", gap:8, background:"#EFF6FF", border:`1px solid ${C}33`, borderRadius:100, padding:"6px 18px" }}>
+                <span style={{ fontSize:13, fontWeight:700, color:C }}>14-day free trial + 50% off for 6 months</span>
+              </div>
             </div>
 
             {/* Annual / Monthly toggle */}
@@ -1205,7 +1208,7 @@ export default function LandingPage() {
                 <span style={{ position:"absolute", top:3, left: annual ? 25 : 3, width:20, height:20, borderRadius:"50%", background:"#fff", transition:"left .2s", boxShadow:"0 1px 4px rgba(0,0,0,.2)" }} />
               </button>
               <span style={{ fontSize:14, fontWeight:600, color:annual ? CDk : CMute }}>Annual</span>
-              <span style={{ fontSize:11, fontWeight:700, background:"#DCFCE7", color:"#16A34A", borderRadius:100, padding:"3px 10px" }}>Save 17%</span>
+              <span style={{ fontSize:11, fontWeight:700, background:"#DCFCE7", color:"#16A34A", borderRadius:100, padding:"3px 10px" }}>2 months free</span>
             </div>
 
             <div className="pk-price-grid">
@@ -1220,10 +1223,44 @@ export default function LandingPage() {
                       </div>
                     )}
                     <p style={{ fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:1.2, color:CMute, marginBottom:8 }}>{plan.name}</p>
-                    <div style={{ display:"flex", alignItems:"flex-end", gap:4, marginBottom:8 }}>
-                      <span style={{ fontSize:52, fontWeight:900, color:plan.highlight?C:CDk, lineHeight:1, letterSpacing:"-1px" }}>{displayPrice}</span>
-                      <span style={{ fontSize:13, color:CMute, marginBottom:8, maxWidth:120, lineHeight:1.3 }}>{displayPeriod}</span>
-                    </div>
+                    {!annual && plan.promoPrice ? (
+                      <>
+                        <div style={{ display:"inline-block", background:"#DCFCE7", borderRadius:100, padding:"3px 12px", marginBottom:8 }}>
+                          <span style={{ fontSize:12, fontWeight:800, color:"#16A34A", letterSpacing:"0.5px" }}>50% OFF</span>
+                        </div>
+                        <div style={{ display:"flex", alignItems:"flex-end", gap:4, marginBottom:4 }}>
+                          <span style={{ fontSize:52, fontWeight:900, color:plan.highlight?C:CDk, lineHeight:1, letterSpacing:"-1px" }}>{plan.promoPrice}</span>
+                          <span style={{ fontSize:13, color:CMute, marginBottom:8 }}>/mo</span>
+                        </div>
+                        <p style={{ fontSize:13, color:CMute, marginBottom:2 }}>for first 6 months</p>
+                        <p style={{ fontSize:12, color:"#AAAAAA", marginBottom:4 }}>
+                          <span style={{ textDecoration:"line-through" }}>{plan.price}/mo</span>{" "}
+                          · then {plan.price}/mo after
+                        </p>
+                      </>
+                    ) : annual && plan.annualPromoPrice ? (
+                      <>
+                        <div style={{ display:"inline-block", background:"#DCFCE7", borderRadius:100, padding:"3px 12px", marginBottom:8 }}>
+                          <span style={{ fontSize:12, fontWeight:800, color:"#16A34A", letterSpacing:"0.5px" }}>50% OFF + 2 MONTHS FREE</span>
+                        </div>
+                        <div style={{ display:"flex", alignItems:"flex-end", gap:4, marginBottom:4 }}>
+                          <span style={{ fontSize:52, fontWeight:900, color:plan.highlight?C:CDk, lineHeight:1, letterSpacing:"-1px" }}>{plan.annualPromoPrice}</span>
+                          <span style={{ fontSize:13, color:CMute, marginBottom:8 }}>/yr</span>
+                        </div>
+                        <p style={{ fontSize:13, color:CMute, marginBottom:2 }}>That&apos;s {plan.annualPromoMonthly}/mo · save {plan.annualPromoSave}</p>
+                        <p style={{ fontSize:12, color:"#AAAAAA", marginBottom:4 }}>
+                          <span style={{ textDecoration:"line-through" }}>{plan.annualPrice}/yr</span>{" "}
+                          · then {plan.annualPrice}/yr after
+                        </p>
+                      </>
+                    ) : (
+                      <>
+                        <div style={{ display:"flex", alignItems:"flex-end", gap:4, marginBottom:8 }}>
+                          <span style={{ fontSize:52, fontWeight:900, color:plan.highlight?C:CDk, lineHeight:1, letterSpacing:"-1px" }}>{displayPrice}</span>
+                          <span style={{ fontSize:13, color:CMute, marginBottom:8, maxWidth:120, lineHeight:1.3 }}>{displayPeriod}</span>
+                        </div>
+                      </>
+                    )}
                     <p style={{ fontSize:14, color:CMute, lineHeight:1.6, marginBottom:24 }}>{plan.description}</p>
                     <ul style={{ marginBottom:28, display:"flex", flexDirection:"column", gap:10 }}>
                       {plan.features.map(f => (
@@ -1243,7 +1280,7 @@ export default function LandingPage() {
               })}
             </div>
             <p style={{ textAlign:"center", fontSize:13, color:"#AAAAAA", marginTop:28 }}>
-              7-day free trial on all plans · Cancel anytime · Upgrade when you&apos;re ready
+              14-day free trial on all plans · Cancel anytime · Prices in GBP
             </p>
           </div>
         </section>
@@ -1257,7 +1294,7 @@ export default function LandingPage() {
             </div>
             <div style={{ maxWidth:720, margin:"0 auto", display:"flex", flexDirection:"column", gap:2 }}>
               {[
-                { q:"What does the Starter plan include?", a:"Starter gives you 3 active projects, 500MB storage, a client portal, files & comments, and 5 invoices per month — everything you need to get going at just $5/mo." },
+                { q:"What does the Starter plan include?", a:"Starter gives you 3 active projects, 500MB storage, a client portal, files & comments, and 5 invoices per month — everything you need to get going at just £5/mo. Plus, every plan starts with a 14-day free trial." },
                 { q:"What payment methods can my clients use?", a:"Clients pay through Stripe, which supports all major credit/debit cards, Apple Pay, Google Pay, and bank transfers in supported countries." },
                 { q:"Can I migrate from HoneyBook or Dubsado?", a:"Yes. You can import your contacts via CSV and be up and running in under 10 minutes. We're adding direct migration tools soon." },
                 { q:"Do I need a Stripe account?", a:"Yes, you'll connect your own Stripe account (free to create). This means you get paid directly — SoloPad never touches your money and charges zero transaction fees." },

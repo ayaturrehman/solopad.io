@@ -65,6 +65,7 @@ export async function POST(req) {
       cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/settings?billing=cancelled`,
       subscription_data: {
         metadata: { businessId: user.businessId, plan },
+        trial_period_days: 14,
       },
       allow_promotion_codes: !couponCode, // Allow manual entry if no code provided
     };

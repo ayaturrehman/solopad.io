@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { PLAN_ORDER, getPlan } from "@/lib/plans";
-import { Check, Tag, Loader2 } from "lucide-react";
+import { Check, Tag, Loader2, Sparkles } from "lucide-react";
 
 export default function PricingPage() {
   const router = useRouter();
@@ -61,8 +61,17 @@ export default function PricingPage() {
       <div className="text-center mb-8">
         <h1 className="text-2xl font-bold text-zinc-900">Choose your plan</h1>
         <p className="mt-2 text-sm text-zinc-500">
-          Simple pricing. No hidden fees. Cancel anytime.
+          Simple pricing in GBP. No hidden fees. Cancel anytime.
         </p>
+      </div>
+
+      {/* Promo banner */}
+      <div className="mx-auto max-w-lg mb-8 rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 px-5 py-3 text-center">
+        <div className="flex items-center justify-center gap-2 text-sm font-semibold text-blue-700">
+          <Sparkles className="h-4 w-4" />
+          14-day free trial + 50% off for 6 months
+        </div>
+        <p className="mt-0.5 text-xs text-blue-500">Applied automatically at checkout</p>
       </div>
 
       {/* Interval toggle */}
@@ -81,7 +90,7 @@ export default function PricingPage() {
             interval === "yearly" ? "bg-zinc-900 text-white" : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200"
           }`}
         >
-          Yearly <span className="text-xs opacity-75">Save 17%</span>
+          Yearly <span className="text-xs opacity-75">2 months free</span>
         </button>
       </div>
 
@@ -90,9 +99,9 @@ export default function PricingPage() {
         {PLAN_ORDER.map((planId) => {
           const item = getPlan(planId);
           const isPopular = planId === "solo";
-          const isStarter = planId === "starter";
-          const price = interval === "yearly" && item.annualPrice ? item.annualPrice : item.price;
-          const period = interval === "yearly" && item.annualPeriod ? item.annualPeriod : item.period;
+          const isYearly = interval === "yearly";
+          const price = isYearly ? item.annualPrice : item.price;
+          const period = isYearly ? item.annualPeriod : item.period;
 
           return (
             <div
@@ -108,14 +117,49 @@ export default function PricingPage() {
               )}
               <h3 className="text-lg font-semibold text-zinc-900">{item.name}</h3>
               <p className="mt-1 text-sm text-zinc-500">{item.description}</p>
-              <div className="mt-4">
-                <span className="text-3xl font-bold text-zinc-900">{price}</span>
-                <span className="text-sm text-zinc-400">{period}</span>
-              </div>
-              {isStarter && item.promoPrice && interval === "monthly" && (
-                <p className="mt-1.5 text-xs font-medium text-green-600">
-                  Launch offer: {item.promoPrice}{item.promoPeriod}
-                </p>
+
+              {/* Pricing display */}
+              {!isYearly && item.promoPrice ? (
+                /* Monthly with 50% off */
+                <div className="mt-4">
+                  <span className="inline-block rounded-full bg-green-100 px-3 py-0.5 text-xs font-bold text-green-700 mb-2">
+                    50% OFF
+                  </span>
+                  <div className="flex items-end gap-2">
+                    <span className="text-4xl font-black text-zinc-900">{item.promoPrice}</span>
+                    <span className="text-sm text-zinc-400 mb-1">/mo</span>
+                  </div>
+                  <p className="mt-1.5 text-sm text-zinc-500">
+                    for first 6 months
+                  </p>
+                  <p className="mt-0.5 text-xs text-zinc-400">
+                    <span className="line-through">{item.price}/mo</span>{" "}
+                    · then {item.price}/mo after
+                  </p>
+                </div>
+              ) : isYearly && item.annualPromoPrice ? (
+                /* Annual with 50% off first 6mo + 2 months free */
+                <div className="mt-4">
+                  <span className="inline-block rounded-full bg-green-100 px-3 py-0.5 text-xs font-bold text-green-700 mb-2">
+                    50% OFF + 2 MONTHS FREE
+                  </span>
+                  <div className="flex items-end gap-2">
+                    <span className="text-4xl font-black text-zinc-900">{item.annualPromoPrice}</span>
+                    <span className="text-sm text-zinc-400 mb-1">/yr</span>
+                  </div>
+                  <p className="mt-1.5 text-sm text-zinc-500">
+                    That&apos;s {item.annualPromoMonthly}/mo · save {item.annualPromoSave}
+                  </p>
+                  <p className="mt-0.5 text-xs text-zinc-400">
+                    <span className="line-through">{item.annualPrice}/yr</span>{" "}
+                    · then {item.annualPrice}/yr after
+                  </p>
+                </div>
+              ) : (
+                <div className="mt-4">
+                  <span className="text-4xl font-black text-zinc-900">{price}</span>
+                  <span className="text-sm text-zinc-400">{period}</span>
+                </div>
               )}
               <ul className="mt-5 flex-1 space-y-2">
                 {item.features.map((f) => (
@@ -179,7 +223,7 @@ export default function PricingPage() {
               <>
                 <span className="font-medium">{couponResult.coupon.name}</span>:{" "}
                 {couponResult.coupon.percentOff ? `${couponResult.coupon.percentOff}% off` : ""}
-                {couponResult.coupon.amountOff ? `$${couponResult.coupon.amountOff} off` : ""}
+                {couponResult.coupon.amountOff ? `£${couponResult.coupon.amountOff} off` : ""}
                 {couponResult.coupon.duration === "once" ? " (first payment)" : ""}
                 {couponResult.coupon.duration === "repeating" ? ` for ${couponResult.coupon.durationInMonths} months` : ""}
                 {couponResult.coupon.duration === "forever" ? " forever" : ""}
