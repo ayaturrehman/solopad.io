@@ -24,13 +24,30 @@ export async function POST(req) {
 
     const hashed = await bcrypt.hash(password, 10);
 
+    const selectedPlan = isValidPlan(plan) ? plan : "starter";
+
     const user = await db.$transaction(async (tx) => {
       const newUser = await tx.user.create({
-        data: { name, email, password: hashed, role: "owner", plan: isValidPlan(plan) ? plan : "starter" },
+        data: { name, email, password: hashed, role: "owner", plan: selectedPlan },
       });
 
       const business = await tx.business.create({
-        data: { name: `${name}'s Business`, ownerId: newUser.id },
+        data: { name: `${name}'s Business`, ownerId: newUser.id, plan: selectedPlan },
+      });
+
+      // Auto-create subscription with 30-day free trial (no Stripe yet — that happens at checkout)
+      const trialEnd = new Date();
+      trialEnd.setDate(trialEnd.getDate() + 30);
+      await tx.subscription.create({
+        data: {
+          businessId: business.id,
+          stripeCustomerId: `pending_${business.id}`, // placeholder until Stripe checkout
+          plan: selectedPlan,
+          status: "trialing",
+          trialEnd,
+          currentPeriodStart: new Date(),
+          currentPeriodEnd: trialEnd,
+        },
       });
 
       // Auto-create owner TeamMember so owner appears in team list with permissions

@@ -39,7 +39,7 @@ export async function POST(req) {
 
     let stripeCustomerId;
 
-    if (subscription?.stripeCustomerId) {
+    if (subscription?.stripeCustomerId && !subscription.stripeCustomerId.startsWith("pending_")) {
       stripeCustomerId = subscription.stripeCustomerId;
     } else {
       // Create Stripe customer
@@ -50,15 +50,23 @@ export async function POST(req) {
       });
       stripeCustomerId = customer.id;
 
-      // Create subscription record (no active subscription yet — that comes from webhook)
-      subscription = await db.subscription.create({
-        data: {
-          businessId: user.businessId,
-          stripeCustomerId: customer.id,
-          plan: "starter",
-          status: "active",
-        },
-      });
+      if (subscription) {
+        // Update existing subscription record (created at signup with placeholder)
+        await db.subscription.update({
+          where: { id: subscription.id },
+          data: { stripeCustomerId: customer.id },
+        });
+      } else {
+        // Create subscription record
+        subscription = await db.subscription.create({
+          data: {
+            businessId: user.businessId,
+            stripeCustomerId: customer.id,
+            plan: "starter",
+            status: "active",
+          },
+        });
+      }
     }
 
     // ─── If user already has an active Stripe subscription, UPDATE it ───
