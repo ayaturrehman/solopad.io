@@ -37,10 +37,11 @@ export function ToastProvider({ children }) {
   return (
     <ToastContext.Provider value={toast}>
       {children}
-      <div className="fixed bottom-4 right-4 z-[200] flex flex-col-reverse gap-2">
+      <div className="fixed bottom-4 right-4 z-[200] flex flex-col-reverse gap-2" aria-live="assertive" aria-atomic="true">
         {toasts.map((t) => (
           <div
             key={t.id}
+            role="alert"
             className={cn(
               "flex items-center gap-2 rounded-lg border px-4 py-3 text-sm font-medium shadow-lg backdrop-blur-sm animate-[toast-in_0.2s_ease-out]",
               t.type === "success"
@@ -54,7 +55,7 @@ export function ToastProvider({ children }) {
               <AlertCircle className="h-4 w-4 shrink-0 text-red-500" />
             )}
             <span>{t.title}</span>
-            <button onClick={() => removeToast(t.id)} className="ml-2 shrink-0 text-zinc-400 hover:text-zinc-600">
+            <button onClick={() => removeToast(t.id)} aria-label="Dismiss" className="ml-2 shrink-0 text-zinc-400 hover:text-zinc-600">
               <X className="h-3.5 w-3.5" />
             </button>
           </div>

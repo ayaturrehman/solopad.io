@@ -104,6 +104,17 @@ export default function TopBar() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname, nonQParams]);
 
+  useEffect(() => {
+    function handleEscape(e) {
+      if (e.key === "Escape") {
+        if (showBell) setShowBell(false);
+        if (showProfile) setShowProfile(false);
+      }
+    }
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [showBell, showProfile]);
+
   const fetchNotifications = useCallback((countOnly = false) => {
     const url = countOnly ? "/api/notifications?countOnly=1" : "/api/notifications";
     fetch(url)
@@ -191,6 +202,7 @@ export default function TopBar() {
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}
                 placeholder={searchPlaceholder}
+                aria-label="Search"
                 className="w-full rounded border border-zinc-200 bg-zinc-50 py-1.5 pl-8 pr-10 text-sm text-zinc-700 placeholder-zinc-400 outline-none focus:border-zinc-400 focus:bg-white"
               />
               {isSearchPending && (
@@ -225,6 +237,7 @@ export default function TopBar() {
             }}
             className="relative inline-flex h-11 w-11 items-center justify-center rounded text-zinc-500 transition-colors hover:bg-zinc-50 hover:text-zinc-900"
             aria-label="Notifications"
+            aria-expanded={showBell}
           >
             <Bell className="h-4 w-4" />
             {unread > 0 && (
@@ -237,7 +250,7 @@ export default function TopBar() {
           {showBell && (
             <>
               <div className="fixed inset-0 z-30" onClick={() => setShowBell(false)} />
-              <div className="absolute right-0 top-11 z-40 w-80 rounded border border-zinc-200 bg-white shadow-lg">
+              <div className="absolute right-0 top-11 z-40 w-80 rounded border border-zinc-200 bg-white shadow-lg" role="menu">
                 <div className="flex items-center justify-between border-b border-zinc-100 px-3 py-2">
                   <span className="text-xs font-semibold text-zinc-900">Notifications</span>
                   {unread > 0 && (
@@ -285,6 +298,7 @@ export default function TopBar() {
           <button
             onClick={() => { setShowBell(false); setShowProfile((value) => !value); }}
             className="inline-flex items-center gap-2 rounded bg-white px-2.5 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 hover:text-zinc-900"
+            aria-expanded={showProfile}
           >
             <span className="flex h-7 w-7 items-center justify-center rounded-full bg-zinc-900 text-xs font-semibold text-white">
               {initials}
@@ -296,7 +310,7 @@ export default function TopBar() {
           {showProfile && (
             <>
               <div className="fixed inset-0 z-30" onClick={() => setShowProfile(false)} />
-              <div className="absolute right-0 top-12 z-40 w-60 overflow-hidden rounded border border-zinc-200 bg-white shadow-lg">
+              <div className="absolute right-0 top-12 z-40 w-60 overflow-hidden rounded border border-zinc-200 bg-white shadow-lg" role="menu">
                 <div className="border-b border-zinc-100 px-4 py-3">
                   <p className="text-sm font-semibold text-zinc-900">{userName}</p>
                   <p className="text-xs text-zinc-500">{session?.user?.email || "Signed in"}</p>

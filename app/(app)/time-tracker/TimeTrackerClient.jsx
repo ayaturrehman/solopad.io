@@ -6,6 +6,7 @@ import Button from "@/components/ui/Button";
 import { inputClassName, selectClassName } from "@/components/ui/Input";
 import CollectionPageHeader, { collectionPageHeaderSecondaryActionClassName } from "@/components/shared/CollectionPageHeader";
 import { Play, Square, Plus, Trash2, ChevronDown, ChevronUp } from "lucide-react";
+import TimeReports from "./TimeReports";
 
 function formatDuration(seconds) {
   const h = Math.floor(seconds / 3600);
@@ -43,6 +44,7 @@ function groupByDate(entries) {
 }
 
 export default function TimeTrackerClient({ entries: initialEntries, projects }) {
+  const [tab, setTab] = useState("timer");
   const [entries, setEntries] = useState(initialEntries);
   const [running, setRunning] = useState(false);
   const [elapsed, setElapsed] = useState(0);
@@ -168,18 +170,47 @@ export default function TimeTrackerClient({ entries: initialEntries, projects })
         <CollectionPageHeader
           title="Time Tracker"
           showFilter={false}
-          actions={(
-            <button
-              type="button"
-              onClick={() => setShowManual((value) => !value)}
-              className={collectionPageHeaderSecondaryActionClassName}
-            >
-              <Plus className="h-4 w-4" />
-              {showManual ? "Hide manual entry" : "Log time manually"}
-            </button>
-          )}
+          actions={
+            tab === "timer" ? (
+              <button
+                type="button"
+                onClick={() => setShowManual((value) => !value)}
+                className={collectionPageHeaderSecondaryActionClassName}
+              >
+                <Plus className="h-4 w-4" />
+                {showManual ? "Hide manual entry" : "Log time manually"}
+              </button>
+            ) : null
+          }
         />
 
+        {/* Tab buttons */}
+        <div className="px-4 md:px-6 border-b border-zinc-200 flex gap-6">
+          <button
+            onClick={() => setTab("timer")}
+            className={cn(
+              "py-3 text-sm font-medium border-b-2 transition-colors",
+              tab === "timer"
+                ? "border-blue-500 text-blue-600"
+                : "border-transparent text-zinc-600 hover:text-zinc-900"
+            )}
+          >
+            Timer
+          </button>
+          <button
+            onClick={() => setTab("reports")}
+            className={cn(
+              "py-3 text-sm font-medium border-b-2 transition-colors",
+              tab === "reports"
+                ? "border-blue-500 text-blue-600"
+                : "border-transparent text-zinc-600 hover:text-zinc-900"
+            )}
+          >
+            Reports
+          </button>
+        </div>
+
+        {tab === "timer" ? (
         <div className="px-4 pb-4 md:px-6">
         {/* Active Timer Card */}
         <div className="mb-6 rounded border border-zinc-200 bg-white p-6">
@@ -400,6 +431,11 @@ export default function TimeTrackerClient({ entries: initialEntries, projects })
           </div>
         )}
       </div>
+        ) : (
+        <div className="px-4 pb-4 md:px-6">
+          <TimeReports projects={projects} />
+        </div>
+        )}
       </div>
     </div>
   );

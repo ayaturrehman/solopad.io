@@ -35,9 +35,11 @@ export default function Input({ label, error, className, required = false, id, .
       <input
         id={id}
         className={cn(inputClassName, error && "border-red-400 focus:border-red-400", className)}
+        aria-invalid={error ? "true" : undefined}
+        aria-describedby={error ? `${id}-error` : undefined}
         {...props}
       />
-      {error && <p className="text-xs text-red-600">{error}</p>}
+      {error && <p id={`${id}-error`} role="alert" className="text-xs text-red-600">{error}</p>}
     </div>
   );
 }
@@ -49,11 +51,13 @@ export function Select({ label, error, className, required = false, id, children
       <select
         id={id}
         className={cn(selectClassName, error && "border-red-400 focus:border-red-400", className)}
+        aria-invalid={error ? "true" : undefined}
+        aria-describedby={error ? `${id}-error` : undefined}
         {...props}
       >
         {children}
       </select>
-      {error && <p className="text-xs text-red-600">{error}</p>}
+      {error && <p id={`${id}-error`} role="alert" className="text-xs text-red-600">{error}</p>}
     </div>
   );
 }
@@ -65,9 +69,11 @@ export function Textarea({ label, error, className, required = false, id, ...pro
       <textarea
         id={id}
         className={cn(textareaClassName, error && "border-red-400 focus:border-red-400", className)}
+        aria-invalid={error ? "true" : undefined}
+        aria-describedby={error ? `${id}-error` : undefined}
         {...props}
       />
-      {error && <p className="text-xs text-red-600">{error}</p>}
+      {error && <p id={`${id}-error`} role="alert" className="text-xs text-red-600">{error}</p>}
     </div>
   );
 }

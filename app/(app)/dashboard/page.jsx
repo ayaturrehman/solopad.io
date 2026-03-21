@@ -22,33 +22,37 @@ export default async function DashboardPage() {
     db.project.findMany({
       where: { userId, archived: false },
       orderBy: { updatedAt: "desc" },
-      include: { contact: { select: { name: true } } },
+      select: { id: true, title: true, status: true, stage: true, endDate: true, updatedAt: true, contact: { select: { name: true } } },
       take: 6,
     }),
     db.task.findMany({
       where: { userId, status: { not: "done" } },
-      include: { project: { select: { id: true, title: true } } },
+      select: { id: true, title: true, status: true, priority: true, dueDate: true, project: { select: { id: true, title: true } } },
       orderBy: [{ dueDate: "asc" }, { createdAt: "desc" }],
       take: 6,
     }),
     db.proposal.findMany({
       where: { userId },
       orderBy: { createdAt: "desc" },
+      select: { id: true, title: true, status: true, createdAt: true },
       take: 4,
     }),
     db.contract.findMany({
       where: { userId },
       orderBy: { createdAt: "desc" },
+      select: { id: true, title: true, status: true, createdAt: true },
       take: 4,
     }),
     db.contact.findMany({
       where: { userId },
       orderBy: { createdAt: "desc" },
+      select: { id: true, name: true, email: true, company: true, createdAt: true },
       take: 5,
     }),
     db.invoice.findMany({
       where: { project: { userId }, status: { notIn: ["paid", "cancelled"] } },
       orderBy: { createdAt: "desc" },
+      select: { id: true, total: true, status: true, createdAt: true },
       take: 20,
     }),
   ]);

@@ -6,7 +6,11 @@ import { cn, formatDate } from "@/lib/utils";
 import { inputClassName, selectClassName, textareaClassName, FormLabel } from "@/components/ui/Input";
 import Modal from "@/components/shared/Modal";
 import Button from "@/components/ui/Button";
-import CollectionPageHeader, { collectionPageHeaderPrimaryActionClassName } from "@/components/shared/CollectionPageHeader";
+import CollectionPageHeader, {
+  collectionPageHeaderPrimaryActionClassName,
+  collectionPageHeaderSegmentedGroupClassName,
+  getCollectionPageHeaderSegmentedButtonClassName,
+} from "@/components/shared/CollectionPageHeader";
 import {
   Plus,
   ChevronDown,
@@ -21,9 +25,12 @@ import {
   Loader2,
   CheckSquare,
   X,
+  List,
+  Columns,
 } from "lucide-react";
 
 import { PRIORITY_DOT, STATUS_OPTIONS, STATUS_PILL, makeSubtask, cleanSubtasks, isOverdue } from "./taskUtils";
+import TaskKanbanBoard from "./TaskKanbanBoard";
 
 const FILTER_TABS = [
   { key: "all", label: "All", group: "Status" },
@@ -74,9 +81,16 @@ const emptyTaskForm = {
   subtasks: [makeSubtask("")],
 };
 
+const STORAGE_KEY = "solopad-tasks-view";
+
 export default function TasksClient({ tasks: initialTasks, projects, teamMembers }) {
   const searchParams = useSearchParams();
   const [tasks, setTasks] = useState(initialTasks);
+  const [view, setView] = useState(() => {
+    if (typeof window === "undefined") return "list";
+    const saved = localStorage.getItem(STORAGE_KEY);
+    return saved === "board" || saved === "list" ? saved : "list";
+  });
   const [filter, setFilter] = useState("all");
   const [filterOpen, setFilterOpen] = useState(false);
   const [filterSearch, setFilterSearch] = useState("");
@@ -103,6 +117,17 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
     setAiPrompt("");
     setAiError("");
     setAiSuccess(false);
+  }
+
+  function switchView(v) {
+    setView(v);
+    localStorage.setItem(STORAGE_KEY, v);
+  }
+
+  function handleStatusChange(taskId, newStatus) {
+    setTasks((prev) =>
+      prev.map((t) => t.id === taskId ? { ...t, status: newStatus } : t)
+    );
   }
 
   async function handleAiGenerate() {
@@ -791,15 +816,36 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
           setFilterSearch("");
         }}
         actions={(
-          <Button
-            type="button"
-            onClick={() => setShowForm((value) => !value)}
-            className={collectionPageHeaderPrimaryActionClassName}
-            variant="primary"
-          >
-            <Plus className="h-4 w-4" />
-            Add task
-          </Button>
+          <>
+            <div className={collectionPageHeaderSegmentedGroupClassName}>
+              <Button
+                title="List view"
+                onClick={() => switchView("list")}
+                className={getCollectionPageHeaderSegmentedButtonClassName(view === "list", "left")}
+                variant="ghost"
+              >
+                <List className="h-3.5 w-3.5" />
+              </Button>
+              <Button
+                title="Board view"
+                onClick={() => switchView("board")}
+                className={getCollectionPageHeaderSegmentedButtonClassName(view === "board", "right")}
+                variant="ghost"
+              >
+                <Columns className="h-3.5 w-3.5" />
+              </Button>
+            </div>
+
+            <Button
+              type="button"
+              onClick={() => setShowForm((value) => !value)}
+              className={collectionPageHeaderPrimaryActionClassName}
+              variant="primary"
+            >
+              <Plus className="h-4 w-4" />
+              Add task
+            </Button>
+          </>
         )}
       />
 
@@ -1028,42 +1074,50 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
         </form>
       </Modal>
 
-      {/* Task list */}
-      <div className="px-4 pb-4 md:px-6">
-      <div className="rounded border border-zinc-200 bg-white shadow-sm">
-        {active.length === 0 && done.length === 0 && (
-          <div className="flex flex-col items-center justify-center px-6 py-16 text-center">
-            <CheckSquare className="mb-4 h-12 w-12 text-zinc-200" strokeWidth={1.5} />
-            <p className="text-sm font-medium text-zinc-700">No tasks yet</p>
-            <p className="mt-1 text-xs text-zinc-400">Add your first task or let AI break down a milestone</p>
-          </div>
-        )}
-
-        {active.length > 0 && (
-          <div className="divide-y divide-zinc-100">
-            {active.map((task) => (
-              <TaskRow key={task.id} task={task} />
-            ))}
-          </div>
-        )}
-
-        {done.length > 0 && (
-          <>
-            {active.length > 0 && <div className="border-t border-zinc-100" />}
-            <div className="px-4 py-2">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-400">
-                Completed ({done.length})
-              </p>
+      {/* Task list / board */}
+      {filtered.length === 0 ? (
+        <div className="px-4 pb-4 md:px-6">
+          <div className="rounded border border-zinc-200 bg-white shadow-sm">
+            <div className="flex flex-col items-center justify-center px-6 py-16 text-center">
+              <CheckSquare className="mb-4 h-12 w-12 text-zinc-200" strokeWidth={1.5} />
+              <p className="text-sm font-medium text-zinc-700">No tasks yet</p>
+              <p className="mt-1 text-xs text-zinc-400">Add your first task or let AI break down a milestone</p>
             </div>
-            <div className="divide-y divide-zinc-100">
-              {done.map((task) => (
-                <TaskRow key={task.id} task={task} />
-              ))}
-            </div>
-          </>
-        )}
-      </div>
-      </div>
+          </div>
+        </div>
+      ) : view === "board" ? (
+        <div className="px-4 pb-4 md:px-6">
+          <TaskKanbanBoard tasks={filtered} onStatusChange={handleStatusChange} />
+        </div>
+      ) : (
+        <div className="px-4 pb-4 md:px-6">
+          <div className="rounded border border-zinc-200 bg-white shadow-sm">
+            {active.length > 0 && (
+              <div className="divide-y divide-zinc-100">
+                {active.map((task) => (
+                  <TaskRow key={task.id} task={task} />
+                ))}
+              </div>
+            )}
+
+            {done.length > 0 && (
+              <>
+                {active.length > 0 && <div className="border-t border-zinc-100" />}
+                <div className="px-4 py-2">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-400">
+                    Completed ({done.length})
+                  </p>
+                </div>
+                <div className="divide-y divide-zinc-100">
+                  {done.map((task) => (
+                    <TaskRow key={task.id} task={task} />
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

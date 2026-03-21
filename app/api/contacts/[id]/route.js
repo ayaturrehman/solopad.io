@@ -16,8 +16,19 @@ export async function GET(req, { params }) { try {
       where: { id, ...filter },
       include: {
         projects: {
-          include: { invoices: true },
+          select: {
+            id: true,
+            title: true,
+            status: true,
+            stage: true,
+            totalRevenue: true,
+            updatedAt: true,
+            invoices: {
+              select: { id: true, total: true, status: true },
+            },
+          },
           orderBy: { updatedAt: "desc" },
+          take: 50,
         },
       },
     });
