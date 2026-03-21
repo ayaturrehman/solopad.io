@@ -12,6 +12,12 @@ export async function POST(req) {
 
     const { plan, interval = "monthly", couponCode } = await req.json();
 
+    // Derive base URL from env or request origin
+    const baseUrl =
+      process.env.NEXT_PUBLIC_APP_URL ||
+      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null) ||
+      new URL(req.url).origin;
+
     // Validate plan + get Stripe price ID
     const priceId = getStripePriceId(plan, interval);
     if (!priceId) {
@@ -85,7 +91,7 @@ export async function POST(req) {
 
           return NextResponse.json({
             updated: true,
-            url: `${process.env.NEXT_PUBLIC_APP_URL}/settings?billing=success`,
+            url: `${baseUrl}/settings?billing=success`,
           });
         }
       } catch (err) {
@@ -100,8 +106,8 @@ export async function POST(req) {
       customer: stripeCustomerId,
       line_items: [{ price: priceId, quantity: 1 }],
       metadata: { businessId: user.businessId, plan, interval },
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/settings?billing=success`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/settings?billing=cancelled`,
+      success_url: `${baseUrl}/settings?billing=success`,
+      cancel_url: `${baseUrl}/settings?billing=cancelled`,
       subscription_data: {
         metadata: { businessId: user.businessId, plan },
         trial_period_days: 30,

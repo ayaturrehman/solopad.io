@@ -61,7 +61,7 @@ export default function PricingPage() {
       <div className="text-center mb-8">
         <h1 className="text-2xl font-bold text-zinc-900">Choose your plan</h1>
         <p className="mt-2 text-sm text-zinc-500">
-          30-day free trial on all plans. No hidden fees. Cancel anytime.
+          30-day free trial on all plans. No hidden fees. Cancel anytime. Prices in GBP — local currency applied at checkout.
         </p>
       </div>
 

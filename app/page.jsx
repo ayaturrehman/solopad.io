@@ -1280,7 +1280,7 @@ export default function LandingPage() {
               })}
             </div>
             <p style={{ textAlign:"center", fontSize:13, color:"#AAAAAA", marginTop:28 }}>
-              30-day free trial on all plans · Cancel anytime
+              30-day free trial on all plans · Cancel anytime · Prices in GBP, local currency applied at checkout
             </p>
           </div>
         </section>
