@@ -36,7 +36,7 @@ import {
   formatDate,
 } from "@/lib/utils";
 import { normalizeTask } from "@/lib/tasks";
-import { sanitizeHtml } from "@/lib/sanitize";
+import SanitizedHtml from "./SanitizedHtml";
 
 const TABS = ["overview", "files", "activity", "tasks", "notes", "messages", "details"];
 
@@ -466,7 +466,7 @@ function OverviewPanel({ project, tasks, files, invoices, proposals, contracts, 
               {latestNote ? (
                 <div>
                   {latestNote.title && <p className="mb-1 text-sm font-medium text-zinc-800">{latestNote.title}</p>}
-                  <p className="text-sm leading-6 text-zinc-600 line-clamp-4" dangerouslySetInnerHTML={{ __html: sanitizeHtml(latestNote.body) }} />
+                  <SanitizedHtml html={latestNote.body} className="text-sm leading-6 text-zinc-600 line-clamp-4" />
                   <p className="mt-3 text-xs text-zinc-400">{formatDate(latestNote.createdAt)}</p>
                 </div>
               ) : (

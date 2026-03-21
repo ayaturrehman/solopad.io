@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { getSession } from "@/lib/session";
 import db from "@/lib/db";
 import AutoPrint from "@/components/AutoPrint";
-import { sanitizeHtml } from "@/lib/sanitize";
+import { sanitizeHtmlServer as sanitizeHtml } from "@/lib/sanitize-server";
 
 const PAPER_SIZES = {
   A4:     { width: 794,  height: 1123, css: "210mm 297mm" },
