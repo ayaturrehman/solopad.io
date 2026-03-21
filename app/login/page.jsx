@@ -41,7 +41,7 @@ export default function LoginPage() {
       <div className="w-full max-w-sm">
         <div className="mb-8 flex flex-col items-center">
           <Link href="/" className="mb-6 flex items-center gap-2">
-            <BrandLogo className="gap-0" markClassName="h-[42px] w-[42px]" textClassName="text-[24px] font-black text-zinc-900" />
+            <BrandLogo markClassName="h-8 w-8" />
           </Link>
           <h1 className="text-2xl font-bold text-zinc-900">Welcome back</h1>
           <p className="mt-1 text-sm text-zinc-500">Sign in to your account</p>
@@ -77,7 +77,7 @@ export default function LoginPage() {
         <p className="mt-4 text-center text-sm text-zinc-500">
           Don&apos;t have an account?{" "}
           <Link href="/signup" className="font-medium text-zinc-900 hover:underline">
-            Sign up free
+            Sign up
           </Link>
         </p>
       </div>

@@ -28,13 +28,27 @@ export async function GET() {
 
     const customerId = subscription.stripeCustomerId;
 
+    // Verify customer exists in Stripe before making calls
+    const customerCheck = await stripe.customers.retrieve(customerId).catch((e) => {
+      if (e.code === "resource_missing") return null;
+      throw e;
+    });
+    if (!customerCheck || customerCheck.deleted) {
+      // Customer was deleted from Stripe — clear stale reference
+      await db.subscription.update({
+        where: { businessId: user.businessId },
+        data: { stripeCustomerId: null, stripeSubscriptionId: null, status: "canceled" },
+      }).catch(() => {});
+      return NextResponse.json({ invoices: [], upcoming: null, paymentMethod: null });
+    }
+
     // Run ALL Stripe API calls in parallel instead of sequentially (was 2.5s → ~800ms)
     const [stripeInvoices, upcomingResult, customerResult] = await Promise.all([
       stripe.invoices.list({ customer: customerId, limit: 20 }),
       subscription.stripeSubscriptionId && subscription.status !== "canceled"
         ? stripe.invoices.retrieveUpcoming({ customer: customerId }).catch(() => null)
         : Promise.resolve(null),
-      stripe.customers.retrieve(customerId).catch(() => null),
+      Promise.resolve(customerCheck), // already fetched above
     ]);
 
     const invoices = stripeInvoices.data.map((inv) => ({

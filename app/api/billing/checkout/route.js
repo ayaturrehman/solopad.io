@@ -55,7 +55,46 @@ export async function POST(req) {
       });
     }
 
-    // Build checkout session
+    // ─── If user already has an active Stripe subscription, UPDATE it ───
+    // This preserves the existing trial period instead of creating a new one
+    if (subscription?.stripeSubscriptionId) {
+      try {
+        const existingSub = await stripe.subscriptions.retrieve(subscription.stripeSubscriptionId);
+
+        // Only update if subscription is active or trialing (not canceled/past_due)
+        if (existingSub && (existingSub.status === "active" || existingSub.status === "trialing")) {
+          await stripe.subscriptions.update(subscription.stripeSubscriptionId, {
+            items: [{
+              id: existingSub.items.data[0].id,
+              price: priceId,
+            }],
+            metadata: { businessId: user.businessId, plan },
+            proration_behavior: "create_prorations",
+            // Trial stays untouched — Stripe keeps the existing trial_end
+          });
+
+          // Update local DB immediately (webhook will also fire but this is faster for UI)
+          await db.subscription.update({
+            where: { id: subscription.id },
+            data: { plan, stripePriceId: priceId },
+          });
+          await db.business.update({
+            where: { id: user.businessId },
+            data: { plan },
+          });
+
+          return NextResponse.json({
+            updated: true,
+            url: `${process.env.NEXT_PUBLIC_APP_URL}/settings?billing=success`,
+          });
+        }
+      } catch (err) {
+        // If subscription retrieval fails (e.g. deleted in Stripe), fall through to checkout
+        console.log("[Billing Checkout] Existing sub not found, creating new checkout:", err.message);
+      }
+    }
+
+    // ─── No existing subscription — create new checkout session ───
     const checkoutOptions = {
       mode: "subscription",
       customer: stripeCustomerId,
@@ -65,9 +104,10 @@ export async function POST(req) {
       cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/settings?billing=cancelled`,
       subscription_data: {
         metadata: { businessId: user.businessId, plan },
-        trial_period_days: 14,
+        trial_period_days: 30,
       },
       allow_promotion_codes: !couponCode, // Allow manual entry if no code provided
+      adaptive_pricing: { enabled: true }, // Auto-convert to user's local currency
     };
 
     // Apply specific coupon code if provided

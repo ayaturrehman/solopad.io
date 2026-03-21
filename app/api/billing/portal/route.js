@@ -26,6 +26,19 @@ export async function POST(req) {
       return NextResponse.json({ error: "No billing account found. Upgrade to a paid plan first." }, { status: 400 });
     }
 
+    // Verify customer still exists in Stripe
+    const customer = await stripe.customers.retrieve(subscription.stripeCustomerId).catch((e) => {
+      if (e.code === "resource_missing") return null;
+      throw e;
+    });
+    if (!customer || customer.deleted) {
+      await db.subscription.update({
+        where: { businessId: user.businessId },
+        data: { stripeCustomerId: null, stripeSubscriptionId: null, status: "canceled" },
+      }).catch(() => {});
+      return NextResponse.json({ error: "Billing account not found. Please subscribe to a plan." }, { status: 400 });
+    }
+
     // Create Stripe Billing Portal session
     const portalSession = await stripe.billingPortal.sessions.create({
       customer: subscription.stripeCustomerId,

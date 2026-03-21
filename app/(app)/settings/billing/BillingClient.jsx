@@ -56,6 +56,13 @@ function BillingContent({ plan: initialPlan, billingStatus: initialBillingStatus
         body: JSON.stringify({ plan: nextPlan, interval: "monthly" }),
       });
       const data = await res.json();
+      if (data.updated) {
+        // Plan changed inline (existing subscription updated, trial preserved)
+        setPlan(nextPlan);
+        setBillingStatus((prev) => ({ ...prev, plan: nextPlan }));
+        window.location.href = data.url;
+        return;
+      }
       if (data.url) { window.location.href = data.url; return; }
       if (data.error) alert(data.error);
     } catch {

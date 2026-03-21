@@ -52,7 +52,7 @@ function SignupContent() {
       <div className="w-full max-w-sm">
         <div className="mb-8 flex flex-col items-center">
           <Link href="/" className="mb-6 flex items-center gap-2">
-            <BrandLogo dark markClassName="h-8 w-8" textClassName="text-zinc-900" />
+            <BrandLogo markClassName="h-8 w-8" />
           </Link>
           <h1 className="text-2xl font-bold text-zinc-900">Create your account</h1>
           <p className="mt-1 text-sm text-zinc-500">{plan.name} plan selected · {plan.price}{plan.period}</p>

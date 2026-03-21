@@ -1192,7 +1192,7 @@ export default function LandingPage() {
               <h2 style={{ fontSize:"clamp(28px, 3.5vw, 46px)", fontWeight:900, color:CDk, letterSpacing:"-0.8px" }}>Simple, honest pricing.</h2>
               <p style={{ fontSize:16, color:CMute, marginTop:12 }}>No transaction fees. No hidden costs. Start from £5/mo.</p>
               <div style={{ marginTop:16, display:"inline-flex", alignItems:"center", gap:8, background:"#EFF6FF", border:`1px solid ${C}33`, borderRadius:100, padding:"6px 18px" }}>
-                <span style={{ fontSize:13, fontWeight:700, color:C }}>14-day free trial + 50% off for 6 months</span>
+                <span style={{ fontSize:13, fontWeight:700, color:C }}>30-day free trial + 50% off for 6 months</span>
               </div>
             </div>
 
@@ -1280,7 +1280,7 @@ export default function LandingPage() {
               })}
             </div>
             <p style={{ textAlign:"center", fontSize:13, color:"#AAAAAA", marginTop:28 }}>
-              14-day free trial on all plans · Cancel anytime · Prices in GBP
+              30-day free trial on all plans · Cancel anytime
             </p>
           </div>
         </section>
@@ -1294,7 +1294,7 @@ export default function LandingPage() {
             </div>
             <div style={{ maxWidth:720, margin:"0 auto", display:"flex", flexDirection:"column", gap:2 }}>
               {[
-                { q:"What does the Starter plan include?", a:"Starter gives you 3 active projects, 500MB storage, a client portal, files & comments, and 5 invoices per month — everything you need to get going at just £5/mo. Plus, every plan starts with a 14-day free trial." },
+                { q:"What does the Starter plan include?", a:"Starter gives you unlimited projects, 10 invoices per month, basic proposals, contracts, finance & expenses, tasks, and a client portal — everything you need to get going at just £5/mo. Every plan starts with a 30-day free trial." },
                 { q:"What payment methods can my clients use?", a:"Clients pay through Stripe, which supports all major credit/debit cards, Apple Pay, Google Pay, and bank transfers in supported countries." },
                 { q:"Can I migrate from HoneyBook or Dubsado?", a:"Yes. You can import your contacts via CSV and be up and running in under 10 minutes. We're adding direct migration tools soon." },
                 { q:"Do I need a Stripe account?", a:"Yes, you'll connect your own Stripe account (free to create). This means you get paid directly — SoloPad never touches your money and charges zero transaction fees." },
