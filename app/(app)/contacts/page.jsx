@@ -50,17 +50,6 @@ export default async function ContactsPage({ searchParams }) {
     ...(status !== "all" ? { status } : {}),
   };
 
-  const [totalCount, statusGroups] = await Promise.all([
-    db.contact.count({ where }),
-    db.contact.groupBy({ by: ["status"], where: filter, _count: { _all: true } }),
-  ]);
-  const allCount = statusGroups.reduce((s, g) => s + g._count._all, 0);
-  const leadCount = statusGroups.find((g) => g.status === "lead")?._count._all ?? 0;
-  const activeCount = statusGroups.find((g) => g.status === "active")?._count._all ?? 0;
-  const archivedCount = statusGroups.find((g) => g.status === "archived")?._count._all ?? 0;
-
-  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
-  const currentPage = Math.min(page, totalPages);
   const orderBy = sortBy
     ? [
       { [sortBy]: sortDir },
@@ -68,13 +57,26 @@ export default async function ContactsPage({ searchParams }) {
     ]
     : [{ updatedAt: "desc" }];
 
-  const contacts = await db.contact.findMany({
-    where,
-    orderBy,
-    skip: (currentPage - 1) * pageSize,
-    take: pageSize,
-    include: { _count: { select: { projects: true } } },
-  });
+  // Run ALL 3 queries in parallel (was 2 sequential batches → 1 parallel batch)
+  const [totalCount, statusGroups, contacts] = await Promise.all([
+    db.contact.count({ where }),
+    db.contact.groupBy({ by: ["status"], where: filter, _count: { _all: true } }),
+    db.contact.findMany({
+      where,
+      orderBy,
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+      include: { _count: { select: { projects: true } } },
+    }),
+  ]);
+
+  const allCount = statusGroups.reduce((s, g) => s + g._count._all, 0);
+  const leadCount = statusGroups.find((g) => g.status === "lead")?._count._all ?? 0;
+  const activeCount = statusGroups.find((g) => g.status === "active")?._count._all ?? 0;
+  const archivedCount = statusGroups.find((g) => g.status === "archived")?._count._all ?? 0;
+
+  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+  const currentPage = Math.min(page, totalPages);
 
   return (
     <Suspense fallback={null}>

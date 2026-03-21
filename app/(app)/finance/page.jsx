@@ -30,17 +30,20 @@ export default async function FinancePage({ searchParams }) {
   const userId = session.user.id;
   const now = new Date();
 
-  const user = await db.user.findUnique({ where: { id: userId }, select: { businessId: true } });
-  const business = user?.businessId
-    ? await db.business.findUnique({ where: { id: user.businessId }, select: { currency: true } })
-    : null;
-  const currency = business?.currency || "USD";
+  // Single query to get currency (was 2 sequential queries)
+  const user = await db.user.findUnique({
+    where: { id: userId },
+    select: { businessId: true, business: { select: { currency: true } } },
+  });
+  const currency = user?.business?.currency || "USD";
   const yearStart = new Date(now.getFullYear(), 0, 1);
   const hasExtendedExpenseModels = supportsExtendedExpenseModels();
 
-  await syncRecurringExpenses(userId);
+  // Only sync recurring expenses on the expenses tab (saves ~200ms on other tabs)
+  if (tab === "expenses") await syncRecurringExpenses(userId);
 
-  const [invoices, expenses, projects, customExpenseCategories, recurringExpenses] = await Promise.all([
+  // Core data needed for overview + invoices tabs
+  const [invoices, expenses] = await Promise.all([
     db.invoice.findMany({
       where: { project: { userId }, createdAt: { gte: yearStart } },
       include: { project: { select: { title: true, contact: { select: { name: true } } } } },
@@ -55,27 +58,31 @@ export default async function FinancePage({ searchParams }) {
       orderBy: { date: "desc" },
       take: 200,
     }),
-    db.project.findMany({
-      where: { userId, archived: false },
-      select: { id: true, title: true },
-      orderBy: { title: "asc" },
-      take: 100,
-    }),
-    hasExtendedExpenseModels
-      ? db.expenseCategory.findMany({
-        where: { userId },
-        orderBy: { name: "asc" },
-      })
+  ]);
+
+  // Only fetch heavy data for tabs that need it (saves 1-3 DB queries on overview/payments tabs)
+  const [projects, customExpenseCategories, recurringExpenses] = await Promise.all([
+    (tab === "invoices" || tab === "expenses")
+      ? db.project.findMany({
+          where: { userId, archived: false },
+          select: { id: true, title: true },
+          orderBy: { title: "asc" },
+          take: 100,
+        })
       : Promise.resolve([]),
-    hasExtendedExpenseModels
+    (tab === "expenses" && hasExtendedExpenseModels)
+      ? db.expenseCategory.findMany({
+          where: { userId },
+          orderBy: { name: "asc" },
+        })
+      : Promise.resolve([]),
+    (tab === "expenses" && hasExtendedExpenseModels)
       ? db.recurringExpense.findMany({
-        where: { userId },
-        include: {
-          project: { select: { id: true, title: true } },
-        },
-        orderBy: [{ active: "desc" }, { nextDate: "asc" }],
-        take: 100,
-      })
+          where: { userId },
+          include: { project: { select: { id: true, title: true } } },
+          orderBy: [{ active: "desc" }, { nextDate: "asc" }],
+          take: 100,
+        })
       : Promise.resolve([]),
   ]);
 

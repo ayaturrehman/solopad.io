@@ -92,6 +92,7 @@ export default function ContactFormModal({
   const router = useRouter();
   const [form, setForm] = useState(getInitialForm(contact));
   const [fieldErrors, setFieldErrors] = useState({});
+  const [touched, setTouched] = useState({});
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const isEditing = Boolean(contact?.id);
@@ -101,6 +102,7 @@ export default function ContactFormModal({
     if (open) {
       setForm(getInitialForm(contact));
       setFieldErrors({});
+      setTouched({});
       setError("");
       setLoading(false);
     }
@@ -123,8 +125,34 @@ export default function ContactFormModal({
     });
   }
 
+  function handleBlur(field) {
+    setTouched((prev) => ({ ...prev, [field]: true }));
+    const newErrors = { ...fieldErrors };
+
+    if (field === "name" && !form.name?.trim()) {
+      newErrors.name = "Full name is required.";
+    } else if (field === "name") {
+      delete newErrors.name;
+    }
+
+    if (field === "email" && form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+      newErrors.email = "Enter a valid email address.";
+    } else if (field === "email") {
+      delete newErrors.email;
+    }
+
+    if (field === "company" && form.entityType === "organization" && !form.company?.trim()) {
+      newErrors.company = "Organisation name is required.";
+    } else if (field === "company") {
+      delete newErrors.company;
+    }
+
+    setFieldErrors(newErrors);
+  }
+
   async function handleSubmit(event) {
     event.preventDefault();
+    setTouched({ name: true, email: true, company: true });
     const nextErrors = validateContactForm(form);
     if (Object.keys(nextErrors).length) {
       setFieldErrors(nextErrors);
@@ -174,8 +202,9 @@ export default function ContactFormModal({
             label="Full name"
             value={form.name}
             onChange={(event) => setField("name", event.target.value)}
+            onBlur={() => handleBlur("name")}
             required
-            error={fieldErrors.name}
+            error={(touched.name || loading) && fieldErrors.name ? fieldErrors.name : ""}
           />
           <Select
             label="Type"
@@ -192,8 +221,9 @@ export default function ContactFormModal({
             label={form.entityType === "organization" ? "Organisation name" : "Company"}
             value={form.company}
             onChange={(event) => setField("company", event.target.value)}
+            onBlur={() => handleBlur("company")}
             required={form.entityType === "organization"}
-            error={fieldErrors.company}
+            error={(touched.company || loading) && fieldErrors.company ? fieldErrors.company : ""}
           />
           <Input
             label="Job title"
@@ -205,7 +235,8 @@ export default function ContactFormModal({
             type="email"
             value={form.email}
             onChange={(event) => setField("email", event.target.value)}
-            error={fieldErrors.email}
+            onBlur={() => handleBlur("email")}
+            error={(touched.email || loading) && fieldErrors.email ? fieldErrors.email : ""}
           />
           <Input
             label="Phone"

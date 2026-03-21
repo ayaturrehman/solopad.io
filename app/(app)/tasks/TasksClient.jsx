@@ -791,14 +791,15 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
           setFilterSearch("");
         }}
         actions={(
-          <button
+          <Button
             type="button"
             onClick={() => setShowForm((value) => !value)}
             className={collectionPageHeaderPrimaryActionClassName}
+            variant="primary"
           >
             <Plus className="h-4 w-4" />
             Add task
-          </button>
+          </Button>
         )}
       />
 

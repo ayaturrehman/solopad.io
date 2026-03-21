@@ -329,8 +329,12 @@ export default async function ContactDetailPage({ params, searchParams }) {
     where: { id, ...filter },
     include: {
       projects: {
-        include: { invoices: true },
+        // Only load full invoices on the projects tab; overview/notes just need counts
+        include: tab === "projects"
+          ? { invoices: { select: { id: true, total: true, status: true } } }
+          : { invoices: { select: { total: true, status: true } } },
         orderBy: { updatedAt: "desc" },
+        take: 50,
       },
     },
   });

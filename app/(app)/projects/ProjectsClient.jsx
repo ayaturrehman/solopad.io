@@ -4,6 +4,7 @@ import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import Badge from "@/components/ui/Badge";
+import Button from "@/components/ui/Button";
 import { showNavigationLoading } from "@/components/shared/NavigationLoadingOverlay";
 import CollectionPageHeader, {
   collectionPageHeaderPrimaryActionClassName,
@@ -225,30 +226,33 @@ export default function ProjectsClient({ projects, currency = "USD", contacts = 
         actions={(
           <>
             <div className={collectionPageHeaderSegmentedGroupClassName}>
-              <button
+              <Button
                 title="List view"
                 onClick={() => switchView("list")}
                 className={getCollectionPageHeaderSegmentedButtonClassName(view === "list", "left")}
+                variant="ghost"
               >
                 <List className="h-3.5 w-3.5" />
-              </button>
-              <button
+              </Button>
+              <Button
                 title="Pipeline view"
                 onClick={() => switchView("pipeline")}
                 className={getCollectionPageHeaderSegmentedButtonClassName(view === "pipeline", "right")}
+                variant="ghost"
               >
                 <Columns className="h-3.5 w-3.5" />
-              </button>
+              </Button>
             </div>
 
             {projects.length > 0 && (
-              <button
+              <Button
                 onClick={() => { setEditingProject(null); setModalOpen(true); }}
                 className={collectionPageHeaderPrimaryActionClassName}
+                variant="primary"
               >
                 <Plus className="h-4 w-4" />
                 New project
-              </button>
+              </Button>
             )}
           </>
         )}
@@ -262,13 +266,14 @@ export default function ProjectsClient({ projects, currency = "USD", contacts = 
             ? "Create your first project to start tracking work, stages, and revenue."
             : "Try a different filter or top search term."}
           action={(
-            <button
+            <Button
               onClick={() => { setEditingProject(null); setModalOpen(true); }}
               className={collectionPageHeaderPrimaryActionClassName}
+              variant="primary"
             >
               <Plus className="h-4 w-4" />
               Add first project
-            </button>
+            </Button>
           )}
           className="border-dashed"
         />
@@ -383,15 +388,17 @@ export default function ProjectsClient({ projects, currency = "USD", contacts = 
                 </td>
                 <td className="px-4 py-3 text-right">
                   <div className="flex items-center justify-end gap-2">
-                    <button
+                    <Button
                       type="button"
                       onClick={() => { setEditingProject(project); setModalOpen(true); }}
                       className="text-zinc-400 hover:text-zinc-700 transition-colors"
                       data-no-row-nav="true"
                       title="Edit project"
+                      variant="ghost"
+                      size="xs"
                     >
                       <Pencil className="h-3.5 w-3.5" />
-                    </button>
+                    </Button>
                     <Link href={`/projects/${project.id}`} className="text-zinc-400 hover:text-zinc-700" data-no-row-nav="true">
                       <ExternalLink className="h-4 w-4" />
                     </Link>

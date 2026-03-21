@@ -8,6 +8,7 @@ import {
   X, Trash2, Mail,
   Square, CheckSquare, Plus,
 } from "lucide-react";
+import Button from "@/components/ui/Button";
 import CollectionPageHeader, { collectionPageHeaderPrimaryActionClassName } from "@/components/shared/CollectionPageHeader";
 import { CollectionEmptyState, CollectionTableFrame, CollectionTablePagination } from "@/components/shared/CollectionDataTable";
 import { cn, formatCurrency, formatDate } from "@/lib/utils";
@@ -202,20 +203,22 @@ export default function InvoicesClient({ invoices }) {
             <span className="text-xs text-zinc-400">(max {MAX_BULK})</span>
           )}
           <div className="ml-auto flex items-center gap-2">
-            <button
+            <Button
               onClick={bulkSendEmail}
               disabled={bulkLoading}
-              className="inline-flex items-center gap-1.5 rounded-md border border-zinc-700 px-3 py-1.5 text-xs font-medium hover:bg-zinc-700 disabled:opacity-50"
+              size="xs"
+              variant="secondary"
             >
               <Mail className="h-3.5 w-3.5" /> Send email
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={bulkDelete}
               disabled={bulkLoading}
-              className="inline-flex items-center gap-1.5 rounded-md border border-red-500 px-3 py-1.5 text-xs font-medium text-red-400 hover:bg-red-900/30 disabled:opacity-50"
+              size="xs"
+              variant="danger"
             >
               <Trash2 className="h-3.5 w-3.5" /> Delete
-            </button>
+            </Button>
             <button
               onClick={() => setSelected(new Set())}
               className="ml-1 text-zinc-400 hover:text-white"

@@ -42,7 +42,7 @@ function getInitialForm(project) {
   };
 }
 
-function ContactPicker({ contacts, value, onChange, error }) {
+function ContactPicker({ contacts, value, onChange, error, onBlur }) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const wrapperRef = useRef(null);
@@ -64,11 +64,12 @@ function ContactPicker({ contacts, value, onChange, error }) {
       if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
         setOpen(false);
         setSearch("");
+        onBlur?.();
       }
     }
     document.addEventListener("mousedown", onClickOutside);
     return () => document.removeEventListener("mousedown", onClickOutside);
-  }, []);
+  }, [onBlur]);
 
   function select(contact) {
     onChange(contact.id);
@@ -181,6 +182,7 @@ export default function ProjectFormModal({ open, onClose, project = null, contac
   const isEdit = Boolean(project);
   const [form, setForm] = useState(() => getInitialForm(project));
   const [errors, setErrors] = useState({});
+  const [touched, setTouched] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [serverError, setServerError] = useState("");
 
@@ -189,6 +191,7 @@ export default function ProjectFormModal({ open, onClose, project = null, contac
     if (open) {
       setForm(getInitialForm(project));
       setErrors({});
+      setTouched({});
       setServerError("");
     }
   }, [open, project]);
@@ -206,8 +209,28 @@ export default function ProjectFormModal({ open, onClose, project = null, contac
     return next;
   }
 
+  function handleBlur(field) {
+    setTouched((prev) => ({ ...prev, [field]: true }));
+    const newErrors = { ...errors };
+
+    if (field === "title" && !form.title.trim()) {
+      newErrors.title = "Project name is required.";
+    } else if (field === "title") {
+      delete newErrors.title;
+    }
+
+    if (field === "contactId" && !form.contactId) {
+      newErrors.contactId = "Select a contact.";
+    } else if (field === "contactId") {
+      delete newErrors.contactId;
+    }
+
+    setErrors(newErrors);
+  }
+
   async function handleSubmit(e) {
     e.preventDefault();
+    setTouched({ title: true, contactId: true });
     const next = validate();
     if (Object.keys(next).length) { setErrors(next); return; }
 
@@ -263,8 +286,9 @@ export default function ProjectFormModal({ open, onClose, project = null, contac
           required
           value={form.title}
           onChange={(e) => set("title", e.target.value)}
+          onBlur={() => handleBlur("title")}
           placeholder="e.g. Brand identity for Acme"
-          error={errors.title}
+          error={(touched.title || submitting) && errors.title ? errors.title : ""}
         />
 
         <div className="relative">
@@ -272,7 +296,8 @@ export default function ProjectFormModal({ open, onClose, project = null, contac
             contacts={contacts}
             value={form.contactId}
             onChange={(id) => set("contactId", id)}
-            error={errors.contactId}
+            onBlur={() => handleBlur("contactId")}
+            error={(touched.contactId || submitting) && errors.contactId ? errors.contactId : ""}
           />
         </div>
 
