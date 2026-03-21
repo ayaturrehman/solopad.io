@@ -38,63 +38,68 @@ function makeBaseName() {
   return `contacts-export-${date}`;
 }
 
-export async function POST(req) {
-  const session = await getSession();
-  if (!session?.user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+export async function POST(req) { try {
+    const session = await getSession();
+    if (!session?.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
-  const body = await req.json().catch(() => ({}));
-  const format = VALID_FORMATS.has(body?.format) ? body.format : "csv";
-  const scope = VALID_SCOPES.has(body?.scope) ? body.scope : "filtered";
-  const password = typeof body?.password === "string" ? body.password.trim() : "";
-  const query = typeof body?.query === "string" ? body.query.trim() : "";
-  const status = typeof body?.status === "string" && VALID_STATUS.has(body.status) ? body.status : "all";
+    const body = await req.json().catch(() => ({}));
+    const format = VALID_FORMATS.has(body?.format) ? body.format : "csv";
+    const scope = VALID_SCOPES.has(body?.scope) ? body.scope : "filtered";
+    const password = typeof body?.password === "string" ? body.password.trim() : "";
+    const query = typeof body?.query === "string" ? body.query.trim() : "";
+    const status = typeof body?.status === "string" && VALID_STATUS.has(body.status) ? body.status : "all";
 
-  if (password && password.length < 4) {
-    return NextResponse.json({ error: "Password must be at least 4 characters." }, { status: 400 });
-  }
+    if (password && password.length < 4) {
+      return NextResponse.json({ error: "Password must be at least 4 characters." }, { status: 400 });
+    }
 
-  const filter = await getTenantFilter(session);
-  const where = makeWhere(filter, { query, status, scope });
-  const contacts = await db.contact.findMany({
-    where,
-    orderBy: { updatedAt: "desc" },
-    include: { _count: { select: { projects: true } } },
-  });
-
-  const baseName = makeBaseName();
-  const fileName = `${baseName}.${format}`;
-  const fileBuffer = format === "xlsx"
-    ? buildContactsXlsxBuffer(contacts)
-    : buildContactsCsvBuffer(contacts);
-
-  if (password) {
-    const zipName = `${baseName}.zip`;
-    const zipBuffer = createPasswordProtectedZipBuffer({
-      fileName,
-      data: fileBuffer,
-      password,
+    const filter = await getTenantFilter(session);
+    const where = makeWhere(filter, { query, status, scope });
+    const contacts = await db.contact.findMany({
+      where,
+      orderBy: { updatedAt: "desc" },
+      include: { _count: { select: { projects: true } } },
     });
 
-    return new NextResponse(zipBuffer, {
+    const baseName = makeBaseName();
+    const fileName = `${baseName}.${format}`;
+    const fileBuffer = format === "xlsx"
+      ? buildContactsXlsxBuffer(contacts)
+      : buildContactsCsvBuffer(contacts);
+
+    if (password) {
+      const zipName = `${baseName}.zip`;
+      const zipBuffer = createPasswordProtectedZipBuffer({
+        fileName,
+        data: fileBuffer,
+        password,
+      });
+
+      return new NextResponse(zipBuffer, {
+        headers: {
+          "Content-Type": "application/zip",
+          "Content-Disposition": `attachment; filename="${zipName}"`,
+          "Content-Length": String(zipBuffer.length),
+        },
+      });
+    }
+
+    const contentType = format === "xlsx"
+      ? "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      : "text/csv; charset=utf-8";
+
+    return new NextResponse(fileBuffer, {
       headers: {
-        "Content-Type": "application/zip",
-        "Content-Disposition": `attachment; filename="${zipName}"`,
-        "Content-Length": String(zipBuffer.length),
+        "Content-Type": contentType,
+        "Content-Disposition": `attachment; filename="${fileName}"`,
+        "Content-Length": String(fileBuffer.length),
       },
     });
+
+  } catch (err) {
+    console.error("[Contacts Export POST]", err);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
-
-  const contentType = format === "xlsx"
-    ? "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    : "text/csv; charset=utf-8";
-
-  return new NextResponse(fileBuffer, {
-    headers: {
-      "Content-Type": contentType,
-      "Content-Disposition": `attachment; filename="${fileName}"`,
-      "Content-Length": String(fileBuffer.length),
-    },
-  });
 }

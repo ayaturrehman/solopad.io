@@ -9,9 +9,17 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    // Single query with relation join instead of 2 sequential queries
     const user = await db.user.findUnique({
       where: { id: session.user.id },
-      select: { businessId: true },
+      select: {
+        businessId: true,
+        business: {
+          select: {
+            subscription: true,
+          },
+        },
+      },
     });
 
     if (!user?.businessId) {
@@ -22,9 +30,7 @@ export async function GET() {
       });
     }
 
-    const subscription = await db.subscription.findUnique({
-      where: { businessId: user.businessId },
-    });
+    const subscription = user.business?.subscription;
 
     if (!subscription) {
       return NextResponse.json({

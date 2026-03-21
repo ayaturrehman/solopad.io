@@ -5,26 +5,31 @@ import { getTenantFilter } from "@/lib/tenant";
 import db from "@/lib/db";
 import { normalizeContactInput } from "@/lib/contacts";
 
-export async function GET(req, { params }) {
-  const session = await getSession();
-  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+export async function GET(req, { params }) { try {
+    const session = await getSession();
+    if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { id } = await params;
-  const filter = await getTenantFilter(session);
+    const { id } = await params;
+    const filter = await getTenantFilter(session);
 
-  const contact = await db.contact.findFirst({
-    where: { id, ...filter },
-    include: {
-      projects: {
-        include: { invoices: true },
-        orderBy: { updatedAt: "desc" },
+    const contact = await db.contact.findFirst({
+      where: { id, ...filter },
+      include: {
+        projects: {
+          include: { invoices: true },
+          orderBy: { updatedAt: "desc" },
+        },
       },
-    },
-  });
+    });
 
-  if (!contact) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    if (!contact) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-  return NextResponse.json(contact);
+    return NextResponse.json(contact);
+
+  } catch (err) {
+    console.error("[Contacts GET]", err);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
 }
 
 export async function PATCH(req, { params }) {
@@ -64,22 +69,27 @@ export async function PATCH(req, { params }) {
   }
 }
 
-export async function DELETE(req, { params }) {
-  const session = await getSession();
-  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+export async function DELETE(req, { params }) { try {
+    const session = await getSession();
+    if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { id } = await params;
+    const { id } = await params;
 
-  const filter = await getTenantFilter(session);
-  const contact = await db.contact.findFirst({ where: { id, ...filter } });
-  if (!contact) {
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
+    const filter = await getTenantFilter(session);
+    const contact = await db.contact.findFirst({ where: { id, ...filter } });
+    if (!contact) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+
+    await db.contact.delete({ where: { id } });
+
+    revalidatePath("/contacts");
+    revalidatePath("/dashboard");
+
+    return NextResponse.json({ success: true });
+
+  } catch (err) {
+    console.error("[Contacts DELETE]", err);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
-
-  await db.contact.delete({ where: { id } });
-
-  revalidatePath("/contacts");
-  revalidatePath("/dashboard");
-
-  return NextResponse.json({ success: true });
 }

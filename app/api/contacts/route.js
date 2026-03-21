@@ -5,38 +5,43 @@ import { getTenantFilter, getTenantData } from "@/lib/tenant";
 import db from "@/lib/db";
 import { normalizeContactInput } from "@/lib/contacts";
 
-export async function GET(req) {
-  const session = await getSession();
-  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+export async function GET(req) { try {
+    const session = await getSession();
+    if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { searchParams } = new URL(req.url);
-  const search = searchParams.get("search") || "";
-  const status = searchParams.get("status") || "";
+    const { searchParams } = new URL(req.url);
+    const search = searchParams.get("search") || "";
+    const status = searchParams.get("status") || "";
 
-  const filter = await getTenantFilter(session);
+    const filter = await getTenantFilter(session);
 
-  const where = {
-    ...filter,
-    ...(search && {
-      OR: [
-        { name: { contains: search, mode: "insensitive" } },
-        { email: { contains: search, mode: "insensitive" } },
-        { company: { contains: search, mode: "insensitive" } },
-        { phone: { contains: search, mode: "insensitive" } },
-        { website: { contains: search, mode: "insensitive" } },
-        { source: { contains: search, mode: "insensitive" } },
-      ],
-    }),
-    ...(status && { status }),
-  };
+    const where = {
+      ...filter,
+      ...(search && {
+        OR: [
+          { name: { contains: search, mode: "insensitive" } },
+          { email: { contains: search, mode: "insensitive" } },
+          { company: { contains: search, mode: "insensitive" } },
+          { phone: { contains: search, mode: "insensitive" } },
+          { website: { contains: search, mode: "insensitive" } },
+          { source: { contains: search, mode: "insensitive" } },
+        ],
+      }),
+      ...(status && { status }),
+    };
 
-  const contacts = await db.contact.findMany({
-    where,
-    orderBy: { updatedAt: "desc" },
-    include: { _count: { select: { projects: true } } },
-  });
+    const contacts = await db.contact.findMany({
+      where,
+      orderBy: { updatedAt: "desc" },
+      include: { _count: { select: { projects: true } } },
+    });
 
-  return NextResponse.json(contacts);
+    return NextResponse.json(contacts);
+
+  } catch (err) {
+    console.error("[Contacts GET]", err);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
 }
 
 export async function POST(req) {

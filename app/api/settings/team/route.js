@@ -7,25 +7,30 @@ import { canManageTeam, getDefaultPermissionsForRole, parsePermissions, serializ
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
-export async function GET() {
-  const session = await getSession();
-  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+export async function GET() { try {
+    const session = await getSession();
+    if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const user = await db.user.findUnique({ where: { id: session.user.id }, select: { businessId: true } });
-  const where = user?.businessId ? { businessId: user.businessId } : { userId: session.user.id };
+    const user = await db.user.findUnique({ where: { id: session.user.id }, select: { businessId: true } });
+    const where = user?.businessId ? { businessId: user.businessId } : { userId: session.user.id };
 
-  const members = await db.teamMember.findMany({
-    where,
-    orderBy: { createdAt: "desc" },
-  });
+    const members = await db.teamMember.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+    });
 
-  return NextResponse.json({
-    canManageTeam: canManageTeam(session.user.plan),
-    members: members.map((member) => ({
-      ...member,
-      permissions: parsePermissions(member.permissions),
-    })),
-  });
+    return NextResponse.json({
+      canManageTeam: canManageTeam(session.user.plan),
+      members: members.map((member) => ({
+        ...member,
+        permissions: parsePermissions(member.permissions),
+      })),
+    });
+
+  } catch (err) {
+    console.error("[Settings Team GET]", err);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
 }
 
 export async function POST(req) {

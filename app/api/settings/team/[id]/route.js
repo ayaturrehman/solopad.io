@@ -20,43 +20,53 @@ async function getTeamMemberSafe(id, businessId, userId) {
   return member;
 }
 
-export async function PATCH(req, { params }) {
-  const session = await getSession();
-  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+export async function PATCH(req, { params }) { try {
+    const session = await getSession();
+    if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { id } = params;
-  const businessId = await getCallerBusiness(session.user.id);
-  const member = await getTeamMemberSafe(id, businessId, session.user.id);
+    const { id } = params;
+    const businessId = await getCallerBusiness(session.user.id);
+    const member = await getTeamMemberSafe(id, businessId, session.user.id);
 
-  if (!member) return NextResponse.json({ error: "Team member not found." }, { status: 404 });
+    if (!member) return NextResponse.json({ error: "Team member not found." }, { status: 404 });
 
-  const body = await req.json();
-  const role = body.role || member.role;
-  const permissions = Array.isArray(body.permissions)
-    ? serializePermissions(body.permissions)
-    : member.permissions;
+    const body = await req.json();
+    const role = body.role || member.role;
+    const permissions = Array.isArray(body.permissions)
+      ? serializePermissions(body.permissions)
+      : member.permissions;
 
-  const updated = await db.teamMember.update({
-    where: { id },
-    data: { role, permissions },
-  });
+    const updated = await db.teamMember.update({
+      where: { id },
+      data: { role, permissions },
+    });
 
-  return NextResponse.json({
-    member: { ...updated, permissions: parsePermissions(updated.permissions) },
-  });
+    return NextResponse.json({
+      member: { ...updated, permissions: parsePermissions(updated.permissions) },
+    });
+
+  } catch (err) {
+    console.error("[Settings Team PATCH]", err);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
 }
 
-export async function DELETE(req, { params }) {
-  const session = await getSession();
-  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+export async function DELETE(req, { params }) { try {
+    const session = await getSession();
+    if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { id } = params;
-  const businessId = await getCallerBusiness(session.user.id);
-  const member = await getTeamMemberSafe(id, businessId, session.user.id);
+    const { id } = params;
+    const businessId = await getCallerBusiness(session.user.id);
+    const member = await getTeamMemberSafe(id, businessId, session.user.id);
 
-  if (!member) return NextResponse.json({ error: "Team member not found." }, { status: 404 });
+    if (!member) return NextResponse.json({ error: "Team member not found." }, { status: 404 });
 
-  await db.teamMember.delete({ where: { id } });
+    await db.teamMember.delete({ where: { id } });
 
-  return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true });
+
+  } catch (err) {
+    console.error("[Settings Team DELETE]", err);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
 }

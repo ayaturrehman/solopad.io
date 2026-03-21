@@ -114,28 +114,33 @@ export async function PATCH(req, { params }) {
 }
 
 // DELETE /api/invoices/[id]
-export async function DELETE(req, { params }) {
-  const session = await getSession();
-  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+export async function DELETE(req, { params }) { try {
+    const session = await getSession();
+    if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { id } = await params;
+    const { id } = await params;
 
-  const filter = await getTenantFilter(session);
+    const filter = await getTenantFilter(session);
 
-  const invoice = await db.invoice.findFirst({
-    where: { id, project: filter },
-    include: { project: true },
-  });
+    const invoice = await db.invoice.findFirst({
+      where: { id, project: filter },
+      include: { project: true },
+    });
 
-  if (!invoice) {
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
+    if (!invoice) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+
+    await db.invoice.delete({ where: { id } });
+
+    revalidatePath("/dashboard");
+    revalidatePath("/finance");
+    revalidatePath("/calendar");
+
+    return NextResponse.json({ success: true });
+
+  } catch (err) {
+    console.error("[Invoices DELETE]", err);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
-
-  await db.invoice.delete({ where: { id } });
-
-  revalidatePath("/dashboard");
-  revalidatePath("/finance");
-  revalidatePath("/calendar");
-
-  return NextResponse.json({ success: true });
 }
