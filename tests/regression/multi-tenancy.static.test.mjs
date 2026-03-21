@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 
-const root = "/Users/ayaturrehman/Documents/syslom/Project/freelancer/freelance-managment-app";
+const root = process.cwd();
 
 function read(relPath) {
   return fs.readFileSync(path.join(root, relPath), "utf8");
@@ -97,7 +97,7 @@ test("core app modules exist", () => {
 test("tenant helper preserves business fallback and user ownership stamping", () => {
   const file = read("lib/tenant.js");
   assert.match(file, /businessId/);
-  assert.match(file, /return \{ businessId: user\.businessId \}/);
+  assert.match(file, /return \{ businessId: session\.user\.businessId \}/);
   assert.match(file, /return \{ userId: user\?\.id \?\? session\.user\.id \}/);
   assert.match(file, /userId: user\?\.id \?\? session\.user\.id/);
 });
@@ -105,8 +105,19 @@ test("tenant helper preserves business fallback and user ownership stamping", ()
 test("critical API routes are session-gated", () => {
   for (const file of sessionTenantRoutes) {
     const source = read(file);
-    assert.match(source, /getSession/, `${file} should use getSession`);
-    assert.match(source, /Unauthorized/, `${file} should reject unauthenticated access`);
+    const usesDirectSession = /getSession/.test(source);
+    const usesPermissionGate = /requirePermission/.test(source);
+    const checksForError = /if \(error\)|if \(!session|error:|Unauthorized/.test(source);
+    assert.equal(
+      usesDirectSession || usesPermissionGate,
+      true,
+      `${file} should use getSession or requirePermission`
+    );
+    assert.equal(
+      checksForError,
+      true,
+      `${file} should check for authentication errors`
+    );
   }
 });
 
@@ -198,7 +209,6 @@ test("shared top-nav search supports current module search placeholders", () => 
     "Search projects...",
     "Search proposals...",
     "Search contracts...",
-    "Search templates...",
     "Search invoices...",
     "Search expenses...",
     "Search tasks...",

@@ -8,7 +8,7 @@ import path from "node:path";
 import bcrypt from "bcryptjs";
 import { PrismaClient } from "@prisma/client";
 
-const root = "/Users/ayaturrehman/Documents/syslom/Project/freelancer/freelance-managment-app";
+const root = process.cwd();
 const rawTestDatabaseUrl = process.env.TEST_REGRESSION_DATABASE_URL || "";
 const canRunHttpSuite = /^postgres(ql)?:\/\//.test(rawTestDatabaseUrl);
 
@@ -710,5 +710,186 @@ test("authenticated app routes render successfully for the active tenant", async
     assert.equal(page.status, 200, `${pathname} should render`);
     assert.match(page.body, new RegExp(marker, "i"), `${pathname} should include ${marker}`);
   }
+});
+
+test("tasks CRUD and isolation — Tenant A creates a task, Tenant B can't see it", async () => {
+  const ownerCookies = await login(seed.ownerA.email, "tenant-owner-pass");
+  const otherCookies = await login(seed.ownerB.email, "tenant-other-pass");
+
+  const createTask = await jsonRequest("/api/tasks", {
+    method: "POST",
+    cookies: ownerCookies,
+    body: {
+      projectId: seed.projectA.id,
+      title: "Tenant A Fresh Task",
+      status: "todo",
+      priority: "high",
+    },
+  });
+
+  assert.equal(createTask.status, 200);
+  const freshTaskId = createTask.body.id;
+
+  const ownerTasks = await jsonRequest("/api/tasks", { cookies: ownerCookies });
+  assert.ok(ownerTasks.body.tasks.some((t) => t.id === freshTaskId));
+
+  const otherTasks = await jsonRequest("/api/tasks", { cookies: otherCookies });
+  assert.ok(!otherTasks.body.tasks.some((t) => t.id === freshTaskId));
+});
+
+test("services CRUD and isolation — Create service as A, verify B can't see it", async () => {
+  const ownerCookies = await login(seed.ownerA.email, "tenant-owner-pass");
+  const otherCookies = await login(seed.ownerB.email, "tenant-other-pass");
+
+  const createService = await jsonRequest("/api/services", {
+    method: "POST",
+    cookies: ownerCookies,
+    body: {
+      name: "Tenant A Fresh Service",
+      defaultRate: 1500,
+      unit: "hourly",
+    },
+  });
+
+  assert.equal(createService.status, 200);
+  const freshServiceId = createService.body.id;
+
+  const ownerServices = await jsonRequest("/api/services", { cookies: ownerCookies });
+  assert.ok(ownerServices.body.some((s) => s.id === freshServiceId));
+
+  const otherServices = await jsonRequest("/api/services", { cookies: otherCookies });
+  assert.ok(!otherServices.body.some((s) => s.id === freshServiceId));
+});
+
+test("notifications isolation — Each tenant only sees their own notifications", async () => {
+  const ownerCookies = await login(seed.ownerA.email, "tenant-owner-pass");
+  const otherCookies = await login(seed.ownerB.email, "tenant-other-pass");
+
+  const ownerNotifications = await jsonRequest("/api/notifications", { cookies: ownerCookies });
+  const otherNotifications = await jsonRequest("/api/notifications", { cookies: otherCookies });
+
+  assert.equal(ownerNotifications.status, 200);
+  assert.equal(otherNotifications.status, 200);
+
+  // Both should have notifications, but none should be shared across tenants
+  if (ownerNotifications.body.length > 0) {
+    const ownerIds = ownerNotifications.body.map((n) => n.id);
+    const otherIds = otherNotifications.body.map((n) => n.id);
+    const shared = ownerIds.filter((id) => otherIds.includes(id));
+    assert.equal(shared.length, 0);
+  }
+});
+
+test("time entries CRUD and isolation — Tenant A creates time entry, B can't see it", async () => {
+  const ownerCookies = await login(seed.ownerA.email, "tenant-owner-pass");
+  const otherCookies = await login(seed.ownerB.email, "tenant-other-pass");
+
+  const createTimeEntry = await jsonRequest("/api/time-entries", {
+    method: "POST",
+    cookies: ownerCookies,
+    body: {
+      projectId: seed.projectA.id,
+      duration: 60,
+      description: "Tenant A Fresh Time Entry",
+      date: new Date().toISOString().split("T")[0],
+    },
+  });
+
+  assert.equal(createTimeEntry.status, 200);
+  const freshTimeEntryId = createTimeEntry.body.id;
+
+  const ownerTimeEntries = await jsonRequest("/api/time-entries", { cookies: ownerCookies });
+  assert.ok(ownerTimeEntries.body.some((t) => t.id === freshTimeEntryId));
+
+  const otherTimeEntries = await jsonRequest("/api/time-entries", { cookies: otherCookies });
+  assert.ok(!otherTimeEntries.body.some((t) => t.id === freshTimeEntryId));
+});
+
+test("expenses CRUD and isolation — Create expense as A, verify B can't see it", async () => {
+  const ownerCookies = await login(seed.ownerA.email, "tenant-owner-pass");
+  const otherCookies = await login(seed.ownerB.email, "tenant-other-pass");
+
+  const createExpense = await jsonRequest("/api/expenses", {
+    method: "POST",
+    cookies: ownerCookies,
+    body: {
+      projectId: seed.projectA.id,
+      description: "Tenant A Fresh Expense",
+      amount: 450,
+      category: "travel",
+    },
+  });
+
+  assert.equal(createExpense.status, 200);
+  const freshExpenseId = createExpense.body.id;
+
+  const ownerExpenses = await jsonRequest("/api/expenses", { cookies: ownerCookies });
+  assert.ok(ownerExpenses.body.some((e) => e.id === freshExpenseId));
+
+  const otherExpenses = await jsonRequest("/api/expenses", { cookies: otherCookies });
+  assert.ok(!otherExpenses.body.some((e) => e.id === freshExpenseId));
+});
+
+test("contact detail isolation — Tenant A can't GET Tenant B's contact by ID", async () => {
+  const ownerCookies = await login(seed.ownerA.email, "tenant-owner-pass");
+
+  const foreignRead = await jsonRequest(`/api/contacts/${seed.contactB.id}`, {
+    cookies: ownerCookies,
+  });
+
+  assert.equal(foreignRead.status, 404);
+});
+
+test("project CRUD — Create and update project, verify tenant stamping", async () => {
+  const ownerCookies = await login(seed.ownerA.email, "tenant-owner-pass");
+
+  const createProject = await jsonRequest("/api/projects", {
+    method: "POST",
+    cookies: ownerCookies,
+    body: {
+      title: "Tenant A Stamped Project",
+      clientName: "Stamped Client",
+      clientEmail: "stamped@example.com",
+      description: "Verify tenant ownership",
+      status: "active",
+    },
+  });
+
+  assert.equal(createProject.status, 200);
+  const projectId = createProject.body.id;
+
+  const updateProject = await jsonRequest(`/api/projects/${projectId}`, {
+    method: "PATCH",
+    cookies: ownerCookies,
+    body: { title: "Tenant A Updated Project" },
+  });
+
+  assert.equal(updateProject.status, 200);
+  assert.equal(updateProject.body.title, "Tenant A Updated Project");
+  assert.equal(updateProject.body.businessId, seed.businessA.id);
+});
+
+test("cross-tenant task mutation blocked — Tenant B can't PATCH Tenant A's task", async () => {
+  const ownerCookies = await login(seed.ownerA.email, "tenant-owner-pass");
+  const otherCookies = await login(seed.ownerB.email, "tenant-other-pass");
+
+  const patchForeignTask = await jsonRequest(`/api/tasks/${seed.taskA.id}`, {
+    method: "PATCH",
+    cookies: otherCookies,
+    body: { title: "Malicious update" },
+  });
+
+  assert.equal(patchForeignTask.status, 404);
+});
+
+test("cross-tenant service mutation blocked — Tenant B can't DELETE Tenant A's service", async () => {
+  const otherCookies = await login(seed.ownerB.email, "tenant-other-pass");
+
+  const deleteForeignService = await jsonRequest(`/api/services/${seed.serviceA.id}`, {
+    method: "DELETE",
+    cookies: otherCookies,
+  });
+
+  assert.equal(deleteForeignService.status, 404);
 });
 }

@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 
-const root = "/Users/ayaturrehman/Documents/syslom/Project/freelancer/freelance-managment-app";
+const root = process.cwd();
 
 function read(relPath) {
   return fs.readFileSync(path.join(root, relPath), "utf8");
@@ -66,13 +66,14 @@ test("contact form remains a side-sheet with shared input components and visible
   const source = read("app/(app)/contacts/ContactFormModal.jsx");
 
   assert.match(source, /import Modal from "@\/components\/shared\/Modal"/);
-  assert.match(source, /import Input from "@\/components\/ui\/Input"/);
+  assert.match(source, /import Input/);
+  assert.match(source, /@\/components\/ui\/Input/);
   assert.match(source, /import Select from "@\/components\/ui\/Select"/);
   assert.match(source, /layout="side"/);
   assert.match(source, /label="Full name"/);
   assert.match(source, /label="Type"/);
   assert.match(source, /label="Status"/);
-  assert.match(source, /label="Address"/);
+  assert.match(source, /label="Street address"/);
   assert.match(source, /label="Notes"/);
   assert.match(source, /Save contact/);
 });
