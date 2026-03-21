@@ -261,3 +261,14 @@ html[data-theme="dark"] .proposal-rich-text-view th,
 html[data-theme="dark"] .proposal-rich-text-view td {
   border-color: #27272a;
 }
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
