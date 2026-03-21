@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireStripe } from "@/lib/stripe";
 import db from "@/lib/db";
-import { Resend } from "resend";
-
-const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
+import { sendNotificationEmail } from "@/lib/email";
 
 export async function POST(req) {
   let stripe;
@@ -98,18 +96,18 @@ async function handleCheckoutCompleted(session) {
     });
   }
 
-  // Email notification
-  if (invoice.project?.user?.email && resend) {
-    try {
-      await resend.emails.send({
-        from: process.env.FROM_EMAIL,
-        to: invoice.project.user.email,
-        subject: `Payment received for ${invoice.project.title}`,
-        html: `<p>Your client <strong>${invoice.project.contact?.name || "Client"}</strong> paid <strong>$${invoice.total.toFixed(2)}</strong> for <strong>${invoice.project.title}</strong>.</p><p>Login to SoloPad to view the details.</p>`,
-      });
-    } catch {
-      // Email failure is non-fatal
-    }
+  // Email notification (respects notification preferences)
+  if (invoice.project?.user?.email) {
+    await sendNotificationEmail({
+      businessId: invoice.project.user.businessId,
+      type: "payment_received",
+      to: invoice.project.user.email,
+      variables: {
+        clientName: invoice.project.contact?.name || "Client",
+        amount: `$${invoice.total.toFixed(2)}`,
+        projectTitle: invoice.project.title,
+      },
+    });
   }
 }
 
@@ -161,19 +159,18 @@ async function handleChargeRefunded(charge) {
     });
   }
 
-  // Email notification
-  if (invoice.project?.user?.email && resend) {
-    try {
-      const refundAmount = (refundedAmountCents / 100).toFixed(2);
-      await resend.emails.send({
-        from: process.env.FROM_EMAIL,
-        to: invoice.project.user.email,
-        subject: `Refund processed for ${invoice.project.title}`,
-        html: `<p>A ${isFullRefund ? "full" : "partial"} refund of <strong>$${refundAmount}</strong> has been processed for <strong>${invoice.project.title}</strong>.</p>`,
-      });
-    } catch {
-      // non-fatal
-    }
+  // Email notification (respects notification preferences)
+  if (invoice.project?.user?.email) {
+    const refundAmount = (refundedAmountCents / 100).toFixed(2);
+    await sendNotificationEmail({
+      businessId: invoice.project.user.businessId,
+      type: "refund_processed",
+      to: invoice.project.user.email,
+      variables: {
+        amount: `$${refundAmount}`,
+        projectTitle: invoice.project.title,
+      },
+    });
   }
 }
 
@@ -203,18 +200,17 @@ async function handleDisputeCreated(dispute) {
     });
   }
 
-  // Email with urgency
-  if (invoice.project?.user?.email && resend) {
-    try {
-      await resend.emails.send({
-        from: process.env.FROM_EMAIL,
-        to: invoice.project.user.email,
-        subject: `⚠ Payment dispute filed — ${invoice.project.title}`,
-        html: `<p>A client has disputed the payment of <strong>$${invoice.total.toFixed(2)}</strong> for <strong>${invoice.project.title}</strong>.</p><p>You need to respond to this dispute in your <a href="https://dashboard.stripe.com/disputes">Stripe Dashboard</a> within the response window.</p>`,
-      });
-    } catch {
-      // non-fatal
-    }
+  // Email with urgency (respects notification preferences)
+  if (invoice.project?.user?.email) {
+    await sendNotificationEmail({
+      businessId: invoice.project.user.businessId,
+      type: "dispute_alert",
+      to: invoice.project.user.email,
+      variables: {
+        amount: `$${invoice.total.toFixed(2)}`,
+        projectTitle: invoice.project.title,
+      },
+    });
   }
 }
 

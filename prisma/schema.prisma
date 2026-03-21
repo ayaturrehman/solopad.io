@@ -54,6 +54,7 @@ model Business {
   contracts         Contract[]
   contentTemplates  ContentTemplate[]
   recurringInvoices RecurringInvoice[]
+  emailTemplates    EmailTemplate[]
   subscription      Subscription?
 }
 
@@ -681,4 +682,24 @@ model ContentTemplate {
 
   @@index([type, isSystem])
   @@index([userId, type])
+}
+
+// ─── EmailTemplate ────────────────────────────────────────────────────────────
+// User-customizable email templates for each notification type.
+// Falls back to system defaults when no custom template exists.
+
+model EmailTemplate {
+  id          String   @id @default(cuid())
+  businessId  String
+  business    Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  type        String   // "payment_received" | "invoice_reminder" | "proposal_sent" | "contract_sent" | "invoice_sent" | "refund_processed" | "dispute_alert"
+  subject     String   // Email subject line (supports {{variables}})
+  body        String   // Email body HTML (supports {{variables}})
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([businessId, type])
+  @@index([businessId])
 }

@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/session";
 import db from "@/lib/db";
+import { DEFAULT_TEMPLATES } from "@/lib/email";
 import NotificationsClient from "./NotificationsClient";
 
 export default async function NotificationsPage() {
@@ -9,7 +10,7 @@ export default async function NotificationsPage() {
 
   const user = await db.user.findUnique({
     where: { id: session.user.id },
-    select: { businessId: true },
+    select: { businessId: true, email: true },
   });
 
   if (!user) redirect("/login");
@@ -32,6 +33,24 @@ export default async function NotificationsPage() {
       })
     : null;
 
+  // Load email templates server-side
+  let initialTemplates = [];
+  if (user.businessId) {
+    const custom = await db.emailTemplate.findMany({
+      where: { businessId: user.businessId },
+    });
+    const customMap = Object.fromEntries(custom.map((t) => [t.type, t]));
+
+    initialTemplates = Object.entries(DEFAULT_TEMPLATES).map(([type, def]) => ({
+      type,
+      subject: customMap[type]?.subject || def.subject,
+      body: customMap[type]?.body || def.body,
+      isCustom: !!customMap[type],
+      variables: def.variables,
+      description: def.description,
+    }));
+  }
+
   return (
     <NotificationsClient
       settings={business ?? {
@@ -47,6 +66,8 @@ export default async function NotificationsPage() {
         notifyTaskOverdue: false,
       }}
       hasBusiness={!!user.businessId}
+      userEmail={user.email}
+      initialTemplates={initialTemplates}
     />
   );
 }

@@ -2,9 +2,7 @@ import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { requirePermission } from "@/lib/permissions";
 import db from "@/lib/db";
-import { Resend } from "resend";
-
-const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
+import { sendNotificationEmail } from "@/lib/email";
 
 export async function POST(req) {
   const { session, error, status: permStatus } = await requirePermission("manage_invoices");
@@ -46,31 +44,35 @@ export async function POST(req) {
     const portalLink = `${process.env.NEXT_PUBLIC_APP_URL}/p/${inv.project.portalToken}`;
 
     try {
-      await resend.emails.send({
-        from: process.env.RESEND_FROM_EMAIL || "noreply@solopad.app",
-        to: email,
-        subject: `Invoice ${invoiceLabel} from ${session.user.name}`,
-        html: `
-          <p>Hi ${inv.project.contact?.name || ""},</p>
-          <p>${session.user.name} has sent you invoice <strong>${invoiceLabel}</strong>.</p>
-          <p>
-            <a href="${portalLink}" style="display:inline-block;padding:10px 20px;background:#18181b;color:#fff;border-radius:8px;text-decoration:none;font-weight:600;">
-              View &amp; Pay Invoice
-            </a>
-          </p>
-          <p style="color:#71717a;font-size:12px;">Powered by Solopad</p>
-        `,
+      const user = await db.user.findUnique({
+        where: { id: session.user.id },
+        select: { businessId: true },
       });
 
-      // Mark as sent if still draft
-      if (inv.status === "draft") {
-        await db.invoice.update({
-          where: { id: inv.id },
-          data: { status: "sent", sentAt: new Date() },
-        });
-      }
+      const result = await sendNotificationEmail({
+        businessId: user?.businessId,
+        type: "invoice_sent",
+        to: email,
+        variables: {
+          clientName: inv.project.contact?.name || "",
+          invoiceNumber: invoiceLabel,
+          senderName: session.user.name,
+          portalLink,
+        },
+      });
 
-      results.sent++;
+      if (result.sent) {
+        // Mark as sent if still draft
+        if (inv.status === "draft") {
+          await db.invoice.update({
+            where: { id: inv.id },
+            data: { status: "sent", sentAt: new Date() },
+          });
+        }
+        results.sent++;
+      } else {
+        results.errors.push({ id: inv.id, error: result.error || "Email disabled" });
+      }
     } catch (err) {
       results.errors.push({ id: inv.id, error: err.message });
     }
