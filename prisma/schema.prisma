@@ -41,6 +41,7 @@ model Business {
   proposals         Proposal[]
   contracts         Contract[]
   contentTemplates  ContentTemplate[]
+  recurringInvoices RecurringInvoice[]
   subscription      Subscription?
 }
 
@@ -106,6 +107,7 @@ model User {
   contracts        Contract[]
   pdfTemplates     PdfTemplate[]
   contentTemplates ContentTemplate[]
+  recurringInvoices RecurringInvoice[]
 }
 
 // ─── Contact ──────────────────────────────────────────────────────────────────
@@ -135,6 +137,7 @@ model Contact {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   projects      Project[]
+  recurringInvoices RecurringInvoice[]
 
   @@index([userId])
   @@index([businessId])
@@ -254,11 +257,46 @@ model Invoice {
   createdAt             DateTime      @default(now())
   sentAt                DateTime?
   paidAt                DateTime?
+  lastReminderAt        DateTime?
+  recurringInvoiceId    String?
   paymentPlans          PaymentPlan[]
 
   @@index([projectId])
   @@index([projectId, status])
   @@index([projectId, createdAt])
+}
+
+// ─── RecurringInvoice ─────────────────────────────────────────────────────────
+
+model RecurringInvoice {
+  id          String    @id @default(cuid())
+  userId      String
+  businessId  String?
+  contactId   String
+  projectId   String?
+  items       Json
+  subtotal    Float     @default(0)
+  tax         Float     @default(0)
+  total       Float     @default(0)
+  notes       String?
+  dueDays     Int       @default(14)
+  interval    String    @default("monthly") // weekly, biweekly, monthly, quarterly, yearly
+  active      Boolean   @default(true)
+  startDate   DateTime  @default(now())
+  endDate     DateTime?
+  nextRunAt   DateTime
+  lastRunAt   DateTime?
+  runCount    Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  business Business? @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  contact Contact @relation(fields: [contactId], references: [id], onDelete: Cascade)
+
+  @@index([active, nextRunAt])
+  @@index([userId])
+  @@index([businessId])
 }
 
 // ─── PaymentPlan ──────────────────────────────────────────────────────────────
