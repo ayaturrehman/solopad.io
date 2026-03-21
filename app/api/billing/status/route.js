@@ -22,7 +22,7 @@ export async function GET() {
 
     if (!user?.businessId) {
       return NextResponse.json({
-        plan: "free",
+        plan: "starter",
         status: "active",
         subscription: null,
       });
@@ -32,7 +32,7 @@ export async function GET() {
 
     if (!subscription) {
       return NextResponse.json({
-        plan: "free",
+        plan: "starter",
         status: "active",
         subscription: null,
       });

@@ -20,7 +20,7 @@ export default async function BillingPage() {
 
   return (
     <BillingClient
-      plan={user.plan ?? "free"}
+      plan={user.plan ?? "starter"}
       billingStatus={
         subscription
           ? {
@@ -32,7 +32,7 @@ export default async function BillingPage() {
                 trialEnd: subscription.trialEnd,
               },
             }
-          : { plan: "free", status: "active", subscription: null }
+          : { plan: "starter", status: "active", subscription: null }
       }
     />
   );

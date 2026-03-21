@@ -26,7 +26,7 @@ export async function POST(req) {
 
     const user = await db.$transaction(async (tx) => {
       const newUser = await tx.user.create({
-        data: { name, email, password: hashed, role: "owner", plan: isValidPlan(plan) ? plan : "free" },
+        data: { name, email, password: hashed, role: "owner", plan: isValidPlan(plan) ? plan : "starter" },
       });
 
       const business = await tx.business.create({

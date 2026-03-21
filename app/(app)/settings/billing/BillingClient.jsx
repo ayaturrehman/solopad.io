@@ -9,6 +9,7 @@ import { AlertCircle, CheckCircle2, CreditCard } from "lucide-react";
 
 const planColors = {
   free: "bg-zinc-100 text-zinc-600",
+  starter: "bg-emerald-100 text-emerald-700",
   solo: "bg-blue-100 text-blue-700",
   pro: "bg-violet-100 text-violet-700",
 };
@@ -25,7 +26,7 @@ function BillingContent({ plan: initialPlan, billingStatus: initialBillingStatus
 
   useEffect(() => {
     Promise.all([
-      fetch("/api/billing/status").then((r) => r.json()).catch(() => ({ plan: "free", status: "active", subscription: null })),
+      fetch("/api/billing/status").then((r) => r.json()).catch(() => ({ plan: "starter", status: "active", subscription: null })),
       fetch("/api/billing/invoices").then((r) => r.json()).catch(() => ({ invoices: [], upcoming: null, paymentMethod: null })),
     ]).then(([statusData, invoiceData]) => {
       if (statusData) setBillingStatus(statusData);
@@ -36,7 +37,7 @@ function BillingContent({ plan: initialPlan, billingStatus: initialBillingStatus
   async function changePlan(nextPlan) {
     if (nextPlan === plan) return;
 
-    if (nextPlan === "free") {
+    if (nextPlan === "free" || nextPlan === "starter") {
       setSavingPlan(true);
       try {
         const res = await fetch("/api/billing/portal", { method: "POST" });
@@ -149,9 +150,9 @@ function BillingContent({ plan: initialPlan, billingStatus: initialBillingStatus
           <p className="mt-0.5 text-xs text-zinc-400">Subscription status, payment method, and invoice history.</p>
         </CardHeader>
         <CardBody className="space-y-5">
-          {billingStatus.plan === "free" && !billingData.invoices?.length ? (
+          {(billingStatus.plan === "free" || billingStatus.plan === "starter") && !billingData.invoices?.length ? (
             <div className="text-center py-6">
-              <p className="text-sm text-zinc-500 mb-3">No billing history. Upgrade to a paid plan to get started.</p>
+              <p className="text-sm text-zinc-500 mb-3">No billing history yet. Upgrade your plan to unlock more features.</p>
             </div>
           ) : (
             <>

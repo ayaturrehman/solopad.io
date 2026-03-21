@@ -49,7 +49,7 @@ export async function POST(req) {
         data: {
           businessId: user.businessId,
           stripeCustomerId: customer.id,
-          plan: "free",
+          plan: "starter",
           status: "active",
         },
       });

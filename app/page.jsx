@@ -397,7 +397,7 @@ export default function LandingPage() {
             <div className="pk-nav-actions">
               <Link href={authHref} className="nav-link">Log in</Link>
               <Link href="/signup" className="btn-primary" style={{ fontSize:13, padding:"8px 16px" }}>
-                Get started free <ArrowRight size={14} />
+                Get started <ArrowRight size={14} />
               </Link>
               <button
                 type="button"
@@ -449,7 +449,7 @@ export default function LandingPage() {
                 </div>
 
                 <div className="pk-reveal pk-d2 pk-hero-actions">
-                  <Link href="/signup" className="btn-primary">Start for free <ArrowRight size={15} /></Link>
+                  <Link href="/signup" className="btn-primary">Start your free trial <ArrowRight size={15} /></Link>
                 </div>
 
 
@@ -823,7 +823,7 @@ export default function LandingPage() {
                   </div>
                 ))}
               </div>
-              <Link href="/signup" className="btn-primary">Try contracts free <ArrowRight size={14} /></Link>
+              <Link href="/signup" className="btn-primary">Try contracts now <ArrowRight size={14} /></Link>
             </div>
           </div>
         </section>
@@ -990,7 +990,7 @@ export default function LandingPage() {
                   </div>
                 ))}
               </div>
-              <Link href="/signup" className="btn-primary">Try AI drafting free <ArrowRight size={14} /></Link>
+              <Link href="/signup" className="btn-primary">Try AI drafting now <ArrowRight size={14} /></Link>
             </div>
           </div>
         </section>
@@ -1190,7 +1190,7 @@ export default function LandingPage() {
             <div className="pk-reveal" style={{ textAlign:"center", marginBottom:40 }}>
               <p style={{ fontSize:12, fontWeight:700, color:C, textTransform:"uppercase", letterSpacing:1.5, marginBottom:12 }}>Pricing</p>
               <h2 style={{ fontSize:"clamp(28px, 3.5vw, 46px)", fontWeight:900, color:CDk, letterSpacing:"-0.8px" }}>Simple, honest pricing.</h2>
-              <p style={{ fontSize:16, color:CMute, marginTop:12 }}>No transaction fees. No hidden costs. No surprises.</p>
+              <p style={{ fontSize:16, color:CMute, marginTop:12 }}>No transaction fees. No hidden costs. Start from $5/mo.</p>
             </div>
 
             {/* Annual / Monthly toggle */}
@@ -1243,7 +1243,7 @@ export default function LandingPage() {
               })}
             </div>
             <p style={{ textAlign:"center", fontSize:13, color:"#AAAAAA", marginTop:28 }}>
-              No credit card required · Cancel anytime · Upgrade when you&apos;re ready
+              7-day free trial on all plans · Cancel anytime · Upgrade when you&apos;re ready
             </p>
           </div>
         </section>
@@ -1257,12 +1257,12 @@ export default function LandingPage() {
             </div>
             <div style={{ maxWidth:720, margin:"0 auto", display:"flex", flexDirection:"column", gap:2 }}>
               {[
-                { q:"Is there really a free plan?", a:"Yes. SoloPad Free gives you 1 active project, 100MB storage, a client portal link, and 1 invoice with Stripe — forever. No credit card required." },
+                { q:"What does the Starter plan include?", a:"Starter gives you 3 active projects, 500MB storage, a client portal, files & comments, and 5 invoices per month — everything you need to get going at just $5/mo." },
                 { q:"What payment methods can my clients use?", a:"Clients pay through Stripe, which supports all major credit/debit cards, Apple Pay, Google Pay, and bank transfers in supported countries." },
                 { q:"Can I migrate from HoneyBook or Dubsado?", a:"Yes. You can import your contacts via CSV and be up and running in under 10 minutes. We're adding direct migration tools soon." },
                 { q:"Do I need a Stripe account?", a:"Yes, you'll connect your own Stripe account (free to create). This means you get paid directly — SoloPad never touches your money and charges zero transaction fees." },
                 { q:"Is my data secure?", a:"Your data is encrypted in transit and at rest. We use PostgreSQL on secure infrastructure with daily backups. Your files are stored with enterprise-grade encryption." },
-                { q:"Can I cancel anytime?", a:"Yes. No contracts, no cancellation fees. Downgrade to Free anytime and keep your data." },
+                { q:"Can I cancel anytime?", a:"Yes. No contracts, no cancellation fees. Downgrade to Starter anytime and keep your data." },
               ].map(({ q, a }, i) => (
                 <div
                   key={q}

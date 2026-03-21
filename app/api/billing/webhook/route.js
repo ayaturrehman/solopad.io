@@ -107,7 +107,7 @@ async function handleSubscriptionDeleted(sub) {
   await db.subscription.update({
     where: { id: subscription.id },
     data: {
-      plan: "free",
+      plan: "starter",
       status: "canceled",
       stripeSubscriptionId: null,
       stripePriceId: null,
@@ -117,7 +117,7 @@ async function handleSubscriptionDeleted(sub) {
 
   await db.business.update({
     where: { id: subscription.businessId },
-    data: { plan: "free" },
+    data: { plan: "starter" },
   });
 
   // Notify the owner
@@ -128,7 +128,7 @@ async function handleSubscriptionDeleted(sub) {
         businessId: subscription.businessId,
         type: "subscription_canceled",
         title: "Subscription ended",
-        body: "Your plan has been downgraded to Free. Upgrade anytime to restore features.",
+        body: "Your plan has been downgraded to Starter. Upgrade anytime to restore features.",
         link: "/settings",
       },
     });
@@ -236,11 +236,14 @@ async function handleTrialEnding(sub) {
 // ─── Helper: map Stripe price ID back to plan name ──────────────
 function mapPriceIdToPlan(priceId) {
   if (!priceId) return null;
+  const starterMonthly = process.env.STRIPE_PRICE_STARTER_MONTHLY;
+  const starterYearly = process.env.STRIPE_PRICE_STARTER_YEARLY;
   const soloMonthly = process.env.STRIPE_PRICE_SOLO_MONTHLY;
   const soloYearly = process.env.STRIPE_PRICE_SOLO_YEARLY;
   const proMonthly = process.env.STRIPE_PRICE_PRO_MONTHLY;
   const proYearly = process.env.STRIPE_PRICE_PRO_YEARLY;
 
+  if (priceId === starterMonthly || priceId === starterYearly) return "starter";
   if (priceId === soloMonthly || priceId === soloYearly) return "solo";
   if (priceId === proMonthly || priceId === proYearly) return "pro";
   return null;

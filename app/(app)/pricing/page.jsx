@@ -61,7 +61,7 @@ export default function PricingPage() {
       <div className="text-center mb-8">
         <h1 className="text-2xl font-bold text-zinc-900">Choose your plan</h1>
         <p className="mt-2 text-sm text-zinc-500">
-          Start free. Upgrade when you need more.
+          Simple pricing. No hidden fees. Cancel anytime.
         </p>
       </div>
 
@@ -89,8 +89,8 @@ export default function PricingPage() {
       <div className="grid gap-6 md:grid-cols-3">
         {PLAN_ORDER.map((planId) => {
           const item = getPlan(planId);
-          const isFree = planId === "free";
           const isPopular = planId === "solo";
+          const isStarter = planId === "starter";
           const price = interval === "yearly" && item.annualPrice ? item.annualPrice : item.price;
           const period = interval === "yearly" && item.annualPeriod ? item.annualPeriod : item.period;
 
@@ -112,6 +112,11 @@ export default function PricingPage() {
                 <span className="text-3xl font-bold text-zinc-900">{price}</span>
                 <span className="text-sm text-zinc-400">{period}</span>
               </div>
+              {isStarter && item.promoPrice && interval === "monthly" && (
+                <p className="mt-1.5 text-xs font-medium text-green-600">
+                  Launch offer: {item.promoPrice}{item.promoPeriod}
+                </p>
+              )}
               <ul className="mt-5 flex-1 space-y-2">
                 {item.features.map((f) => (
                   <li key={f} className="flex items-start gap-2 text-sm text-zinc-600">
@@ -124,20 +129,16 @@ export default function PricingPage() {
                 Platform fee: {Math.round(item.platformFee * 100)}% on client payments
               </p>
               <button
-                onClick={() => isFree ? router.push("/dashboard") : handleUpgrade(planId)}
+                onClick={() => handleUpgrade(planId)}
                 disabled={loading === planId}
                 className={`mt-5 w-full rounded-lg py-2.5 text-sm font-semibold transition ${
-                  isFree
-                    ? "bg-zinc-100 text-zinc-700 hover:bg-zinc-200"
-                    : isPopular
-                      ? "bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
-                      : "bg-zinc-900 text-white hover:bg-zinc-700 disabled:opacity-50"
+                  isPopular
+                    ? "bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
+                    : "bg-zinc-900 text-white hover:bg-zinc-700 disabled:opacity-50"
                 }`}
               >
                 {loading === planId ? (
                   <Loader2 className="mx-auto h-4 w-4 animate-spin" />
-                ) : isFree ? (
-                  "Start free"
                 ) : (
                   item.cta
                 )}

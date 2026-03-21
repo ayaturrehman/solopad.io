@@ -14,7 +14,7 @@ export async function GET() { try {
     });
 
     return NextResponse.json({
-      plan: user?.plan ?? "free",
+      plan: user?.plan ?? "starter",
       plans: PLAN_ORDER.map((planId) => getPlan(planId)),
     });
 

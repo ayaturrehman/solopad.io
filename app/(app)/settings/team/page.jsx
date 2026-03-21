@@ -25,7 +25,7 @@ export default async function TeamPage() {
 
   return (
     <TeamClient
-      plan={user.plan ?? "free"}
+      plan={user.plan ?? "starter"}
       userRole={user.role ?? "owner"}
       canManage={canManage}
       members={members.map((m) => ({ ...m, permissions: parsePermissions(m.permissions) }))}

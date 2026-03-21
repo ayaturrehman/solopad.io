@@ -20,7 +20,7 @@ function SignupContent() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const selectedPlan = isValidPlan(searchParams.get("plan")) ? searchParams.get("plan") : "free";
+  const selectedPlan = isValidPlan(searchParams.get("plan")) ? searchParams.get("plan") : "starter";
   const plan = getPlan(selectedPlan);
 
   async function handleSubmit(e) {
