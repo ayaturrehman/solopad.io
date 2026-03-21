@@ -16,28 +16,42 @@ export async function POST(req) {
     }
 
     const now = new Date();
-    const threeDaysAgo = new Date(now.getTime() - 3 * 86400000);
+
+    // Get businesses with overdue reminders enabled
+    const businesses = await db.business.findMany({
+      where: { overdueRemindersEnabled: true },
+      select: { id: true, overdueReminderDays: true },
+    });
+
+    const businessMap = Object.fromEntries(businesses.map((b) => [b.id, b]));
 
     const overdueInvoices = await db.invoice.findMany({
       where: {
         status: { in: ["sent", "viewed"] },
+        remindersEnabled: true,
         dueDate: { lt: now },
-        OR: [
-          { lastReminderAt: null },
-          { lastReminderAt: { lt: threeDaysAgo } },
-        ],
       },
       include: {
-        project: { select: { id: true } },
+        project: { select: { id: true, businessId: true } },
       },
       take: 50,
+    });
+
+    // Filter by per-business reminder frequency
+    const filteredInvoices = overdueInvoices.filter((inv) => {
+      const bizId = inv.project?.businessId;
+      const biz = bizId ? businessMap[bizId] : null;
+      if (bizId && !biz) return false; // business has reminders disabled
+      const days = biz?.overdueReminderDays ?? 3;
+      const cutoff = new Date(now.getTime() - days * 86400000);
+      return !inv.lastReminderAt || inv.lastReminderAt < cutoff;
     });
 
     let sent = 0;
     const fromEmail = process.env.RESEND_FROM_EMAIL || process.env.FROM_EMAIL || "noreply@solopad.app";
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
-    for (const inv of overdueInvoices) {
+    for (const inv of filteredInvoices) {
       if (!inv.project) continue;
 
       try {
@@ -81,7 +95,7 @@ export async function POST(req) {
       }
     }
 
-    return NextResponse.json({ success: true, sent, checked: overdueInvoices.length });
+    return NextResponse.json({ success: true, sent, checked: filteredInvoices.length });
   } catch (err) {
     console.error("[Cron Invoice Reminders]", err);
     return NextResponse.json({ error: err.message }, { status: 500 });

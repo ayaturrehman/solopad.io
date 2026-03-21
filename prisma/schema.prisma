@@ -24,6 +24,18 @@ model Business {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  // Notification & Reminder settings
+  overdueRemindersEnabled  Boolean @default(true)
+  overdueReminderDays      Int     @default(3)      // re-remind every N days
+  preDueRemindersEnabled   Boolean @default(false)
+  preDueReminderDays       String  @default("3,7")   // comma-separated days before due
+  emailNotifications       Boolean @default(true)     // send email notifications
+  notifyPaymentReceived    Boolean @default(true)
+  notifyInvoiceViewed      Boolean @default(true)
+  notifyProposalAccepted   Boolean @default(true)
+  notifyContractSigned     Boolean @default(true)
+  notifyTaskOverdue        Boolean @default(false)
+
   // Relations
   users             User[]
   contacts          Contact[]

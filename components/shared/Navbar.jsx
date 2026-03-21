@@ -9,7 +9,7 @@ import {
   DollarSign, Package, CalendarDays,
   CheckSquare, Clock, CalendarCheck,
   FileText, FileSignature, Menu, X, ChevronRight,
-  Settings, LayoutTemplate,
+  Settings,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -67,7 +67,7 @@ export default function Navbar() {
   return (
     <>
       {/* ── Desktop sidebar (hidden on mobile) ── */}
-      <aside className="hidden md:flex relative h-screen w-52 flex-col border-r border-zinc-800 bg-zinc-900 text-white">
+      <aside className="hidden md:flex relative h-screen w-52 flex-col border-r border-zinc-800 bg-zinc-900 text-white" role="navigation" aria-label="Main navigation">
         {/* Logo */}
         <Link href="/dashboard" className="flex items-center bg-black/40 px-3 py-2">
           <BrandLogo dark markClassName="h-5 w-5" textClassName="text-sm text-white/90" />
@@ -86,6 +86,7 @@ export default function Navbar() {
                   <Link
                     key={href}
                     href={href}
+                    aria-current={isActive(href) ? "page" : undefined}
                     className={cn(
                       "flex items-center gap-2.5 rounded px-3 py-1.5 text-[13px] font-medium transition-colors",
                       isActive(href)
@@ -103,24 +104,13 @@ export default function Navbar() {
         </nav>
 
         {/* Settings footer */}
-        <div className="border-t border-white/10 px-2 py-2 space-y-px">
+        <div className="border-t border-white/10 px-2 py-2">
           <Link
-            href="/settings/pdf-templates"
+            href="/settings/profile"
+            aria-current={isActive("/settings") ? "page" : undefined}
             className={cn(
               "flex items-center gap-2.5 rounded px-3 py-1.5 text-[13px] font-medium transition-colors",
-              isActive("/settings/pdf-templates")
-                ? "bg-zinc-700 text-blue-100 shadow-sm"
-                : "text-slate-300 hover:bg-white/8 hover:text-white"
-            )}
-          >
-            <LayoutTemplate className="h-4 w-4 shrink-0" />
-            PDF Templates
-          </Link>
-          <Link
-            href="/settings"
-            className={cn(
-              "flex items-center gap-2.5 rounded px-3 py-1.5 text-[13px] font-medium transition-colors",
-              pathname === "/settings"
+              isActive("/settings")
                 ? "bg-zinc-700 text-blue-100 shadow-sm"
                 : "text-slate-300 hover:bg-white/8 hover:text-white"
             )}
@@ -132,7 +122,7 @@ export default function Navbar() {
       </aside>
 
       {/* ── Mobile bottom nav ── */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 border-t border-zinc-200 bg-white">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 border-t border-zinc-200 bg-white" role="navigation" aria-label="Quick navigation">
         <div className="flex items-center justify-around px-1 py-1">
           {bottomNavItems.map(({ href, label, icon: Icon }) => {
             const active = isActive(href);
@@ -140,6 +130,7 @@ export default function Navbar() {
               <Link
                 key={href}
                 href={href}
+                aria-current={active ? "page" : undefined}
                 className={cn(
                   "flex flex-col items-center gap-0.5 px-2 py-2 rounded min-w-0 flex-1 transition-colors",
                   active ? "text-zinc-900" : "text-zinc-400"
@@ -155,6 +146,7 @@ export default function Navbar() {
           {/* More button opens full drawer */}
           <button
             onClick={() => setDrawerOpen(true)}
+            aria-label="More navigation options"
             className="flex flex-col items-center gap-0.5 px-2 py-2 rounded flex-1 text-zinc-400"
           >
             <Menu className="h-5 w-5" />
@@ -170,9 +162,10 @@ export default function Navbar() {
           <div
             className="md:hidden fixed inset-0 z-50 bg-black/40"
             onClick={() => setDrawerOpen(false)}
+            role="presentation"
           />
           {/* Drawer slides up from bottom */}
-          <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 rounded-t-2xl bg-zinc-900 text-white max-h-[80vh] flex flex-col">
+          <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 rounded-t-2xl bg-zinc-900 text-white max-h-[80vh] flex flex-col" role="dialog" aria-modal="true" aria-label="Navigation menu">
             {/* Handle + header */}
             <div className="flex items-center justify-between px-5 pt-4 pb-3 border-b border-white/10">
             <div className="flex items-center gap-2">
@@ -180,6 +173,7 @@ export default function Navbar() {
               </div>
               <button
                 onClick={() => setDrawerOpen(false)}
+                aria-label="Close menu"
                 className="rounded p-1.5 text-slate-400 hover:bg-white/10"
               >
                 <X className="h-4 w-4" />
@@ -201,6 +195,7 @@ export default function Navbar() {
                           key={href}
                           href={href}
                           onClick={() => setDrawerOpen(false)}
+                          aria-current={active ? "page" : undefined}
                           className={cn(
                             "flex items-center justify-between rounded px-3 py-3 text-sm font-medium transition-colors",
                             active
@@ -224,15 +219,15 @@ export default function Navbar() {
             {/* Settings links */}
             <div className="border-t border-white/10 px-3 py-3 space-y-px">
               {[
-                { href: "/settings/pdf-templates", label: "PDF Templates", icon: LayoutTemplate },
-                { href: "/settings", label: "Settings", icon: Settings },
+                { href: "/settings/profile", label: "Settings", icon: Settings },
               ].map(({ href, label, icon: Icon }) => {
-                const active = pathname === href;
+                const active = isActive("/settings");
                 return (
                   <Link
                     key={href}
                     href={href}
                     onClick={() => setDrawerOpen(false)}
+                    aria-current={active ? "page" : undefined}
                     className={cn(
                       "flex items-center justify-between rounded px-3 py-3 text-sm font-medium transition-colors",
                       active ? "bg-zinc-700 text-blue-100" : "text-slate-300 hover:bg-white/8 hover:text-white"
