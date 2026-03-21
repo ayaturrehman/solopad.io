@@ -2,11 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { PLAN_ORDER, getPlan } from "@/lib/plans";
+import { PLAN_ORDER, getLocalisedPlan, isUKVisitor } from "@/lib/plans";
 import { Check, Tag, Loader2, Sparkles } from "lucide-react";
 
 export default function PricingPage() {
   const router = useRouter();
+  const isUK = isUKVisitor();
   const [interval, setInterval] = useState("monthly"); // monthly | yearly
   const [loading, setLoading] = useState(null); // plan id being checked out
   const [couponCode, setCouponCode] = useState("");
@@ -97,7 +98,7 @@ export default function PricingPage() {
       {/* Plan cards */}
       <div className="grid gap-6 md:grid-cols-3">
         {PLAN_ORDER.map((planId) => {
-          const item = getPlan(planId);
+          const item = getLocalisedPlan(planId, isUK);
           const isPopular = planId === "solo";
           const isYearly = interval === "yearly";
           const price = isYearly ? item.annualPrice : item.price;
@@ -223,7 +224,7 @@ export default function PricingPage() {
               <>
                 <span className="font-medium">{couponResult.coupon.name}</span>:{" "}
                 {couponResult.coupon.percentOff ? `${couponResult.coupon.percentOff}% off` : ""}
-                {couponResult.coupon.amountOff ? `£${couponResult.coupon.amountOff} off` : ""}
+                {couponResult.coupon.amountOff ? `${isUK ? "£" : "$"}${couponResult.coupon.amountOff} off` : ""}
                 {couponResult.coupon.duration === "once" ? " (first payment)" : ""}
                 {couponResult.coupon.duration === "repeating" ? ` for ${couponResult.coupon.durationInMonths} months` : ""}
                 {couponResult.coupon.duration === "forever" ? " forever" : ""}

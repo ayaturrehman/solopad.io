@@ -10,7 +10,7 @@ import { signIn } from "next-auth/react";
 import BrandLogo from "@/components/shared/BrandLogo";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
-import { PLAN_ORDER, getPlan, isValidPlan } from "@/lib/plans";
+import { PLAN_ORDER, getLocalisedPlan, isValidPlan, isUKVisitor } from "@/lib/plans";
 
 function SignupContent() {
   const router = useRouter();
@@ -20,8 +20,9 @@ function SignupContent() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const isUK = isUKVisitor();
   const selectedPlan = isValidPlan(searchParams.get("plan")) ? searchParams.get("plan") : "starter";
-  const plan = getPlan(selectedPlan);
+  const plan = getLocalisedPlan(selectedPlan, isUK);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -69,7 +70,7 @@ function SignupContent() {
             </div>
             <div className="mt-3 flex flex-wrap gap-2">
               {PLAN_ORDER.map((planId) => {
-                const item = getPlan(planId);
+                const item = getLocalisedPlan(planId, isUK);
                 const active = selectedPlan === planId;
                 return (
                   <Link
