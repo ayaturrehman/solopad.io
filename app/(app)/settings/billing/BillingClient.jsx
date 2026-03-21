@@ -27,6 +27,7 @@ function BillingContent({ plan: initialPlan, billingStatus: initialBillingStatus
   const billingParam = searchParams?.get("billing");
 
   const [plan, setPlan] = useState(initialPlan);
+  const [interval, setInterval] = useState("monthly");
   const [savingPlan, setSavingPlan] = useState(false);
   const [billingStatus, setBillingStatus] = useState(initialBillingStatus);
   const [billingData, setBillingData] = useState({ invoices: [], upcoming: null, paymentMethod: null });
@@ -69,7 +70,7 @@ function BillingContent({ plan: initialPlan, billingStatus: initialBillingStatus
       const res = await fetch("/api/billing/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan: nextPlan, interval: "monthly" }),
+        body: JSON.stringify({ plan: nextPlan, interval }),
       });
       const data = await res.json();
       if (data.updated) {
@@ -255,14 +256,39 @@ function BillingContent({ plan: initialPlan, billingStatus: initialBillingStatus
       {/* Change Plan */}
       <Card>
         <CardHeader>
-          <h2 className="font-semibold text-zinc-900">Change plan</h2>
-          <p className="mt-0.5 text-xs text-zinc-400">Switch plans anytime. Prices in GBP, local currency applied at checkout.</p>
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h2 className="font-semibold text-zinc-900">Change plan</h2>
+              <p className="mt-0.5 text-xs text-zinc-400">Switch plans anytime. Prices in GBP, local currency applied at checkout.</p>
+            </div>
+            <div className="flex items-center gap-1.5 rounded-full bg-zinc-100 p-0.5">
+              <button
+                onClick={() => setInterval("monthly")}
+                className={`rounded-full px-3 py-1 text-xs font-medium transition ${
+                  interval === "monthly" ? "bg-white text-zinc-900 shadow-sm" : "text-zinc-500 hover:text-zinc-700"
+                }`}
+              >
+                Monthly
+              </button>
+              <button
+                onClick={() => setInterval("yearly")}
+                className={`rounded-full px-3 py-1 text-xs font-medium transition ${
+                  interval === "yearly" ? "bg-white text-zinc-900 shadow-sm" : "text-zinc-500 hover:text-zinc-700"
+                }`}
+              >
+                Yearly <span className="text-emerald-600">-17%</span>
+              </button>
+            </div>
+          </div>
         </CardHeader>
         <CardBody>
           <div className="grid gap-3 md:grid-cols-3">
             {PLAN_ORDER.map((planId) => {
               const item = getPlan(planId);
               const active = plan === planId;
+              const isYearly = interval === "yearly";
+              const displayPrice = isYearly ? item.annualPrice : item.price;
+              const displayPeriod = isYearly ? "/yr" : item.period;
               return (
                 <div key={planId} className={`rounded-lg border p-4 transition ${active ? "border-zinc-900 bg-zinc-50" : "border-zinc-200 bg-white hover:border-zinc-300"}`}>
                   <div className="flex items-start justify-between gap-3">
@@ -270,7 +296,12 @@ function BillingContent({ plan: initialPlan, billingStatus: initialBillingStatus
                       <p className="text-sm font-semibold text-zinc-900">{item.name}</p>
                       <p className="mt-0.5 text-xs text-zinc-500">{item.tagline || item.description}</p>
                     </div>
-                    <p className="text-sm font-bold text-zinc-900 whitespace-nowrap">{item.price}<span className="text-xs font-normal text-zinc-400">{item.period}</span></p>
+                    <div className="text-right">
+                      <p className="text-sm font-bold text-zinc-900 whitespace-nowrap">{displayPrice}<span className="text-xs font-normal text-zinc-400">{displayPeriod}</span></p>
+                      {isYearly && item.annualMonthly && (
+                        <p className="text-xs text-zinc-400">{item.annualMonthly}/mo</p>
+                      )}
+                    </div>
                   </div>
                   <ul className="mt-3 space-y-1.5">
                     {item.features.slice(0, 3).map((f) => (
