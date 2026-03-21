@@ -4,7 +4,7 @@ import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Card, CardHeader, CardBody } from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
-import { PLAN_ORDER, getLocalisedPlan, isUKVisitor } from "@/lib/plans";
+import { PLAN_ORDER, getPlan } from "@/lib/plans";
 import { AlertCircle, CheckCircle2, CreditCard } from "lucide-react";
 
 const planColors = {
@@ -17,7 +17,6 @@ const planColors = {
 function BillingContent({ plan: initialPlan, billingStatus: initialBillingStatus }) {
   const searchParams = useSearchParams();
   const billingParam = searchParams?.get("billing");
-  const isUK = isUKVisitor();
 
   const [plan, setPlan] = useState(initialPlan);
   const [savingPlan, setSavingPlan] = useState(false);
@@ -110,7 +109,7 @@ function BillingContent({ plan: initialPlan, billingStatus: initialBillingStatus
           <div className="flex items-center justify-between">
             <div>
               <p className="font-medium capitalize text-zinc-900">{plan} plan</p>
-              <p className="text-sm text-zinc-500">{getLocalisedPlan(plan, isUK).description}</p>
+              <p className="text-sm text-zinc-500">{getPlan(plan).description}</p>
             </div>
             <span className={`rounded-full px-3 py-1 text-xs font-medium capitalize ${planColors[plan]}`}>
               {plan}
@@ -118,7 +117,7 @@ function BillingContent({ plan: initialPlan, billingStatus: initialBillingStatus
           </div>
           <div className="grid gap-3 md:grid-cols-3">
             {PLAN_ORDER.map((planId) => {
-              const item = getLocalisedPlan(planId, isUK);
+              const item = getPlan(planId);
               const active = plan === planId;
               return (
                 <div key={planId} className={`rounded border p-4 ${active ? "border-zinc-900 bg-zinc-50" : "border-zinc-200 bg-white"}`}>

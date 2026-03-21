@@ -26,11 +26,6 @@ export async function POST(req) {
       return NextResponse.json({ error: "No billing account found. Upgrade to a paid plan first." }, { status: 400 });
     }
 
-    const baseUrl =
-      process.env.NEXT_PUBLIC_APP_URL ||
-      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null) ||
-      new URL(req.url).origin;
-
     // Verify customer still exists in Stripe
     const customer = await stripe.customers.retrieve(subscription.stripeCustomerId).catch((e) => {
       if (e.code === "resource_missing") return null;
@@ -47,7 +42,7 @@ export async function POST(req) {
     // Create Stripe Billing Portal session
     const portalSession = await stripe.billingPortal.sessions.create({
       customer: subscription.stripeCustomerId,
-      return_url: `${baseUrl}/settings`,
+      return_url: `${process.env.NEXT_PUBLIC_APP_URL}/settings`,
     });
 
     return NextResponse.json({ url: portalSession.url });
