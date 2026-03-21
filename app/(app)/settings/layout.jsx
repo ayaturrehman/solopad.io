@@ -24,6 +24,10 @@ const settingsNav = [
 export default function SettingsLayout({ children }) {
   const pathname = usePathname();
 
+  /* Full-screen mode for the template editor — hide the Settings chrome entirely */
+  const isEditorFullscreen = /\/settings\/pdf-templates\/[^/]+\/edit/.test(pathname);
+  if (isEditorFullscreen) return <>{children}</>;
+
   function isActive(href) {
     return pathname === href || pathname.startsWith(href + "/");
   }

@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { selectClassName } from "@/components/ui/Input";
-import { Check, ChevronDown, ChevronRight, RefreshCw, Save, X } from "lucide-react";
+import { Check, ChevronDown, ChevronRight, LayoutTemplate, RefreshCw, Save, X } from "lucide-react";
 import ProposalPreview from "@/app/(app)/proposals/[id]/ProposalPreview";
 import ContractPreview from "@/app/(app)/contracts/[id]/ContractPreview";
 
@@ -538,20 +538,24 @@ function DocumentPreview({ template }) {
   );
 }
 
+
+// ── Tab navigation for left panel ────────────────────────────────────────────
+const EDITOR_TABS = [
+  { key: "design", label: "Design" },
+  { key: "content", label: "Content" },
+  { key: "layout", label: "Layout" },
+];
+
 // ── Main Editor ──────────────────────────────────────────────────────────────
 export default function TemplateEditor({ initialTemplate }) {
   const router = useRouter();
   const [template, setTemplate] = useState(initialTemplate);
-  const [openSections, setOpenSections] = useState({ general: true });
+  const [activeTab, setActiveTab] = useState("design");
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
   function set(key, value) {
     setTemplate((prev) => ({ ...prev, [key]: value }));
-  }
-
-  function toggleSection(key) {
-    setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
   }
 
   function applyTheme(themeKey) {
@@ -585,211 +589,286 @@ export default function TemplateEditor({ initialTemplate }) {
 
   const isProposal = template.type === "proposal";
   const isContract = template.type === "contract";
+  const docTypeLabel = isProposal ? "Proposal" : isContract ? "Contract" : "Invoice";
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden bg-zinc-50">
+    <div className="fixed inset-0 z-50 flex flex-col bg-white">
 
-      {/* Top bar */}
-      <div className="shrink-0 bg-white border-b border-zinc-200 px-5 h-12 flex items-center gap-3">
-        <div className="flex-1 min-w-0">
-          <span className="text-xs text-zinc-400 mr-1.5">Editing</span>
-          <span className="text-sm font-semibold text-zinc-900">{template.name}</span>
+      {/* ── Top bar ─────────────────────────────────────────────────────── */}
+      <div className="shrink-0 border-b border-zinc-200 bg-white px-4 h-14 flex items-center gap-4">
+
+        {/* Back button + template info */}
+        <button
+          onClick={() => router.push("/settings/pdf-templates")}
+          className="inline-flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-sm text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900"
+        >
+          <ChevronRight className="h-4 w-4 rotate-180" />
+          <span className="hidden sm:inline">Templates</span>
+        </button>
+
+        <div className="h-5 w-px bg-zinc-200" />
+
+        <div className="flex-1 min-w-0 flex items-center gap-2.5">
+          <div className="h-7 w-7 rounded-md bg-zinc-100 flex items-center justify-center">
+            <LayoutTemplate className="h-3.5 w-3.5 text-zinc-500" />
+          </div>
+          <div className="min-w-0">
+            <div className="text-sm font-semibold text-zinc-900 truncate">{template.name}</div>
+            <div className="text-xs text-zinc-400">{docTypeLabel} template</div>
+          </div>
         </div>
 
-        {/* Colour swatches */}
-        <div className="flex items-center gap-1.5">
-          <span className="text-xs text-zinc-400 mr-1">Theme</span>
-          {THEMES.map((theme) => (
-            <button
-              key={theme.key}
-              type="button"
-              title={theme.label}
-              onClick={() => applyTheme(theme.key)}
-              className="h-5 w-5 rounded-full border-2 transition-transform hover:scale-110"
-              style={{
-                backgroundColor: theme.swatch,
-                borderColor: template.accentColor === theme.accent ? "#111827" : "transparent",
-                outline: template.accentColor === theme.accent ? "2px solid #e5e7eb" : "none",
-                outlineOffset: 1,
-              }}
-            />
-          ))}
+        {/* Theme swatches */}
+        <div className="hidden md:flex items-center gap-1.5 bg-zinc-50 rounded-lg px-3 py-1.5">
+          <span className="text-xs text-zinc-400 font-medium mr-1">Theme</span>
+          {THEMES.map((theme) => {
+            const isActive = template.accentColor === theme.accent;
+            return (
+              <button
+                key={theme.key}
+                type="button"
+                title={theme.label}
+                onClick={() => applyTheme(theme.key)}
+                className={`h-5 w-5 rounded-full transition-all hover:scale-110 ${
+                  isActive ? "ring-2 ring-zinc-900 ring-offset-2" : "ring-1 ring-zinc-200"
+                }`}
+                style={{ backgroundColor: theme.swatch }}
+              />
+            );
+          })}
         </div>
 
         <div className="h-5 w-px bg-zinc-200" />
 
+        {/* Save button */}
         <button
           onClick={handleSave}
           disabled={saving}
-          className={`inline-flex items-center gap-1.5 rounded px-3 py-1.5 text-xs font-semibold transition-colors disabled:opacity-60 ${
-            saved ? "bg-green-600 text-white" : "bg-zinc-900 text-white hover:bg-zinc-800"
+          className={`inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-semibold transition-all disabled:opacity-60 ${
+            saved
+              ? "bg-emerald-600 text-white"
+              : "bg-zinc-900 text-white hover:bg-zinc-800 active:scale-[0.97]"
           }`}
         >
           {saved
-            ? <><Check className="h-3.5 w-3.5" />Saved</>
+            ? <><Check className="h-4 w-4" />Saved</>
             : saving
-              ? <><RefreshCw className="h-3.5 w-3.5 animate-spin" />Saving…</>
-              : <><Save className="h-3.5 w-3.5" />Save</>
+              ? <><RefreshCw className="h-4 w-4 animate-spin" />Saving…</>
+              : <><Save className="h-4 w-4" />Save changes</>
           }
-        </button>
-
-        <button
-          onClick={() => router.push("/settings/pdf-templates")}
-          className="inline-flex h-7 w-7 items-center justify-center rounded text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-700"
-        >
-          <X className="h-4 w-4" />
         </button>
       </div>
 
-      {/* Split layout */}
+      {/* ── Body: controls + preview ────────────────────────────────────── */}
       <div className="flex flex-1 overflow-hidden">
 
-        {/* Left panel */}
-        <div className="w-80 shrink-0 bg-white border-r border-zinc-200 overflow-y-auto">
+        {/* ── Left panel: settings ──────────────────────────────────────── */}
+        <div className="w-80 shrink-0 border-r border-zinc-200 bg-white flex flex-col overflow-hidden">
 
-          {/* General */}
-          <AccordionSection title="General" open={!!openSections.general} onToggle={() => toggleSection("general")}>
-            <TextInput label="Template Name" value={template.name} onChange={(v) => set("name", v)} />
-            <Field label="Paper Size">
-              <SegmentedControl
-                options={[{ value: "A5", label: "A5" }, { value: "A4", label: "A4" }, { value: "Letter", label: "Letter" }]}
-                value={template.paperSize || "A4"}
-                onChange={(v) => set("paperSize", v)}
-              />
-            </Field>
-            <Field label="Orientation">
-              <SegmentedControl
-                options={[{ value: "portrait", label: "Portrait" }, { value: "landscape", label: "Landscape" }]}
-                value={template.orientation || "portrait"}
-                onChange={(v) => set("orientation", v)}
-              />
-            </Field>
-            <Field label="Margins (inches)">
-              <div className="grid grid-cols-2 gap-2">
-                {["marginTop", "marginBottom", "marginLeft", "marginRight"].map((key) => (
-                  <div key={key} className="flex flex-col gap-1">
-                    <label className="text-xs text-zinc-400 capitalize">{key.replace("margin", "")}</label>
-                    <input
-                      type="number"
-                      step="0.05"
-                      min="0"
-                      max="2"
-                      value={template[key] ?? 0.4}
-                      onChange={(e) => set(key, parseFloat(e.target.value) || 0)}
-                      className="h-8 rounded border border-zinc-200 px-2 text-sm text-zinc-900 outline-none focus:border-zinc-400 bg-white"
+          {/* Tab navigation */}
+          <div className="shrink-0 border-b border-zinc-200 px-2 pt-2">
+            <div className="flex gap-0.5">
+              {EDITOR_TABS.map((tab) => (
+                <button
+                  key={tab.key}
+                  onClick={() => setActiveTab(tab.key)}
+                  className={`flex-1 rounded-t-lg px-3 py-2 text-xs font-semibold transition-colors ${
+                    activeTab === tab.key
+                      ? "bg-zinc-50 text-zinc-900 border-b-2 border-zinc-900"
+                      : "text-zinc-400 hover:text-zinc-600 hover:bg-zinc-50"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Tab content */}
+          <div className="flex-1 overflow-y-auto">
+
+            {/* ── Design tab ──────────────────────────────────────────── */}
+            {activeTab === "design" && (
+              <div className="flex flex-col">
+                {/* Header Style */}
+                <div className="px-4 py-4 border-b border-zinc-100">
+                  <Field label="Header Style">
+                    <div className="grid grid-cols-3 gap-2">
+                      {["classic", "minimal", "bold"].map((s) => (
+                        <HeaderStyleCard
+                          key={s}
+                          value={s}
+                          selected={template.headerStyle === s}
+                          accent={template.accentColor || "#18181b"}
+                          onSelect={(v) => set("headerStyle", v)}
+                        />
+                      ))}
+                    </div>
+                  </Field>
+                </div>
+
+                {/* Colours */}
+                <div className="px-4 py-4 border-b border-zinc-100 flex flex-col gap-4">
+                  <label className="text-xs font-semibold text-zinc-800 uppercase tracking-wide">Colours</label>
+                  <ColorInput label="Accent Colour" value={template.accentColor || "#18181b"} onChange={(v) => set("accentColor", v)} />
+                  <ColorInput label="Table Header Background" value={template.tableHeaderBg || "#18181b"} onChange={(v) => set("tableHeaderBg", v)} />
+                  <ColorInput label="Table Header Text" value={template.tableHeaderTextColor || "#ffffff"} onChange={(v) => set("tableHeaderTextColor", v)} />
+                </div>
+
+                {/* Font */}
+                <div className="px-4 py-4 flex flex-col gap-4">
+                  <label className="text-xs font-semibold text-zinc-800 uppercase tracking-wide">Typography</label>
+                  <Field label="Font Family">
+                    <select
+                      value={template.fontFamily || "helvetica"}
+                      onChange={(e) => set("fontFamily", e.target.value)}
+                      className={selectClassName}
+                    >
+                      <option value="helvetica">Helvetica (Sans-serif)</option>
+                      <option value="times">Times New Roman (Serif)</option>
+                      <option value="courier">Courier (Monospace)</option>
+                    </select>
+                  </Field>
+                  <Field label="Base Font Size">
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="range"
+                        min="8"
+                        max="14"
+                        step="1"
+                        value={template.fontSize || 10}
+                        onChange={(e) => set("fontSize", parseInt(e.target.value))}
+                        className="flex-1 accent-zinc-900"
+                      />
+                      <span className="text-sm font-semibold text-zinc-700 tabular-nums w-8 text-right">{template.fontSize || 10}pt</span>
+                    </div>
+                  </Field>
+                </div>
+              </div>
+            )}
+
+            {/* ── Content tab ─────────────────────────────────────────── */}
+            {activeTab === "content" && (
+              <div className="flex flex-col">
+                {/* Business details */}
+                <div className="px-4 py-4 border-b border-zinc-100 flex flex-col gap-4">
+                  <label className="text-xs font-semibold text-zinc-800 uppercase tracking-wide">Business Details</label>
+                  <Toggle label="Show Logo" checked={!!template.showLogo} onChange={(v) => set("showLogo", v)} />
+                  {template.showLogo && (
+                    <TextInput label="Logo URL" value={template.logoUrl} onChange={(v) => set("logoUrl", v)} placeholder="https://example.com/logo.png" />
+                  )}
+                  <TextInput label="Business Name" value={template.businessName} onChange={(v) => set("businessName", v)} placeholder="Acme Studio" />
+                  <TextAreaInput label="Business Address" value={template.businessAddress} onChange={(v) => set("businessAddress", v)} placeholder="123 Main St, London, UK" rows={2} />
+                  <TextInput label="Business Email" value={template.businessEmail} onChange={(v) => set("businessEmail", v)} placeholder="hello@yourbusiness.com" />
+                  <TextInput label="Business Phone" value={template.businessPhone} onChange={(v) => set("businessPhone", v)} placeholder="+1 555 000 0000" />
+                </div>
+
+                {/* Footer */}
+                <div className="px-4 py-4 border-b border-zinc-100 flex flex-col gap-4">
+                  <label className="text-xs font-semibold text-zinc-800 uppercase tracking-wide">Footer</label>
+                  <TextInput label="Footer Text" value={template.footerText} onChange={(v) => set("footerText", v)} placeholder="Thank you for your business" />
+                  <Toggle label="Show Page Numbers" checked={template.showPageNumbers !== false} onChange={(v) => set("showPageNumbers", v)} />
+                </div>
+
+                {/* Terms & extras */}
+                <div className="px-4 py-4 flex flex-col gap-4">
+                  <label className="text-xs font-semibold text-zinc-800 uppercase tracking-wide">Extras</label>
+                  <Toggle label="Show Watermark (DRAFT)" checked={!!template.showWatermark} onChange={(v) => set("showWatermark", v)} />
+                  <Toggle label="Show Terms & Conditions" checked={!!template.showTerms} onChange={(v) => set("showTerms", v)} />
+                  {template.showTerms && (
+                    <TextAreaInput
+                      label="Terms Text"
+                      value={template.termsText}
+                      onChange={(v) => set("termsText", v)}
+                      placeholder="Payment is due within 14 days of invoice date..."
+                      rows={4}
                     />
+                  )}
+                  {(isProposal || isContract) && (
+                    <Toggle
+                      label="Show Signature Block"
+                      checked={template.showSignatureBlock !== false}
+                      onChange={(v) => set("showSignatureBlock", v)}
+                    />
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* ── Layout tab ──────────────────────────────────────────── */}
+            {activeTab === "layout" && (
+              <div className="flex flex-col">
+                {/* Template name */}
+                <div className="px-4 py-4 border-b border-zinc-100 flex flex-col gap-4">
+                  <label className="text-xs font-semibold text-zinc-800 uppercase tracking-wide">Template</label>
+                  <TextInput label="Template Name" value={template.name} onChange={(v) => set("name", v)} />
+                </div>
+
+                {/* Page setup */}
+                <div className="px-4 py-4 border-b border-zinc-100 flex flex-col gap-4">
+                  <label className="text-xs font-semibold text-zinc-800 uppercase tracking-wide">Page Setup</label>
+                  <Field label="Paper Size">
+                    <SegmentedControl
+                      options={[{ value: "A5", label: "A5" }, { value: "A4", label: "A4" }, { value: "Letter", label: "Letter" }]}
+                      value={template.paperSize || "A4"}
+                      onChange={(v) => set("paperSize", v)}
+                    />
+                  </Field>
+                  <Field label="Orientation">
+                    <SegmentedControl
+                      options={[{ value: "portrait", label: "Portrait" }, { value: "landscape", label: "Landscape" }]}
+                      value={template.orientation || "portrait"}
+                      onChange={(v) => set("orientation", v)}
+                    />
+                  </Field>
+                </div>
+
+                {/* Margins */}
+                <div className="px-4 py-4 border-b border-zinc-100 flex flex-col gap-4">
+                  <label className="text-xs font-semibold text-zinc-800 uppercase tracking-wide">Margins (inches)</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {["marginTop", "marginBottom", "marginLeft", "marginRight"].map((key) => (
+                      <div key={key} className="flex flex-col gap-1">
+                        <label className="text-xs text-zinc-400 capitalize">{key.replace("margin", "")}</label>
+                        <input
+                          type="number"
+                          step="0.05"
+                          min="0"
+                          max="2"
+                          value={template[key] ?? 0.4}
+                          onChange={(e) => set(key, parseFloat(e.target.value) || 0)}
+                          className="h-9 rounded-lg border border-zinc-200 px-2.5 text-sm text-zinc-900 outline-none focus:border-zinc-400 bg-white tabular-nums"
+                        />
+                      </div>
+                    ))}
                   </div>
-                ))}
+                </div>
+
+                {/* Table options */}
+                <div className="px-4 py-4 flex flex-col gap-4">
+                  <label className="text-xs font-semibold text-zinc-800 uppercase tracking-wide">Table</label>
+                  <Toggle label="Show Item Numbers" checked={!!template.showItemNumbers} onChange={(v) => set("showItemNumbers", v)} />
+                  <Toggle label="Show Tax Column" checked={!!template.showTaxColumn} onChange={(v) => set("showTaxColumn", v)} />
+                </div>
               </div>
-            </Field>
-          </AccordionSection>
-
-          {/* Font */}
-          <AccordionSection title="Font" open={!!openSections.font} onToggle={() => toggleSection("font")}>
-            <Field label="Font Family">
-              <select
-                value={template.fontFamily || "helvetica"}
-                onChange={(e) => set("fontFamily", e.target.value)}
-                className={selectClassName}
-              >
-                <option value="helvetica">Helvetica (Sans-serif)</option>
-                <option value="times">Times New Roman (Serif)</option>
-                <option value="courier">Courier (Monospace)</option>
-              </select>
-            </Field>
-            <Field label="Base Font Size (pt)">
-              <div className="flex items-center gap-3">
-                <input
-                  type="range"
-                  min="8"
-                  max="14"
-                  step="1"
-                  value={template.fontSize || 10}
-                  onChange={(e) => set("fontSize", parseInt(e.target.value))}
-                  className="flex-1"
-                />
-                <span className="text-sm font-medium text-zinc-700 w-8 text-right">{template.fontSize || 10}pt</span>
-              </div>
-            </Field>
-          </AccordionSection>
-
-          {/* Colours */}
-          <AccordionSection title="Colours" open={!!openSections.colours} onToggle={() => toggleSection("colours")}>
-            <ColorInput label="Accent Colour" value={template.accentColor || "#18181b"} onChange={(v) => set("accentColor", v)} />
-            <ColorInput label="Table Header Background" value={template.tableHeaderBg || "#18181b"} onChange={(v) => set("tableHeaderBg", v)} />
-            <ColorInput label="Table Header Text" value={template.tableHeaderTextColor || "#ffffff"} onChange={(v) => set("tableHeaderTextColor", v)} />
-          </AccordionSection>
-
-          {/* Header & Footer */}
-          <AccordionSection title="Header & Footer" open={!!openSections.header} onToggle={() => toggleSection("header")}>
-            <Field label="Header Style">
-              <div className="grid grid-cols-3 gap-2">
-                {["classic", "minimal", "bold"].map((s) => (
-                  <HeaderStyleCard
-                    key={s}
-                    value={s}
-                    selected={template.headerStyle === s}
-                    accent={template.accentColor || "#18181b"}
-                    onSelect={(v) => set("headerStyle", v)}
-                  />
-                ))}
-              </div>
-            </Field>
-            <Toggle label="Show Logo" checked={!!template.showLogo} onChange={(v) => set("showLogo", v)} />
-            {template.showLogo && (
-              <TextInput label="Logo URL" value={template.logoUrl} onChange={(v) => set("logoUrl", v)} placeholder="https://example.com/logo.png" />
             )}
-            <TextInput label="Business Name" value={template.businessName} onChange={(v) => set("businessName", v)} placeholder="Acme Studio" />
-            <TextAreaInput label="Business Address" value={template.businessAddress} onChange={(v) => set("businessAddress", v)} placeholder="123 Main St, London, UK" rows={2} />
-            <TextInput label="Business Email" value={template.businessEmail} onChange={(v) => set("businessEmail", v)} placeholder="hello@yourbusiness.com" />
-            <TextInput label="Business Phone" value={template.businessPhone} onChange={(v) => set("businessPhone", v)} placeholder="+1 555 000 0000" />
-            <TextInput label="Footer Text" value={template.footerText} onChange={(v) => set("footerText", v)} placeholder="Thank you for your business" />
-            <Toggle label="Show Page Numbers" checked={template.showPageNumbers !== false} onChange={(v) => set("showPageNumbers", v)} />
-          </AccordionSection>
 
-          {/* Table */}
-          <AccordionSection title="Table" open={!!openSections.table} onToggle={() => toggleSection("table")}>
-            <Toggle label="Show Item Numbers" checked={!!template.showItemNumbers} onChange={(v) => set("showItemNumbers", v)} />
-            <Toggle label="Show Tax Column" checked={!!template.showTaxColumn} onChange={(v) => set("showTaxColumn", v)} />
-          </AccordionSection>
-
-          {/* Other Details */}
-          <AccordionSection title="Other Details" open={!!openSections.other} onToggle={() => toggleSection("other")}>
-            <Toggle label="Show Watermark (DRAFT)" checked={!!template.showWatermark} onChange={(v) => set("showWatermark", v)} />
-            <Toggle label="Show Terms & Conditions" checked={!!template.showTerms} onChange={(v) => set("showTerms", v)} />
-            {template.showTerms && (
-              <TextAreaInput
-                label="Terms Text"
-                value={template.termsText}
-                onChange={(v) => set("termsText", v)}
-                placeholder="Payment is due within 14 days of invoice date..."
-                rows={4}
-              />
-            )}
-            {(isProposal || isContract) && (
-              <Toggle
-                label="Show Signature Block"
-                checked={template.showSignatureBlock !== false}
-                onChange={(v) => set("showSignatureBlock", v)}
-              />
-            )}
-          </AccordionSection>
-
+          </div>
         </div>
 
-        {/* Right panel — preview */}
-        <div className="flex-1 overflow-auto bg-zinc-300">
-          <div className="flex justify-center py-10 min-h-full">
+        {/* ── Right panel: live preview ────────────────────────────────── */}
+        <div className="flex-1 overflow-auto bg-zinc-100">
+          <div className="flex justify-center py-10 px-6 min-h-full">
             {template.type === "proposal" ? (
-              <div className="shadow-2xl" style={{ flexShrink: 0 }}>
+              <div className="rounded-lg shadow-xl ring-1 ring-zinc-200" style={{ flexShrink: 0 }}>
                 <ProposalPreview proposal={SAMPLE.proposal} template={template} noScale />
               </div>
             ) : template.type === "contract" ? (
-              <div className="shadow-2xl" style={{ flexShrink: 0 }}>
+              <div className="rounded-lg shadow-xl ring-1 ring-zinc-200" style={{ flexShrink: 0 }}>
                 <ContractPreview contract={SAMPLE.contract} template={template} noScale />
               </div>
             ) : (
-              <div className="shadow-2xl" style={{ flexShrink: 0 }}>
+              <div className="rounded-lg shadow-xl ring-1 ring-zinc-200" style={{ flexShrink: 0 }}>
                 <DocumentPreview template={template} />
               </div>
             )}
