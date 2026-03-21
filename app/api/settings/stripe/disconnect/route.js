@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getSession } from "@/lib/session";
+import { requirePermission } from "@/lib/permissions";
 import Stripe from "stripe";
 import db from "@/lib/db";
 
@@ -7,8 +7,8 @@ const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SEC
 
 // POST /api/settings/stripe/disconnect
 export async function POST() {
-  const session = await getSession();
-  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const { session, error, status: permStatus } = await requirePermission("manage_settings");
+  if (error) return NextResponse.json({ error }, { status: permStatus });
 
   const user = await db.user.findUnique({
     where: { id: session.user.id },

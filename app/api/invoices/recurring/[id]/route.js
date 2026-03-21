@@ -1,13 +1,11 @@
 import { NextResponse } from "next/server";
-import { getSession } from "@/lib/session";
+import { requirePermission } from "@/lib/permissions";
 import db from "@/lib/db";
 
 export async function PATCH(req, { params }) {
   try {
-    const session = await getSession();
-    if (!session?.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const { session, error, status: permStatus } = await requirePermission("manage_invoices");
+    if (error) return NextResponse.json({ error }, { status: permStatus });
 
     const userId = session.user.id;
     const { id } = params;
@@ -45,10 +43,8 @@ export async function PATCH(req, { params }) {
 
 export async function DELETE(req, { params }) {
   try {
-    const session = await getSession();
-    if (!session?.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const { session, error, status: permStatus } = await requirePermission("manage_invoices");
+    if (error) return NextResponse.json({ error }, { status: permStatus });
 
     const userId = session.user.id;
     const { id } = params;

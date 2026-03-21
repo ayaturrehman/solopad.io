@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import db from "@/lib/db";
-import { getSession } from "@/lib/session";
+import { requirePermission } from "@/lib/permissions";
 import { getTenantFilter } from "@/lib/tenant";
 import {
   buildContactsCsvBuffer,
@@ -39,10 +39,8 @@ function makeBaseName() {
 }
 
 export async function POST(req) { try {
-    const session = await getSession();
-    if (!session?.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const { session, error, status: permStatus } = await requirePermission("manage_contacts");
+    if (error) return NextResponse.json({ error }, { status: permStatus });
 
     const body = await req.json().catch(() => ({}));
     const format = VALID_FORMATS.has(body?.format) ? body.format : "csv";

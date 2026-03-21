@@ -3,12 +3,12 @@
  * Creates a draft invoice pre-filled from a signed contract.
  */
 import { NextResponse } from "next/server";
-import { getSession } from "@/lib/session";
+import { requirePermission } from "@/lib/permissions";
 import db from "@/lib/db";
 
 export async function POST(req, { params }) {
-  const session = await getSession();
-  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const { session, error, status: permStatus } = await requirePermission("manage_contracts");
+  if (error) return NextResponse.json({ error }, { status: permStatus });
 
   const { id } = await params;
   const contract = await db.contract.findFirst({ where: { id, userId: session.user.id } });

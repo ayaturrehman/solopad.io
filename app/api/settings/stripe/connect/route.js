@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
-import { getSession } from "@/lib/session";
+import { requirePermission } from "@/lib/permissions";
 
 // GET /api/settings/stripe/connect
 // Redirects the user to Stripe's OAuth page to connect their account
 export async function GET() { try {
-    const session = await getSession();
-    if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const { session, error, status: permStatus } = await requirePermission("manage_settings");
+    if (error) return NextResponse.json({ error }, { status: permStatus });
 
     const clientId = process.env.STRIPE_CLIENT_ID;
     const redirectUri = `${process.env.NEXT_PUBLIC_APP_URL}/api/settings/stripe/callback`;

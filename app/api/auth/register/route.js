@@ -33,6 +33,19 @@ export async function POST(req) {
         data: { name: `${name}'s Business`, ownerId: newUser.id },
       });
 
+      // Auto-create owner TeamMember so owner appears in team list with permissions
+      await tx.teamMember.create({
+        data: {
+          userId: newUser.id,
+          businessId: business.id,
+          name,
+          email,
+          role: "owner",
+          permissions: "",
+          status: "active",
+        },
+      });
+
       return tx.user.update({
         where: { id: newUser.id },
         data: { businessId: business.id },

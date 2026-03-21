@@ -69,7 +69,7 @@ export async function POST(req) { try {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    await db.user.create({
+    const newUser = await db.user.create({
       data: {
         name,
         email,
@@ -79,9 +79,11 @@ export async function POST(req) { try {
       },
     });
 
+    // Link the TeamMember record to the new user and activate
     await db.teamMember.update({
       where: { id: teamMember.id },
       data: {
+        userId: newUser.id,
         status: "active",
         inviteToken: null,
       },

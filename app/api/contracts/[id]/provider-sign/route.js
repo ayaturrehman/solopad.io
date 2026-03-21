@@ -3,13 +3,13 @@
  * Authenticated — lets the freelancer (service provider) sign their own contract.
  */
 import { NextResponse } from "next/server";
-import { getSession } from "@/lib/session";
+import { requirePermission } from "@/lib/permissions";
 import db from "@/lib/db";
 
 export async function POST(req, { params }) { try {
     const { id } = await params;
-    const session = await getSession();
-    if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const { session, error, status: permStatus } = await requirePermission("manage_contracts");
+    if (error) return NextResponse.json({ error }, { status: permStatus });
 
     const body = await req.json().catch(() => ({}));
     const { signatureName } = body;

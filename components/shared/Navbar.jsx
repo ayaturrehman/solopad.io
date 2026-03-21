@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { useSession } from "next-auth/react";
 import BrandLogo from "@/components/shared/BrandLogo";
 import {
   LayoutDashboard, Briefcase, Users,
@@ -12,52 +13,55 @@ import {
   Settings,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { checkPermission } from "@/lib/permissions";
 
+// permission: null means always visible
 const navGroups = [
   {
     label: "Overview",
     items: [
-      { href: "/dashboard",    label: "Dashboard",    icon: LayoutDashboard },
-      { href: "/calendar",     label: "Calendar",     icon: CalendarDays },
+      { href: "/dashboard",    label: "Dashboard",    icon: LayoutDashboard, permission: null },
+      { href: "/calendar",     label: "Calendar",     icon: CalendarDays,    permission: null },
     ],
   },
   {
     label: "Work",
     items: [
-      { href: "/contacts",     label: "Contacts",     icon: Users },
-      { href: "/proposals",    label: "Proposals",    icon: FileText },
-      { href: "/projects",     label: "Projects",     icon: Briefcase },
-      { href: "/contracts",    label: "Contracts",    icon: FileSignature },
+      { href: "/contacts",     label: "Contacts",     icon: Users,          permission: "view_contacts" },
+      { href: "/proposals",    label: "Proposals",    icon: FileText,       permission: "view_proposals" },
+      { href: "/projects",     label: "Projects",     icon: Briefcase,      permission: "view_projects" },
+      { href: "/contracts",    label: "Contracts",    icon: FileSignature,  permission: "view_contracts" },
     ],
   },
   {
     label: "Finance",
     items: [
-      { href: "/finance",      label: "Finance",      icon: DollarSign },
-      { href: "/services",     label: "Services",     icon: Package },
+      { href: "/finance",      label: "Finance",      icon: DollarSign,     permission: "view_finances" },
+      { href: "/services",     label: "Services",     icon: Package,        permission: "view_projects" },
     ],
   },
   {
     label: "Tools",
     items: [
-      { href: "/tasks",        label: "Tasks",        icon: CheckSquare },
-      { href: "/time-tracker", label: "Time Tracker", icon: Clock },
-      { href: "/scheduler",    label: "Scheduler",    icon: CalendarCheck },
+      { href: "/tasks",        label: "Tasks",        icon: CheckSquare,    permission: "view_tasks" },
+      { href: "/time-tracker", label: "Time Tracker", icon: Clock,          permission: "view_time" },
+      { href: "/scheduler",    label: "Scheduler",    icon: CalendarCheck,  permission: null },
     ],
   },
 ];
 
 // Flattened list for bottom nav (most used items)
 const bottomNavItems = [
-  { href: "/dashboard",  label: "Home",      icon: LayoutDashboard },
-  { href: "/projects",   label: "Projects",  icon: Briefcase },
-  { href: "/proposals",  label: "Proposals", icon: FileText },
-  { href: "/tasks",      label: "Tasks",     icon: CheckSquare },
-  { href: "/contacts",   label: "Contacts",  icon: Users },
+  { href: "/dashboard",  label: "Home",      icon: LayoutDashboard, permission: null },
+  { href: "/projects",   label: "Projects",  icon: Briefcase,       permission: "view_projects" },
+  { href: "/proposals",  label: "Proposals", icon: FileText,        permission: "view_proposals" },
+  { href: "/tasks",      label: "Tasks",     icon: CheckSquare,     permission: "view_tasks" },
+  { href: "/contacts",   label: "Contacts",  icon: Users,           permission: "view_contacts" },
 ];
 
 export default function Navbar() {
   const pathname = usePathname();
+  const { data: session } = useSession();
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   function isActive(href) {
@@ -82,7 +86,9 @@ export default function Navbar() {
                 {group.label}
               </p>
               <div className="flex flex-col gap-px">
-                {group.items.map(({ href, label, icon: Icon }) => (
+                {group.items
+                  .filter(({ permission }) => !permission || checkPermission(session, permission))
+                  .map(({ href, label, icon: Icon }) => (
                   <Link
                     key={href}
                     href={href}
@@ -124,7 +130,9 @@ export default function Navbar() {
       {/* ── Mobile bottom nav ── */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 border-t border-zinc-200 bg-white" role="navigation" aria-label="Quick navigation">
         <div className="flex items-center justify-around px-1 py-1">
-          {bottomNavItems.map(({ href, label, icon: Icon }) => {
+          {bottomNavItems
+            .filter(({ permission }) => !permission || checkPermission(session, permission))
+            .map(({ href, label, icon: Icon }) => {
             const active = isActive(href);
             return (
               <Link
@@ -188,7 +196,9 @@ export default function Navbar() {
                     {group.label}
                   </p>
                   <div className="flex flex-col gap-px">
-                    {group.items.map(({ href, label, icon: Icon }) => {
+                    {group.items
+                      .filter(({ permission }) => !permission || checkPermission(session, permission))
+                      .map(({ href, label, icon: Icon }) => {
                       const active = isActive(href);
                       return (
                         <Link

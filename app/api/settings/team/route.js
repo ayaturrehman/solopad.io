@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { nanoid } from "nanoid";
 import { getSession } from "@/lib/session";
+import { requirePermission } from "@/lib/permissions";
 import db from "@/lib/db";
 import { canManageTeam, getDefaultPermissionsForRole, parsePermissions, serializePermissions } from "@/lib/team";
 
@@ -34,8 +35,8 @@ export async function GET() { try {
 }
 
 export async function POST(req) {
-  const session = await getSession();
-  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const { session, error, status: permStatus } = await requirePermission("manage_team");
+  if (error) return NextResponse.json({ error }, { status: permStatus });
   if (!canManageTeam(session.user.plan)) {
     return NextResponse.json({ error: "Upgrade to Solo to invite teammates." }, { status: 403 });
   }

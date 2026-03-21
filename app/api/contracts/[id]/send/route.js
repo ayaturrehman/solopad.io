@@ -1,14 +1,14 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
-import { getSession } from "@/lib/session";
+import { requirePermission } from "@/lib/permissions";
 import db from "@/lib/db";
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 export async function POST(request, { params }) {
   const { id } = await params;
-  const session = await getSession();
-  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const { session, error, status: permStatus } = await requirePermission("manage_contracts");
+  if (error) return NextResponse.json({ error }, { status: permStatus });
 
   if (!resend) {
     return NextResponse.json(

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getSession } from "@/lib/session";
+import { requirePermission } from "@/lib/permissions";
 import db from "@/lib/db";
 import { parsePermissions, serializePermissions } from "@/lib/team";
 
@@ -21,8 +21,8 @@ async function getTeamMemberSafe(id, businessId, userId) {
 }
 
 export async function PATCH(req, { params }) { try {
-    const session = await getSession();
-    if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const { session, error, status: permStatus } = await requirePermission("manage_team");
+    if (error) return NextResponse.json({ error }, { status: permStatus });
 
     const { id } = params;
     const businessId = await getCallerBusiness(session.user.id);
@@ -52,8 +52,8 @@ export async function PATCH(req, { params }) { try {
 }
 
 export async function DELETE(req, { params }) { try {
-    const session = await getSession();
-    if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const { session, error, status: permStatus } = await requirePermission("manage_team");
+    if (error) return NextResponse.json({ error }, { status: permStatus });
 
     const { id } = params;
     const businessId = await getCallerBusiness(session.user.id);

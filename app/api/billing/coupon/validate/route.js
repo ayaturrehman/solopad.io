@@ -1,14 +1,12 @@
 import { NextResponse } from "next/server";
 import { requireStripe } from "@/lib/stripe";
-import { getSession } from "@/lib/session";
+import { requirePermission } from "@/lib/permissions";
 
 export async function POST(req) {
   try {
     const stripe = requireStripe();
-    const session = await getSession();
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const { session, error, status: permStatus } = await requirePermission("manage_billing");
+    if (error) return NextResponse.json({ error }, { status: permStatus });
 
     const { code } = await req.json();
 

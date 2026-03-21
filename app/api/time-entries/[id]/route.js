@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
-import { getSession } from "@/lib/session";
+import { requirePermission } from "@/lib/permissions";
 import { getTenantFilter } from "@/lib/tenant";
 import db from "@/lib/db";
 
 export async function PATCH(req, { params }) { try {
-    const session = await getSession();
-    if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const { session, error, status: permStatus } = await requirePermission("manage_time");
+    if (error) return NextResponse.json({ error }, { status: permStatus });
 
     const filter = await getTenantFilter(session);
     const entry = await db.timeEntry.findFirst({ where: { id: params.id, ...filter } });
@@ -40,8 +40,8 @@ export async function PATCH(req, { params }) { try {
 }
 
 export async function DELETE(req, { params }) { try {
-    const session = await getSession();
-    if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const { session, error, status: permStatus } = await requirePermission("manage_time");
+    if (error) return NextResponse.json({ error }, { status: permStatus });
 
     const filter = await getTenantFilter(session);
     const entry = await db.timeEntry.findFirst({ where: { id: params.id, ...filter } });

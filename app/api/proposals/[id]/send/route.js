@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { renderToBuffer } from "@react-pdf/renderer";
 import React from "react";
-import { getSession } from "@/lib/session";
+import { requirePermission } from "@/lib/permissions";
 import db from "@/lib/db";
 import { ProposalPDF } from "@/lib/pdf-templates/ProposalPDF";
 
@@ -41,10 +41,8 @@ const DEFAULT_TEMPLATE = {
 
 export async function POST(request, { params }) {
   const { id } = await params;
-  const session = await getSession();
-  if (!session?.user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { session, error, status: permStatus } = await requirePermission("manage_proposals");
+  if (error) return NextResponse.json({ error }, { status: permStatus });
 
   if (!resend) {
     return NextResponse.json(

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
-import { getSession } from "@/lib/session";
+import { requirePermission } from "@/lib/permissions";
 import { getTenantFilter } from "@/lib/tenant";
 import db from "@/lib/db";
 import { buildServiceUsageMap, normalizeServiceInput } from "@/lib/services";
@@ -11,8 +11,8 @@ async function getOwnedService(id, session) {
 }
 
 export async function PATCH(req, { params }) { try {
-    const session = await getSession();
-    if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const { session, error, status: permStatus } = await requirePermission("manage_projects");
+    if (error) return NextResponse.json({ error }, { status: permStatus });
 
     const { id } = await params;
     const body = await req.json();
@@ -54,8 +54,8 @@ export async function PATCH(req, { params }) { try {
 }
 
 export async function DELETE(req, { params }) { try {
-    const session = await getSession();
-    if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const { session, error, status: permStatus } = await requirePermission("manage_projects");
+    if (error) return NextResponse.json({ error }, { status: permStatus });
 
     const { id } = await params;
 

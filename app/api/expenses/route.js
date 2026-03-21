@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
-import { getSession } from "@/lib/session";
+import { requirePermission } from "@/lib/permissions";
 import { getTenantFilter, getTenantData } from "@/lib/tenant";
 import db from "@/lib/db";
 
 export async function GET(req) { try {
-    const session = await getSession();
-    if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const { session, error, status: permStatus } = await requirePermission("view_finances");
+    if (error) return NextResponse.json({ error }, { status: permStatus });
 
     const filter = await getTenantFilter(session);
 
@@ -27,8 +27,8 @@ export async function GET(req) { try {
 }
 
 export async function POST(req) { try {
-    const session = await getSession();
-    if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const { session, error, status: permStatus } = await requirePermission("manage_invoices");
+    if (error) return NextResponse.json({ error }, { status: permStatus });
 
     const { description, amount, category, date, projectId, note } = await req.json();
 
