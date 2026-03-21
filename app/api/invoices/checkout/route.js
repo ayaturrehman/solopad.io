@@ -5,7 +5,11 @@ import db from "@/lib/db";
 export async function POST(req) {
   try {
     const stripe = requireStripe();
-    const { invoiceId } = await req.json();
+    const { invoiceId, token } = await req.json();
+
+    if (!invoiceId) {
+      return NextResponse.json({ error: "Invoice ID required" }, { status: 400 });
+    }
 
     const invoice = await db.invoice.findUnique({
       where: { id: invoiceId },
@@ -23,12 +27,11 @@ export async function POST(req) {
       : invoice.lineItems;
 
     const freelancer = invoice.project?.user;
-    const currency = invoice.currency?.toLowerCase() || "usd";
+    const currency = invoice.currency?.toLowerCase() || "gbp";
 
-    // Build session options — use automatic_payment_methods (best practice)
+    // Build session options
     const sessionOptions = {
       mode: "payment",
-      automatic_payment_methods: { enabled: true },
       line_items: lineItems.map((item) => ({
         price_data: {
           currency,

@@ -50,12 +50,11 @@ export async function POST(req, { params }) {
 
     const invoice = milestone.invoice;
     const freelancer = invoice.project?.user;
-    const currency = invoice.currency?.toLowerCase() || "usd";
+    const currency = invoice.currency?.toLowerCase() || "gbp";
     const amountCents = Math.round(milestone.amount * 100);
 
     const sessionOptions = {
       mode: "payment",
-      automatic_payment_methods: { enabled: true },
       line_items: [
         {
           price_data: {

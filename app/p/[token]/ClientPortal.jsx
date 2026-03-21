@@ -384,7 +384,7 @@ export default function ClientPortal({ project, files, comments: initialComments
       {/* Header */}
       <header className="sticky top-0 z-30 border-b border-zinc-200 bg-white">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
-          <BrandLogo dark className="gap-0 opacity-90" markClassName="h-5 w-5" textClassName="text-base font-black text-zinc-700" />
+          <BrandLogo className="gap-0 opacity-90" markClassName="h-5 w-5" textClassName="text-base font-black text-zinc-700" />
           <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
             project.status === "complete"    ? "bg-green-100 text-green-700" :
             project.status === "in_review"   ? "bg-blue-100 text-blue-700" :
