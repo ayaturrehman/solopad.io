@@ -125,7 +125,7 @@ export default function DashboardClient({
   statusCounts,
 }) {
   return (
-    <div className="space-y-5 px-4 py-4 md:px-6">
+    <div className="space-y-6 px-4 py-4 md:px-6">
 
       {/* Greeting */}
       <div className="dash-fade-in flex items-center justify-between" style={delay(0)}>
@@ -143,7 +143,7 @@ export default function DashboardClient({
       </StatCardGrid>
 
       {/* Charts row */}
-      <div className="grid gap-4 sm:grid-cols-2" style={delay(360)}>
+      <div className="grid gap-6 sm:grid-cols-2" style={delay(360)}>
         <Card className="dash-fade-up px-4 py-4" style={delay(340)}>
           <p className="mb-4 text-sm font-semibold text-zinc-900">Tasks</p>
           <TaskDonut open={taskOpen} done={taskDone} />
@@ -155,7 +155,7 @@ export default function DashboardClient({
       </div>
 
       {/* Main panels */}
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-[220px_minmax(0,1.2fr)_minmax(0,0.9fr)_minmax(0,0.9fr)]">
+      <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-[220px_minmax(0,1.2fr)_minmax(0,0.9fr)_minmax(0,0.9fr)]">
 
         {/* Quick actions */}
         <Card className="dash-fade-up px-4 py-4" style={delay(420)}>

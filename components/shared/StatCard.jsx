@@ -35,7 +35,7 @@ export function StatCard({ label, value, note, color, delay = 0 }) {
  */
 export function StatCardGrid({ children, className }) {
   return (
-    <div className={cn("grid gap-3 sm:grid-cols-2 xl:grid-cols-4", className)}>
+    <div className={cn("grid gap-6 sm:grid-cols-2 xl:grid-cols-4", className)}>
       {children}
     </div>
   );
