@@ -97,6 +97,16 @@ function BillingContent({ plan: initialPlan, billingStatus: initialBillingStatus
       const res = await fetch("/api/billing/portal", { method: "POST" });
       const data = await res.json();
       if (data.url) { window.location.href = data.url; return; }
+      // If portal fails for trial users, redirect to checkout for current plan instead
+      if (isTrialing) {
+        const checkoutRes = await fetch("/api/billing/checkout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ plan, interval }),
+        });
+        const checkoutData = await checkoutRes.json();
+        if (checkoutData.url) { window.location.href = checkoutData.url; return; }
+      }
       alert(data.error || "Could not open billing portal.");
     } catch {
       alert("Could not open billing portal. Please try again.");
