@@ -28,7 +28,7 @@ export default function FinanceOverviewClient({
   ];
 
   return (
-    <div className="flex flex-col gap-4 px-4 py-4 md:px-6">
+    <div className="flex flex-col gap-6 px-4 py-4 md:px-6">
 
       {/* KPI cards */}
       <StatCardGrid>
@@ -50,7 +50,7 @@ export default function FinanceOverviewClient({
       </Card>
 
       {/* Recent lists */}
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid gap-6 lg:grid-cols-2">
         <RecentList
           title="Invoices"
           href="/finance?tab=invoices"
