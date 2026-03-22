@@ -1,8 +1,9 @@
-
 import { getSession } from "@/lib/session";
 import db from "@/lib/db";
 import { redirect } from "next/navigation";
 import CalendarView from "./CalendarView";
+
+export const revalidate = 60;
 
 export default async function CalendarPage() {
   const session = await getSession();

@@ -430,6 +430,7 @@ model Notification {
 
   @@index([userId])
   @@index([businessId])
+  @@index([businessId, read])
 }
 
 // ─── Task ─────────────────────────────────────────────────────────────────────

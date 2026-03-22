@@ -42,25 +42,32 @@ export default async function FinancePage({ searchParams }) {
   // Only sync recurring expenses on the expenses tab (saves ~200ms on other tabs)
   if (tab === "expenses") await syncRecurringExpenses(userId);
 
-  // Core data needed for overview + invoices tabs
+  // Only fetch what the active tab needs — saves 1-2 heavy queries on non-overview tabs
+  const needsInvoices = tab === "overview" || tab === "invoices" || tab === "payments";
+  const needsExpenses = tab === "overview" || tab === "expenses";
+
   const [invoices, expenses] = await Promise.all([
-    db.invoice.findMany({
-      where: { project: { userId }, createdAt: { gte: yearStart } },
-      include: {
-        project: { select: { title: true, contact: { select: { name: true } } } },
-        paymentPlans: { select: { id: true, label: true, amount: true, status: true, paidAt: true } },
-      },
-      orderBy: { createdAt: "desc" },
-      take: 200,
-    }),
-    db.expense.findMany({
-      where: { userId, date: { gte: yearStart } },
-      include: {
-        project: { select: { id: true, title: true } },
-      },
-      orderBy: { date: "desc" },
-      take: 200,
-    }),
+    needsInvoices
+      ? db.invoice.findMany({
+          where: { project: { userId }, createdAt: { gte: yearStart } },
+          include: {
+            project: { select: { title: true, contact: { select: { name: true } } } },
+            paymentPlans: { select: { id: true, label: true, amount: true, status: true, paidAt: true } },
+          },
+          orderBy: { createdAt: "desc" },
+          take: 200,
+        })
+      : Promise.resolve([]),
+    needsExpenses
+      ? db.expense.findMany({
+          where: { userId, date: { gte: yearStart } },
+          include: {
+            project: { select: { id: true, title: true } },
+          },
+          orderBy: { date: "desc" },
+          take: 200,
+        })
+      : Promise.resolve([]),
   ]);
 
   // Only fetch heavy data for tabs that need it (saves 1-3 DB queries on overview/payments tabs)
