@@ -331,7 +331,7 @@ export default function ProjectsClient({ projects, currency = "USD", contacts = 
                   onDoubleClick={(event) => handleRowDoubleClick(event, `/projects/${project.id}`)}
                   className="cursor-pointer px-4 py-3 transition-colors"
                 >
-                  <Link href={`/projects/${project.id}`} className="font-medium text-zinc-900 hover:underline">
+                  <Link prefetch={false} href={`/projects/${project.id}`} className="font-medium text-zinc-900 hover:underline">
                     {project.title}
                   </Link>
                   <p className="text-xs text-zinc-400">{formatDate(project.updatedAt)}</p>
@@ -399,7 +399,7 @@ export default function ProjectsClient({ projects, currency = "USD", contacts = 
                     >
                       <Pencil className="h-3.5 w-3.5" />
                     </Button>
-                    <Link href={`/projects/${project.id}`} className="text-zinc-400 hover:text-zinc-700" data-no-row-nav="true">
+                    <Link prefetch={false} href={`/projects/${project.id}`} className="text-zinc-400 hover:text-zinc-700" data-no-row-nav="true">
                       <ExternalLink className="h-4 w-4" />
                     </Link>
                   </div>

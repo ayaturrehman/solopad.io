@@ -446,7 +446,7 @@ export default function ContactsTable({
                   onDoubleClick={(event) => handleRowDoubleClick(event, `/contacts/${contact.id}`)}
                   className="cursor-pointer px-5 py-3.5"
                 >
-                  <Link href={`/contacts/${contact.id}`} className="font-medium text-zinc-900 hover:underline">
+                  <Link prefetch={false} href={`/contacts/${contact.id}`} className="font-medium text-zinc-900 hover:underline">
                     {contact.name}
                   </Link>
                 </td>
@@ -528,6 +528,7 @@ export default function ContactsTable({
                 ) : null}
                 <td className="px-5 py-3.5 text-right">
                   <Link
+                    prefetch={false}
                     href={`/contacts/${contact.id}`}
                     className="rounded border border-zinc-200 px-2.5 py-1 text-xs font-medium text-zinc-600 hover:bg-zinc-50"
                   >

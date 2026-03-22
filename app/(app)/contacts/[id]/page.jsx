@@ -265,6 +265,7 @@ function ProjectsTab({ contact, newProjectHref }) {
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
                       <Link
+                        prefetch={false}
                         href={`/projects/${project.id}`}
                         className="text-lg font-medium tracking-tight text-zinc-900 transition-colors hover:text-blue-700"
                       >

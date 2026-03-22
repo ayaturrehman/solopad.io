@@ -60,6 +60,7 @@ function formatHour(h) {
 function EventPill({ ev }) {
   return (
     <Link
+      prefetch={false}
       href={ev.href}
       className="group/pill flex items-center gap-1.5 rounded-md px-1.5 py-[3px] text-[11px] leading-tight transition-colors hover:bg-zinc-100"
       title={ev.label}
@@ -385,6 +386,7 @@ function DayView({ viewDate, eventMap, todayStr }) {
             {dayEvents.map((ev, i) => (
               <Link
                 key={i}
+                prefetch={false}
                 href={ev.href}
                 className="flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm transition-colors hover:bg-zinc-50"
               >

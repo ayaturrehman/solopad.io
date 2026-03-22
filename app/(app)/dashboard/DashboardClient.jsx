@@ -199,7 +199,7 @@ export default function DashboardClient({
                 return (
                   <div key={project.id} className="dash-fade-up flex items-center justify-between gap-3 py-3" style={delay(480 + i * 40)}>
                     <div className="min-w-0">
-                      <Link href={`/projects/${project.id}`} className="block truncate text-sm font-medium text-zinc-900 hover:underline">
+                      <Link prefetch={false} href={`/projects/${project.id}`} className="block truncate text-sm font-medium text-zinc-900 hover:underline">
                         {project.title}
                       </Link>
                       <p className="mt-0.5 text-xs text-zinc-400">{project.contact?.name || "—"}</p>
@@ -266,7 +266,7 @@ export default function DashboardClient({
               {contacts.map((contact, i) => (
                 <div key={contact.id} className="dash-fade-up flex items-center gap-3 py-3" style={delay(520 + i * 30)}>
                   <div className="min-w-0">
-                    <Link href={`/contacts/${contact.id}`} className="block truncate text-sm font-medium text-zinc-900 hover:underline">
+                    <Link prefetch={false} href={`/contacts/${contact.id}`} className="block truncate text-sm font-medium text-zinc-900 hover:underline">
                       {contact.name}
                     </Link>
                     <p className="mt-0.5 text-xs text-zinc-400">{contact.company || contact.email || "-"}</p>

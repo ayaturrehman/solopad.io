@@ -132,10 +132,13 @@ export default function TopBar() {
       .catch(() => {});
   }, []);
 
-  // Full fetch on mount, lightweight count-only poll every 30s
+  // Count-only on mount; full fetch deferred to bell click.
+  // Poll count every 60s, but only when the tab is visible.
   useEffect(() => {
-    fetchNotifications(false);
-    const interval = setInterval(() => fetchNotifications(true), 60000);
+    fetchNotifications(true); // count-only on mount
+    const interval = setInterval(() => {
+      if (document.visibilityState === "visible") fetchNotifications(true);
+    }, 60000);
     return () => clearInterval(interval);
   }, [fetchNotifications]);
 

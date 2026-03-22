@@ -6,10 +6,6 @@ import DashboardClient from "./DashboardClient";
 
 export const revalidate = 60;
 
-function sum(values) {
-  return values.reduce((total, value) => total + value, 0);
-}
-
 export default async function DashboardPage() {
   const session = await getSession();
   if (!session?.user) redirect("/login");
@@ -17,10 +13,16 @@ export default async function DashboardPage() {
   const userId = session.user.id;
   const now = new Date();
 
-  const [userWithBusiness, projects, tasks, proposals, contracts, contacts, invoices] = await Promise.all([
+  const urgentDeadline = new Date(now.getTime() + 1000 * 60 * 60 * 24 * 3);
+
+  const [
+    userWithBusiness, projects, openTasks, proposals, contracts, contacts,
+    invoiceAgg, projectStatusCounts, sentProposals, unsignedContracts,
+    urgentTasks, nextProjectDeadline, taskDone, openInvoiceCount,
+  ] = await Promise.all([
     db.user.findUnique({ where: { id: userId }, select: { business: { select: { currency: true } } } }),
     db.project.findMany({
-      where: { userId, archived: false },
+      where: { userId, archived: false, status: { not: "complete" } },
       orderBy: { updatedAt: "desc" },
       select: { id: true, title: true, status: true, stage: true, endDate: true, updatedAt: true, contact: { select: { name: true } } },
       take: 6,
@@ -49,12 +51,33 @@ export default async function DashboardPage() {
       select: { id: true, name: true, email: true, company: true, createdAt: true },
       take: 5,
     }),
-    db.invoice.findMany({
+    // DB-level aggregate for outstanding total instead of fetching 20 invoices
+    db.invoice.aggregate({
       where: { project: { userId }, status: { notIn: ["paid", "cancelled"] } },
-      orderBy: { createdAt: "desc" },
-      select: { id: true, total: true, status: true, createdAt: true },
-      take: 20,
+      _sum: { total: true },
     }),
+    // DB-level groupBy for project status counts instead of 4x .filter().length
+    db.project.groupBy({
+      by: ["status"],
+      where: { userId, archived: false },
+      _count: { _all: true },
+    }),
+    // DB-level count for sent proposals
+    db.proposal.count({ where: { userId, status: "sent" } }),
+    // DB-level count for unsigned contracts
+    db.contract.count({ where: { userId, status: { not: "signed" } } }),
+    // DB-level count for urgent tasks (due within 3 days)
+    db.task.count({ where: { userId, status: { not: "done" }, dueDate: { lte: urgentDeadline } } }),
+    // DB-level query for next project deadline
+    db.project.findFirst({
+      where: { userId, archived: false, status: { not: "complete" }, endDate: { not: null } },
+      orderBy: { endDate: "asc" },
+      select: { endDate: true },
+    }),
+    // DB-level count for completed tasks
+    db.task.count({ where: { userId, status: "done" } }),
+    // DB-level count for open invoices
+    db.invoice.count({ where: { project: { userId }, status: { notIn: ["paid", "cancelled"] } } }),
   ]);
 
   const currency = userWithBusiness?.business?.currency || "USD";
@@ -62,41 +85,27 @@ export default async function DashboardPage() {
   const greeting = now.getHours() < 12 ? "Good morning" : now.getHours() < 17 ? "Good afternoon" : "Good evening";
   const dateLabel = now.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" });
 
-  const activeProjects = projects.filter((p) => p.status !== "complete");
-  const openTasks = tasks.filter((t) => t.status !== "done");
-  const sentProposals = proposals.filter((p) => p.status === "sent").length;
-  const unsignedContracts = contracts.filter((c) => c.status !== "signed").length;
-  const openInvoices = invoices; // already filtered at DB level
-  const outstanding = sum(invoices.map((i) => i.total));
-  const urgentTasks = openTasks.filter(
-    (t) => t.dueDate && new Date(t.dueDate) <= new Date(now.getTime() + 1000 * 60 * 60 * 24 * 3)
-  ).length;
-  const nextProjectDeadline = activeProjects
-    .filter((p) => p.endDate)
-    .sort((a, b) => new Date(a.endDate) - new Date(b.endDate))[0];
-
-  // Task breakdown
-  const taskDone = tasks.filter((t) => t.status === "done").length;
+  const activeProjects = projects; // already filtered at DB level (status !== "complete")
+  const outstanding = invoiceAgg._sum.total || 0;
   const taskOpen = openTasks.length;
 
-  // Project status breakdown
-  const statusCounts = {
-    not_started: projects.filter((p) => p.status === "not_started").length,
-    in_progress: projects.filter((p) => p.status === "in_progress").length,
-    in_review: projects.filter((p) => p.status === "in_review").length,
-    complete: projects.filter((p) => p.status === "complete").length,
-  };
+  // Convert groupBy result to status counts object
+  const statusCounts = { not_started: 0, in_progress: 0, in_review: 0, complete: 0 };
+  for (const row of projectStatusCounts) {
+    if (row.status in statusCounts) statusCounts[row.status] = row._count._all;
+  }
 
+  const totalProjectCount = Object.values(statusCounts).reduce((s, c) => s + c, 0);
   const kpis = [
-    { label: "Active projects", value: activeProjects.length, note: `${projects.length} total` },
+    { label: "Active projects", value: activeProjects.length, note: `${totalProjectCount} total` },
     { label: "Open tasks", value: openTasks.length, note: urgentTasks ? `${urgentTasks} urgent` : "Nothing urgent" },
     { label: "Proposals out", value: sentProposals, note: `${unsignedContracts} awaiting signature` },
     {
       label: "Outstanding",
       value: formatCurrency(outstanding, currency),
-      note: nextProjectDeadline
+      note: nextProjectDeadline?.endDate
         ? `Next due ${formatDate(nextProjectDeadline.endDate)}`
-        : `${openInvoices.length} unpaid invoices`,
+        : `${openInvoiceCount} unpaid invoices`,
     },
   ];
 

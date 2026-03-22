@@ -172,6 +172,7 @@ function ProposalsCard({ proposals, projectId }) {
             {proposals.map((p) => (
               <Link
                 key={p.id}
+                prefetch={false}
                 href={`/proposals/${p.id}`}
                 className="flex items-center justify-between px-4 py-3 hover:bg-zinc-50"
               >
@@ -230,6 +231,7 @@ function ContractsCard({ contracts, projectId }) {
             {contracts.map((c) => (
               <Link
                 key={c.id}
+                prefetch={false}
                 href={`/contracts/${c.id}`}
                 className="flex items-center justify-between px-4 py-3 hover:bg-zinc-50"
               >
@@ -279,6 +281,7 @@ function InvoicesCard({ invoices, outstanding }) {
             {invoices.slice(0, 5).map((inv) => (
               <Link
                 key={inv.id}
+                prefetch={false}
                 href={`/invoices/${inv.id}`}
                 className="flex items-center justify-between px-4 py-3 hover:bg-zinc-50"
               >
@@ -597,7 +600,7 @@ export default async function ProjectPage({ params, searchParams }) {
 
   if (!project) redirect("/dashboard");
 
-  const [files, comments, notes, invoices, rawTasks, timeEntries, teamMembers, contacts, proposals, contracts] = await Promise.all([
+  const [files, comments, notes, invoices, rawTasks, timeEntries, teamMembers, contacts, proposals, contracts, outstandingAgg, timeAgg] = await Promise.all([
     db.file.findMany({ where: { projectId: id }, orderBy: { createdAt: "desc" }, take: 50 }),
     db.comment.findMany({ where: { projectId: id }, orderBy: { createdAt: "asc" }, take: 50 }),
     db.note.findMany({ where: { projectId: id }, orderBy: { createdAt: "desc" }, take: 50 }),
@@ -631,16 +634,24 @@ export default async function ProjectPage({ params, searchParams }) {
       orderBy: { createdAt: "desc" },
       take: 50,
     }),
+    // DB-level aggregate for outstanding instead of in-memory filter+reduce
+    db.invoice.aggregate({
+      where: { projectId: id, status: { notIn: ["paid", "cancelled"] } },
+      _sum: { total: true },
+    }),
+    // DB-level aggregate for total logged time instead of in-memory reduce
+    db.timeEntry.aggregate({
+      where: { projectId: id },
+      _sum: { duration: true },
+    }),
   ]);
 
   const tasks = rawTasks.map(normalizeTask);
 
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "";
   const portalUrl = `${baseUrl}/p/${project.portalToken}`;
-  const outstanding = invoices
-    .filter((invoice) => invoice.status !== "paid" && invoice.status !== "cancelled")
-    .reduce((sum, invoice) => sum + invoice.total, 0);
-  const totalLoggedSeconds = timeEntries.reduce((sum, entry) => sum + (entry.duration || 0), 0);
+  const outstanding = outstandingAgg._sum.total || 0;
+  const totalLoggedSeconds = timeAgg._sum.duration || 0;
 
   const activityItems = [
     ...comments.map((comment) => ({
@@ -696,6 +707,7 @@ export default async function ProjectPage({ params, searchParams }) {
         ].map((item) => (
           <Link
             key={item.id}
+            prefetch={false}
             href={getTabHref(project.id, item.id)}
             className={`relative mr-8 inline-flex h-12 items-center text-sm font-medium transition-colors ${
               tab === item.id ? "text-blue-600" : "text-zinc-400 hover:text-zinc-700"

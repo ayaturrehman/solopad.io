@@ -97,14 +97,18 @@ export default async function FinancePage({ searchParams }) {
   ]);
 
   const expenseCategoryOptions = getExpenseCategoryOptions(customExpenseCategories);
-  const customExpenseCategoriesWithUsage = customExpenseCategories.map((category) => {
-    const recurringUsage = recurringExpenses.filter((expense) => expense.category === category.name).length;
-    const oneTimeUsage = expenses.filter((expense) => expense.category === category.name).length;
-    return {
-      ...category,
-      usageCount: recurringUsage + oneTimeUsage,
-    };
-  });
+  // Build a lookup map for category usage counts (O(n) instead of O(n*m))
+  const categoryUsageMap = {};
+  for (const expense of expenses) {
+    if (expense.category) categoryUsageMap[expense.category] = (categoryUsageMap[expense.category] || 0) + 1;
+  }
+  for (const expense of recurringExpenses) {
+    if (expense.category) categoryUsageMap[expense.category] = (categoryUsageMap[expense.category] || 0) + 1;
+  }
+  const customExpenseCategoriesWithUsage = customExpenseCategories.map((category) => ({
+    ...category,
+    usageCount: categoryUsageMap[category.name] || 0,
+  }));
 
   // Paid invoices = fully paid OR has any paid milestones
   const paid = invoices.filter((i) => i.status === "paid");
@@ -172,6 +176,7 @@ export default async function FinancePage({ searchParams }) {
         {TABS.map((t) => (
           <Link
             key={t}
+            prefetch={false}
             href={t === "overview" ? "/finance" : `/finance?tab=${t}`}
             className={`relative mr-8 inline-flex h-12 items-center text-sm font-medium capitalize transition-colors ${
               tab === t

@@ -149,7 +149,7 @@ export default function ContractsClient({ contracts }) {
                   className="cursor-pointer px-5 py-3.5 text-sm"
                 >
                   {contract.project ? (
-                    <Link href={`/projects/${contract.project.id}`} className="text-zinc-600 underline underline-offset-2 hover:text-zinc-900">
+                    <Link prefetch={false} href={`/projects/${contract.project.id}`} className="text-zinc-600 underline underline-offset-2 hover:text-zinc-900">
                       {contract.project.title}
                     </Link>
                   ) : (

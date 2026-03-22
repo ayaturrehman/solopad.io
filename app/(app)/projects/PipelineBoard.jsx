@@ -98,7 +98,7 @@ export default function PipelineBoard({ projects: initialProjects, stages, curre
                             <p className="truncate text-[10px] text-zinc-400">{project.contact.name}</p>
                           )}
                         </div>
-                        <Link href={`/projects/${project.id}`} className="text-zinc-400 hover:text-zinc-700">
+                        <Link prefetch={false} href={`/projects/${project.id}`} className="text-zinc-400 hover:text-zinc-700">
                           <ExternalLink className="h-3 w-3" />
                         </Link>
                       </div>

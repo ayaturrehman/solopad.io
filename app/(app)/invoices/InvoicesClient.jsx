@@ -232,6 +232,7 @@ export default function InvoicesClient({ invoices }) {
                 </td>
                 <td className="px-5 py-4 text-right">
                   <Link
+                    prefetch={false}
                     href={`/invoices/${inv.id}`}
                     className="inline-flex items-center gap-1 text-xs text-zinc-400 opacity-0 transition-opacity group-hover:opacity-100 hover:text-zinc-700"
                   >

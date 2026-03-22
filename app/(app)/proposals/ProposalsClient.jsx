@@ -288,6 +288,7 @@ export default function ProposalsClient({ proposals }) {
                 >
                   {proposal.project ? (
                     <Link
+                      prefetch={false}
                       href={`/projects/${proposal.project.id}`}
                       className="text-zinc-600 underline underline-offset-2 hover:text-zinc-900"
                     >
@@ -331,6 +332,7 @@ export default function ProposalsClient({ proposals }) {
                 </td>
                 <td className="px-5 py-3.5 text-right">
                   <Link
+                    prefetch={false}
                     href={`/proposals/${proposal.id}`}
                     className="inline-flex items-center gap-1 text-xs font-medium text-zinc-500 hover:text-zinc-900"
                     data-no-row-nav="true"

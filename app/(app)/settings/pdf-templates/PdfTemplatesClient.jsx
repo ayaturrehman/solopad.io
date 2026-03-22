@@ -176,6 +176,7 @@ function TemplateCard({ template, onSetDefault, onDelete, type }) {
       {/* Hover action overlay */}
       <div className="absolute inset-0 bg-zinc-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2">
         <Link
+          prefetch={false}
           href={`/settings/pdf-templates/${template.id}/edit`}
           className="flex items-center gap-1.5 bg-white text-zinc-900 text-sm font-medium px-4 py-2 rounded-md hover:bg-zinc-100 transition-colors w-40 justify-center"
           onClick={(e) => e.stopPropagation()}
