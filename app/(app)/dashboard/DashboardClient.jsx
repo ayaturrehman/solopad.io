@@ -171,7 +171,7 @@ export default function DashboardClient({
                 style={delay(460 + i * 35)}
               >
                 <span className="inline-flex items-center gap-2">
-                  <Icon className="h-4 w-4 text-zinc-400" />
+                  <Icon className="h-4 w-4 text-blue-500" />
                   {label}
                 </span>
                 <Plus className="h-3.5 w-3.5 text-zinc-400" />
@@ -187,7 +187,7 @@ export default function DashboardClient({
               <p className="text-sm font-semibold text-zinc-900">Projects</p>
               <p className="mt-1 text-xs text-zinc-400">Current work with status and nearest due date</p>
             </div>
-            <Link href="/projects" className="text-xs text-zinc-400 transition-colors hover:text-zinc-700">View all</Link>
+            <Link href="/projects" className="text-xs text-blue-600 transition-colors hover:text-blue-700">View all</Link>
           </div>
           {activeProjects.length === 0 ? (
             <p className="py-10 text-center text-sm text-zinc-400">No active projects yet.</p>
@@ -224,7 +224,7 @@ export default function DashboardClient({
               <p className="text-sm font-semibold text-zinc-900">Tasks</p>
               <p className="mt-1 text-xs text-zinc-400">What needs attention today</p>
             </div>
-            <Link href="/tasks" className="text-xs text-zinc-400 transition-colors hover:text-zinc-700">View all</Link>
+            <Link href="/tasks" className="text-xs text-blue-600 transition-colors hover:text-blue-700">View all</Link>
           </div>
           {openTasks.length === 0 ? (
             <p className="py-10 text-center text-sm text-zinc-400">All clear. No open tasks.</p>
@@ -257,7 +257,7 @@ export default function DashboardClient({
               <p className="text-sm font-semibold text-zinc-900">Contacts</p>
               <p className="mt-1 text-xs text-zinc-400">Recently added contacts</p>
             </div>
-            <Link href="/contacts" className="text-xs text-zinc-400 transition-colors hover:text-zinc-700">View all</Link>
+            <Link href="/contacts" className="text-xs text-blue-600 transition-colors hover:text-blue-700">View all</Link>
           </div>
           {contacts.length === 0 ? (
             <p className="py-10 text-center text-sm text-zinc-400">No contacts yet.</p>
