@@ -14,12 +14,23 @@ import { CollectionEmptyState, CollectionTableFrame, CollectionTablePagination }
 import { cn, formatCurrency, formatDate } from "@/lib/utils";
 
 const STATUS_CONFIG = {
-  draft:     { label: "Draft",     color: "bg-zinc-100 text-zinc-500",   icon: FileText },
-  sent:      { label: "Sent",      color: "bg-blue-100 text-blue-700",   icon: Send },
-  paid:      { label: "Paid",      color: "bg-green-100 text-green-700", icon: CheckCircle2 },
-  overdue:   { label: "Overdue",   color: "bg-red-100 text-red-700",     icon: Clock },
-  cancelled: { label: "Cancelled", color: "bg-zinc-100 text-zinc-400",   icon: XCircle },
+  draft:          { label: "Draft",          color: "bg-zinc-100 text-zinc-500",    icon: FileText },
+  sent:           { label: "Sent",           color: "bg-blue-100 text-blue-700",    icon: Send },
+  paid:           { label: "Paid",           color: "bg-green-100 text-green-700",  icon: CheckCircle2 },
+  partially_paid: { label: "Partial",        color: "bg-amber-100 text-amber-700",  icon: Clock },
+  overdue:        { label: "Overdue",        color: "bg-red-100 text-red-700",      icon: Clock },
+  cancelled:      { label: "Cancelled",      color: "bg-zinc-100 text-zinc-400",    icon: XCircle },
 };
+
+// Derive display status — shows "Partial" when milestones are partially paid
+function getDisplayStatus(inv) {
+  if (inv.status === "paid") return "paid";
+  if (inv.paymentPlans?.length > 0) {
+    const paidCount = inv.paymentPlans.filter((m) => m.status === "paid").length;
+    if (paidCount > 0 && paidCount < inv.paymentPlans.length) return "partially_paid";
+  }
+  return inv.status;
+}
 
 const TABS = ["all", "draft", "sent", "paid", "overdue"];
 const PAGE_SIZE = 25;
@@ -277,7 +288,8 @@ export default function InvoicesClient({ invoices }) {
             </thead>
             <tbody className="divide-y divide-zinc-50">
               {paginated.map((inv) => {
-                const cfg = STATUS_CONFIG[inv.status] || STATUS_CONFIG.draft;
+                const displayStatus = getDisplayStatus(inv);
+                const cfg = STATUS_CONFIG[displayStatus] || STATUS_CONFIG.draft;
                 const Icon = cfg.icon;
                 const isSelected = selected.has(inv.id);
                 return (
@@ -320,6 +332,11 @@ export default function InvoicesClient({ invoices }) {
                     </td>
                     <td className="px-5 py-4 text-right text-sm font-semibold text-zinc-900">
                       {formatCurrency(inv.total, inv.currency)}
+                      {displayStatus === "partially_paid" && (
+                        <p className="text-xs font-normal text-amber-600 mt-0.5">
+                          {inv.paymentPlans.filter((m) => m.status === "paid").length}/{inv.paymentPlans.length} paid
+                        </p>
+                      )}
                     </td>
                     <td className="px-5 py-4 text-right">
                       <Link
