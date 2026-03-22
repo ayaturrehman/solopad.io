@@ -46,7 +46,10 @@ export default async function FinancePage({ searchParams }) {
   const [invoices, expenses] = await Promise.all([
     db.invoice.findMany({
       where: { project: { userId }, createdAt: { gte: yearStart } },
-      include: { project: { select: { title: true, contact: { select: { name: true } } } } },
+      include: {
+        project: { select: { title: true, contact: { select: { name: true } } } },
+        paymentPlans: { select: { id: true, label: true, amount: true, status: true, paidAt: true } },
+      },
       orderBy: { createdAt: "desc" },
       take: 200,
     }),
@@ -96,18 +99,58 @@ export default async function FinancePage({ searchParams }) {
     };
   });
 
+  // Paid invoices = fully paid OR has any paid milestones
   const paid = invoices.filter((i) => i.status === "paid");
-  const totalRevenue = paid.reduce((s, i) => s + i.total, 0);
+
+  // Revenue = fully paid invoices + paid milestones from partially paid invoices
+  const paidMilestoneRevenue = invoices
+    .filter((i) => i.status !== "paid" && i.paymentPlans?.length > 0)
+    .reduce((s, i) => s + i.paymentPlans.filter((m) => m.status === "paid").reduce((ms, m) => ms + m.amount, 0), 0);
+  const totalRevenue = paid.reduce((s, i) => s + i.total, 0) + paidMilestoneRevenue;
+
   const totalExpenses = expenses.reduce((s, e) => s + e.amount, 0);
   const netIncome = totalRevenue - totalExpenses;
+
+  // Outstanding = unpaid invoice amounts, minus any paid milestones
   const outstanding = invoices
     .filter((i) => i.status !== "paid" && i.status !== "cancelled")
-    .reduce((s, i) => s + i.total, 0);
+    .reduce((s, i) => {
+      if (i.paymentPlans?.length > 0) {
+        return s + i.paymentPlans.filter((m) => m.status !== "paid").reduce((ms, m) => ms + m.amount, 0);
+      }
+      return s + i.total;
+    }, 0);
 
-  // Monthly breakdown
+  // Payments list = fully paid invoices + individual paid milestones
+  const allPayments = [
+    ...paid.map((i) => ({ ...i, paymentType: "invoice" })),
+    ...invoices
+      .filter((i) => i.status !== "paid" && i.paymentPlans?.length > 0)
+      .flatMap((i) => i.paymentPlans
+        .filter((m) => m.status === "paid")
+        .map((m) => ({
+          id: m.id,
+          invoiceNumber: i.invoiceNumber ? `${i.invoiceNumber} — ${m.label}` : m.label,
+          total: m.amount,
+          currency: i.currency,
+          paidAt: m.paidAt,
+          createdAt: m.paidAt || i.createdAt,
+          updatedAt: m.paidAt || i.updatedAt,
+          project: i.project,
+          paymentType: "milestone",
+        }))
+      ),
+  ];
+
+  // Monthly breakdown — include milestone payments
   const monthlyRevenue = Array(12).fill(0);
   const monthlyExpenses = Array(12).fill(0);
-  paid.forEach((i) => { monthlyRevenue[new Date(i.createdAt).getMonth()] += i.total; });
+  paid.forEach((i) => { monthlyRevenue[new Date(i.paidAt || i.createdAt).getMonth()] += i.total; });
+  invoices
+    .filter((i) => i.status !== "paid" && i.paymentPlans?.length > 0)
+    .forEach((i) => i.paymentPlans.filter((m) => m.status === "paid").forEach((m) => {
+      monthlyRevenue[new Date(m.paidAt || i.createdAt).getMonth()] += m.amount;
+    }));
   expenses.forEach((e) => { monthlyExpenses[new Date(e.date).getMonth()] += e.amount; });
   const maxBar = Math.max(...monthlyRevenue, ...monthlyExpenses, 1);
 
@@ -163,7 +206,7 @@ export default async function FinancePage({ searchParams }) {
       {/* Payments tab */}
       {tab === "payments" && (
         <Suspense fallback={null}>
-          <PaymentsClient payments={paid} currency={currency} />
+          <PaymentsClient payments={allPayments} currency={currency} />
         </Suspense>
       )}
 

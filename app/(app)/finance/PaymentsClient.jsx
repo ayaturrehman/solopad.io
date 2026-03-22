@@ -135,7 +135,7 @@ export default function PaymentsClient({ payments, currency }) {
                     {inv.project?.title || "—"}
                   </td>
                   <td className="px-5 py-4 text-sm text-zinc-500">
-                    {formatDate(inv.updatedAt)}
+                    {formatDate(inv.paidAt)}
                   </td>
                   <td className="px-5 py-4 text-right text-sm font-semibold text-green-700">
                     {formatCurrency(inv.total, currency)}
