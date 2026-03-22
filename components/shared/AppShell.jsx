@@ -25,7 +25,7 @@ export default function AppShell({ children, subscriptionExpired = false }) {
       <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-zinc-900 focus:shadow-md">
         Skip to main content
       </a>
-      <div className="flex h-screen overflow-hidden bg-white">
+      <div className="flex h-screen overflow-hidden bg-zinc-50">
         <Navbar />
         <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
           <Suspense fallback={null}><TopBar /></Suspense>
