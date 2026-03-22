@@ -56,9 +56,10 @@ function BillingContent({ plan: initialPlan, billingStatus: initialBillingStatus
   const displayPeriod = isCurrentYearly ? "/yr" : planInfo.period;
 
   async function changePlan(nextPlan) {
-    if (nextPlan === plan) return;
+    // Allow same plan selection during trial (user wants to subscribe/add payment)
+    if (nextPlan === plan && !isTrialing) return;
 
-    if (nextPlan === "free" || nextPlan === "starter") {
+    if (!isTrialing && (nextPlan === "free" || nextPlan === "starter")) {
       setSavingPlan(true);
       try {
         const res = await fetch("/api/billing/portal", { method: "POST" });
@@ -327,13 +328,13 @@ function BillingContent({ plan: initialPlan, billingStatus: initialBillingStatus
                   </ul>
                   <Button
                     size="sm"
-                    variant={active ? "secondary" : "primary"}
+                    variant={active && !isTrialing ? "secondary" : "primary"}
                     className="mt-4 w-full"
-                    disabled={active || savingPlan}
-                    loading={savingPlan && !active}
+                    disabled={(active && !isTrialing) || savingPlan}
+                    loading={savingPlan}
                     onClick={() => changePlan(planId)}
                   >
-                    {active ? "Current plan" : `Switch to ${item.name}`}
+                    {active && !isTrialing ? "Current plan" : active && isTrialing ? "Subscribe" : `Switch to ${item.name}`}
                   </Button>
                 </div>
               );
