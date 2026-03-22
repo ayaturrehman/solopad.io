@@ -322,6 +322,18 @@ export default function ClientPortal({ project, files, comments: initialComments
   const unpaidInvoices = invoices.filter((i) => i.status !== "paid" && i.status !== "cancelled");
   const paidInvoices = invoices.filter((i) => i.status === "paid");
 
+  // Calculate outstanding amount — for milestone invoices, only count unpaid milestones
+  function getOutstandingAmount(inv) {
+    if (inv.paymentPlans?.length > 0) {
+      return inv.paymentPlans
+        .filter((m) => m.status !== "paid")
+        .reduce((s, m) => s + m.amount, 0);
+    }
+    return inv.total;
+  }
+  const totalOutstanding = unpaidInvoices.reduce((s, i) => s + getOutstandingAmount(i), 0);
+  const outstandingCurrency = unpaidInvoices[0]?.currency || "USD";
+
   // SSE — connect once on mount, receive new messages instantly
   useEffect(() => {
     const es = new EventSource(`/api/comments/stream?projectId=${project.id}&token=${project.portalToken}`);
@@ -465,7 +477,7 @@ export default function ClientPortal({ project, files, comments: initialComments
         <div className="border-b border-amber-200 bg-amber-50">
           <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
             <p className="text-sm font-medium text-amber-800">
-              {unpaidInvoices.length} payment{unpaidInvoices.length > 1 ? "s" : ""} outstanding — {formatCurrency(unpaidInvoices.reduce((s, i) => s + i.total, 0))} total
+              {unpaidInvoices.length} payment{unpaidInvoices.length > 1 ? "s" : ""} outstanding — {formatCurrency(totalOutstanding, outstandingCurrency)} total
             </p>
             <button onClick={() => setActiveTab("invoices")} className="shrink-0 rounded bg-amber-700 px-3 py-1.5 text-xs font-semibold text-white hover:bg-amber-800">
               View & Pay
@@ -547,7 +559,7 @@ export default function ClientPortal({ project, files, comments: initialComments
                     </div>
                     <div className="flex justify-between py-2.5 text-sm">
                       <dt className="text-zinc-500">Outstanding</dt>
-                      <dd className="font-semibold text-zinc-900">{formatCurrency(unpaidInvoices.reduce((s, i) => s + i.total, 0))}</dd>
+                      <dd className="font-semibold text-zinc-900">{formatCurrency(totalOutstanding, outstandingCurrency)}</dd>
                     </div>
                     <div className="flex justify-between py-2.5 text-sm">
                       <dt className="text-zinc-500">Paid</dt>
