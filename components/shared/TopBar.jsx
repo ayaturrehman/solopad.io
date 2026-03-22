@@ -135,7 +135,7 @@ export default function TopBar() {
   // Full fetch on mount, lightweight count-only poll every 30s
   useEffect(() => {
     fetchNotifications(false);
-    const interval = setInterval(() => fetchNotifications(true), 30000);
+    const interval = setInterval(() => fetchNotifications(true), 60000);
     return () => clearInterval(interval);
   }, [fetchNotifications]);
 
