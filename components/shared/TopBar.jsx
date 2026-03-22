@@ -9,6 +9,12 @@ import Link from "next/link";
 import { LoadingDots } from "@/components/shared/NavigationLoadingOverlay";
 import { cn } from "@/lib/utils";
 import { signOut, useSession } from "next-auth/react";
+import { motion, AnimatePresence } from "framer-motion";
+
+const dropdownVariants = {
+  closed: { opacity: 0, y: -4, scale: 0.97 },
+  open: { opacity: 1, y: 0, scale: 1 },
+};
 
 function timeAgo(dateStr) {
   const now = Date.now();
@@ -247,10 +253,17 @@ export default function TopBar() {
             )}
           </button>
 
+          <AnimatePresence>
           {showBell && (
             <>
               <div className="fixed inset-0 z-30" onClick={() => setShowBell(false)} />
-              <div className="absolute right-0 top-11 z-40 w-80 rounded border border-zinc-200 bg-white shadow-lg" role="menu">
+              <motion.div
+                variants={dropdownVariants}
+                initial="closed"
+                animate="open"
+                exit="closed"
+                transition={{ duration: 0.15, ease: [0.22, 1, 0.36, 1] }}
+                className="absolute right-0 top-11 z-40 w-80 rounded border border-zinc-200 bg-white shadow-lg origin-top-right" role="menu">
                 <div className="flex items-center justify-between border-b border-zinc-100 px-3 py-2">
                   <span className="text-xs font-semibold text-zinc-900">Notifications</span>
                   {unread > 0 && (
@@ -281,9 +294,10 @@ export default function TopBar() {
                     ))
                   )}
                 </div>
-              </div>
+              </motion.div>
             </>
           )}
+          </AnimatePresence>
         </div>
 
         <Link
@@ -307,10 +321,17 @@ export default function TopBar() {
             <ChevronDown className="h-4 w-4 text-zinc-400" />
           </button>
 
+          <AnimatePresence>
           {showProfile && (
             <>
               <div className="fixed inset-0 z-30" onClick={() => setShowProfile(false)} />
-              <div className="absolute right-0 top-12 z-40 w-60 overflow-hidden rounded border border-zinc-200 bg-white shadow-lg" role="menu">
+              <motion.div
+                variants={dropdownVariants}
+                initial="closed"
+                animate="open"
+                exit="closed"
+                transition={{ duration: 0.15, ease: [0.22, 1, 0.36, 1] }}
+                className="absolute right-0 top-12 z-40 w-60 overflow-hidden rounded border border-zinc-200 bg-white shadow-lg origin-top-right" role="menu">
                 <div className="border-b border-zinc-100 px-4 py-3">
                   <p className="text-sm font-semibold text-zinc-900">{userName}</p>
                   <p className="text-xs text-zinc-500">{session?.user?.email || "Signed in"}</p>
@@ -357,9 +378,10 @@ export default function TopBar() {
                     Sign out
                   </button>
                 </div>
-              </div>
+              </motion.div>
             </>
           )}
+          </AnimatePresence>
         </div>
       </div>
     </div>

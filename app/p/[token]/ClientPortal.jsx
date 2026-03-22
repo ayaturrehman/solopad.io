@@ -7,6 +7,7 @@ import {
   Download, FileText, Send, CheckCircle,
   MessageSquare, Calendar, User, Clock, ChevronDown, ChevronUp,
   FileSignature, FileCheck2, ExternalLink,
+  Image, FileSpreadsheet, FileCode, Film, Music, Archive, File,
 } from "lucide-react";
 import { formatCurrency, formatDate, formatBytes } from "@/lib/utils";
 import { sanitizeHtml } from "@/lib/sanitize";
@@ -32,12 +33,45 @@ function stripHtml(html) {
   return html?.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim() || "";
 }
 
+const FILE_TYPE_MAP = {
+  pdf:  { icon: FileText, color: "bg-red-50 text-red-500" },
+  doc:  { icon: FileText, color: "bg-blue-50 text-blue-500" },
+  docx: { icon: FileText, color: "bg-blue-50 text-blue-500" },
+  xls:  { icon: FileSpreadsheet, color: "bg-green-50 text-green-600" },
+  xlsx: { icon: FileSpreadsheet, color: "bg-green-50 text-green-600" },
+  csv:  { icon: FileSpreadsheet, color: "bg-green-50 text-green-600" },
+  png:  { icon: Image, color: "bg-purple-50 text-purple-500" },
+  jpg:  { icon: Image, color: "bg-purple-50 text-purple-500" },
+  jpeg: { icon: Image, color: "bg-purple-50 text-purple-500" },
+  gif:  { icon: Image, color: "bg-purple-50 text-purple-500" },
+  svg:  { icon: Image, color: "bg-purple-50 text-purple-500" },
+  webp: { icon: Image, color: "bg-purple-50 text-purple-500" },
+  mp4:  { icon: Film, color: "bg-amber-50 text-amber-500" },
+  mov:  { icon: Film, color: "bg-amber-50 text-amber-500" },
+  avi:  { icon: Film, color: "bg-amber-50 text-amber-500" },
+  mp3:  { icon: Music, color: "bg-pink-50 text-pink-500" },
+  wav:  { icon: Music, color: "bg-pink-50 text-pink-500" },
+  zip:  { icon: Archive, color: "bg-zinc-100 text-zinc-500" },
+  rar:  { icon: Archive, color: "bg-zinc-100 text-zinc-500" },
+  js:   { icon: FileCode, color: "bg-yellow-50 text-yellow-600" },
+  ts:   { icon: FileCode, color: "bg-blue-50 text-blue-600" },
+  html: { icon: FileCode, color: "bg-orange-50 text-orange-500" },
+  css:  { icon: FileCode, color: "bg-cyan-50 text-cyan-500" },
+  json: { icon: FileCode, color: "bg-zinc-100 text-zinc-600" },
+};
+
+function getFileType(filename) {
+  const ext = filename?.split(".").pop()?.toLowerCase();
+  return FILE_TYPE_MAP[ext] || { icon: File, color: "bg-zinc-100 text-zinc-400" };
+}
+
 function FileRow({ file }) {
+  const { icon: FileIcon, color } = getFileType(file.name);
   return (
     <div className="flex items-center justify-between gap-3">
       <div className="flex min-w-0 items-center gap-3">
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-zinc-100">
-          <FileText className="h-4 w-4 text-zinc-400" />
+        <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded ${color}`}>
+          <FileIcon className="h-4 w-4" />
         </div>
         <div className="min-w-0">
           <p className="truncate text-sm font-medium text-zinc-900">{file.name}</p>
@@ -679,12 +713,18 @@ export default function ClientPortal({ project, files, comments: initialComments
           <div className="mx-auto max-w-2xl">
             <h2 className="mb-5 text-lg font-semibold text-zinc-900">Messages</h2>
             <div className="rounded border border-zinc-200 bg-white">
-              <div className="max-h-[480px] space-y-4 overflow-y-auto p-5">
+              <div className="max-h-[480px] space-y-4 overflow-y-auto p-5 scrollbar-hide">
                 {messages.length === 0 && (
                   <p className="py-8 text-center text-sm text-zinc-400">No messages yet. Start the conversation below.</p>
                 )}
-                {messages.map((c) => (
-                  <div key={c.id} className={`flex gap-3 ${c.authorType === "client" ? "flex-row-reverse" : ""}`}>
+                {messages.map((c, i) => (
+                  <motion.div
+                    key={c.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.2, delay: i < 20 ? i * 0.03 : 0 }}
+                    className={`flex gap-3 ${c.authorType === "client" ? "flex-row-reverse" : ""}`}
+                  >
                     <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-semibold ${c.authorType === "freelancer" ? "bg-zinc-900 text-white" : "bg-blue-600 text-white"}`}>
                       {c.authorName?.[0]?.toUpperCase() ?? "?"}
                     </div>
@@ -694,7 +734,7 @@ export default function ClientPortal({ project, files, comments: initialComments
                         {c.body}
                       </div>
                     </div>
-                  </div>
+                  </motion.div>
                 ))}
                 <div ref={messagesEndRef} />
               </div>
@@ -709,9 +749,24 @@ export default function ClientPortal({ project, files, comments: initialComments
                 ) : (
                   <form onSubmit={sendComment} className="flex gap-2">
                     <input className="h-10 flex-1 rounded border border-zinc-200 px-3 text-sm placeholder:text-zinc-400 focus:border-zinc-400 focus:outline-none" placeholder={`Message as ${clientName}…`} value={body} onChange={(e) => setBody(e.target.value)} />
-                    <button type="submit" disabled={sending || !body.trim()} className="flex h-10 w-10 items-center justify-center rounded bg-zinc-900 text-white hover:bg-zinc-700 disabled:opacity-40">
-                      <Send className="h-4 w-4" />
-                    </button>
+                    <motion.button
+                      type="submit"
+                      disabled={sending || !body.trim()}
+                      className="flex h-10 w-10 items-center justify-center rounded bg-zinc-900 text-white hover:bg-zinc-700 disabled:opacity-40"
+                      whileTap={{ scale: 0.9 }}
+                    >
+                      {sending ? (
+                        <motion.div
+                          initial={{ rotate: 0 }}
+                          animate={{ rotate: 360 }}
+                          transition={{ repeat: Infinity, duration: 0.8, ease: "linear" }}
+                        >
+                          <Clock className="h-4 w-4" />
+                        </motion.div>
+                      ) : (
+                        <Send className="h-4 w-4" />
+                      )}
+                    </motion.button>
                   </form>
                 )}
               </div>

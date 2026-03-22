@@ -272,3 +272,12 @@ html[data-theme="dark"] .proposal-rich-text-view td {
     transform: translateY(0) scale(1);
   }
 }
+
+/* Hide scrollbar but keep scrolling */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
