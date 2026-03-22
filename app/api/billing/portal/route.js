@@ -26,6 +26,11 @@ export async function POST(req) {
       return NextResponse.json({ error: "No billing account found. Upgrade to a paid plan first." }, { status: 400 });
     }
 
+    // Trial users with placeholder customer ID — no billing portal yet
+    if (subscription.stripeCustomerId.startsWith("pending_")) {
+      return NextResponse.json({ error: "You're on a free trial. Subscribe to a paid plan to manage billing." }, { status: 400 });
+    }
+
     const baseUrl =
       process.env.NEXT_PUBLIC_APP_URL ||
       (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null) ||
@@ -37,11 +42,7 @@ export async function POST(req) {
       throw e;
     });
     if (!customer || customer.deleted) {
-      await db.subscription.update({
-        where: { businessId: user.businessId },
-        data: { stripeCustomerId: null, stripeSubscriptionId: null, status: "canceled" },
-      }).catch(() => {});
-      return NextResponse.json({ error: "Billing account not found. Please subscribe to a plan." }, { status: 400 });
+      return NextResponse.json({ error: "Billing account not found. Please subscribe to a paid plan." }, { status: 400 });
     }
 
     // Create Stripe Billing Portal session
