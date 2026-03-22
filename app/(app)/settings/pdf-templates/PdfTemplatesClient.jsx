@@ -134,11 +134,17 @@ function TemplateCard({ template, onSetDefault, onDelete, type }) {
     setLoading(false);
   }
 
+  const accent = template.accentColor || "#18181b";
+  const fontLabel = { helvetica: "Sans", times: "Serif", courier: "Mono" }[template.fontFamily] || "Sans";
+
   return (
-    <div className="group relative border border-zinc-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow cursor-pointer bg-white">
+    <div className="group relative border border-zinc-200 rounded-lg overflow-hidden hover:shadow-lg transition-all duration-200 cursor-pointer bg-white">
+      {/* Accent bar */}
+      <div className="h-1" style={{ backgroundColor: accent }} />
+
       {/* Thumbnail */}
       <div
-        className="h-52 bg-zinc-50 overflow-hidden"
+        className="h-48 bg-zinc-50 overflow-hidden"
         onClick={() => router.push(`/settings/pdf-templates/${template.id}/edit`)}
       >
         <DocumentThumbnail template={template} />
@@ -150,10 +156,19 @@ function TemplateCard({ template, onSetDefault, onDelete, type }) {
           <div className="flex items-center gap-2 min-w-0">
             <span className="text-sm font-medium text-zinc-900 truncate">{template.name}</span>
             {template.isDefault && (
-              <span className="shrink-0 bg-amber-400 text-amber-900 text-xs font-semibold px-2 py-0.5 rounded">
+              <span className="shrink-0 bg-amber-100 text-amber-700 text-[10px] font-semibold px-1.5 py-0.5 rounded">
                 DEFAULT
               </span>
             )}
+          </div>
+        </div>
+        <div className="flex items-center gap-2 mt-1.5">
+          <span className="text-[10px] text-zinc-400 font-medium">{fontLabel}</span>
+          <span className="text-zinc-200">·</span>
+          <span className="text-[10px] text-zinc-400 font-medium capitalize">{template.headerStyle || "classic"}</span>
+          <span className="text-zinc-200">·</span>
+          <div className="flex items-center gap-1">
+            <div className="h-2.5 w-2.5 rounded-full border border-zinc-200" style={{ backgroundColor: accent }} />
           </div>
         </div>
       </div>

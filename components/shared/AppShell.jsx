@@ -13,7 +13,6 @@ import PageTransition from "@/components/shared/PageTransition";
 export default function AppShell({ children, subscriptionExpired = false }) {
   const pathname = usePathname();
   const isBuilder = pathname?.startsWith("/templates/builder");
-
   if (isBuilder) {
     return <>{children}</>;
   }

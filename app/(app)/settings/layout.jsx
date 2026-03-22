@@ -28,8 +28,31 @@ export default function SettingsLayout({ children }) {
   const isEditorFullscreen = /\/settings\/pdf-templates\/[^/]+\/edit/.test(pathname);
   if (isEditorFullscreen) return <>{children}</>;
 
+  /* PDF Templates gallery — hide settings sidebar, give full width */
+  const isPdfTemplates = pathname?.startsWith("/settings/pdf-templates");
+
   function isActive(href) {
     return pathname === href || pathname.startsWith(href + "/");
+  }
+
+  if (isPdfTemplates) {
+    return (
+      <div className="px-4 py-4 md:px-6">
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-semibold tracking-tight text-zinc-900">PDF Templates</h1>
+            <p className="mt-1 text-sm text-zinc-500">Customise how your invoices, proposals, and contracts look.</p>
+          </div>
+          <Link
+            href="/settings/profile"
+            className="text-sm text-zinc-500 hover:text-zinc-700 transition-colors"
+          >
+            &larr; Back to Settings
+          </Link>
+        </div>
+        <div className="min-w-0">{children}</div>
+      </div>
+    );
   }
 
   return (

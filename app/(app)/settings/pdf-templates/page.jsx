@@ -1,6 +1,7 @@
 import { getSession } from "@/lib/session";
 import { redirect } from "next/navigation";
 import db from "@/lib/db";
+import { seedDefaultTemplates } from "@/lib/pdf-templates/seedTemplates";
 import PdfTemplatesClient from "./PdfTemplatesClient";
 
 export const metadata = { title: "PDF Templates" };
@@ -8,6 +9,9 @@ export const metadata = { title: "PDF Templates" };
 export default async function PdfTemplatesPage() {
   const session = await getSession();
   if (!session?.user) redirect("/login");
+
+  // Seed starter templates on first visit
+  await seedDefaultTemplates(session.user.id);
 
   const templates = await db.pdfTemplate.findMany({
     where: { userId: session.user.id },
