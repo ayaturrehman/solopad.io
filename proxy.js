@@ -25,7 +25,7 @@ export const config = {
     "/api/notes/:path*",
     "/api/projects/:path*",
     "/api/files/:path*",
-    "/api/invoices/:path*",
+    "/api/invoices/((?!checkout).*)",
     "/api/comments/:path*",
     "/api/settings/:path*",
     "/api/tasks/:path*",

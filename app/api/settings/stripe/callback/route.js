@@ -1,56 +1,56 @@
 import { NextResponse } from "next/server";
-import Stripe from "stripe";
+import { requireStripe } from "@/lib/stripe";
 import db from "@/lib/db";
+import { getSession } from "@/lib/session";
 
-const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY) : null;
-
-// GET /api/settings/stripe/callback?code=...&state=userId
+// GET /api/settings/stripe/callback?account_id=acct_xxx
+// Called when the user returns from Stripe Express onboarding
 export async function GET(req) {
-  const { searchParams } = new URL(req.url);
-  const code = searchParams.get("code");
-  const userId = searchParams.get("state");
-  const error = searchParams.get("error");
-
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL;
-
-  if (error || !code || !userId) {
-    return NextResponse.redirect(
-      `${appUrl}/settings?stripe=error`
-    );
-  }
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
   try {
-    // Exchange code for access token + connected account ID
-    // stripe.oauth was removed in SDK v10+; use the token endpoint directly
-    const tokenRes = await fetch("https://connect.stripe.com/oauth/token", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({
-        grant_type: "authorization_code",
-        code,
-        client_secret: process.env.STRIPE_SECRET_KEY,
-      }),
+    const session = await getSession();
+    if (!session?.user) {
+      return NextResponse.redirect(`${appUrl}/login`);
+    }
+
+    const url = new URL(req.url);
+    const accountId = url.searchParams.get("account_id");
+
+    if (!accountId) {
+      return NextResponse.redirect(`${appUrl}/settings/payments?stripe=error`);
+    }
+
+    // Verify this account belongs to the logged-in user
+    const user = await db.user.findUnique({
+      where: { id: session.user.id },
+      select: { stripeAccountId: true },
     });
 
-    const tokenData = await tokenRes.json();
-    if (tokenData.error) throw new Error(tokenData.error_description || tokenData.error);
+    if (user?.stripeAccountId !== accountId) {
+      console.error("[Stripe Callback] Account mismatch:", accountId, "vs", user?.stripeAccountId);
+      return NextResponse.redirect(`${appUrl}/settings/payments?stripe=error`);
+    }
 
-    const accountId = tokenData.stripe_user_id;
-
-    // Verify the account is charges_enabled
+    // Check the account status
+    const stripe = requireStripe();
     const account = await stripe.accounts.retrieve(accountId);
 
+    const isOnboarded = account.charges_enabled && account.payouts_enabled;
+
     await db.user.update({
-      where: { id: userId },
-      data: {
-        stripeAccountId: accountId,
-        stripeOnboarded: account.charges_enabled,
-      },
+      where: { id: session.user.id },
+      data: { stripeOnboarded: isOnboarded },
     });
 
-    return NextResponse.redirect(`${appUrl}/settings?stripe=connected`);
+    if (isOnboarded) {
+      return NextResponse.redirect(`${appUrl}/settings/payments?stripe=connected`);
+    } else {
+      // Onboarding incomplete — user needs to finish
+      return NextResponse.redirect(`${appUrl}/settings/payments?stripe=incomplete`);
+    }
   } catch (err) {
-    console.error("[Stripe OAuth callback]", err);
-    return NextResponse.redirect(`${appUrl}/settings?stripe=error`);
+    console.error("[Stripe Callback]", err);
+    return NextResponse.redirect(`${appUrl}/settings/payments?stripe=error`);
   }
 }

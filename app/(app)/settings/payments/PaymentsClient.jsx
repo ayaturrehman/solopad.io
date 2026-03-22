@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import { Card, CardHeader, CardBody } from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
-import { AlertCircle, Check, CheckCircle2, CreditCard, Link2, Link2Off } from "lucide-react";
+import { AlertCircle, Check, CheckCircle2, CreditCard, Link2, Link2Off, Clock, Banknote } from "lucide-react";
 
 const PAYMENT_OPTIONS = [
   { id: "card", label: "Credit / Debit Card", description: "Visa, Mastercard, Amex - includes Apple Pay & Google Pay", required: true },
@@ -16,6 +16,7 @@ const PAYMENT_OPTIONS = [
 function PaymentsContent({ stripe: initialStripe, paymentMethods: initialMethods }) {
   const searchParams = useSearchParams();
   const stripeParam = searchParams?.get("stripe");
+  const stripeMsg = searchParams?.get("msg");
 
   const [stripe, setStripe] = useState(initialStripe);
   const [methods, setMethods] = useState(initialMethods);
@@ -41,7 +42,7 @@ function PaymentsContent({ stripe: initialStripe, paymentMethods: initialMethods
   }
 
   async function disconnectStripe() {
-    if (!confirm("Disconnect your Stripe account? Clients will no longer be able to pay invoices until you reconnect.")) return;
+    if (!confirm("Disconnect your bank account? Clients will no longer be able to pay invoices until you reconnect.")) return;
     setDisconnecting(true);
     await fetch("/api/settings/stripe/disconnect", { method: "POST" });
     setStripe({ connected: false, onboarded: false, accountId: null });
@@ -53,49 +54,88 @@ function PaymentsContent({ stripe: initialStripe, paymentMethods: initialMethods
       {stripeParam === "connected" && (
         <div className="flex items-center gap-2 rounded border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
           <CheckCircle2 className="h-4 w-4 shrink-0" />
-          Stripe account connected successfully.
+          Bank account connected successfully. You can now receive payments.
+        </div>
+      )}
+      {stripeParam === "incomplete" && (
+        <div className="flex items-center gap-2 rounded border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
+          <Clock className="h-4 w-4 shrink-0" />
+          Setup incomplete. Click below to finish connecting your bank account.
         </div>
       )}
       {stripeParam === "error" && (
         <div className="flex items-center gap-2 rounded border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
           <AlertCircle className="h-4 w-4 shrink-0" />
-          Stripe connection failed. Please try again.
+          Connection failed{stripeMsg ? `: ${stripeMsg}` : ". Please try again."}
         </div>
       )}
 
-      {/* Stripe Account */}
+      {/* Payment Account */}
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2">
-            <svg className="h-4 w-4" viewBox="0 0 32 32" fill="none">
-              <path d="M13.3 11.5c0-.8.7-1.1 1.8-1.1 1.6 0 3.6.5 5.2 1.4V7.4A13.8 13.8 0 0015.1 7c-4.6 0-7.7 2.4-7.7 6.4 0 6.2 8.6 5.2 8.6 7.9 0 .9-.8 1.2-2 1.2-1.7 0-3.9-.7-5.6-1.7v4.5c1.9.8 3.8 1.2 5.6 1.2 4.7 0 8-2.3 8-6.4-.1-6.8-8.7-5.5-8.7-8.6z" fill="#635BFF" />
-            </svg>
-            <h2 className="font-semibold text-zinc-900">Stripe Account</h2>
+            <Banknote className="h-4 w-4 text-zinc-500" />
+            <h2 className="font-semibold text-zinc-900">Get Paid</h2>
           </div>
-          <p className="mt-0.5 text-xs text-zinc-400">Connect your Stripe account so clients pay directly to you.</p>
+          <p className="mt-0.5 text-xs text-zinc-400">
+            Connect your bank account to receive client payments. When a client pays an invoice, the money is deposited directly to your bank account within 2-3 business days.
+          </p>
         </CardHeader>
         <CardBody>
-          {stripe.connected ? (
+          {stripe.connected && stripe.onboarded ? (
             <div className="space-y-3">
               <div className="flex items-center gap-2 rounded border border-green-200 bg-green-50 px-3 py-2">
                 <div className="h-2 w-2 rounded-full bg-green-500" />
                 <span className="text-sm font-medium text-green-700">
-                  {stripe.onboarded ? "Connected and active" : "Connected - finish onboarding in Stripe"}
+                  Connected and active — ready to receive payments
                 </span>
               </div>
-              <p className="text-xs text-zinc-400">Account: <span className="font-mono">{stripe.accountId}</span></p>
+              <div className="rounded border border-zinc-100 bg-zinc-50 px-3 py-2.5">
+                <p className="text-xs text-zinc-500">
+                  Client payments are processed securely via Stripe. Funds are deposited to your bank account within 2-3 business days after payment. A small platform fee is deducted based on your plan.
+                </p>
+              </div>
               <Button variant="secondary" size="sm" onClick={disconnectStripe} loading={disconnecting}>
-                <Link2Off className="mr-1.5 h-3.5 w-3.5" /> Disconnect Stripe
+                <Link2Off className="mr-1.5 h-3.5 w-3.5" /> Disconnect bank account
               </Button>
+            </div>
+          ) : stripe.connected && !stripe.onboarded ? (
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 rounded border border-amber-200 bg-amber-50 px-3 py-2">
+                <Clock className="h-4 w-4 text-amber-600" />
+                <span className="text-sm font-medium text-amber-700">
+                  Setup incomplete — finish adding your bank details
+                </span>
+              </div>
+              <p className="text-sm text-zinc-500">
+                You started the setup but didn't finish. Click below to complete adding your bank account details.
+              </p>
+              <a
+                href="/api/settings/stripe/connect"
+                className="inline-flex items-center gap-2 rounded bg-zinc-900 px-3 py-2 text-sm font-semibold text-white hover:bg-zinc-800"
+              >
+                <Link2 className="h-4 w-4" /> Complete setup
+              </a>
             </div>
           ) : (
             <div className="space-y-3">
-              <p className="text-sm text-zinc-500">No Stripe account connected. Connect now to accept card, Apple Pay, Google Pay, and more.</p>
+              <p className="text-sm text-zinc-500">
+                Connect your bank account to start accepting client payments. The setup takes about 2 minutes — you'll need your bank details and basic business information.
+              </p>
+              <div className="rounded border border-zinc-100 bg-zinc-50 px-3 py-2.5">
+                <p className="text-xs font-medium text-zinc-700 mb-1">How it works</p>
+                <ol className="text-xs text-zinc-500 space-y-1 list-decimal list-inside">
+                  <li>You add your bank account details (takes 2 minutes)</li>
+                  <li>Clients pay your invoices with card, Apple Pay, or Google Pay</li>
+                  <li>Money is deposited to your bank within 2-3 business days</li>
+                  <li>Processing fee (2.9% + 30p) is deducted automatically</li>
+                </ol>
+              </div>
               <a
                 href="/api/settings/stripe/connect"
-                className="inline-flex items-center gap-2 rounded bg-indigo-600 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-700"
+                className="inline-flex items-center gap-2 rounded bg-zinc-900 px-3 py-2 text-sm font-semibold text-white hover:bg-zinc-800"
               >
-                <Link2 className="h-4 w-4" /> Connect with Stripe
+                <Link2 className="h-4 w-4" /> Connect bank account
               </a>
             </div>
           )}
@@ -115,7 +155,7 @@ function PaymentsContent({ stripe: initialStripe, paymentMethods: initialMethods
           {!stripe.connected && (
             <div className="flex items-start gap-2 rounded border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700">
               <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-              Connect your Stripe account above before enabling payment methods.
+              Connect your bank account above before enabling payment methods.
             </div>
           )}
           {PAYMENT_OPTIONS.map((option) => {

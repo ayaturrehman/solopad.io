@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server";
 import { requirePermission } from "@/lib/permissions";
-import Stripe from "stripe";
+import { requireStripe } from "@/lib/stripe";
 import db from "@/lib/db";
-
-const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY) : null;
 
 // POST /api/settings/stripe/disconnect
 export async function POST() {
@@ -17,12 +15,12 @@ export async function POST() {
 
   if (user?.stripeAccountId) {
     try {
-      await stripe.oauth.deauthorize({
-        client_id: process.env.STRIPE_CLIENT_ID,
-        stripe_user_id: user.stripeAccountId,
-      });
-    } catch {
-      // Account may already be deauthorized — still clear from DB
+      const stripe = requireStripe();
+      // For Express accounts, delete the account (removes it from the platform)
+      await stripe.accounts.del(user.stripeAccountId);
+    } catch (err) {
+      // Account may already be deleted or deauthorized — still clear from DB
+      console.warn("[Stripe Disconnect] Could not delete account:", err.message);
     }
   }
 

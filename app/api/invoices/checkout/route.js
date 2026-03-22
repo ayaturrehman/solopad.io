@@ -22,6 +22,28 @@ export async function POST(req) {
       return NextResponse.json({ error: "Invoice is not available for payment" }, { status: 400 });
     }
 
+    // Safety net: if there's an existing checkout session, check if it was already paid
+    // This prevents duplicate charges when the webhook fails to mark the invoice as paid
+    if (invoice.stripeSessionId) {
+      try {
+        const existingSession = await stripe.checkout.sessions.retrieve(invoice.stripeSessionId);
+        if (existingSession.payment_status === "paid") {
+          // Webhook missed — mark as paid now and reject new checkout
+          await db.invoice.update({
+            where: { id: invoiceId },
+            data: {
+              status: "paid",
+              paidAt: new Date(),
+              stripePaymentIntentId: existingSession.payment_intent,
+            },
+          });
+          return NextResponse.json({ error: "This invoice has already been paid." }, { status: 400 });
+        }
+      } catch {
+        // Session may be expired or invalid — continue with new checkout
+      }
+    }
+
     const lineItems = typeof invoice.lineItems === "string"
       ? JSON.parse(invoice.lineItems)
       : invoice.lineItems;
