@@ -7,6 +7,8 @@
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "test:regression": "node --test tests/regression/**/*.test.mjs"
   },
   "dependencies": {
@@ -33,6 +35,7 @@
     "ai": "^6.0.116",
     "bcryptjs": "^3.0.3",
     "clsx": "^2.1.1",
+    "framer-motion": "^12.38.0",
     "isomorphic-dompurify": "^2.36.0",
     "lucide-react": "^0.577.0",
     "nanoid": "^5.1.6",
@@ -48,8 +51,10 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@vitejs/plugin-react": "^6.0.1",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
-    "tailwindcss": "^4"
+    "tailwindcss": "^4",
+    "vitest": "^4.1.0"
   }
 }

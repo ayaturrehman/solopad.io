@@ -8,6 +8,7 @@ import NavigationLoadingOverlay from "@/components/shared/NavigationLoadingOverl
 import TopBar from "@/components/shared/TopBar";
 import { ToastProvider } from "@/components/ui/Toast";
 import { AlertCircle } from "lucide-react";
+import PageTransition from "@/components/shared/PageTransition";
 
 export default function AppShell({ children, subscriptionExpired = false }) {
   const pathname = usePathname();
@@ -57,7 +58,9 @@ export default function AppShell({ children, subscriptionExpired = false }) {
                 </div>
               </div>
             ) : (
-              <div className="w-full pb-24 md:pb-6">{children}</div>
+              <PageTransition>
+                <div className="w-full pb-24 md:pb-6">{children}</div>
+              </PageTransition>
             )}
             <NavigationLoadingOverlay />
           </main>

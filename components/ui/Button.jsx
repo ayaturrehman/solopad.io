@@ -1,9 +1,9 @@
 import { cn } from "@/lib/utils";
 
 const variants = {
-  primary: "bg-zinc-900 text-white hover:bg-zinc-700",
-  secondary: "border border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50",
-  danger: "bg-red-600 text-white hover:bg-red-700",
+  primary: "bg-zinc-900 text-white hover:bg-zinc-700 shadow-sm hover:shadow",
+  secondary: "border border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50 hover:shadow-sm",
+  danger: "bg-red-600 text-white hover:bg-red-700 shadow-sm hover:shadow",
   ghost: "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900",
 };
 
@@ -24,7 +24,7 @@ export default function Button({
   return (
     <button
       className={cn(
-        "inline-flex items-center gap-1.5 rounded font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed",
+        "inline-flex items-center gap-1.5 rounded font-medium transition-all duration-150 hover:-translate-y-px active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed",
         variants[variant],
         sizes[size],
         className

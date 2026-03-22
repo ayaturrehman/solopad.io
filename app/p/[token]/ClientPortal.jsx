@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { formatCurrency, formatDate, formatBytes } from "@/lib/utils";
 import { sanitizeHtml } from "@/lib/sanitize";
+import { motion, AnimatePresence } from "framer-motion";
 
 const STATUS_LABELS_MAP = {
   not_started: "Not Started",
@@ -143,7 +144,15 @@ function InvoiceCard({ invoice }) {
       </div>
 
       {/* Line items breakdown */}
+      <AnimatePresence>
       {expanded && hasLineItems && (
+        <motion.div
+          initial={{ height: 0, opacity: 0 }}
+          animate={{ height: "auto", opacity: 1 }}
+          exit={{ height: 0, opacity: 0 }}
+          transition={{ duration: 0.2, ease: "easeInOut" }}
+          className="overflow-hidden"
+        >
         <div className="border-t border-zinc-100 px-5 pb-4">
           <table className="w-full text-sm">
             <thead>
@@ -189,7 +198,9 @@ function InvoiceCard({ invoice }) {
             <p className="mt-3 rounded bg-zinc-50 px-3 py-1.5 text-xs text-zinc-500">{invoice.notes}</p>
           )}
         </div>
+        </motion.div>
       )}
+      </AnimatePresence>
 
       {/* Milestone payments */}
       {invoice.paymentPlans?.length > 0 && !isCancelled && (
@@ -211,7 +222,7 @@ function InvoiceCard({ invoice }) {
                 Dismiss
               </button>
             )}
-            <button onClick={handlePay} disabled={loading} className="rounded bg-zinc-900 px-5 py-2 text-sm font-semibold text-white hover:bg-zinc-700 disabled:opacity-50">
+            <button onClick={handlePay} disabled={loading} className="rounded bg-green-600 px-5 py-2 text-sm font-semibold text-white hover:bg-green-700 disabled:opacity-50 shadow-sm">
               {loading ? "Redirecting…" : error ? "Try again" : `Pay ${formatCurrency(invoice.total, invoice.currency)}`}
             </button>
           </div>
@@ -410,9 +421,14 @@ export default function ClientPortal({ project, files, comments: initialComments
 
       {/* Hero */}
       <div className="border-b border-zinc-200 bg-white">
-        <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
-          <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400">Project</p>
-          <h1 className="mt-1 text-2xl font-bold text-zinc-900 sm:text-3xl">{project.title}</h1>
+        <motion.div
+          className="mx-auto max-w-6xl px-4 py-8 sm:px-6"
+          initial="hidden"
+          animate="visible"
+          variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.08 } } }}
+        >
+          <motion.p variants={{ hidden: { opacity: 0, y: 6 }, visible: { opacity: 1, y: 0 } }} className="text-xs font-semibold uppercase tracking-widest text-zinc-400">Project</motion.p>
+          <motion.h1 variants={{ hidden: { opacity: 0, y: 6 }, visible: { opacity: 1, y: 0 } }} className="mt-1 text-2xl font-bold text-zinc-900 sm:text-3xl">{project.title}</motion.h1>
           {project.description && (
             <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-500">{project.description}</p>
           )}
@@ -449,7 +465,7 @@ export default function ClientPortal({ project, files, comments: initialComments
               ))}
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Tabs */}
         <div className="mx-auto max-w-6xl overflow-x-auto px-4 sm:px-6">
@@ -464,7 +480,11 @@ export default function ClientPortal({ project, files, comments: initialComments
               >
                 {tab.label}
                 {activeTab === tab.id && (
-                  <span className="absolute inset-x-0 bottom-0 h-0.5 bg-zinc-900" />
+                  <motion.span
+                    layoutId="portal-tab-underline"
+                    className="absolute inset-x-0 bottom-0 h-0.5 bg-zinc-900"
+                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                  />
                 )}
               </button>
             ))}
@@ -488,6 +508,14 @@ export default function ClientPortal({ project, files, comments: initialComments
 
       {/* Main */}
       <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+        <AnimatePresence mode="wait">
+        <motion.div
+          key={activeTab}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.15 }}
+        >
 
         {/* OVERVIEW */}
         {activeTab === "overview" && (
@@ -804,6 +832,9 @@ export default function ClientPortal({ project, files, comments: initialComments
             </div>
           </div>
         )}
+
+        </motion.div>
+        </AnimatePresence>
       </main>
 
       <footer className="py-10 text-center text-xs text-zinc-400">
