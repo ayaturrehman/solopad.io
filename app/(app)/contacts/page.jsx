@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { cookies } from "next/headers";
 import { getSession } from "@/lib/session";
 import db from "@/lib/db";
 import { redirect } from "next/navigation";
@@ -29,8 +30,14 @@ export default async function ContactsPage({ searchParams }) {
   const sortDir = typeof params?.sortDir === "string" && VALID_SORT_DIRECTIONS.has(params.sortDir)
     ? params.sortDir
     : "asc";
-  const requestedPageSize = Number.parseInt(typeof params?.pageSize === "string" ? params.pageSize : `${DEFAULT_PAGE_SIZE}`, 10);
-  const pageSize = VALID_PAGE_SIZES.has(requestedPageSize) ? requestedPageSize : DEFAULT_PAGE_SIZE;
+
+  // Page size: URL param > cookie > default
+  // Cookie is set by the client when user changes page size, so server always matches
+  const cookieStore = await cookies();
+  const cookiePageSize = Number.parseInt(cookieStore.get("contacts-pageSize")?.value || "", 10);
+  const fallbackPageSize = VALID_PAGE_SIZES.has(cookiePageSize) ? cookiePageSize : DEFAULT_PAGE_SIZE;
+  const requestedPageSize = Number.parseInt(typeof params?.pageSize === "string" ? params.pageSize : `${fallbackPageSize}`, 10);
+  const pageSize = VALID_PAGE_SIZES.has(requestedPageSize) ? requestedPageSize : fallbackPageSize;
   const requestedPage = Number.parseInt(typeof params?.page === "string" ? params.page : "1", 10);
   const page = Number.isFinite(requestedPage) && requestedPage > 0 ? requestedPage : 1;
 

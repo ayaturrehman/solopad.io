@@ -516,7 +516,7 @@ export default function ContractBuilderClient({
                   onChange={(e) => setBrief(e.target.value)}
                   rows={4}
                   className={cn(textareaClassName, "mt-3 bg-zinc-50 transition")}
-                  placeholder="E.g. Website design contract for a cafe. 6-week timeline, $3,500 fixed fee, 50% deposit."
+                  placeholder="E.g. Website design contract for a cafe. 6-week timeline, £3,500 fixed fee, 50% deposit."
                 />
                 <button
                   type="button"

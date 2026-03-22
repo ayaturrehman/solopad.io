@@ -51,6 +51,16 @@ export async function POST(req) {
     });
     if (!project) return NextResponse.json({ error: "Project not found" }, { status: 404 });
 
+    // Use freelancer's configured currency if not specified on invoice
+    let defaultCurrency = "GBP";
+    if (!currency && session.user?.businessId) {
+      const biz = await db.business.findUnique({
+        where: { id: session.user.businessId },
+        select: { currency: true },
+      });
+      if (biz?.currency) defaultCurrency = biz.currency;
+    }
+
     // Compute amounts
     const round2 = (v) => Math.round(v * 100) / 100;
     const parsedLines = Array.isArray(lineItems) ? lineItems : [];
@@ -75,7 +85,7 @@ export async function POST(req) {
         discountValue: dval,
         discountAmount: discountAmt,
         total,
-        currency: currency || "USD",
+        currency: currency || defaultCurrency,
         dueDate: dueDate ? new Date(dueDate) : null,
         notes: notes?.trim() || null,
         remindersEnabled: remindersEnabled ?? true,

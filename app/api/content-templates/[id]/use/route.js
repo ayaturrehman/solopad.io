@@ -1,7 +1,14 @@
 import db from "@/lib/db";
 import { NextResponse } from "next/server";
+import { getSession } from "@/lib/session";
 
-export async function POST(req, { params }) { try {
+export async function POST(req, { params }) {
+  try {
+    const session = await getSession();
+    if (!session?.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { id } = await params;
     await db.contentTemplate.update({
       where: { id },

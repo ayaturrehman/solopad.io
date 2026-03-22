@@ -7,6 +7,8 @@ import {
   CheckSquare, Briefcase, UserPlus, FileText, FileSignature, Clock3,
 } from "lucide-react";
 import { STATUS_LABELS, STATUS_COLORS, formatDate, formatCurrency, cn } from "@/lib/utils";
+import { Card } from "@/components/ui/Card";
+import { StatCard, StatCardGrid } from "@/components/shared/StatCard";
 
 /* ─── helpers ─────────────────────────────────────────────────────────────── */
 
@@ -134,39 +136,29 @@ export default function DashboardClient({
       </div>
 
       {/* KPI cards */}
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <StatCardGrid>
         {kpis.map((item, i) => (
-          <div
-            key={item.label}
-            className="dash-fade-up rounded border border-zinc-200 bg-white px-4 py-4 transition-shadow hover:shadow-sm"
-            style={delay(80 + i * 60)}
-          >
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-400">{item.label}</p>
-            <p className="dash-count mt-2 text-2xl md:text-3xl tracking-tight text-zinc-900" style={delay(160 + i * 60)}>
-              {item.value}
-            </p>
-            <p className="mt-1 text-xs text-zinc-400">{item.note}</p>
-          </div>
+          <StatCard key={item.label} label={item.label} value={item.value} note={item.note} delay={80 + i * 60} />
         ))}
-      </div>
+      </StatCardGrid>
 
       {/* Charts row */}
       <div className="grid gap-4 sm:grid-cols-2" style={delay(360)}>
-        <div className="dash-fade-up rounded border border-zinc-200 bg-white px-4 py-4" style={delay(340)}>
+        <Card className="dash-fade-up px-4 py-4" style={delay(340)}>
           <p className="mb-4 text-sm font-semibold text-zinc-900">Tasks</p>
           <TaskDonut open={taskOpen} done={taskDone} />
-        </div>
-        <div className="dash-fade-up rounded border border-zinc-200 bg-white px-4 py-4" style={delay(380)}>
+        </Card>
+        <Card className="dash-fade-up px-4 py-4" style={delay(380)}>
           <p className="mb-4 text-sm font-semibold text-zinc-900">Project Status</p>
           <ProjectStatusBars statusCounts={statusCounts} />
-        </div>
+        </Card>
       </div>
 
       {/* Main panels */}
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-[220px_minmax(0,1.2fr)_minmax(0,0.9fr)_minmax(0,0.9fr)]">
 
         {/* Quick actions */}
-        <div className="dash-fade-up rounded border border-zinc-200 bg-white px-4 py-4" style={delay(420)}>
+        <Card className="dash-fade-up px-4 py-4" style={delay(420)}>
           <div className="mb-4 flex items-center justify-between">
             <p className="text-sm font-semibold text-zinc-900">Create new</p>
           </div>
@@ -186,10 +178,10 @@ export default function DashboardClient({
               </Link>
             ))}
           </div>
-        </div>
+        </Card>
 
         {/* Projects */}
-        <div className="dash-fade-up rounded border border-zinc-200 bg-white px-4 py-4" style={delay(440)}>
+        <Card className="dash-fade-up px-4 py-4" style={delay(440)}>
           <div className="mb-4 flex items-center justify-between">
             <div>
               <p className="text-sm font-semibold text-zinc-900">Projects</p>
@@ -223,10 +215,10 @@ export default function DashboardClient({
               })}
             </div>
           )}
-        </div>
+        </Card>
 
         {/* Tasks */}
-        <div className="dash-fade-up rounded border border-zinc-200 bg-white px-4 py-4" style={delay(460)}>
+        <Card className="dash-fade-up px-4 py-4" style={delay(460)}>
           <div className="mb-4 flex items-center justify-between">
             <div>
               <p className="text-sm font-semibold text-zinc-900">Tasks</p>
@@ -256,10 +248,10 @@ export default function DashboardClient({
               })}
             </div>
           )}
-        </div>
+        </Card>
 
         {/* Contacts */}
-        <div className="dash-fade-up rounded border border-zinc-200 bg-white px-4 py-4" style={delay(480)}>
+        <Card className="dash-fade-up px-4 py-4" style={delay(480)}>
           <div className="mb-4 flex items-center justify-between">
             <div>
               <p className="text-sm font-semibold text-zinc-900">Contacts</p>
@@ -283,11 +275,11 @@ export default function DashboardClient({
               ))}
             </div>
           )}
-        </div>
+        </Card>
       </div>
 
       {/* Documents */}
-      <div className="dash-fade-up rounded border border-zinc-200 bg-white px-4 py-4" style={delay(560)}>
+      <Card className="dash-fade-up px-4 py-4" style={delay(560)}>
         <div className="mb-4 flex items-center justify-between">
           <div>
             <p className="text-sm font-semibold text-zinc-900">Documents</p>
@@ -347,7 +339,7 @@ export default function DashboardClient({
         <Link href="/proposals" className="mt-4 inline-flex items-center gap-1 text-xs text-zinc-400 transition-colors hover:text-zinc-700">
           Open documents <ChevronRight className="h-3 w-3" />
         </Link>
-      </div>
+      </Card>
     </div>
   );
 }

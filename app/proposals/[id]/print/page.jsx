@@ -12,9 +12,9 @@ const PAPER_SIZES = {
 
 function pt(n) { return Math.round(n * 1.333); }
 
-function fmtMoney(n, currency = "USD") {
-  try { return new Intl.NumberFormat("en-US", { style: "currency", currency, minimumFractionDigits: 2 }).format(n || 0); }
-  catch { return `$${(n || 0).toFixed(2)}`; }
+function fmtMoney(n, currency = "GBP") {
+  try { return new Intl.NumberFormat("en-GB", { style: "currency", currency, minimumFractionDigits: 2 }).format(n || 0); }
+  catch { return `£${(n || 0).toFixed(2)}`; }
 }
 
 function fmt(date) {

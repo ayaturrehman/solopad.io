@@ -75,7 +75,7 @@ const SAMPLE = {
 };
 
 function fmtMoney(n) {
-  return `$${Number(n).toFixed(2)}`;
+  return `£${Number(n).toFixed(2)}`;
 }
 
 // ── Form primitives ──────────────────────────────────────────────────────────

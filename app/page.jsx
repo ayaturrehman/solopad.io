@@ -444,7 +444,7 @@ export default function LandingPage() {
                     <span style={{ color:C }}>one place.</span>
                   </h1>
                   <p style={{ fontSize:19, color:"#52525B", lineHeight:1.74, maxWidth:560, marginBottom:32 }}>
-                    Proposals, contracts, invoices, time tracking, scheduling, and a client portal — everything you need to manage clients and get paid. Starting at $12/mo.
+                    Proposals, contracts, invoices, time tracking, scheduling, and a client portal — everything you need to manage clients and get paid. Starting at £5/mo.
                   </p>
                 </div>
 
@@ -534,7 +534,7 @@ export default function LandingPage() {
                     <text x="176" y="223" fontSize="13" fontWeight="500" fill="#1E293B">4 weeks</text>
                     <line x1="86" y1="241" x2="474" y2="241" stroke="#F1F5F9" strokeWidth="1"/>
                     <text x="86" y="265" fontSize="13" fill="#64748B">Total</text>
-                    <text x="474" y="265" fontSize="22" fontWeight="700" fill="#1E293B" textAnchor="end">$4,800</text>
+                    <text x="474" y="265" fontSize="22" fontWeight="700" fill="#1E293B" textAnchor="end">£4,800</text>
                     <rect x="338" y="281" width="136" height="38" rx="9" fill="#2563EB"/>
                     <text x="406" y="305" fontSize="13" fontWeight="600" fill="#fff" textAnchor="middle">Send proposal</text>
                   </g>
@@ -583,14 +583,14 @@ export default function LandingPage() {
                     <text x="474" y="167" fontSize="10" fontWeight="600" fill="#94A3B8" letterSpacing="0.8" textAnchor="end">AMOUNT</text>
                     <line x1="86" y1="175" x2="474" y2="175" stroke="#F1F5F9" strokeWidth="1"/>
                     <text x="86" y="201" fontSize="13" fill="#1E293B">Design mockups</text>
-                    <text x="474" y="201" fontSize="13" fill="#1E293B" textAnchor="end">$1,200</text>
+                    <text x="474" y="201" fontSize="13" fill="#1E293B" textAnchor="end">£1,200</text>
                     <text x="86" y="227" fontSize="13" fill="#1E293B">Frontend development</text>
-                    <text x="474" y="227" fontSize="13" fill="#1E293B" textAnchor="end">$1,800</text>
+                    <text x="474" y="227" fontSize="13" fill="#1E293B" textAnchor="end">£1,800</text>
                     <text x="86" y="253" fontSize="13" fill="#1E293B">Content migration</text>
-                    <text x="474" y="253" fontSize="13" fill="#1E293B" textAnchor="end">$400</text>
+                    <text x="474" y="253" fontSize="13" fill="#1E293B" textAnchor="end">£400</text>
                     <line x1="86" y1="271" x2="474" y2="271" stroke="#E2E8F0" strokeWidth="1.5"/>
                     <text x="86" y="297" fontSize="13" fontWeight="600" fill="#1E293B">Total due</text>
-                    <text x="474" y="297" fontSize="22" fontWeight="700" fill="#1E293B" textAnchor="end">$3,400</text>
+                    <text x="474" y="297" fontSize="22" fontWeight="700" fill="#1E293B" textAnchor="end">£3,400</text>
                   </g>
 
                   {/* STATE 3: PAID */}
@@ -601,7 +601,7 @@ export default function LandingPage() {
                     <circle cx="290" cy="195" r="30" fill="#059669"/>
                     <path className="hk-check" d="M278 196 l7 7 l13 -15" stroke="#fff" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
                     <text x="290" y="257" fontSize="20" fontWeight="700" fill="#1E293B" textAnchor="middle">Payment received</text>
-                    <text x="290" y="287" fontSize="30" fontWeight="700" fill="#059669" textAnchor="middle">$3,400.00</text>
+                    <text x="290" y="287" fontSize="30" fontWeight="700" fill="#059669" textAnchor="middle">£3,400.00</text>
                     <text x="290" y="309" fontSize="12" fill="#94A3B8" textAnchor="middle">Acme Co. · Just now</text>
                   </g>
 
@@ -752,7 +752,7 @@ export default function LandingPage() {
                 ))}
                 <div style={{ marginTop:16, display:"flex", justifyContent:"space-between", alignItems:"center", background:CLt, borderRadius:10, padding:"14px 16px" }}>
                   <span style={{ fontSize:14, fontWeight:700, color:CDk }}>Total Investment</span>
-                  <span style={{ fontSize:20, fontWeight:900, color:C }}>$3,200</span>
+                  <span style={{ fontSize:20, fontWeight:900, color:C }}>£3,200</span>
                 </div>
                 <div style={{ marginTop:12, background:C, borderRadius:10, padding:"12px", textAlign:"center", fontSize:14, fontWeight:700, color:"#fff" }}>
                   Accept Proposal →
@@ -791,7 +791,7 @@ export default function LandingPage() {
                 {[
                   { label:"Parties",         value:"Sarah K. & Acme Co." },
                   { label:"Start date",      value:"April 1, 2026" },
-                  { label:"Payment",         value:"$5,000 · 50% upfront" },
+                  { label:"Payment",         value:"£5,000 · 50% upfront" },
                   { label:"Revision rounds", value:"2 included" },
                 ].map(({ label, value }) => (
                   <div key={label} style={{ display:"flex", justifyContent:"space-between", padding:"8px 0", borderBottom:"1px solid #F9F9F9", fontSize:13 }}>
@@ -942,7 +942,7 @@ export default function LandingPage() {
                       <span style={{ fontSize:11, fontWeight:700, color:"#64748B", textTransform:"uppercase", letterSpacing:1.2 }}>Prompt</span>
                     </div>
                     <p style={{ margin:0, fontSize:14, color:"#334155", lineHeight:1.65 }}>
-                      Draft a logo redesign proposal. Budget is $2,500. Make it polished and easy to approve.
+                      Draft a logo redesign proposal. Budget is £2,500. Make it polished and easy to approve.
                     </p>
                   </div>
 
@@ -964,7 +964,7 @@ export default function LandingPage() {
                       ))}
                     </div>
                     <div style={{ display:"grid", gridTemplateColumns:"1fr auto auto", gap:10, alignItems:"center", paddingTop:14, borderTop:"1px solid rgba(191,219,254,.2)" }}>
-                      <span style={{ fontSize:12, color:"#DBEAFE" }}>Investment $2,500</span>
+                      <span style={{ fontSize:12, color:"#DBEAFE" }}>Investment £2,500</span>
                       <div style={{ background:"#FFFFFF", borderRadius:12, padding:"10px 14px", fontSize:12, fontWeight:700, color:C }}>Use draft</div>
                       <div style={{ background:"rgba(255,255,255,.18)", border:"1px solid rgba(255,255,255,.18)", borderRadius:12, padding:"10px 14px", fontSize:12, fontWeight:600, color:"#DBEAFE" }}>Edit</div>
                     </div>
@@ -1138,7 +1138,7 @@ export default function LandingPage() {
             <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(280px, 1fr))", gap:22 }}>
               {[
                 {
-                  quote:"I was paying $36/mo for HoneyBook and using maybe 20% of it. SoloPad gives me everything I need for $12.",
+                  quote:"I was paying £30/mo for HoneyBook and using maybe 20% of it. SoloPad gives me everything I need for £5.",
                   name:"Alex R.",
                   role:"Freelance Designer",
                   avatar:"photo-1573496359142-b8d87734a5a2",
@@ -1389,7 +1389,7 @@ export default function LandingPage() {
               <div>
                 <BrandLogo markClassName="h-7 w-7" textClassName="text-[15px] font-black text-[#111111]" />
                 <p style={{ fontSize:13, color:"#AAAAAA", marginTop:12, lineHeight:1.65 }}>Built for freelancers who want to get paid.</p>
-                <p style={{ fontSize:12, color:"#C0C0C0", marginTop:10, lineHeight:1.65, fontStyle:"italic" }}>Built by a freelancer who got tired of paying $36/mo for tools he barely used.</p>
+                <p style={{ fontSize:12, color:"#C0C0C0", marginTop:10, lineHeight:1.65, fontStyle:"italic" }}>Built by a freelancer who got tired of paying too much for tools he barely used.</p>
                 {/* Social links */}
                 <div style={{ display:"flex", gap:12, marginTop:16 }}>
                   <a href="https://x.com/solopad_io" target="_blank" rel="noopener noreferrer" aria-label="Twitter / X" style={{ color:"#AAAAAA", display:"inline-flex", alignItems:"center", justifyContent:"center", width:32, height:32, borderRadius:8, border:"1px solid #EBEBEB", background:"#FAFAFA", transition:"color .15s" }}>

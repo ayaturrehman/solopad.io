@@ -13,9 +13,9 @@ const PAPER_SIZES = {
 
 function fmtMoney(n, currency = "USD") {
   try {
-    return new Intl.NumberFormat("en-US", { style: "currency", currency, minimumFractionDigits: 2 }).format(n || 0);
+    return new Intl.NumberFormat("en-GB", { style: "currency", currency, minimumFractionDigits: 2 }).format(n || 0);
   } catch {
-    return `$${(n || 0).toFixed(2)}`;
+    return `£${(n || 0).toFixed(2)}`;
   }
 }
 

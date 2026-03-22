@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import db from "@/lib/db";
+import { bookingLimiter } from "@/lib/rate-limit";
 
 // Public booking endpoint — userId comes from the URL/booking page (not from session)
 // The userId here is the FREELANCER's userId whose calendar the client is booking.
@@ -9,6 +10,13 @@ import db from "@/lib/db";
 // the caller's account. The booking is created FOR that freelancer, not by them.
 
 export async function POST(req) { try {
+    // Rate limit: 20 bookings per minute per IP
+    const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+    const { success } = bookingLimiter.check(ip);
+    if (!success) {
+      return NextResponse.json({ error: "Too many requests. Please try again shortly." }, { status: 429 });
+    }
+
     const body = await req.json();
     const { clientName, clientEmail, startAt, endAt, title, notes, userId } = body;
 

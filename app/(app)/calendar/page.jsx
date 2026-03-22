@@ -55,7 +55,7 @@ export default async function CalendarPage() {
       events.push({
         date: new Date(inv.dueDate).toISOString().split("T")[0],
         type: inv.status === "paid" ? "paid" : inv.status === "overdue" ? "overdue" : "invoice",
-        label: `Invoice · $${inv.total.toLocaleString()}`,
+        label: `Invoice · £${inv.total.toLocaleString()}`,
         status: inv.status,
         href: "#",
       });
@@ -83,9 +83,9 @@ export default async function CalendarPage() {
   });
 
   return (
-    <>
-        <h1 className="text-lg font-bold text-zinc-900 p-4">Calendar</h1>
+    <div className="py-4">
+      <h1 className="mb-4 px-4 text-lg font-semibold tracking-tight text-zinc-900 md:px-6">Calendar</h1>
       <CalendarView events={events} />
-    </>
+    </div>
   );
 }

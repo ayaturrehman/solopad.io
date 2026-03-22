@@ -29,7 +29,7 @@ const TABS = [
 ];
 const MAX_BULK_SELECTION = 25;
 const PAGE_SIZE_OPTIONS = [10, 25, 50];
-const PAGE_SIZE_STORAGE_KEY = "contacts.pageSize";
+// Page size preference stored in cookie "contacts-pageSize" (read by server + client)
 
 function relativeDate(dateStr) {
   if (!dateStr) return null;
@@ -130,19 +130,10 @@ export default function ContactsTable({
     return () => document.removeEventListener("mousedown", handlePointerDown);
   }, [actionsOpen]);
 
+  // Sync cookie when page size changes — server reads this on next request
   useEffect(() => {
-    const storedValue = window.localStorage.getItem(PAGE_SIZE_STORAGE_KEY);
-    const storedPageSize = Number.parseInt(storedValue || "", 10);
-    if (!PAGE_SIZE_OPTIONS.includes(storedPageSize)) return;
-
-    const hasPageSizeParam = searchParams.has("pageSize");
-    if (!hasPageSizeParam && storedPageSize !== currentPageSize) {
-      updateParams({ pageSize: storedPageSize, page: 1 });
-      return;
-    }
-
-    window.localStorage.setItem(PAGE_SIZE_STORAGE_KEY, String(currentPageSize));
-  }, [currentPageSize, searchParams, updateParams]);
+    document.cookie = `contacts-pageSize=${currentPageSize};path=/;max-age=${60 * 60 * 24 * 365};samesite=lax`;
+  }, [currentPageSize]);
 
   useEffect(() => {
     if (previousScopeRef.current === null) {
@@ -423,7 +414,7 @@ export default function ContactsTable({
             pageSize: currentPageSize,
             pageSizeOptions: PAGE_SIZE_OPTIONS,
             onPageSizeChange: (nextPageSize) => {
-              window.localStorage.setItem(PAGE_SIZE_STORAGE_KEY, nextPageSize);
+              document.cookie = `contacts-pageSize=${nextPageSize};path=/;max-age=${60 * 60 * 24 * 365};samesite=lax`;
               updateParams({ pageSize: nextPageSize, page: 1 });
             },
             onPageChange: (nextPage) => updateParams({ page: nextPage }),

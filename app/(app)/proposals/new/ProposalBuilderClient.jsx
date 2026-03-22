@@ -507,7 +507,7 @@ export default function ProposalBuilderClient({
               <div className="px-4 pb-4 space-y-2 border-t border-zinc-100">
                 <textarea value={brief} onChange={(e) => setBrief(e.target.value)} rows={4}
                   className={cn(textareaClassName, "mt-3 bg-zinc-50 transition")}
-                  placeholder="E.g. Brand identity for a cafe. Budget ~$2,500. Logo, guidelines, launch assets in 3 weeks." />
+                  placeholder="E.g. Brand identity for a cafe. Budget ~£2,500. Logo, guidelines, launch assets in 3 weeks." />
                 <button type="button" onClick={handleDraftFromBrief} disabled={drafting}
                   className="h-8 w-full rounded bg-blue-600 text-sm font-medium text-white transition hover:bg-blue-700 disabled:opacity-50">
                   {drafting ? "Drafting…" : "Fill from brief"}

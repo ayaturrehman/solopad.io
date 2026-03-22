@@ -12,7 +12,8 @@ const ALLOWED_EXTENSIONS = new Set([
   ".mp4", ".mov", ".mp3", ".wav",
 ]);
 
-const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
+const MAX_FILE_SIZE = 15 * 1024 * 1024; // 15MB per file
+const MAX_FILES_PER_PROJECT = 50;
 
 export async function POST(req) { try {
     const session = await getSession();
@@ -26,10 +27,15 @@ export async function POST(req) { try {
       return NextResponse.json({ error: "Missing file or projectId" }, { status: 400 });
     }
 
+    // File size limit: 15MB
     if (file.size > MAX_FILE_SIZE) {
-      return NextResponse.json({ error: "File too large (max 100MB)" }, { status: 413 });
+      return NextResponse.json(
+        { error: "File too large. Maximum file size is 15MB." },
+        { status: 413 }
+      );
     }
 
+    // File type validation
     const ext = path.extname(file.name).toLowerCase();
     if (!ALLOWED_EXTENSIONS.has(ext)) {
       return NextResponse.json({ error: `File type ${ext} not allowed` }, { status: 400 });
@@ -40,6 +46,15 @@ export async function POST(req) { try {
       where: { id: projectId, userId: session.user.id },
     });
     if (!project) return NextResponse.json({ error: "Project not found" }, { status: 404 });
+
+    // File count limit: 20 per project
+    const fileCount = await db.file.count({ where: { projectId } });
+    if (fileCount >= MAX_FILES_PER_PROJECT) {
+      return NextResponse.json(
+        { error: `Maximum ${MAX_FILES_PER_PROJECT} files per project. Delete existing files to upload new ones.` },
+        { status: 400 }
+      );
+    }
 
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
