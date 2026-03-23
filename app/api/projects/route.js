@@ -1,9 +1,33 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { requirePermission } from "@/lib/permissions";
-import { getTenantData } from "@/lib/tenant";
+import { getTenantFilter, getTenantData } from "@/lib/tenant";
 import db from "@/lib/db";
 import { nanoid } from "nanoid";
+
+export async function GET() { try {
+    const { session, error, status: permStatus } = await requirePermission("view_projects");
+    if (error) return NextResponse.json({ error }, { status: permStatus });
+
+    const filter = await getTenantFilter(session);
+
+    const projects = await db.project.findMany({
+      where: { ...filter, archived: false },
+      include: {
+        contact: { select: { name: true } },
+        _count: { select: { tasks: true, invoices: true } },
+      },
+      orderBy: { updatedAt: "desc" },
+      take: 100,
+    });
+
+    return NextResponse.json(projects);
+
+  } catch (err) {
+    console.error("[Projects GET]", err);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
+}
 
 export async function POST(req) { try {
     const { session, error, status: permStatus } = await requirePermission("manage_projects");

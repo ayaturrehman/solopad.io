@@ -4,6 +4,40 @@ import { requirePermission } from "@/lib/permissions";
 import { getTenantFilter } from "@/lib/tenant";
 import db from "@/lib/db";
 
+// GET /api/invoices/[id]
+export async function GET(req, { params }) { try {
+    const { session, error, status: permStatus } = await requirePermission("view_invoices");
+    if (error) return NextResponse.json({ error }, { status: permStatus });
+
+    const { id } = await params;
+    const filter = await getTenantFilter(session);
+
+    const invoice = await db.invoice.findFirst({
+      where: { id, project: filter },
+      include: {
+        project: { select: { title: true, contact: { select: { name: true, email: true } } } },
+        paymentPlans: { orderBy: { dueDate: "asc" } },
+      },
+    });
+
+    if (!invoice) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+
+    // Parse lineItems JSON
+    let lineItems = [];
+    try {
+      lineItems = typeof invoice.lineItems === "string" ? JSON.parse(invoice.lineItems) : invoice.lineItems || [];
+    } catch { lineItems = []; }
+
+    return NextResponse.json({ ...invoice, lineItems });
+
+  } catch (err) {
+    console.error("[GET /api/invoices/[id]]", err);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
+}
+
 // PATCH /api/invoices/[id]
 export async function PATCH(req, { params }) {
   const { session, error, status: permStatus } = await requirePermission("manage_invoices");

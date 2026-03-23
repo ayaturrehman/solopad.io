@@ -2,6 +2,25 @@ import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import db from "@/lib/db";
 import { bookingLimiter } from "@/lib/rate-limit";
+import { getSession } from "@/lib/session";
+
+export async function GET() { try {
+    const session = await getSession();
+    if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+    const bookings = await db.booking.findMany({
+      where: { userId: session.user.id },
+      orderBy: { startAt: "asc" },
+      take: 200,
+    });
+
+    return NextResponse.json(bookings);
+
+  } catch (err) {
+    console.error("[Bookings GET]", err);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
+}
 
 // Public booking endpoint — userId comes from the URL/booking page (not from session)
 // The userId here is the FREELANCER's userId whose calendar the client is booking.

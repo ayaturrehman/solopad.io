@@ -381,44 +381,7 @@ export default function LandingPage() {
 
       <div className="pk">
 
-        {/* ── Nav ─────────────────────────────────────── */}
-        <header style={{ background:"#fff", borderBottom:"1px solid #EBEBEB", position:"sticky", top:0, zIndex:50 }}>
-          <div className="pk-shell pk-nav-inner">
-            <BrandLogo
-              className="gap-0"
-              markClassName="h-[34px] w-[34px] sm:h-[42px] sm:w-[42px]"
-              textClassName="text-[20px] font-black text-[#111111] sm:text-[24px]"
-            />
-            <nav className="pk-nav-links">
-              <a href="#features"      className="nav-link">Features</a>
-              <a href="#how-it-works"  className="nav-link">How it works</a>
-              <a href="#pricing"       className="nav-link">Pricing</a>
-            </nav>
-            <div className="pk-nav-actions">
-              <Link href={authHref} className="nav-link">Log in</Link>
-              <Link href="/signup" className="btn-primary" style={{ fontSize:13, padding:"8px 16px" }}>
-                Get started <ArrowRight size={14} />
-              </Link>
-              <button
-                type="button"
-                className="pk-mobile-toggle"
-                onClick={() => setMobileMenuOpen((open) => !open)}
-                aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
-                aria-expanded={mobileMenuOpen}
-              >
-                {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
-              </button>
-            </div>
-            {mobileMenuOpen && (
-              <div className="pk-mobile-panel">
-                <a href="#features" onClick={() => setMobileMenuOpen(false)}>Features</a>
-                <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)}>How it works</a>
-                <a href="#pricing" onClick={() => setMobileMenuOpen(false)}>Pricing</a>
-                <Link href={authHref} onClick={() => setMobileMenuOpen(false)}>Log in</Link>
-              </div>
-            )}
-          </div>
-        </header>
+        {/* Nav is now provided by MarketingLayout */}
 
         {/* ── Hero ────────────────────────────────────── */}
         <section style={{ background:BLt, overflow:"hidden", padding:"120px 0 48px", position:"relative" }}>
@@ -660,7 +623,7 @@ export default function LandingPage() {
               {[
                 { icon:Clock,       p:"Chasing feedback via email",    f:"One portal link — clients comment directly. No hunting inboxes." },
                 { icon:FileText,    p:"Files scattered everywhere",     f:"Upload once. Latest version always there. Zero version confusion." },
-                { icon:CreditCard,  p:"Awkward invoice follow-ups",     f:"Client pays on the portal. Stripe handles it. You get notified." },
+                { icon:CreditCard,  p:"Awkward invoice follow-ups",     f:"Client pays on the portal. Card, Apple Pay, Google Pay. You get notified." },
                 { icon:Users,       p:"No CRM — leads tracked on sticky notes", f:"SoloPad's built-in CRM tracks every lead, client, and deal. CSV import included." },
               ].map(({ icon:Icon, p, f }, i) => (
                 <div
@@ -1008,7 +971,7 @@ export default function LandingPage() {
                 { Icon:Link2,        title:"Client Portal",          desc:"Share one link. Clients see files, progress, and invoices." },
                 { Icon:FileText,     title:"Proposals",              desc:"AI-drafted proposals that clients accept with one click." },
                 { Icon:PenTool,      title:"Contracts & E-sign",     desc:"Legally binding contracts with built-in e-signature." },
-                { Icon:CreditCard,   title:"Invoices & Payments",    desc:"Line-item invoices with Stripe. Clients pay online." },
+                { Icon:CreditCard,   title:"Invoices & Payments",    desc:"Line-item invoices. Clients pay online with card, Apple Pay, or Google Pay." },
                 { Icon:Users,        title:"CRM & Contacts",         desc:"Track leads, active clients, and archived contacts." },
                 { Icon:CheckSquare,  title:"Projects & Tasks",       desc:"Milestones, subtasks, and AI-generated task lists." },
                 { Icon:Clock,        title:"Time Tracking",          desc:"Log billable hours per project. Know your true hourly rate." },
@@ -1082,7 +1045,7 @@ export default function LandingPage() {
                   { n:"01", t:"Create the project", d:"Add the title, deadline, and client. You are live in under a minute.", bg:"#FFFFFF", tag:"Start" },
                   { n:"02", t:"Upload the work", d:"Drop in files, notes, and invoices so nothing gets scattered.", bg:CLt, tag:"Organize" },
                   { n:"03", t:"Share the portal", d:"Send one link. Clients see progress without chasing you for updates.", bg:"#FFFFFF", tag:"Share" },
-                  { n:"04", t:"Get approved", d:"Client reviews, pays with Stripe, and the project moves forward cleanly.", bg:OLt, tag:"Finish" },
+                  { n:"04", t:"Get approved", d:"Client reviews, pays online, and the project moves forward cleanly.", bg:OLt, tag:"Finish" },
                 ].map(({ n, t, d, bg, tag }, i) => (
                   <div key={n} className={`pk-reveal pk-d${i+1}`} style={{ background:bg, borderRadius:24, border:"1px solid rgba(17,24,39,.08)", padding:"26px 22px 24px", minHeight:228, boxShadow:"0 12px 28px rgba(15,23,42,.04)" }}>
                     <div style={{ width:50, height:50, borderRadius:16, background:C, color:"#fff", fontSize:17, fontWeight:700, display:"flex", alignItems:"center", justifyContent:"center", marginBottom:22, boxShadow:"0 14px 28px rgba(29,78,216,.18)" }}>
@@ -1285,6 +1248,23 @@ export default function LandingPage() {
           </div>
         </section>
 
+        {/* FAQ Schema for rich results */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: [
+              { "@type": "Question", name: "What does the Starter plan include?", acceptedAnswer: { "@type": "Answer", text: "Starter gives you unlimited projects, 10 invoices per month, basic proposals, contracts, finance & expenses, tasks, and a client portal — everything you need to get going at just £5/mo. Every plan starts with a 30-day free trial." }},
+              { "@type": "Question", name: "What payment methods can my clients use?", acceptedAnswer: { "@type": "Answer", text: "Clients can pay with all major credit/debit cards, Apple Pay, Google Pay, and bank transfers in supported countries." }},
+              { "@type": "Question", name: "Can I migrate from HoneyBook or Dubsado?", acceptedAnswer: { "@type": "Answer", text: "Yes. You can import your contacts via CSV and be up and running in under 10 minutes. We're adding direct migration tools soon." }},
+              { "@type": "Question", name: "How do I get paid?", acceptedAnswer: { "@type": "Answer", text: "Just connect your bank account in settings — it takes 2 minutes. When clients pay your invoices, money is deposited directly to your bank within 2-3 business days. No separate accounts needed." }},
+              { "@type": "Question", name: "Is my data secure?", acceptedAnswer: { "@type": "Answer", text: "Your data is encrypted in transit and at rest. We use PostgreSQL on secure infrastructure with daily backups. Your files are stored with enterprise-grade encryption." }},
+              { "@type": "Question", name: "Can I cancel anytime?", acceptedAnswer: { "@type": "Answer", text: "Yes. No contracts, no cancellation fees. Downgrade to Starter anytime and keep your data." }},
+            ]
+          })}}
+        />
+
         {/* ── FAQ ──────────────────────────────────────── */}
         <section style={{ background:"#fff", padding:"120px 0" }}>
           <div className="pk-shell pk-section-stage" data-pk-section-drift>
@@ -1295,9 +1275,9 @@ export default function LandingPage() {
             <div style={{ maxWidth:720, margin:"0 auto", display:"flex", flexDirection:"column", gap:2 }}>
               {[
                 { q:"What does the Starter plan include?", a:"Starter gives you unlimited projects, 10 invoices per month, basic proposals, contracts, finance & expenses, tasks, and a client portal — everything you need to get going at just £5/mo. Every plan starts with a 30-day free trial." },
-                { q:"What payment methods can my clients use?", a:"Clients pay through Stripe, which supports all major credit/debit cards, Apple Pay, Google Pay, and bank transfers in supported countries." },
+                { q:"What payment methods can my clients use?", a:"Clients can pay with all major credit/debit cards, Apple Pay, Google Pay, and bank transfers in supported countries." },
                 { q:"Can I migrate from HoneyBook or Dubsado?", a:"Yes. You can import your contacts via CSV and be up and running in under 10 minutes. We're adding direct migration tools soon." },
-                { q:"Do I need a Stripe account?", a:"Yes, you'll connect your own Stripe account (free to create). This means you get paid directly — SoloPad never touches your money and charges zero transaction fees." },
+                { q:"How do I get paid?", a:"Just connect your bank account in settings — it takes 2 minutes. When clients pay your invoices, money is deposited directly to your bank within 2-3 business days. No separate accounts needed." },
                 { q:"Is my data secure?", a:"Your data is encrypted in transit and at rest. We use PostgreSQL on secure infrastructure with daily backups. Your files are stored with enterprise-grade encryption." },
                 { q:"Can I cancel anytime?", a:"Yes. No contracts, no cancellation fees. Downgrade to Starter anytime and keep your data." },
               ].map(({ q, a }, i) => (

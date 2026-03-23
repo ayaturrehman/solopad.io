@@ -4,6 +4,34 @@ import { requirePermission } from "@/lib/permissions";
 import { getTenantFilter } from "@/lib/tenant";
 import db from "@/lib/db";
 
+export async function GET(req) { try {
+    const { session, error, status: permStatus } = await requirePermission("view_invoices");
+    if (error) return NextResponse.json({ error }, { status: permStatus });
+
+    const filter = await getTenantFilter(session);
+    const { searchParams } = new URL(req.url);
+    const status = searchParams.get("status") || "";
+
+    const invoices = await db.invoice.findMany({
+      where: {
+        project: filter,
+        ...(status && { status }),
+      },
+      include: {
+        project: { select: { title: true, contact: { select: { name: true } } } },
+      },
+      orderBy: { createdAt: "desc" },
+      take: 200,
+    });
+
+    return NextResponse.json(invoices);
+
+  } catch (err) {
+    console.error("[Invoices GET]", err);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
+}
+
 export async function POST(req) {
   const { session, error, status: permStatus } = await requirePermission("manage_invoices");
   if (error) return NextResponse.json({ error }, { status: permStatus });

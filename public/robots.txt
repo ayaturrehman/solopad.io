@@ -1,0 +1,23 @@
+# SoloPad robots.txt
+User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /invoices
+Disallow: /contracts
+Disallow: /proposals
+Disallow: /projects
+Disallow: /settings
+Disallow: /pipeline
+Disallow: /contacts
+Disallow: /finance
+Disallow: /tasks
+Disallow: /time-tracker
+Disallow: /scheduler
+Disallow: /services
+Disallow: /calendar
+Disallow: /api/
+Disallow: /payment
+Disallow: /p/
+Disallow: /join/
+
+Sitemap: https://solopad.io/sitemap.xml
