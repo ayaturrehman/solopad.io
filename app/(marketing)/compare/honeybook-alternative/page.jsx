@@ -1,6 +1,4 @@
-import { Metadata } from 'next';
-
-export const metadata: Metadata = {
+export const metadata = {
   title: 'HoneyBook Alternative for Freelancers | SoloPad',
   description: 'Why thousands of solo freelancers are switching from HoneyBook to SoloPad. Compare pricing, features, and discover why SoloPad saves you £660/year.',
   canonical: 'https://solopad.io/compare/honeybook-alternative',
@@ -54,6 +52,7 @@ export default function HoneybookAlternativePage() {
         .fade-up-delay-2 { animation-delay: 0.2s; opacity: 0; }
         .fade-up-delay-3 { animation-delay: 0.3s; opacity: 0; }
         .fade-up-delay-4 { animation-delay: 0.4s; opacity: 0; }
+        .cta-primary:hover { background-color: #1D4ED8 !important; }
       `}} />
 
       <script
@@ -908,8 +907,7 @@ export default function HoneybookAlternativePage() {
               cursor: 'pointer',
               transition: 'background-color 0.2s',
             }}
-            onMouseEnter={(e) => (e.target.style.backgroundColor = '#1d4ed8')}
-            onMouseLeave={(e) => (e.target.style.backgroundColor = '#2563EB')}
+            className="cta-primary"
           >
             Start Free Trial
           </a>

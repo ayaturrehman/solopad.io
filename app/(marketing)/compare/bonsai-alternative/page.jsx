@@ -121,6 +121,10 @@ const jsonLd = {
 export default function BonsaiComparison() {
   return (
     <>
+      <style>{`
+        .cta-primary:hover { background-color: #1D4ED8 !important; }
+        .cta-secondary:hover { background-color: #F0F9FF !important; }
+      `}</style>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -575,8 +579,7 @@ export default function BonsaiComparison() {
               cursor: 'pointer',
               transition: 'background-color 0.2s',
             }}
-            onMouseEnter={(e) => e.target.style.backgroundColor = '#1D4ED8'}
-            onMouseLeave={(e) => e.target.style.backgroundColor = '#2563EB'}
+            className="cta-primary"
             >
               Start Free Trial
             </a>
@@ -593,8 +596,7 @@ export default function BonsaiComparison() {
               cursor: 'pointer',
               transition: 'background-color 0.2s',
             }}
-            onMouseEnter={(e) => e.target.style.backgroundColor = '#F0F9FF'}
-            onMouseLeave={(e) => e.target.style.backgroundColor = '#FFFFFF'}
+            className="cta-secondary"
             >
               See All Comparisons
             </a>

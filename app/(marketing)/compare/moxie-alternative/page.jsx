@@ -1,5 +1,3 @@
-'use client';
-
 export const metadata = {
   title: 'Moxie Alternative for Freelancers | SoloPad',
   description: 'Compare SoloPad to Moxie. We offer all the features you need at £5/mo including AI drafting, contracts, proposals, invoicing, CRM, time tracking, and more.',

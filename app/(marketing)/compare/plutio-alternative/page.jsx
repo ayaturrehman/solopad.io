@@ -129,6 +129,10 @@ export default function PlutioAlternativePage() {
         .fade-up-delay-2 { animation-delay: 0.2s; opacity: 0; }
         .fade-up-delay-3 { animation-delay: 0.3s; opacity: 0; }
         .fade-up-delay-4 { animation-delay: 0.4s; opacity: 0; }
+        .cta-primary:hover { background: #1D4ED8 !important; }
+        .cta-secondary:hover { background: #EFF6FF !important; border-color: #2563EB !important; }
+        .cta-light:hover { background: #f0f0f0 !important; }
+        .cta-glass:hover { background: rgba(255,255,255,0.3) !important; }
       `}} />
 
       <script
@@ -201,8 +205,7 @@ export default function PlutioAlternativePage() {
               cursor: 'pointer',
               transition: 'background 0.2s',
             }}
-            onMouseEnter={(e) => e.target.style.background = '#1d4ed8'}
-            onMouseLeave={(e) => e.target.style.background = '#2563EB'}
+            className="cta-primary"
             >
               Start Free Trial
             </a>
@@ -219,14 +222,7 @@ export default function PlutioAlternativePage() {
               cursor: 'pointer',
               transition: 'all 0.2s',
             }}
-            onMouseEnter={(e) => {
-              e.target.style.background = '#EFF6FF';
-              e.target.style.borderColor = '#2563EB';
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.background = 'white';
-              e.target.style.borderColor = '#DBEAFE';
-            }}
+            className="cta-secondary"
             >
               View Comparison
             </a>
@@ -883,8 +879,7 @@ export default function PlutioAlternativePage() {
               cursor: 'pointer',
               transition: 'background 0.2s',
             }}
-            onMouseEnter={(e) => e.target.style.background = '#f0f0f0'}
-            onMouseLeave={(e) => e.target.style.background = 'white'}
+            className="cta-light"
             >
               Start Free Trial
             </a>
@@ -901,12 +896,7 @@ export default function PlutioAlternativePage() {
               cursor: 'pointer',
               transition: 'all 0.2s',
             }}
-            onMouseEnter={(e) => {
-              e.target.style.background = 'rgba(255, 255, 255, 0.3)';
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.background = 'rgba(255, 255, 255, 0.2)';
-            }}
+            className="cta-glass"
             >
               Talk to Support
             </a>

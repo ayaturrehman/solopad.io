@@ -49,6 +49,7 @@ export default function DubsadoAlternativePage() {
             transform: none;
           }
         }
+        .cta-primary:hover { background-color: #1D4ED8 !important; }
       `}} />
 
       <script
@@ -793,8 +794,7 @@ export default function DubsadoAlternativePage() {
               cursor: "pointer",
               transition: "background-color 0.2s"
             }}
-            onMouseEnter={(e) => e.target.style.backgroundColor = "#1d4ed8"}
-            onMouseLeave={(e) => e.target.style.backgroundColor = "#2563EB"}
+            className="cta-primary"
           >
             Start free trial
           </a>
