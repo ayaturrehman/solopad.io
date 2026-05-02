@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { requireStripe } from "@/lib/stripe";
 import db from "@/lib/db";
 import { Resend } from "resend";
@@ -47,6 +48,10 @@ export async function POST(req) {
         await handleTrialEnding(event.data.object);
         break;
 
+      case "customer.subscription.trial_ended":
+        await handleTrialEnded(event.data.object);
+        break;
+
       default:
         console.log(`[Billing Webhook] Unhandled: ${event.type}`);
     }
@@ -90,7 +95,14 @@ async function handleSubscriptionChange(sub) {
       where: { id: subscription.businessId },
       data: { plan },
     });
+
+    await db.user.updateMany({
+      where: { businessId: subscription.businessId },
+      data: { plan },
+    });
   }
+
+  revalidateBillingViews();
 }
 
 // ─── Subscription deleted (canceled) ────────────────────────────
@@ -119,6 +131,13 @@ async function handleSubscriptionDeleted(sub) {
     where: { id: subscription.businessId },
     data: { plan: "starter" },
   });
+
+  await db.user.updateMany({
+    where: { businessId: subscription.businessId },
+    data: { plan: "starter" },
+  });
+
+  revalidateBillingViews();
 
   // Notify the owner
   if (subscription.business?.ownerId) {
@@ -149,12 +168,14 @@ async function handlePaymentSucceeded(invoice) {
   });
   if (!subscription) return;
 
-  // If status was past_due, it's now resolved
-  if (subscription.status === "past_due") {
+  // If status was behind on payment or still trialing, activation is now confirmed
+  if (subscription.status === "past_due" || subscription.status === "trialing" || subscription.status === "incomplete") {
     await db.subscription.update({
       where: { id: subscription.id },
-      data: { status: "active" },
+      data: { status: "active", trialEnd: null },
     });
+
+    revalidateBillingViews();
   }
 }
 
@@ -175,6 +196,8 @@ async function handlePaymentFailed(invoice) {
     where: { id: subscription.id },
     data: { status: "past_due" },
   });
+
+  revalidateBillingViews();
 
   // Notify owner
   if (subscription.business?.ownerId) {
@@ -231,6 +254,34 @@ async function handleTrialEnding(sub) {
       },
     });
   }
+}
+
+// ─── Trial ended ───────────────────────────────────────────────
+async function handleTrialEnded(sub) {
+  const customerId = typeof sub.customer === "string" ? sub.customer : sub.customer?.id;
+  if (!customerId) return;
+
+  const subscription = await db.subscription.findUnique({
+    where: { stripeCustomerId: customerId },
+  });
+  if (!subscription) return;
+
+  await db.subscription.update({
+    where: { id: subscription.id },
+    data: {
+      status: sub.status || "past_due",
+      trialEnd: sub.trial_end ? new Date(sub.trial_end * 1000) : new Date(),
+    },
+  });
+
+  revalidateBillingViews();
+}
+
+function revalidateBillingViews() {
+  revalidatePath("/dashboard");
+  revalidatePath("/pricing");
+  revalidatePath("/settings");
+  revalidatePath("/settings/billing");
 }
 
 // ─── Helper: map Stripe price ID back to plan name ──────────────

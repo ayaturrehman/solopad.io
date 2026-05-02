@@ -11,6 +11,8 @@ export async function POST(req) {
     if (error) return NextResponse.json({ error }, { status: permStatus });
 
     const { plan, interval = "monthly", couponCode } = await req.json();
+    const successPath = "/settings/billing?billing=success";
+    const cancelPath = "/settings/billing?billing=cancelled";
 
     // Derive base URL from env or request origin
     const baseUrl =
@@ -99,7 +101,7 @@ export async function POST(req) {
 
           return NextResponse.json({
             updated: true,
-            url: `${baseUrl}/settings?billing=success`,
+            url: `${baseUrl}${successPath}`,
           });
         }
       } catch (err) {
@@ -114,8 +116,8 @@ export async function POST(req) {
       customer: stripeCustomerId,
       line_items: [{ price: priceId, quantity: 1 }],
       metadata: { businessId: user.businessId, plan, interval },
-      success_url: `${baseUrl}/settings?billing=success`,
-      cancel_url: `${baseUrl}/settings?billing=cancelled`,
+      success_url: `${baseUrl}${successPath}`,
+      cancel_url: `${baseUrl}${cancelPath}`,
       subscription_data: {
         metadata: { businessId: user.businessId, plan },
         trial_period_days: 30,

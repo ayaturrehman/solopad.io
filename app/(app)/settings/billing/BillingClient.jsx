@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Card, CardHeader, CardBody } from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
@@ -25,6 +25,7 @@ function getTrialDaysLeft(trialEnd) {
 function BillingContent({ plan: initialPlan, billingStatus: initialBillingStatus }) {
   const searchParams = useSearchParams();
   const billingParam = searchParams?.get("billing");
+  const postCheckoutSyncAttemptedRef = useRef(false);
 
   const [plan, setPlan] = useState(initialPlan);
   const [interval, setInterval] = useState("monthly");
@@ -32,6 +33,7 @@ function BillingContent({ plan: initialPlan, billingStatus: initialBillingStatus
   const [billingStatus, setBillingStatus] = useState(initialBillingStatus);
   const [billingData, setBillingData] = useState({ invoices: [], upcoming: null, paymentMethod: null });
   const [portalLoading, setPortalLoading] = useState(false);
+  const [postCheckoutSyncing, setPostCheckoutSyncing] = useState(false);
 
   useEffect(() => {
     Promise.all([
@@ -46,6 +48,65 @@ function BillingContent({ plan: initialPlan, billingStatus: initialBillingStatus
       if (invoiceData) setBillingData(invoiceData);
     });
   }, []);
+
+  useEffect(() => {
+    if (billingParam !== "success" || postCheckoutSyncAttemptedRef.current) return;
+
+    const now = new Date();
+    const trialEnd = billingStatus?.subscription?.trialEnd ? new Date(billingStatus.subscription.trialEnd) : null;
+    const hasValidSubscription = billingStatus?.status === "active" || (billingStatus?.status === "trialing" && trialEnd && trialEnd > now);
+
+    if (hasValidSubscription) {
+      postCheckoutSyncAttemptedRef.current = true;
+      return;
+    }
+
+    postCheckoutSyncAttemptedRef.current = true;
+    setPostCheckoutSyncing(true);
+
+    let attempts = 0;
+    let timer;
+    let cancelled = false;
+
+    const syncStatus = async () => {
+      attempts += 1;
+
+      try {
+        const res = await fetch("/api/billing/status", { cache: "no-store" });
+        const statusData = await res.json();
+
+        if (cancelled) return;
+
+        if (statusData) {
+          setBillingStatus(statusData);
+          if (statusData.plan) setPlan(statusData.plan);
+          if (statusData.interval) setInterval(statusData.interval);
+        }
+
+        const nextTrialEnd = statusData?.subscription?.trialEnd ? new Date(statusData.subscription.trialEnd) : null;
+        const isReady = statusData?.status === "active" || (statusData?.status === "trialing" && nextTrialEnd && nextTrialEnd > new Date());
+
+        if (isReady || attempts >= 10) {
+          setPostCheckoutSyncing(false);
+          return;
+        }
+      } catch {
+        if (attempts >= 10) {
+          setPostCheckoutSyncing(false);
+          return;
+        }
+      }
+
+      timer = setTimeout(syncStatus, 1500);
+    };
+
+    timer = setTimeout(syncStatus, 800);
+
+    return () => {
+      cancelled = true;
+      if (timer) clearTimeout(timer);
+    };
+  }, [billingParam, billingStatus]);
 
   const trialDaysLeft = getTrialDaysLeft(billingStatus?.subscription?.trialEnd);
   const isTrialing = billingStatus?.status === "trialing" || trialDaysLeft > 0;
@@ -120,7 +181,7 @@ function BillingContent({ plan: initialPlan, billingStatus: initialBillingStatus
       {billingParam === "success" && (
         <div className="flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
           <CheckCircle2 className="h-4 w-4 shrink-0" />
-          Subscription activated! Your plan has been upgraded.
+          {postCheckoutSyncing ? "Payment authorised. Finishing subscription setup..." : "Subscription activated! Your plan has been upgraded."}
         </div>
       )}
       {billingParam === "cancelled" && (
