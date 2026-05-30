@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { requireStripe } from "@/lib/stripe";
 import db from "@/lib/db";
 import { sendNotificationEmail } from "@/lib/email";
+import { isEventProcessed, markEventProcessed } from "@/lib/webhook-events";
 
 export async function POST(req) {
   let stripe;
@@ -20,6 +21,11 @@ export async function POST(req) {
   } catch (err) {
     console.error("[Webhook] Signature verification failed:", err.message);
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
+  }
+
+  // Idempotency: skip events we've already handled (Stripe retries / re-sends).
+  if (await isEventProcessed(event.id)) {
+    return NextResponse.json({ received: true, duplicate: true });
   }
 
   try {
@@ -53,6 +59,9 @@ export async function POST(req) {
     // Return 200 to prevent Stripe from retrying (we logged the error)
     return NextResponse.json({ received: true, error: err.message });
   }
+
+  // Record only after successful handling so failed events can be retried.
+  await markEventProcessed(event.id, { type: event.type, source: "connect" });
 
   return NextResponse.json({ received: true });
 }

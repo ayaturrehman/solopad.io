@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { requireStripe } from "@/lib/stripe";
 import db from "@/lib/db";
+import { isEventProcessed, markEventProcessed } from "@/lib/webhook-events";
 import { Resend } from "resend";
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
@@ -35,6 +36,11 @@ export async function POST(req) {
   } catch (err) {
     console.error("[Billing Webhook] Signature verification failed:", err.message);
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
+  }
+
+  // Idempotency: skip events we've already handled (Stripe retries / re-sends).
+  if (await isEventProcessed(event.id)) {
+    return NextResponse.json({ received: true, duplicate: true });
   }
 
   try {
@@ -71,6 +77,9 @@ export async function POST(req) {
     console.error(`[Billing Webhook] Error in ${event.type}:`, err);
     return NextResponse.json({ received: true, error: err.message });
   }
+
+  // Record only after successful handling so failed events can be retried.
+  await markEventProcessed(event.id, { type: event.type, source: "billing" });
 
   return NextResponse.json({ received: true });
 }
