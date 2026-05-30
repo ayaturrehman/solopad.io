@@ -5,7 +5,7 @@ import db from "@/lib/db";
 
 export async function GET() {
   try {
-    const { session, error, status: permStatus } = await requirePermission("manage_billing");
+    const { session, error, status: permStatus } = await requirePermission("manage_billing", { skipSubscriptionCheck: true });
     if (error) return NextResponse.json({ error }, { status: permStatus });
 
     // Single query with relation join instead of 2 sequential queries

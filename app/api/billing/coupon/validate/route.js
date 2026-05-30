@@ -5,7 +5,7 @@ import { requirePermission } from "@/lib/permissions";
 export async function POST(req) {
   try {
     const stripe = requireStripe();
-    const { session, error, status: permStatus } = await requirePermission("manage_billing");
+    const { session, error, status: permStatus } = await requirePermission("manage_billing", { skipSubscriptionCheck: true });
     if (error) return NextResponse.json({ error }, { status: permStatus });
 
     const { code } = await req.json();

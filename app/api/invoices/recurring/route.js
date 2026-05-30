@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { requirePermission } from "@/lib/permissions";
+import { planHasFeature, getPlan } from "@/lib/plans";
 import db from "@/lib/db";
 
 export async function GET(req) {
@@ -30,8 +31,15 @@ export async function GET(req) {
 
 export async function POST(req) {
   try {
-    const { session, error, status: permStatus } = await requirePermission("manage_invoices");
+    const { session, access, error, status: permStatus } = await requirePermission("manage_invoices");
     if (error) return NextResponse.json({ error }, { status: permStatus });
+
+    if (!planHasFeature(access.plan, "recurring_invoices")) {
+      return NextResponse.json(
+        { error: `Recurring invoices require the ${getPlan("solo").name} plan or higher. Upgrade to unlock them.` },
+        { status: 403 }
+      );
+    }
 
     const userId = session.user.id;
     const businessId = session.user.businessId;

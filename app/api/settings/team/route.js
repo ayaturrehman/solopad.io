@@ -5,6 +5,7 @@ import { getSession } from "@/lib/session";
 import { requirePermission } from "@/lib/permissions";
 import db from "@/lib/db";
 import { canManageTeam, getDefaultPermissionsForRole, parsePermissions, serializePermissions } from "@/lib/team";
+import { getSeatLimit, getPlan } from "@/lib/plans";
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
@@ -12,7 +13,10 @@ export async function GET() { try {
     const session = await getSession();
     if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const user = await db.user.findUnique({ where: { id: session.user.id }, select: { businessId: true } });
+    const user = await db.user.findUnique({
+      where: { id: session.user.id },
+      select: { businessId: true, plan: true, business: { select: { plan: true } } },
+    });
     const where = user?.businessId ? { businessId: user.businessId } : { userId: session.user.id };
 
     const members = await db.teamMember.findMany({
@@ -20,8 +24,11 @@ export async function GET() { try {
       orderBy: { createdAt: "desc" },
     });
 
+    // Authoritative plan from the business, not the (stale) JWT.
+    const plan = user?.business?.plan ?? user?.plan;
+
     return NextResponse.json({
-      canManageTeam: canManageTeam(session.user.plan),
+      canManageTeam: canManageTeam(plan),
       members: members.map((member) => ({
         ...member,
         permissions: parsePermissions(member.permissions),
@@ -35,10 +42,34 @@ export async function GET() { try {
 }
 
 export async function POST(req) {
-  const { session, error, status: permStatus } = await requirePermission("manage_team");
+  const { session, access, error, status: permStatus } = await requirePermission("manage_team");
   if (error) return NextResponse.json({ error }, { status: permStatus });
-  if (!canManageTeam(session.user.plan)) {
+
+  // Use the authoritative plan from the DB (access), not the stale JWT.
+  const plan = access.plan;
+  if (!canManageTeam(plan)) {
     return NextResponse.json({ error: "Upgrade to Solo to invite teammates." }, { status: 403 });
+  }
+
+  if (!access.businessId) {
+    return NextResponse.json({ error: "No business account found." }, { status: 400 });
+  }
+
+  // Enforce the plan's seat limit (owner is excluded from the count).
+  const seatLimit = getSeatLimit(plan);
+  if (seatLimit !== Infinity) {
+    const usedSeats = await db.teamMember.count({
+      where: { businessId: access.businessId, role: { not: "owner" } },
+    });
+    if (usedSeats >= seatLimit) {
+      const planName = getPlan(plan)?.name || plan;
+      return NextResponse.json(
+        {
+          error: `Your ${planName} plan allows up to ${seatLimit} team member${seatLimit === 1 ? "" : "s"}. Upgrade to add more.`,
+        },
+        { status: 403 }
+      );
+    }
   }
 
   const body = await req.json();

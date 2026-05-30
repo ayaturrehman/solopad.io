@@ -14,14 +14,26 @@ export async function POST(req) {
     return NextResponse.json({ error: "Stripe not configured" }, { status: 500 });
   }
 
+  const webhookSecret = process.env.STRIPE_BILLING_WEBHOOK_SECRET;
+  if (!webhookSecret) {
+    // Misconfiguration — the endpoint's live signing secret is missing from this
+    // environment. Stripe will keep failing until it's set (Vercel → Settings →
+    // Environment Variables → STRIPE_BILLING_WEBHOOK_SECRET for Production).
+    console.error(
+      "[Billing Webhook] STRIPE_BILLING_WEBHOOK_SECRET is not set — cannot verify events. " +
+        "Add the signing secret for the /api/billing/webhook endpoint from the Stripe Dashboard."
+    );
+    return NextResponse.json({ error: "Webhook secret not configured" }, { status: 500 });
+  }
+
   const body = await req.text();
   const sig = req.headers.get("stripe-signature");
 
   let event;
   try {
-    event = stripe.webhooks.constructEvent(body, sig, process.env.STRIPE_BILLING_WEBHOOK_SECRET);
+    event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
   } catch (err) {
-    console.error("[Billing Webhook] Signature failed:", err.message);
+    console.error("[Billing Webhook] Signature verification failed:", err.message);
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
 

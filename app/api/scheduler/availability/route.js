@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
+import { requireFeature } from "@/lib/subscription";
 import db from "@/lib/db";
 
 export async function GET() { try {
@@ -20,8 +21,8 @@ export async function GET() { try {
 }
 
 export async function PUT(req) { try {
-    const session = await getSession();
-    if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const { session, error, status } = await requireFeature("scheduler");
+    if (error) return NextResponse.json({ error }, { status });
 
     const body = await req.json();
     const { rules } = body;
