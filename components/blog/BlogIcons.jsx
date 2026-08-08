@@ -78,6 +78,16 @@ export function IconGuide({ size = 48, color = "#2563EB" }) {
   );
 }
 
+export function IconInvoice({ size = 48, color = "#2563EB" }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="10" y="6" width="28" height="36" rx="3" stroke={color} strokeWidth="2" />
+      <path d="M16 14h10M16 20h16M16 26h16M16 32h8" stroke={color} strokeWidth="2" strokeLinecap="round" />
+      <rect x="28" y="30" width="6" height="6" rx="1" stroke={color} strokeWidth="1.5" />
+    </svg>
+  );
+}
+
 // Map slug or category to the right icon
 const iconMap = {
   "how-to-write-a-freelance-proposal": IconProposal,
@@ -85,6 +95,7 @@ const iconMap = {
   "honeybook-vs-dubsado-vs-bonsai": IconCompare,
   "best-freelance-management-software-2026": IconSoftware,
   "ai-proposal-writer-freelance": IconAI,
+  "freelance-invoice-template-examples": IconInvoice,
 };
 
 const categoryIconMap = {

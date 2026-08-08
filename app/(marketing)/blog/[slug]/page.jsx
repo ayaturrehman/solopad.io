@@ -116,6 +116,21 @@ const mdxComponents = {
   hr: () => (
     <hr style={{ border: "none", height: 1, background: "linear-gradient(90deg, transparent, #E2E8F0, transparent)", margin: "48px 0" }} />
   ),
+  img: (props) => (
+    <img
+      {...props}
+      alt={props.alt || ""}
+      style={{
+        width: "100%",
+        height: "auto",
+        borderRadius: 16,
+        border: "1px solid #E2E8F0",
+        margin: "8px 0 32px",
+        background: "#F8FAFC",
+      }}
+      loading="lazy"
+    />
+  ),
   table: (props) => (
     <div style={{ overflowX: "auto", marginBottom: 28, borderRadius: 12, border: "1px solid #F1F5F9" }}>
       <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 15, lineHeight: 1.6 }} {...props} />
