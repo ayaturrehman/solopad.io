@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "Features — Invoices, Contracts, Proposals, CRM & More | SoloPad",
+  title: "Features — Invoices, Contracts, Proposals, CRM & More",
   description:
     "SoloPad gives freelancers invoicing, contracts with e-signatures, AI-drafted proposals, CRM, scheduling, time tracking & a client portal — all in one app starting at £5/mo.",
   alternates: { canonical: "https://www.solopad.io/features" },

@@ -1,5 +1,5 @@
 export const metadata = {
-  title: 'Moxie Alternative for Freelancers | SoloPad',
+  title: 'Moxie Alternative for Freelancers',
   description: 'Compare SoloPad to Moxie. We offer all the features you need at £5/mo including AI drafting, contracts, proposals, invoicing, CRM, time tracking, and more.',
   alternates: { canonical: 'https://www.solopad.io/compare/moxie-alternative' },
   openGraph: {

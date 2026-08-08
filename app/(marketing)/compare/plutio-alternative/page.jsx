@@ -1,5 +1,5 @@
 export const metadata = {
-  title: 'Plutio Alternative for Freelancers | SoloPad',
+  title: 'Plutio Alternative for Freelancers',
   description: 'Compare Plutio vs SoloPad. Better pricing, no client limits, AI drafting, and simpler freelance management. Switch to SoloPad for £5/mo.',
   alternates: { canonical: 'https://www.solopad.io/compare/plutio-alternative' },
   openGraph: {

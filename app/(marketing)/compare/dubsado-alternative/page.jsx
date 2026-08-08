@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "Dubsado Alternative | SoloPad - £5/mo Freelance Management",
+  title: "Dubsado Alternative — £5/mo Freelance Management",
   description: "Compare Dubsado vs SoloPad. Save £180/year with SoloPad's all-in-one freelance management tool. Invoices, contracts, proposals, CRM, time tracking & more.",
   alternates: { canonical: "https://www.solopad.io/compare/dubsado-alternative" },
   openGraph: {

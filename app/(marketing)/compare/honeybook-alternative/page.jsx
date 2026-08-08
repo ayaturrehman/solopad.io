@@ -1,5 +1,5 @@
 export const metadata = {
-  title: 'Best HoneyBook Alternative for Freelancers (2026) | SoloPad',
+  title: 'Best HoneyBook Alternative for Freelancers (2026)',
   description:
     'Looking for a HoneyBook alternative? SoloPad is the cheaper freelance CRM for invoices, contracts, proposals & AI drafting — from £5/mo. Ideal HoneyBook alternative UK freelancers actually use.',
   alternates: { canonical: 'https://www.solopad.io/compare/honeybook-alternative' },

@@ -1,5 +1,5 @@
 export const metadata = {
-  title: 'Bonsai Alternative for Freelancers | SoloPad',
+  title: 'Bonsai Alternative for Freelancers',
   description: 'Compare Bonsai vs SoloPad. See why 2000+ freelancers switched. All features for £5/mo vs Bonsai\'s expensive per-user pricing and limited Basic plan.',
   alternates: { canonical: 'https://www.solopad.io/compare/bonsai-alternative' },
   openGraph: {
