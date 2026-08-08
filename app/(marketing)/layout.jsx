@@ -11,7 +11,7 @@ export const metadata = {
     title: "SoloPad — All-in-One Freelance Invoice, Contract & Proposal Software",
     description:
       "Invoices, contracts, proposals, CRM, scheduling & client portal for freelancers. AI drafting included. Starting at £5/mo.",
-    url: "https://solopad.io",
+    url: "https://www.solopad.io",
     siteName: "SoloPad",
     type: "website",
   },
@@ -24,7 +24,7 @@ export const metadata = {
       "Everything freelancers need to manage clients and get paid. AI drafting included. Starting at £5/mo.",
   },
   alternates: {
-    canonical: "https://solopad.io",
+    canonical: "https://www.solopad.io",
   },
 };
 

@@ -12,12 +12,15 @@ export const metadata = {
   },
   description:
     "Invoices, contracts, proposals, CRM, scheduling, time tracking & client portal for freelancers. AI drafting included. Starting at £5/mo. Try free for 30 days.",
-  metadataBase: new URL("https://solopad.io"),
+  metadataBase: new URL("https://www.solopad.io"),
+  alternates: {
+    canonical: "https://www.solopad.io",
+  },
   openGraph: {
     title: "SoloPad — All-in-One Freelance Invoice, Contract & Proposal Software",
     description:
       "Invoices, contracts, proposals, CRM, scheduling & client portal for freelancers. AI drafting included. Starting at £5/mo.",
-    url: "https://solopad.io",
+    url: "https://www.solopad.io",
     siteName: "SoloPad",
     type: "website",
   },
@@ -61,8 +64,8 @@ export default function RootLayout({ children }) {
                 {
                   "@type": "Organization",
                   name: "SoloPad",
-                  url: "https://solopad.io",
-                  logo: "https://solopad.io/logo.png",
+                  url: "https://www.solopad.io",
+                  logo: "https://www.solopad.io/logo.png",
                   sameAs: [
                     "https://twitter.com/solopad_io",
                     "https://instagram.com/solopad.io"
@@ -72,7 +75,7 @@ export default function RootLayout({ children }) {
                 {
                   "@type": "SoftwareApplication",
                   name: "SoloPad",
-                  url: "https://solopad.io",
+                  url: "https://www.solopad.io",
                   applicationCategory: "BusinessApplication",
                   operatingSystem: "Web",
                   offers: {

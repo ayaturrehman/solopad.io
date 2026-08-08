@@ -1,7 +1,8 @@
 import { getAllPosts } from "@/lib/blog";
+import { SITE_URL } from "@/lib/site";
 
 export default function sitemap() {
-  const baseUrl = "https://solopad.io";
+  const baseUrl = SITE_URL;
 
   // Marketing pages — these are the only pages Google should index
   const marketingPages = [

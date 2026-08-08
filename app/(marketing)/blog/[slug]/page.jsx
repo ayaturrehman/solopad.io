@@ -16,11 +16,11 @@ export async function generateMetadata({ params }) {
   return {
     title: post.metaTitle,
     description: post.metaDescription,
-    alternates: { canonical: `https://solopad.io/blog/${post.slug}` },
+    alternates: { canonical: `https://www.solopad.io/blog/${post.slug}` },
     openGraph: {
       title: post.metaTitle,
       description: post.metaDescription,
-      url: `https://solopad.io/blog/${post.slug}`,
+      url: `https://www.solopad.io/blog/${post.slug}`,
       type: "article",
       publishedTime: post.publishedAt,
       authors: [post.author],
@@ -158,18 +158,34 @@ export default async function BlogPostPage({ params }) {
         headline: post.title,
         description: post.metaDescription,
         datePublished: post.publishedAt,
+        dateModified: post.publishedAt,
         author: { "@type": "Person", name: post.author },
-        publisher: { "@type": "Organization", name: "SoloPad", url: "https://solopad.io" },
-        mainEntityOfPage: `https://solopad.io/blog/${post.slug}`,
+        publisher: { "@type": "Organization", name: "SoloPad", url: "https://www.solopad.io" },
+        mainEntityOfPage: `https://www.solopad.io/blog/${post.slug}`,
       },
       {
         "@type": "BreadcrumbList",
         itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Home", item: "https://solopad.io" },
-          { "@type": "ListItem", position: 2, name: "Blog", item: "https://solopad.io/blog" },
-          { "@type": "ListItem", position: 3, name: post.title, item: `https://solopad.io/blog/${post.slug}` },
+          { "@type": "ListItem", position: 1, name: "Home", item: "https://www.solopad.io" },
+          { "@type": "ListItem", position: 2, name: "Blog", item: "https://www.solopad.io/blog" },
+          { "@type": "ListItem", position: 3, name: post.title, item: `https://www.solopad.io/blog/${post.slug}` },
         ],
       },
+      ...(post.faq?.length
+        ? [
+            {
+              "@type": "FAQPage",
+              mainEntity: post.faq.map((item) => ({
+                "@type": "Question",
+                name: item.question,
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: item.answer,
+                },
+              })),
+            },
+          ]
+        : []),
     ],
   };
 

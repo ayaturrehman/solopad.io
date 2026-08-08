@@ -1,16 +1,16 @@
 export const metadata = {
   title: 'Bonsai Alternative for Freelancers | SoloPad',
   description: 'Compare Bonsai vs SoloPad. See why 2000+ freelancers switched. All features for £5/mo vs Bonsai\'s expensive per-user pricing and limited Basic plan.',
-  canonical: 'https://solopad.io/compare/bonsai-alternative',
+  alternates: { canonical: 'https://www.solopad.io/compare/bonsai-alternative' },
   openGraph: {
     title: 'Bonsai Alternative for Freelancers | SoloPad',
     description: 'Compare Bonsai vs SoloPad. See why freelancers switch to the £5/mo all-in-one platform.',
-    url: 'https://solopad.io/compare/bonsai-alternative',
+    url: 'https://www.solopad.io/compare/bonsai-alternative',
     siteName: 'SoloPad',
     type: 'article',
     images: [
       {
-        url: 'https://solopad.io/og-bonsai-comparison.png',
+        url: 'https://www.solopad.io/og-bonsai-comparison.png',
         width: 1200,
         height: 630,
         alt: 'Bonsai vs SoloPad Comparison',
@@ -41,7 +41,7 @@ const jsonLd = {
         name: 'SoloPad',
         logo: {
           '@type': 'ImageObject',
-          url: 'https://solopad.io/logo.svg',
+          url: 'https://www.solopad.io/logo.svg',
           width: 250,
           height: 60,
         },
@@ -54,19 +54,19 @@ const jsonLd = {
           '@type': 'ListItem',
           position: 1,
           name: 'Home',
-          item: 'https://solopad.io',
+          item: 'https://www.solopad.io',
         },
         {
           '@type': 'ListItem',
           position: 2,
           name: 'Compare',
-          item: 'https://solopad.io/compare',
+          item: 'https://www.solopad.io/compare',
         },
         {
           '@type': 'ListItem',
           position: 3,
           name: 'Bonsai Alternative',
-          item: 'https://solopad.io/compare/bonsai-alternative',
+          item: 'https://www.solopad.io/compare/bonsai-alternative',
         },
       ],
     },

@@ -1,15 +1,15 @@
 export const metadata = {
   title: 'Moxie Alternative for Freelancers | SoloPad',
   description: 'Compare SoloPad to Moxie. We offer all the features you need at £5/mo including AI drafting, contracts, proposals, invoicing, CRM, time tracking, and more.',
-  canonical: 'https://solopad.io/compare/moxie-alternative',
+  alternates: { canonical: 'https://www.solopad.io/compare/moxie-alternative' },
   openGraph: {
     title: 'Moxie Alternative for Freelancers | SoloPad',
     description: 'Compare SoloPad to Moxie. Better pricing, AI drafting, and simpler setup.',
-    url: 'https://solopad.io/compare/moxie-alternative',
+    url: 'https://www.solopad.io/compare/moxie-alternative',
     type: 'article',
     images: [
       {
-        url: 'https://solopad.io/og-moxie-comparison.jpg',
+        url: 'https://www.solopad.io/og-moxie-comparison.jpg',
         width: 1200,
         height: 630,
         alt: 'SoloPad vs Moxie Comparison',
@@ -75,20 +75,20 @@ export default function MoxieAlternativePage() {
             "@type": "Article",
             "headline": "Moxie Alternative for Freelancers",
             "description": "Compare SoloPad to Moxie. Better pricing, AI drafting, and all features on one plan.",
-            "image": "https://solopad.io/og-moxie-comparison.jpg",
+            "image": "https://www.solopad.io/og-moxie-comparison.jpg",
             "datePublished": "2026-03-23",
             "dateModified": "2026-03-23",
             "author": {
               "@type": "Organization",
               "name": "SoloPad",
-              "url": "https://solopad.io"
+              "url": "https://www.solopad.io"
             },
             "publisher": {
               "@type": "Organization",
               "name": "SoloPad",
               "logo": {
                 "@type": "ImageObject",
-                "url": "https://solopad.io/logo.png"
+                "url": "https://www.solopad.io/logo.png"
               }
             }
           },
@@ -99,19 +99,19 @@ export default function MoxieAlternativePage() {
                 "@type": "ListItem",
                 "position": 1,
                 "name": "Home",
-                "item": "https://solopad.io"
+                "item": "https://www.solopad.io"
               },
               {
                 "@type": "ListItem",
                 "position": 2,
                 "name": "Compare",
-                "item": "https://solopad.io/compare"
+                "item": "https://www.solopad.io/compare"
               },
               {
                 "@type": "ListItem",
                 "position": 3,
                 "name": "Moxie Alternative",
-                "item": "https://solopad.io/compare/moxie-alternative"
+                "item": "https://www.solopad.io/compare/moxie-alternative"
               }
             ]
           },

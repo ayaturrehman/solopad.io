@@ -1,15 +1,17 @@
 export const metadata = {
-  title: 'HoneyBook Alternative for Freelancers | SoloPad',
-  description: 'Why thousands of solo freelancers are switching from HoneyBook to SoloPad. Compare pricing, features, and discover why SoloPad saves you £660/year.',
-  canonical: 'https://solopad.io/compare/honeybook-alternative',
+  title: 'Best HoneyBook Alternative for Freelancers (2026) | SoloPad',
+  description:
+    'Looking for a HoneyBook alternative? SoloPad is the cheaper freelance CRM for invoices, contracts, proposals & AI drafting — from £5/mo. Ideal HoneyBook alternative UK freelancers actually use.',
+  alternates: { canonical: 'https://www.solopad.io/compare/honeybook-alternative' },
   openGraph: {
-    title: 'HoneyBook Alternative for Freelancers | SoloPad',
-    description: 'Why thousands of solo freelancers are switching from HoneyBook to SoloPad. Compare pricing, features, and discover why SoloPad saves you £660/year.',
-    url: 'https://solopad.io/compare/honeybook-alternative',
+    title: 'Best HoneyBook Alternative for Freelancers (2026) | SoloPad',
+    description:
+      'Cheaper HoneyBook alternative with invoices, contracts, proposals, CRM, time tracking and AI drafting. From £5/mo — built for solo freelancers.',
+    url: 'https://www.solopad.io/compare/honeybook-alternative',
     type: 'article',
     images: [
       {
-        url: 'https://solopad.io/og-honeybook-comparison.jpg',
+        url: 'https://www.solopad.io/og-honeybook-comparison.jpg',
         width: 1200,
         height: 630,
         alt: 'HoneyBook Alternative Comparison',
@@ -70,15 +72,15 @@ export default function HoneybookAlternativePage() {
                 author: {
                   '@type': 'Organization',
                   name: 'SoloPad',
-                  url: 'https://solopad.io',
+                  url: 'https://www.solopad.io',
                 },
                 publisher: {
                   '@type': 'Organization',
                   name: 'SoloPad',
-                  url: 'https://solopad.io',
+                  url: 'https://www.solopad.io',
                   logo: {
                     '@type': 'ImageObject',
-                    url: 'https://solopad.io/logo.svg',
+                    url: 'https://www.solopad.io/logo.svg',
                   },
                 },
               },
@@ -89,19 +91,19 @@ export default function HoneybookAlternativePage() {
                     '@type': 'ListItem',
                     position: 1,
                     name: 'Home',
-                    item: 'https://solopad.io',
+                    item: 'https://www.solopad.io',
                   },
                   {
                     '@type': 'ListItem',
                     position: 2,
                     name: 'Compare',
-                    item: 'https://solopad.io/compare',
+                    item: 'https://www.solopad.io/compare',
                   },
                   {
                     '@type': 'ListItem',
                     position: 3,
                     name: 'HoneyBook Alternative',
-                    item: 'https://solopad.io/compare/honeybook-alternative',
+                    item: 'https://www.solopad.io/compare/honeybook-alternative',
                   },
                 ],
               },
@@ -146,6 +148,22 @@ export default function HoneybookAlternativePage() {
                     acceptedAnswer: {
                       '@type': 'Answer',
                       text: 'Yes. SoloPad includes time tracking built-in, which HoneyBook doesn\'t offer. This is one of the biggest advantages for freelancers who bill hourly or want to track project time.',
+                    },
+                  },
+                  {
+                    '@type': 'Question',
+                    name: 'Is SoloPad a good HoneyBook alternative for UK freelancers?',
+                    acceptedAnswer: {
+                      '@type': 'Answer',
+                      text: 'Yes. SoloPad is priced in GBP from £5/mo, includes invoices, contracts with e-sign, proposals, CRM, and AI drafting — without US-centric pricing that makes HoneyBook expensive for UK freelancers.',
+                    },
+                  },
+                  {
+                    '@type': 'Question',
+                    name: 'Is there a cheaper HoneyBook alternative with AI drafting?',
+                    acceptedAnswer: {
+                      '@type': 'Answer',
+                      text: 'SoloPad includes AI drafting for proposals and contracts on plans starting at £5/mo. HoneyBook does not offer comparable AI drafting, and its starter plan costs several times more.',
                     },
                   },
                 ],
@@ -197,7 +215,7 @@ export default function HoneybookAlternativePage() {
                 lineHeight: '1.2',
               }}
             >
-              HoneyBook Alternative for Freelancers
+              HoneyBook Alternative for Freelancers (2026)
             </h1>
 
             <p
@@ -818,6 +836,14 @@ export default function HoneybookAlternativePage() {
               {
                 q: 'Does SoloPad have time tracking?',
                 a: 'Yes. SoloPad includes time tracking built-in. This is one of the biggest advantages for freelancers who bill hourly or want to track project time. HoneyBook doesn\'t offer this at all.',
+              },
+              {
+                q: 'Is SoloPad a good HoneyBook alternative for UK freelancers?',
+                a: 'Yes. SoloPad is priced in GBP from £5/mo and includes invoices, contracts with e-sign, proposals, CRM, and AI drafting — without US-centric pricing that makes HoneyBook expensive in the UK.',
+              },
+              {
+                q: 'Is there a cheaper HoneyBook alternative with AI drafting?',
+                a: 'SoloPad includes AI drafting for proposals and contracts starting at £5/mo. HoneyBook does not offer comparable AI drafting, and its starter plan costs several times more.',
               },
             ].map((item, idx) => (
               <details

@@ -6,7 +6,7 @@ export const metadata = {
   title: "Blog — Freelance Tips, Guides & Product Updates",
   description:
     "Guides on freelance proposals, contracts, invoicing, pricing, and running your freelance business. Tips from the SoloPad team.",
-  alternates: { canonical: "https://solopad.io/blog" },
+  alternates: { canonical: "https://www.solopad.io/blog" },
 };
 
 function PostIcon({ slug, category, size = 44 }) {

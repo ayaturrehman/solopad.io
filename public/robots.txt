@@ -20,4 +20,4 @@ Disallow: /payment
 Disallow: /p/
 Disallow: /join/
 
-Sitemap: https://solopad.io/sitemap.xml
+Sitemap: https://www.solopad.io/sitemap.xml

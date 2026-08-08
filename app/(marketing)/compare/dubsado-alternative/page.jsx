@@ -1,15 +1,15 @@
 export const metadata = {
   title: "Dubsado Alternative | SoloPad - £5/mo Freelance Management",
   description: "Compare Dubsado vs SoloPad. Save £180/year with SoloPad's all-in-one freelance management tool. Invoices, contracts, proposals, CRM, time tracking & more.",
-  canonical: "https://solopad.io/compare/dubsado-alternative",
+  alternates: { canonical: "https://www.solopad.io/compare/dubsado-alternative" },
   openGraph: {
     title: "Dubsado Alternative | SoloPad - £5/mo Freelance Management",
     description: "Compare Dubsado vs SoloPad. Save £180/year with SoloPad's all-in-one freelance management tool.",
-    url: "https://solopad.io/compare/dubsado-alternative",
+    url: "https://www.solopad.io/compare/dubsado-alternative",
     type: "article",
     images: [
       {
-        url: "https://solopad.io/og-dubsado-comparison.png",
+        url: "https://www.solopad.io/og-dubsado-comparison.png",
         width: 1200,
         height: 630,
         alt: "SoloPad vs Dubsado comparison",
@@ -65,14 +65,14 @@ export default function DubsadoAlternativePage() {
               "author": {
                 "@type": "Organization",
                 "name": "SoloPad",
-                "url": "https://solopad.io"
+                "url": "https://www.solopad.io"
               },
               "publisher": {
                 "@type": "Organization",
                 "name": "SoloPad",
                 "logo": {
                   "@type": "ImageObject",
-                  "url": "https://solopad.io/logo.png"
+                  "url": "https://www.solopad.io/logo.png"
                 }
               }
             },
@@ -83,19 +83,19 @@ export default function DubsadoAlternativePage() {
                   "@type": "ListItem",
                   "position": 1,
                   "name": "Home",
-                  "item": "https://solopad.io"
+                  "item": "https://www.solopad.io"
                 },
                 {
                   "@type": "ListItem",
                   "position": 2,
                   "name": "Compare",
-                  "item": "https://solopad.io/compare"
+                  "item": "https://www.solopad.io/compare"
                 },
                 {
                   "@type": "ListItem",
                   "position": 3,
                   "name": "Dubsado Alternative",
-                  "item": "https://solopad.io/compare/dubsado-alternative"
+                  "item": "https://www.solopad.io/compare/dubsado-alternative"
                 }
               ]
             },
