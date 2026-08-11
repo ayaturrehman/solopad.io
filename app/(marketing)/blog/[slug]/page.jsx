@@ -50,111 +50,24 @@ function SectionIcon() {
 }
 
 const mdxComponents = {
-  h2: (props) => (
-    <h2
-      style={{
-        fontSize: 26,
-        fontWeight: 700,
-        marginTop: 52,
-        marginBottom: 16,
-        lineHeight: 1.35,
-        color: "#111",
-        letterSpacing: "-0.02em",
-        display: "flex",
-        alignItems: "center",
-        gap: 0,
-      }}
-      {...props}
-    />
-  ),
-  h3: (props) => (
-    <h3
-      style={{
-        fontSize: 20,
-        fontWeight: 600,
-        marginTop: 36,
-        marginBottom: 12,
-        lineHeight: 1.4,
-        color: "#222",
-      }}
-      {...props}
-    />
-  ),
-  p: (props) => (
-    <p style={{ fontSize: 17, lineHeight: 1.85, marginBottom: 24, color: "#444", fontWeight: 400 }} {...props} />
-  ),
-  ul: (props) => <ul style={{ marginBottom: 24, paddingLeft: 24 }} {...props} />,
-  ol: (props) => <ol style={{ marginBottom: 24, paddingLeft: 24 }} {...props} />,
-  li: (props) => <li style={{ fontSize: 17, lineHeight: 1.85, marginBottom: 8, color: "#444" }} {...props} />,
-  strong: (props) => <strong style={{ fontWeight: 600, color: "#111" }} {...props} />,
-  a: (props) => (
-    <a
-      style={{
-        color: "#2563EB",
-        textDecoration: "none",
-        borderBottom: "1px solid #93C5FD",
-        transition: "border-color 0.2s, color 0.2s",
-      }}
-      {...props}
-    />
-  ),
-  blockquote: (props) => (
-    <blockquote
-      style={{
-        borderLeft: "3px solid #2563EB",
-        paddingLeft: 24,
-        marginLeft: 0,
-        marginBottom: 24,
-        color: "#555",
-        fontStyle: "italic",
-        fontSize: 18,
-        lineHeight: 1.7,
-      }}
-      {...props}
-    />
-  ),
-  hr: () => (
-    <hr style={{ border: "none", height: 1, background: "linear-gradient(90deg, transparent, #E2E8F0, transparent)", margin: "48px 0" }} />
-  ),
-  img: (props) => (
-    <img
-      {...props}
-      alt={props.alt || ""}
-      style={{
-        width: "100%",
-        height: "auto",
-        borderRadius: 16,
-        border: "1px solid #E2E8F0",
-        margin: "8px 0 32px",
-        background: "#F8FAFC",
-      }}
-      loading="lazy"
-    />
-  ),
+  h2: (props) => <h2 className="bp-h2" {...props} />,
+  h3: (props) => <h3 className="bp-h3" {...props} />,
+  p: (props) => <p className="bp-p" {...props} />,
+  ul: (props) => <ul className="bp-ul" {...props} />,
+  ol: (props) => <ol className="bp-ol" {...props} />,
+  li: (props) => <li className="bp-li" {...props} />,
+  strong: (props) => <strong className="bp-strong" {...props} />,
+  a: (props) => <a className="bp-a" {...props} />,
+  blockquote: (props) => <blockquote className="bp-quote" {...props} />,
+  hr: () => <hr className="bp-hr" />,
+  img: (props) => <img className="bp-img" {...props} alt={props.alt || ""} loading="lazy" />,
   table: (props) => (
-    <div style={{ overflowX: "auto", marginBottom: 28, borderRadius: 12, border: "1px solid #F1F5F9" }}>
-      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 15, lineHeight: 1.6 }} {...props} />
+    <div className="bp-table-wrap">
+      <table className="bp-table" {...props} />
     </div>
   ),
-  th: (props) => (
-    <th
-      style={{
-        textAlign: "left",
-        padding: "12px 16px",
-        borderBottom: "2px solid #E2E8F0",
-        fontWeight: 600,
-        fontSize: 13,
-        color: "#666",
-        textTransform: "uppercase",
-        letterSpacing: "0.05em",
-        background: "#FAFBFC",
-      }}
-      {...props}
-    />
-  ),
-  td: (props) => (
-    <td style={{ padding: "12px 16px", borderBottom: "1px solid #F1F5F9", color: "#444" }} {...props} />
-  ),
+  th: (props) => <th className="bp-th" {...props} />,
+  td: (props) => <td className="bp-td" {...props} />,
 };
 
 export default async function BlogPostPage({ params }) {
@@ -211,6 +124,48 @@ export default async function BlogPostPage({ params }) {
       <style
         dangerouslySetInnerHTML={{
           __html: `
+            .blog-post-page {
+              --bp-fg: #111;
+              --bp-fg-soft: #222;
+              --bp-body: #444;
+              --bp-muted: #555;
+              --bp-faint: #888;
+              --bp-ghost: #999;
+              --bp-card: #ffffff;
+              --bp-card-border: #F1F5F9;
+              --bp-surface: #F8FAFC;
+              --bp-surface-2: #FAFBFC;
+              --bp-line: #E2E8F0;
+              --bp-accent-soft: #EFF6FF;
+              --bp-accent-border: #DBEAFE;
+              --bp-hero-bg: linear-gradient(135deg, #EFF6FF 0%, #F0F4FF 50%, #F8FAFF 100%);
+              --bp-tag-bg: #F8FAFC;
+              --bp-tag-fg: #666;
+              --bp-related-hover-shadow: rgba(0,0,0,0.06);
+              --bp-img-bg: #F8FAFC;
+              --bp-th-fg: #666;
+            }
+            html[data-theme="dark"] .blog-post-page {
+              --bp-fg: #f4f4f5;
+              --bp-fg-soft: #e4e4e7;
+              --bp-body: #a1a1aa;
+              --bp-muted: #a1a1aa;
+              --bp-faint: #a1a1aa;
+              --bp-ghost: #71717a;
+              --bp-card: #18181b;
+              --bp-card-border: #27272a;
+              --bp-surface: #18181b;
+              --bp-surface-2: #111113;
+              --bp-line: #3f3f46;
+              --bp-accent-soft: rgba(37,99,235,0.18);
+              --bp-accent-border: #1e3a5f;
+              --bp-hero-bg: linear-gradient(135deg, #111827 0%, #18181b 55%, #09090b 100%);
+              --bp-tag-bg: #18181b;
+              --bp-tag-fg: #a1a1aa;
+              --bp-related-hover-shadow: rgba(0,0,0,0.4);
+              --bp-img-bg: #111113;
+              --bp-th-fg: #a1a1aa;
+            }
             @keyframes blogFadeUp {
               from { opacity: 0; transform: translateY(20px); }
               to { opacity: 1; transform: translateY(0); }
@@ -220,21 +175,24 @@ export default async function BlogPostPage({ params }) {
               50% { opacity: 0.08; }
               100% { opacity: 0.04; }
             }
-            .blog-post-hero {
-              animation: blogFadeUp 0.6s ease-out;
+            .blog-post-hero { animation: blogFadeUp 0.6s ease-out; }
+            .blog-post-content { animation: blogFadeUp 0.6s ease-out 0.15s both; }
+            .blog-post-footer { animation: blogFadeUp 0.6s ease-out 0.3s both; }
+            .blog-hero-illustration { animation: heroShimmer 4s ease-in-out infinite; }
+            .blog-hero-banner {
+              background: var(--bp-hero-bg);
+              border: 1px solid var(--bp-accent-border);
             }
-            .blog-post-content {
-              animation: blogFadeUp 0.6s ease-out 0.15s both;
-            }
-            .blog-post-footer {
-              animation: blogFadeUp 0.6s ease-out 0.3s both;
-            }
-            .blog-hero-illustration {
-              animation: heroShimmer 4s ease-in-out infinite;
+            .blog-hero-icon {
+              background: var(--bp-card);
+              border: 1px solid var(--bp-accent-border);
             }
             .blog-tag {
               transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
               cursor: default;
+              background: var(--bp-tag-bg);
+              color: var(--bp-tag-fg);
+              border: 1px solid var(--bp-card-border);
             }
             .blog-tag:hover {
               background: #2563EB !important;
@@ -243,49 +201,92 @@ export default async function BlogPostPage({ params }) {
             }
             .blog-related-link {
               transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+              background: var(--bp-card);
+              border: 1px solid var(--bp-card-border);
             }
             .blog-related-link:hover {
               transform: translateY(-3px);
-              box-shadow: 0 8px 24px rgba(0,0,0,0.06);
-              border-color: #DBEAFE !important;
+              box-shadow: 0 8px 24px var(--bp-related-hover-shadow);
+              border-color: var(--bp-accent-border) !important;
             }
             .blog-related-link:hover .related-icon-wrap {
-              background: #EFF6FF !important;
+              background: var(--bp-accent-soft) !important;
               transform: scale(1.05);
             }
             .related-icon-wrap {
               transition: background 0.2s ease, transform 0.2s ease;
+              background: var(--bp-surface);
             }
-            .blog-cta-section {
-              transition: transform 0.2s ease;
-            }
-            .blog-cta-section:hover {
-              transform: scale(1.01);
-            }
-            .blog-cta-btn {
-              transition: transform 0.15s ease, box-shadow 0.15s ease;
-            }
+            .blog-cta-section { transition: transform 0.2s ease; }
+            .blog-cta-section:hover { transform: scale(1.01); }
+            .blog-cta-btn { transition: transform 0.15s ease, box-shadow 0.15s ease; }
             .blog-cta-btn:hover {
               transform: translateY(-2px);
               box-shadow: 0 8px 24px rgba(37,99,235,0.3);
             }
             .blog-back-link {
               transition: color 0.2s ease;
+              color: var(--bp-ghost);
             }
-            .blog-back-link:hover {
-              color: #2563EB !important;
+            .blog-back-link:hover { color: #2563EB !important; }
+            .blog-back-link:hover svg { transform: translateX(-2px); }
+            .blog-back-link svg { transition: transform 0.2s ease; }
+
+            .bp-h2 {
+              font-size: 26px; font-weight: 700; margin-top: 52px; margin-bottom: 16px;
+              line-height: 1.35; color: var(--bp-fg); letter-spacing: -0.02em;
+              display: flex; align-items: center; gap: 0;
             }
-            .blog-back-link:hover svg {
-              transform: translateX(-2px);
+            .bp-h3 {
+              font-size: 20px; font-weight: 600; margin-top: 36px; margin-bottom: 12px;
+              line-height: 1.4; color: var(--bp-fg-soft);
             }
-            .blog-back-link svg {
-              transition: transform 0.2s ease;
+            .bp-p {
+              font-size: 17px; line-height: 1.85; margin-bottom: 24px;
+              color: var(--bp-body); font-weight: 400;
+            }
+            .bp-ul, .bp-ol { margin-bottom: 24px; padding-left: 24px; }
+            .bp-li {
+              font-size: 17px; line-height: 1.85; margin-bottom: 8px; color: var(--bp-body);
+            }
+            .bp-strong { font-weight: 600; color: var(--bp-fg); }
+            .bp-a {
+              color: #2563EB; text-decoration: none; border-bottom: 1px solid #93C5FD;
+              transition: border-color 0.2s, color 0.2s;
+            }
+            html[data-theme="dark"] .bp-a { border-bottom-color: #1e3a5f; color: #60a5fa; }
+            .bp-quote {
+              border-left: 3px solid #2563EB; padding-left: 24px; margin-left: 0;
+              margin-bottom: 24px; color: var(--bp-muted); font-style: italic;
+              font-size: 18px; line-height: 1.7;
+            }
+            .bp-hr {
+              border: none; height: 1px; margin: 48px 0;
+              background: linear-gradient(90deg, transparent, var(--bp-line), transparent);
+            }
+            .bp-img {
+              width: 100%; height: auto; border-radius: 16px;
+              border: 1px solid var(--bp-line); margin: 8px 0 32px;
+              background: var(--bp-img-bg);
+            }
+            .bp-table-wrap {
+              overflow-x: auto; margin-bottom: 28px; border-radius: 12px;
+              border: 1px solid var(--bp-card-border);
+            }
+            .bp-table { width: 100%; border-collapse: collapse; font-size: 15px; line-height: 1.6; }
+            .bp-th {
+              text-align: left; padding: 12px 16px; border-bottom: 2px solid var(--bp-line);
+              font-weight: 600; font-size: 13px; color: var(--bp-th-fg);
+              text-transform: uppercase; letter-spacing: 0.05em; background: var(--bp-surface-2);
+            }
+            .bp-td {
+              padding: 12px 16px; border-bottom: 1px solid var(--bp-card-border); color: var(--bp-body);
             }
           `,
         }}
       />
 
-      <main style={{ maxWidth: 680, margin: "0 auto", padding: "60px 24px 120px" }}>
+      <main className="blog-post-page" style={{ maxWidth: 680, margin: "0 auto", padding: "60px 24px 120px" }}>
         <div className="blog-post-hero">
           {/* Back to blog */}
           <Link
@@ -296,7 +297,6 @@ export default async function BlogPostPage({ params }) {
               alignItems: "center",
               gap: 6,
               fontSize: 14,
-              color: "#999",
               textDecoration: "none",
               marginBottom: 40,
               fontWeight: 500,
@@ -310,11 +310,10 @@ export default async function BlogPostPage({ params }) {
 
           {/* Hero banner with illustration */}
           <div
+            className="blog-hero-banner"
             style={{
               position: "relative",
               borderRadius: 20,
-              background: "linear-gradient(135deg, #EFF6FF 0%, #F0F4FF 50%, #F8FAFF 100%)",
-              border: "1px solid #DBEAFE",
               padding: "40px 36px 36px",
               marginBottom: 40,
               overflow: "hidden",
@@ -339,12 +338,11 @@ export default async function BlogPostPage({ params }) {
             <div style={{ position: "relative" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
                 <div
+                  className="blog-hero-icon"
                   style={{
                     width: 48,
                     height: 48,
                     borderRadius: 12,
-                    background: "white",
-                    border: "1px solid #DBEAFE",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -364,7 +362,7 @@ export default async function BlogPostPage({ params }) {
                   >
                     {post.category}
                   </span>
-                  <div style={{ fontSize: 12, color: "#999", marginTop: 2 }}>{post.readingTime}</div>
+                  <div style={{ fontSize: 12, color: "var(--bp-ghost)", marginTop: 2 }}>{post.readingTime}</div>
                 </div>
               </div>
 
@@ -374,7 +372,7 @@ export default async function BlogPostPage({ params }) {
                   fontWeight: 800,
                   lineHeight: 1.2,
                   letterSpacing: "-0.03em",
-                  color: "#111",
+                  color: "var(--bp-fg)",
                   marginBottom: 20,
                   maxWidth: "85%",
                 }}
@@ -382,7 +380,7 @@ export default async function BlogPostPage({ params }) {
                 {post.title}
               </h1>
 
-              <div style={{ display: "flex", alignItems: "center", gap: 12, fontSize: 14, color: "#888" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12, fontSize: 14, color: "var(--bp-faint)" }}>
                 <div
                   style={{
                     width: 32,
@@ -400,8 +398,8 @@ export default async function BlogPostPage({ params }) {
                 >
                   {post.author.charAt(0).toUpperCase()}
                 </div>
-                <span style={{ fontWeight: 500, color: "#555" }}>{post.author}</span>
-                <span style={{ color: "#DDD" }}>|</span>
+                <span style={{ fontWeight: 500, color: "var(--bp-muted)" }}>{post.author}</span>
+                <span style={{ color: "var(--bp-line)" }}>|</span>
                 <span>
                   {new Date(post.publishedAt).toLocaleDateString("en-GB", {
                     day: "numeric",
@@ -433,9 +431,6 @@ export default async function BlogPostPage({ params }) {
                     fontWeight: 500,
                     padding: "6px 16px",
                     borderRadius: 100,
-                    background: "#F8FAFC",
-                    color: "#666",
-                    border: "1px solid #F1F5F9",
                   }}
                 >
                   {tag}
@@ -507,7 +502,7 @@ export default async function BlogPostPage({ params }) {
           {/* Related posts */}
           {related.length > 0 && (
             <div style={{ marginTop: 80 }}>
-              <h3 style={{ fontSize: 13, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em", color: "#999", marginBottom: 20 }}>
+              <h3 style={{ fontSize: 13, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--bp-ghost)", marginBottom: 20 }}>
                 Related posts
               </h3>
               <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
@@ -524,10 +519,8 @@ export default async function BlogPostPage({ params }) {
                         gap: 16,
                         padding: "18px 20px",
                         borderRadius: 14,
-                        border: "1px solid #F1F5F9",
                         textDecoration: "none",
                         color: "inherit",
-                        background: "white",
                       }}
                     >
                       <div
@@ -536,7 +529,6 @@ export default async function BlogPostPage({ params }) {
                           width: 44,
                           height: 44,
                           borderRadius: 12,
-                          background: "#F8FAFC",
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
@@ -546,14 +538,14 @@ export default async function BlogPostPage({ params }) {
                         <RelatedIcon size={24} color="#2563EB" />
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <p style={{ fontSize: 15, fontWeight: 600, marginBottom: 2, color: "#222", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                        <p style={{ fontSize: 15, fontWeight: 600, marginBottom: 2, color: "var(--bp-fg-soft)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                           {r.title}
                         </p>
-                        <p style={{ fontSize: 13, color: "#999" }}>
+                        <p style={{ fontSize: 13, color: "var(--bp-ghost)" }}>
                           {r.readingTime} · {r.category}
                         </p>
                       </div>
-                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#CCC" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, color: "var(--bp-ghost)" }}>
                         <path d="M6 4l4 4-4 4" />
                       </svg>
                     </Link>

@@ -24,6 +24,45 @@ export default function BlogPage() {
       <style
         dangerouslySetInnerHTML={{
           __html: `
+            .blog-page {
+              --bp-fg: #111;
+              --bp-fg-soft: #222;
+              --bp-muted: #666;
+              --bp-faint: #999;
+              --bp-ghost: #BBB;
+              --bp-card: #ffffff;
+              --bp-card-border: #F1F5F9;
+              --bp-surface: #FAFBFC;
+              --bp-surface-2: #F8FAFC;
+              --bp-accent-soft: #EFF6FF;
+              --bp-accent-border: #DBEAFE;
+              --bp-hero-grad: linear-gradient(135deg, #111 0%, #2563EB 100%);
+              --bp-featured-bg: linear-gradient(135deg, #EFF6FF 0%, #F8FAFF 100%);
+              --bp-shadow: rgba(0,0,0,0.08);
+              --bp-featured-shadow: rgba(37,99,235,0.1);
+              --bp-dot: #DDD;
+              --bp-divider: #F8FAFC;
+            }
+            html[data-theme="dark"] .blog-page {
+              --bp-fg: #f4f4f5;
+              --bp-fg-soft: #e4e4e7;
+              --bp-muted: #a1a1aa;
+              --bp-faint: #71717a;
+              --bp-ghost: #71717a;
+              --bp-card: #18181b;
+              --bp-card-border: #27272a;
+              --bp-surface: #111113;
+              --bp-surface-2: #18181b;
+              --bp-accent-soft: rgba(37,99,235,0.18);
+              --bp-accent-border: #1e3a5f;
+              --bp-hero-grad: linear-gradient(135deg, #fafafa 0%, #60a5fa 100%);
+              --bp-featured-bg: linear-gradient(135deg, #111827 0%, #18181b 100%);
+              --bp-shadow: rgba(0,0,0,0.35);
+              --bp-featured-shadow: rgba(37,99,235,0.2);
+              --bp-dot: #3f3f46;
+              --bp-divider: #27272a;
+            }
+
             @keyframes fadeUp {
               from { opacity: 0; transform: translateY(24px); }
               to { opacity: 1; transform: translateY(0); }
@@ -39,22 +78,27 @@ export default function BlogPage() {
 
             .blog-card {
               transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+              background: var(--bp-card);
+              border: 1px solid var(--bp-card-border);
+              color: inherit;
             }
             .blog-card:hover {
               transform: translateY(-6px);
-              box-shadow: 0 16px 48px rgba(0,0,0,0.08);
-              border-color: #DBEAFE !important;
+              box-shadow: 0 16px 48px var(--bp-shadow);
+              border-color: var(--bp-accent-border) !important;
             }
             .blog-card:hover .blog-card-icon-wrap {
-              background: #EFF6FF !important;
+              background: var(--bp-accent-soft) !important;
               transform: scale(1.05);
             }
             .blog-featured-card {
               transition: transform 0.3s ease, box-shadow 0.3s ease;
+              background: var(--bp-featured-bg);
+              border: 1px solid var(--bp-accent-border);
             }
             .blog-featured-card:hover {
               transform: translateY(-4px);
-              box-shadow: 0 20px 60px rgba(37,99,235,0.1);
+              box-shadow: 0 20px 60px var(--bp-featured-shadow);
             }
             .blog-featured-card:hover .featured-icon-wrap {
               transform: scale(1.08);
@@ -71,13 +115,19 @@ export default function BlogPage() {
             }
             .blog-card-icon-wrap {
               transition: background 0.25s ease, transform 0.25s ease;
+              background: var(--bp-surface-2);
             }
             .featured-icon-wrap {
               transition: transform 0.3s ease;
+              background: var(--bp-card);
+              border: 1px solid var(--bp-accent-border);
             }
             .blog-cat-pill {
               transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
               cursor: default;
+              background: var(--bp-surface-2);
+              color: var(--bp-muted);
+              border: 1px solid var(--bp-card-border);
             }
             .blog-cat-pill:hover {
               background: #2563EB !important;
@@ -92,10 +142,26 @@ export default function BlogPage() {
               box-shadow: 0 8px 24px rgba(37,99,235,0.25);
             }
             .blog-gradient-text {
-              background: linear-gradient(135deg, #111 0%, #2563EB 100%);
+              background: var(--bp-hero-grad);
               -webkit-background-clip: text;
               -webkit-text-fill-color: transparent;
               background-clip: text;
+            }
+            .blog-eyebrow {
+              background: var(--bp-accent-soft);
+            }
+            .blog-featured-badge {
+              background: var(--bp-card);
+              border: 1px solid var(--bp-accent-border);
+              color: #2563EB;
+            }
+            .blog-meta-pill {
+              background: var(--bp-accent-soft);
+              color: #2563EB;
+            }
+            .blog-cta-box {
+              background: var(--bp-surface);
+              border: 1px solid var(--bp-card-border);
             }
             @media (max-width: 640px) {
               .blog-posts-grid {
@@ -106,17 +172,16 @@ export default function BlogPage() {
         }}
       />
 
-      <main style={{ maxWidth: 1080, margin: "0 auto", padding: "60px 24px 120px" }}>
-        {/* Hero */}
+      <main className="blog-page" style={{ maxWidth: 1080, margin: "0 auto", padding: "60px 24px 120px" }}>
         <div className="blog-hero" style={{ marginBottom: 64, maxWidth: 640 }}>
           <div
+            className="blog-eyebrow"
             style={{
               display: "inline-flex",
               alignItems: "center",
               gap: 8,
               padding: "6px 14px",
               borderRadius: 100,
-              background: "#EFF6FF",
               marginBottom: 20,
             }}
           >
@@ -138,13 +203,12 @@ export default function BlogPage() {
           >
             Freelance tips, guides &amp; comparisons
           </h1>
-          <p style={{ fontSize: 17, color: "#666", lineHeight: 1.6, fontWeight: 400 }}>
+          <p style={{ fontSize: 17, color: "var(--bp-muted)", lineHeight: 1.6, fontWeight: 400 }}>
             Everything you need to run a better freelance business — proposals,
             contracts, invoicing, and more.
           </p>
         </div>
 
-        {/* Featured post */}
         {featured && (
           <Link
             href={`/blog/${featured.slug}`}
@@ -156,8 +220,6 @@ export default function BlogPage() {
               alignItems: "center",
               padding: "40px 40px",
               borderRadius: 20,
-              background: "linear-gradient(135deg, #EFF6FF 0%, #F8FAFF 100%)",
-              border: "1px solid #DBEAFE",
               marginBottom: 56,
               textDecoration: "none",
               color: "inherit",
@@ -165,35 +227,32 @@ export default function BlogPage() {
               overflow: "hidden",
             }}
           >
-            {/* Subtle bg decoration */}
             <div style={{ position: "absolute", top: -80, right: -80, width: 240, height: 240, borderRadius: "50%", background: "rgba(37,99,235,0.04)" }} />
 
             <div style={{ position: "relative" }}>
               <span
+                className="blog-featured-badge"
                 style={{
                   display: "inline-block",
                   fontSize: 11,
                   fontWeight: 700,
                   textTransform: "uppercase",
                   letterSpacing: "0.1em",
-                  color: "#2563EB",
-                  background: "white",
                   padding: "4px 12px",
                   borderRadius: 100,
                   marginBottom: 16,
-                  border: "1px solid #DBEAFE",
                 }}
               >
                 Featured
               </span>
-              <h2 style={{ fontSize: 26, fontWeight: 700, lineHeight: 1.3, marginBottom: 12, letterSpacing: "-0.02em", color: "#111" }}>
+              <h2 style={{ fontSize: 26, fontWeight: 700, lineHeight: 1.3, marginBottom: 12, letterSpacing: "-0.02em", color: "var(--bp-fg)" }}>
                 {featured.title}
               </h2>
-              <p style={{ fontSize: 15, color: "#666", lineHeight: 1.6, marginBottom: 20, maxWidth: 520 }}>
+              <p style={{ fontSize: 15, color: "var(--bp-muted)", lineHeight: 1.6, marginBottom: 20, maxWidth: 520 }}>
                 {featured.excerpt}
               </p>
-              <div style={{ display: "flex", alignItems: "center", gap: 16, fontSize: 13, color: "#999" }}>
-                <span style={{ fontWeight: 500, color: "#2563EB", background: "#EFF6FF", padding: "2px 10px", borderRadius: 100 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 16, fontSize: 13, color: "var(--bp-faint)" }}>
+                <span className="blog-meta-pill" style={{ fontWeight: 500, padding: "2px 10px", borderRadius: 100 }}>
                   {featured.category}
                 </span>
                 <span>{featured.readingTime}</span>
@@ -201,15 +260,12 @@ export default function BlogPage() {
               </div>
             </div>
 
-            {/* Featured icon */}
             <div
               className="featured-icon-wrap"
               style={{
                 width: 100,
                 height: 100,
                 borderRadius: 20,
-                background: "white",
-                border: "1px solid #DBEAFE",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -221,10 +277,9 @@ export default function BlogPage() {
           </Link>
         )}
 
-        {/* Categories filter row */}
         {rest.length > 0 && (
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 32 }}>
-            <span style={{ fontSize: 13, fontWeight: 500, color: "#999", marginRight: 4 }}>Topics:</span>
+            <span style={{ fontSize: 13, fontWeight: 500, color: "var(--bp-faint)", marginRight: 4 }}>Topics:</span>
             {[...new Set(posts.map((p) => p.category))].map((cat) => (
               <span
                 key={cat}
@@ -234,9 +289,6 @@ export default function BlogPage() {
                   fontWeight: 500,
                   padding: "5px 16px",
                   borderRadius: 100,
-                  background: "#F8FAFC",
-                  color: "#666",
-                  border: "1px solid #F1F5F9",
                 }}
               >
                 {cat}
@@ -245,7 +297,6 @@ export default function BlogPage() {
           </div>
         )}
 
-        {/* Posts grid */}
         {rest.length > 0 && (
           <div
             className="blog-posts-grid"
@@ -265,13 +316,9 @@ export default function BlogPage() {
                   flexDirection: "column",
                   padding: "28px",
                   borderRadius: 16,
-                  border: "1px solid #F1F5F9",
                   textDecoration: "none",
-                  color: "inherit",
-                  background: "white",
                 }}
               >
-                {/* Icon + category row */}
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
                   <div
                     className="blog-card-icon-wrap"
@@ -279,7 +326,6 @@ export default function BlogPage() {
                       width: 56,
                       height: 56,
                       borderRadius: 14,
-                      background: "#F8FAFC",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
@@ -289,11 +335,10 @@ export default function BlogPage() {
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <span
+                      className="blog-meta-pill"
                       style={{
                         fontSize: 11,
                         fontWeight: 600,
-                        color: "#2563EB",
-                        background: "#EFF6FF",
                         padding: "3px 10px",
                         borderRadius: 100,
                       }}
@@ -303,14 +348,13 @@ export default function BlogPage() {
                   </div>
                 </div>
 
-                {/* Title */}
                 <h3
                   style={{
                     fontSize: 18,
                     fontWeight: 700,
                     lineHeight: 1.35,
                     marginBottom: 10,
-                    color: "#111",
+                    color: "var(--bp-fg)",
                     letterSpacing: "-0.01em",
                     flex: 1,
                   }}
@@ -318,11 +362,10 @@ export default function BlogPage() {
                   {post.title}
                 </h3>
 
-                {/* Excerpt */}
                 <p
                   style={{
                     fontSize: 14,
-                    color: "#777",
+                    color: "var(--bp-muted)",
                     lineHeight: 1.55,
                     marginBottom: 20,
                     display: "-webkit-box",
@@ -334,20 +377,19 @@ export default function BlogPage() {
                   {post.excerpt}
                 </p>
 
-                {/* Footer */}
                 <div
                   style={{
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
-                    borderTop: "1px solid #F8FAFC",
+                    borderTop: "1px solid var(--bp-divider)",
                     paddingTop: 16,
                     marginTop: "auto",
                   }}
                 >
-                  <div style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 12, color: "#BBB" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 12, color: "var(--bp-ghost)" }}>
                     <span>{post.readingTime}</span>
-                    <span style={{ width: 3, height: 3, borderRadius: "50%", background: "#DDD", display: "inline-block" }} />
+                    <span style={{ width: 3, height: 3, borderRadius: "50%", background: "var(--bp-dot)", display: "inline-block" }} />
                     <span>
                       {new Date(post.publishedAt).toLocaleDateString("en-GB", {
                         day: "numeric",
@@ -369,25 +411,23 @@ export default function BlogPage() {
 
         {posts.length === 0 && (
           <div style={{ textAlign: "center", padding: "80px 24px" }}>
-            <p style={{ fontSize: 17, color: "#999" }}>No posts yet. Check back soon.</p>
+            <p style={{ fontSize: 17, color: "var(--bp-faint)" }}>No posts yet. Check back soon.</p>
           </div>
         )}
 
-        {/* CTA */}
         <div
+          className="blog-cta-box"
           style={{
             marginTop: 80,
             padding: "48px 40px",
             borderRadius: 20,
-            background: "#FAFBFC",
-            border: "1px solid #F1F5F9",
             textAlign: "center",
           }}
         >
-          <p style={{ fontSize: 22, fontWeight: 700, color: "#111", marginBottom: 8, letterSpacing: "-0.02em" }}>
+          <p style={{ fontSize: 22, fontWeight: 700, color: "var(--bp-fg)", marginBottom: 8, letterSpacing: "-0.02em" }}>
             Run your freelance business smarter
           </p>
-          <p style={{ fontSize: 15, color: "#777", marginBottom: 28, lineHeight: 1.6 }}>
+          <p style={{ fontSize: 15, color: "var(--bp-muted)", marginBottom: 28, lineHeight: 1.6 }}>
             Proposals, contracts, invoices, CRM, and AI drafting — all in one place. Starting at £5/mo.
           </p>
           <Link
