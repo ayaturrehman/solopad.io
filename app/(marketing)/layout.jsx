@@ -1,10 +1,6 @@
 import MarketingNav from "@/components/marketing/MarketingNav";
 
 export const metadata = {
-  title: {
-    template: "%s | SoloPad",
-    default: "SoloPad — All-in-One Freelance Invoice, Contract & Proposal Software",
-  },
   description:
     "Invoices, contracts, proposals, CRM, scheduling, time tracking & client portal for freelancers. AI drafting included. Starting at £5/mo. Try free for 30 days.",
   openGraph: {

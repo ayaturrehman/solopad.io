@@ -8,7 +8,7 @@ const kumbhSans = Kumbh_Sans({ subsets: ["latin"], variable: "--font-kumbh-sans"
 export const metadata = {
   title: {
     template: "%s | SoloPad",
-    default: "SoloPad — All-in-One Freelance Invoice, Contract & Proposal Software",
+    default: "Freelance Invoicing, Contracts & Proposals | SoloPad",
   },
   description:
     "Invoices, contracts, proposals, CRM, scheduling, time tracking & client portal for freelancers. AI drafting included. Starting at £5/mo. Try free for 30 days.",

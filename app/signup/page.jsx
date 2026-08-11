@@ -131,9 +131,26 @@ function SignupContent() {
   );
 }
 
+function SignupFallback() {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-zinc-50 px-4">
+      <div className="w-full max-w-sm">
+        <div className="mb-8 flex flex-col items-center">
+          <BrandLogo markClassName="h-8 w-8" />
+          <h1 className="mt-6 text-2xl font-bold text-zinc-900">Create your account</h1>
+          <p className="mt-1 text-sm text-zinc-500">
+            Sign up free for SoloPad — invoicing, contracts, proposals, CRM, and AI
+            drafting for freelancers. No credit card required for your 30-day trial.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function SignupPage() {
   return (
-    <Suspense>
+    <Suspense fallback={<SignupFallback />}>
       <SignupContent />
     </Suspense>
   );

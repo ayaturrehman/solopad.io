@@ -203,9 +203,19 @@ export default function BlogPage() {
           >
             Freelance tips, guides &amp; comparisons
           </h1>
-          <p style={{ fontSize: 17, color: "var(--bp-muted)", lineHeight: 1.6, fontWeight: 400 }}>
+          <p style={{ fontSize: 17, color: "var(--bp-muted)", lineHeight: 1.6, fontWeight: 400, marginBottom: 20 }}>
             Everything you need to run a better freelance business — proposals,
             contracts, invoicing, and more.
+          </p>
+          <p style={{ fontSize: 15, color: "var(--bp-faint)", lineHeight: 1.7, fontWeight: 400, maxWidth: 680 }}>
+            This is where we write down what actually works for solo freelancers and
+            small teams — not theory, but the proposals that won real clients, the
+            contract clauses that prevented real disputes, and the invoicing habits
+            that got people paid faster. We test freelance management tools like
+            HoneyBook, Dubsado, and Bonsai directly against SoloPad so you can see
+            honest pricing and feature comparisons before you commit to a platform.
+            New guides on pricing, client management, and freelance business tools
+            go up regularly, so check back if you don&apos;t see your question answered yet.
           </p>
         </div>
 
