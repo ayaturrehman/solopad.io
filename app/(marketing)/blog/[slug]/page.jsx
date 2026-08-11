@@ -1,8 +1,15 @@
 import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
+import remarkGfm from "remark-gfm";
 import Link from "next/link";
 import { getPostBySlug, getAllSlugs, getAllPosts } from "@/lib/blog";
 import { getBlogIcon, BlogHeroIllustration } from "@/components/blog/BlogIcons";
+
+const mdxOptions = {
+  mdxOptions: {
+    remarkPlugins: [remarkGfm],
+  },
+};
 
 export function generateStaticParams() {
   return getAllSlugs().map((slug) => ({ slug }));
@@ -414,7 +421,7 @@ export default async function BlogPostPage({ params }) {
 
         {/* Post content */}
         <article className="blog-post-content" style={{ marginBottom: 20 }}>
-          <MDXRemote source={post.content} components={mdxComponents} />
+          <MDXRemote source={post.content} components={mdxComponents} options={mdxOptions} />
         </article>
 
         {/* Footer */}
