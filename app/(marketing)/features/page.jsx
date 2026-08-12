@@ -57,7 +57,7 @@ function SectionLabel({ color, children }) {
 
 function SectionHeading({ children }) {
   return (
-    <h2 style={{ fontSize: "clamp(28px, 3.6vw, 44px)", fontWeight: 700, color: CDk, lineHeight: 1.1, letterSpacing: "-0.8px", marginBottom: 18 }}>
+    <h2 style={{ fontSize: "clamp(28px, 3.6vw, 44px)", fontWeight: 600, color: CDk, lineHeight: 1.15, letterSpacing: "-0.022em", marginBottom: 18 }}>
       {children}
     </h2>
   );
@@ -334,7 +334,7 @@ export default function FeaturesPage() {
       />
 
       {/* ── Hero ──────────────────────────────────── */}
-      <section style={{ background: "#F8FAFC", padding: "100px 0 80px", textAlign: "center" }}>
+      <section style={{ background: "#F4EFE6", padding: "100px 0 80px", textAlign: "center" }}>
         <div style={{ maxWidth: "88%", margin: "0 auto" }}>
           {/* Breadcrumb */}
           <nav aria-label="Breadcrumb" style={{ marginBottom: 32 }}>
@@ -348,8 +348,8 @@ export default function FeaturesPage() {
           <h1
             className="fade-up"
             style={{
-              fontSize: "clamp(36px, 5vw, 64px)", fontWeight: 700, color: CDk,
-              lineHeight: 1.06, letterSpacing: "-2px", marginBottom: 20, maxWidth: 800, margin: "0 auto 20px",
+              fontSize: "clamp(36px, 5vw, 64px)", fontWeight: 600, color: CDk,
+              lineHeight: 1.08, letterSpacing: "-0.025em", marginBottom: 20, maxWidth: 800, margin: "0 auto 20px",
             }}
           >
             Everything you need to run your freelance business
@@ -551,7 +551,7 @@ export default function FeaturesPage() {
       <section style={{ padding: "80px 0 100px" }}>
         <div style={{
           maxWidth: "88%", margin: "0 auto",
-          background: "#1E3A8A", borderRadius: 28, padding: "72px 48px",
+          background: "#141B24", borderRadius: 28, padding: "72px 48px",
           textAlign: "center", position: "relative", overflow: "hidden",
         }}>
           <div style={{
@@ -569,7 +569,7 @@ export default function FeaturesPage() {
             Join freelancers who replaced 6+ subscriptions with one app that actually works together.
           </p>
           <a href="/signup" style={{
-            background: "#fff", color: "#1E3A8A", border: "none", cursor: "pointer",
+            background: "#fff", color: "#141B24", border: "none", cursor: "pointer",
             display: "inline-flex", alignItems: "center", gap: 8,
             borderRadius: 10, padding: "14px 32px", fontSize: 16, fontWeight: 700,
             textDecoration: "none", position: "relative",

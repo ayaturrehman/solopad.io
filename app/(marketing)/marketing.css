@@ -1,0 +1,206 @@
+/* SoloPad marketing — editorial type + layout system
+   Display: Newsreader (serif)  |  Body/UI: Source Sans 3
+   Skills: web-typography, web-design-guidelines, frontend-design */
+
+.mk {
+  --mk-ink: #141B24;
+  --mk-muted: #5C6570;
+  --mk-faint: #8A929C;
+  --mk-paper: #F4EFE6;
+  --mk-cream: #FAF6EF;
+  --mk-white: #FFFcf7;
+  --mk-line: #E4DDD2;
+  --mk-navy: #141B24;
+  --mk-navy-2: #1C2530;
+  --mk-blue: #1D4ED8;
+  --mk-orange: #F05A37;
+  --mk-measure: 65ch;
+
+  font-family: var(--font-body), "Source Sans 3", ui-sans-serif, system-ui, sans-serif;
+  font-size: 1.125rem;
+  line-height: 1.6;
+  color: var(--mk-ink);
+  background: var(--mk-paper);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.mk h1,
+.mk h2,
+.mk h3,
+.mk .mk-display {
+  font-family: var(--font-display), Newsreader, Georgia, "Times New Roman", serif;
+  font-weight: 600;
+  letter-spacing: -0.022em;
+  text-wrap: balance;
+  color: var(--mk-ink);
+}
+
+.mk h1 {
+  font-size: clamp(2.25rem, 1.35rem + 3.4vw, 4.35rem);
+  line-height: 1.08;
+}
+
+.mk h2 {
+  font-size: clamp(1.75rem, 1.25rem + 1.6vw, 2.65rem);
+  line-height: 1.15;
+}
+
+.mk h3 {
+  font-size: clamp(1.2rem, 1.1rem + 0.4vw, 1.45rem);
+  line-height: 1.28;
+  font-weight: 600;
+}
+
+.mk a:focus-visible,
+.mk button:focus-visible,
+.mk input:focus-visible,
+.mk summary:focus-visible {
+  outline: 2px solid var(--mk-orange);
+  outline-offset: 3px;
+}
+
+.mk-skip {
+  position: absolute;
+  left: 16px;
+  top: -48px;
+  z-index: 100;
+  background: var(--mk-navy);
+  color: #fff;
+  padding: 8px 14px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 6px;
+}
+
+.mk-skip:focus {
+  top: 12px;
+}
+
+.mk-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.mk-prose {
+  max-width: var(--mk-measure);
+  font-size: 1.125rem;
+  line-height: 1.65;
+}
+
+.mk-prose p + p {
+  margin-top: 1.15em;
+}
+
+.mk-legal {
+  max-width: 42rem;
+  margin: 0 auto;
+  padding: 4.5rem 1.5rem 6rem;
+}
+
+.mk-legal h1 {
+  margin: 0 0 0.5rem;
+}
+
+.mk-legal .mk-meta {
+  font-size: 0.875rem;
+  color: var(--mk-faint);
+  margin: 0 0 2.25rem;
+}
+
+.mk-legal a {
+  color: var(--mk-blue);
+}
+
+.mk-legal h2 {
+  font-size: 1.45rem;
+  margin: 2.25rem 0 0.65rem;
+}
+
+.mk-legal p {
+  color: var(--mk-muted);
+  margin: 0 0 1rem;
+}
+
+.mk-legal .mk-note {
+  margin-top: 2.5rem;
+  padding: 1rem 1.25rem;
+  background: #FFF4EC;
+  border-radius: 10px;
+  font-size: 0.9375rem;
+  color: #9A3412;
+}
+
+/* Homepage inherits the pairing even with inline heading sizes */
+.mk .pk {
+  font-family: inherit;
+  color: var(--mk-ink);
+  background: transparent;
+}
+
+.mk .pk h1,
+.mk .pk h2,
+.mk .pk h3 {
+  font-family: var(--font-display), Newsreader, Georgia, serif !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.022em !important;
+  text-wrap: balance;
+}
+
+.mk .pk h1 {
+  line-height: 1.06 !important;
+}
+
+.mk .pk h2 {
+  line-height: 1.12 !important;
+}
+
+.mk .btn-primary,
+.mk .btn-outline,
+.mk .mn-btn {
+  font-family: var(--font-body), "Source Sans 3", ui-sans-serif, sans-serif;
+}
+
+.mk .pk-final-cta h2,
+.mk .bl-hero h1,
+.mk .bl-cta h2,
+.mk .bl-latest-title,
+.mk .gradient-bg h1,
+.mk .gradient-bg h2,
+.mk .gradient-bg h3 {
+  color: #fff !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mk *,
+  .mk *::before,
+  .mk *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+html[data-theme="dark"] .mk {
+  --mk-ink: #F3EEE6;
+  --mk-muted: #B4BCC4;
+  --mk-faint: #8B949E;
+  --mk-paper: #12151A;
+  --mk-cream: #181C22;
+  --mk-white: #1A1F27;
+  --mk-line: #2A313A;
+}
+
+html[data-theme="dark"] .mk-legal .mk-note {
+  background: rgba(240, 90, 55, 0.12);
+  color: #FDBA74;
+}

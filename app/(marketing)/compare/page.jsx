@@ -76,16 +76,16 @@ export default function ComparePage() {
         dangerouslySetInnerHTML={{
           __html: `
             .compare-page {
-              --cp-fg: #111;
-              --cp-muted: #666;
-              --cp-faint: #999;
-              --cp-card: #F8FAFC;
-              --cp-card-border: #F1F5F9;
-              --cp-surface: #FFFFFF;
-              --cp-hero-bg: linear-gradient(135deg, #EFF6FF 0%, #F8FAFC 100%);
-              --cp-hero-border: #DBEAFE;
-              --cp-cta-bg: #EFF6FF;
-              --cp-accent: #2563EB;
+              --cp-fg: #141B24;
+              --cp-muted: #5C6570;
+              --cp-faint: #8A929C;
+              --cp-card: #FFFcf7;
+              --cp-card-border: #E4DDD2;
+              --cp-surface: #F4EFE6;
+              --cp-hero-bg: #EDE7DB;
+              --cp-hero-border: #E4DDD2;
+              --cp-cta-bg: #EDE7DB;
+              --cp-accent: #1D4ED8;
             }
             html[data-theme="dark"] .compare-page {
               --cp-fg: #f4f4f5;
@@ -131,7 +131,7 @@ export default function ComparePage() {
               <span style={{ color: "var(--cp-muted)", fontSize: 14 }}>Compare</span>
             </nav>
 
-            <h1 style={{ fontSize: 48, fontWeight: 700, color: "var(--cp-fg)", margin: "0 0 16px 0", lineHeight: 1.2 }}>
+            <h1 style={{ fontSize: "clamp(2.25rem, 1.5rem + 2.4vw, 3.25rem)", fontWeight: 600, color: "var(--cp-fg)", margin: "0 0 16px 0", lineHeight: 1.12, letterSpacing: "-0.022em" }}>
               SoloPad Comparisons
             </h1>
             <p style={{ fontSize: 20, color: "var(--cp-muted)", margin: "0 0 20px 0", lineHeight: 1.6, maxWidth: 720 }}>
@@ -232,10 +232,10 @@ export default function ComparePage() {
               style={{
                 display: "inline-block",
                 padding: "14px 32px",
-                backgroundColor: "#2563EB",
+                backgroundColor: "#141B24",
                 color: "#FFFFFF",
                 textDecoration: "none",
-                borderRadius: 6,
+                borderRadius: 8,
                 fontWeight: 600,
                 fontSize: 15,
               }}

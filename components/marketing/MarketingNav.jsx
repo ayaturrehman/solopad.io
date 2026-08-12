@@ -39,61 +39,59 @@ export default function MarketingNav() {
     <>
       <style>{`
         .mn-header {
-          background: rgba(255,255,255,0.92);
-          backdrop-filter: blur(12px);
-          -webkit-backdrop-filter: blur(12px);
-          border-bottom: 1px solid #F1F5F9;
+          background: rgba(244, 239, 230, 0.88);
+          backdrop-filter: blur(14px);
+          -webkit-backdrop-filter: blur(14px);
+          border-bottom: 1px solid #E4DDD2;
           position: sticky;
           top: 0;
           z-index: 50;
-          transition: box-shadow 0.2s ease, background 0.2s ease, border-color 0.2s ease;
         }
         .mn-inner {
-          max-width: 88%;
+          max-width: 1120px;
           margin: 0 auto;
           display: flex;
           align-items: center;
           justify-content: space-between;
           gap: 20px;
-          padding: 14px 0;
+          padding: 14px 24px;
         }
         .mn-links {
           display: flex;
-          gap: 32px;
+          gap: 28px;
         }
         .mn-link {
-          color: #777;
+          color: #5C6570;
           text-decoration: none;
-          font-size: 15px;
+          font-size: 0.9375rem;
           font-weight: 500;
+          letter-spacing: 0.01em;
           transition: color 0.15s;
         }
-        .mn-link:hover { color: #111; }
+        .mn-link:hover { color: #141B24; }
         .mn-actions {
           display: flex;
           align-items: center;
           gap: 12px;
         }
         .mn-btn {
-          background: #1D4ED8;
+          background: #141B24;
           color: #fff;
           border: none;
           cursor: pointer;
           display: inline-flex;
           align-items: center;
           gap: 6px;
-          border-radius: 10px;
-          padding: 8px 16px;
-          font-size: 13px;
-          font-weight: 700;
+          border-radius: 8px;
+          padding: 9px 16px;
+          font-size: 0.875rem;
+          font-weight: 600;
           text-decoration: none;
-          transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
+          transition: background 0.15s, transform 0.15s;
           font-family: inherit;
         }
         .mn-btn:hover {
-          background: #1E40AF;
-          transform: translateY(-1px);
-          box-shadow: 0 6px 20px rgba(29,78,216,0.2);
+          background: #1D4ED8;
         }
         .mn-theme-btn {
           display: inline-flex;
@@ -101,17 +99,16 @@ export default function MarketingNav() {
           justify-content: center;
           width: 38px;
           height: 38px;
-          border-radius: 10px;
-          border: 1px solid #E5E7EB;
-          background: #fff;
+          border-radius: 8px;
+          border: 1px solid #E4DDD2;
+          background: #FAF6EF;
           color: #374151;
           cursor: pointer;
-          transition: background 0.15s, border-color 0.15s, color 0.15s;
           font-family: inherit;
         }
         .mn-theme-btn:hover {
-          background: #F8FAFC;
-          border-color: #D1D5DB;
+          background: #fff;
+          border-color: #D6CFC3;
         }
         .mn-mobile-toggle {
           display: none;
@@ -119,57 +116,57 @@ export default function MarketingNav() {
           justify-content: center;
           width: 42px;
           height: 42px;
-          border: 1px solid #E5E7EB;
-          background: #fff;
-          color: #111;
+          border: 1px solid #E4DDD2;
+          background: #FAF6EF;
+          color: #141B24;
           cursor: pointer;
-          border-radius: 10px;
+          border-radius: 8px;
           font-family: inherit;
         }
         .mn-mobile-panel {
           display: none;
           flex-direction: column;
-          gap: 10px;
+          gap: 12px;
           width: 100%;
-          border-top: 1px solid #F1F5F9;
-          padding: 14px 0 4px;
+          border-top: 1px solid #E4DDD2;
+          padding: 14px 24px 16px;
         }
         .mn-mobile-panel a {
-          color: #111;
+          color: #141B24;
           text-decoration: none;
-          font-size: 15px;
+          font-size: 1.0625rem;
           font-weight: 600;
         }
 
         html[data-theme="dark"] .mn-header {
-          background: rgba(9,9,11,0.9);
-          border-bottom-color: #27272a;
+          background: rgba(18, 21, 26, 0.9);
+          border-bottom-color: #2A313A;
         }
         html[data-theme="dark"] .mn-link { color: #a1a1aa; }
         html[data-theme="dark"] .mn-link:hover { color: #fafafa; }
+        html[data-theme="dark"] .mn-btn { background: #F3EEE6; color: #141B24; }
+        html[data-theme="dark"] .mn-btn:hover { background: #fff; }
         html[data-theme="dark"] .mn-theme-btn,
         html[data-theme="dark"] .mn-mobile-toggle {
-          background: #18181b;
+          background: #181C22;
           border-color: #3f3f46;
           color: #e4e4e7;
         }
         html[data-theme="dark"] .mn-theme-btn:hover {
           background: #27272a;
-          border-color: #52525b;
         }
         html[data-theme="dark"] .mn-mobile-panel {
-          border-top-color: #27272a;
+          border-top-color: #2A313A;
         }
         html[data-theme="dark"] .mn-mobile-panel a {
           color: #f4f4f5;
         }
 
         @media (max-width: 1100px) {
-          .mn-inner { max-width: calc(100% - 40px); }
-          .mn-links { gap: 20px; }
+          .mn-links { gap: 18px; }
         }
         @media (max-width: 640px) {
-          .mn-inner { max-width: calc(100% - 24px); justify-content: space-between; gap: 12px; }
+          .mn-inner { padding: 12px 16px; }
           .mn-links { display: none; }
           .mn-actions .mn-link { display: none; }
           .mn-actions .mn-btn { width: auto; padding: 10px 16px; font-size: 14px; white-space: nowrap; }
@@ -188,8 +185,8 @@ export default function MarketingNav() {
               textClassName="text-[20px] font-black text-[#111111] sm:text-[24px]"
             />
           </Link>
-          <nav className="mn-links">
-            <Link href="/#features" className="mn-link">Features</Link>
+          <nav className="mn-links" aria-label="Main">
+            <Link href="/features" className="mn-link">Features</Link>
             <Link href="/#how-it-works" className="mn-link">How it works</Link>
             <Link href="/#pricing" className="mn-link">Pricing</Link>
             <Link href="/blog" className="mn-link">Blog</Link>
@@ -218,14 +215,14 @@ export default function MarketingNav() {
               {mobileOpen ? <X size={18} /> : <Menu size={18} />}
             </button>
           </div>
-          <div className={`mn-mobile-panel ${mobileOpen ? "mn-open" : ""}`}>
-            <Link href="/#features" onClick={() => setMobileOpen(false)}>Features</Link>
-            <Link href="/#how-it-works" onClick={() => setMobileOpen(false)}>How it works</Link>
-            <Link href="/#pricing" onClick={() => setMobileOpen(false)}>Pricing</Link>
-            <Link href="/blog" onClick={() => setMobileOpen(false)}>Blog</Link>
-            <Link href={authHref} onClick={() => setMobileOpen(false)}>Log in</Link>
-          </div>
         </div>
+        <nav className={`mn-mobile-panel ${mobileOpen ? "mn-open" : ""}`} aria-label="Mobile">
+          <Link href="/features" onClick={() => setMobileOpen(false)}>Features</Link>
+          <Link href="/#how-it-works" onClick={() => setMobileOpen(false)}>How it works</Link>
+          <Link href="/#pricing" onClick={() => setMobileOpen(false)}>Pricing</Link>
+          <Link href="/blog" onClick={() => setMobileOpen(false)}>Blog</Link>
+          <Link href={authHref} onClick={() => setMobileOpen(false)}>Log in</Link>
+        </nav>
       </header>
     </>
   );

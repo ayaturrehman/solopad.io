@@ -41,7 +41,7 @@ const ProIcon = () => (
 
 export default function MoxieAlternativePage() {
   return (
-    <div style={{ fontFamily: '"Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif' }}>
+    <div>
       <style dangerouslySetInnerHTML={{__html: `
         @keyframes fadeUp {
           from {
@@ -63,7 +63,7 @@ export default function MoxieAlternativePage() {
         .fade-up-delay-3 { animation-delay: 0.3s; opacity: 0; }
         
         .gradient-bg {
-          background: linear-gradient(135deg, #2563EB 0%, #1E40AF 100%);
+          background: #141B24;
         }
       `}} />
 

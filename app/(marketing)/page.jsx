@@ -4,12 +4,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import BrandLogo from "@/components/shared/BrandLogo";
 import {
   Zap, ArrowRight, Check, FileText,
-  CreditCard, Clock, Users, Menu, X,
+  CreditCard, Clock, Users,
   Link2, PenTool, CheckSquare, Calendar,
-  DollarSign, UserPlus, Printer, TrendingUp,
+  UserPlus, Printer, TrendingUp,
 } from "lucide-react";
 import { PLAN_ORDER, getPlan } from "@/lib/plans";
 
@@ -24,9 +23,6 @@ const CLt   = "#EFF6FF";
 const O     = "#EA580C";
 const OLt   = "#FFF7ED";
 const PLt   = "#EDE9FE";
-const YLt   = "#FEF3C7";
-const BLt   = "#EAF2FF";
-const BrLt  = "#F3E8D8";
 const CDk   = "#111111";
 const CMute = "#777777";
 const PRT = "#fcffbf8c";
@@ -196,7 +192,6 @@ function ParallaxImageCard({
 export default function LandingPage() {
   const { data: session } = useSession();
   const authHref = session ? "/dashboard" : "/login";
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [annual, setAnnual] = useState(false);
   const [openFaq, setOpenFaq] = useState(null);
   useFadeIn();
@@ -207,7 +202,7 @@ export default function LandingPage() {
     <>
       <style>{`
         *, *::before, *::after { box-sizing: border-box; }
-        .pk { font-family: 'Kumbh Sans', 'Inter', -apple-system, sans-serif; color: ${CDk}; background: #fff; }
+        .pk { font-family: inherit; color: ${CDk}; background: transparent; }
 
         .btn-primary {
           background: ${C}; color: #fff; border: none; cursor: pointer;
@@ -282,7 +277,7 @@ export default function LandingPage() {
         .pk-photo-strip { display:grid; grid-template-columns:1.4fr 1fr 1fr; gap:16px; border-radius:24px; overflow:hidden; }
         .pk-price-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:20px; align-items:center; }
         .pk-price-card-highlight { transform:scale(1.04); }
-        .pk-final-cta { background:#1E3A8A; border-radius:28px; padding:72px 48px; text-align:center; position:relative; overflow:hidden; }
+        .pk-final-cta { background:#141B24; border-radius:28px; padding:72px 48px; text-align:center; position:relative; overflow:hidden; }
         .pk-split-intro { display:grid; gap:28px; align-items:end; }
         .pk-split-intro-problem { grid-template-columns:minmax(0, 1.1fr) minmax(280px, .9fr); }
         .pk-split-intro-setup { grid-template-columns:minmax(0, 1.15fr) minmax(280px, .85fr); }
@@ -384,7 +379,7 @@ export default function LandingPage() {
         {/* Nav is now provided by MarketingLayout */}
 
         {/* ── Hero ────────────────────────────────────── */}
-        <section style={{ background:BLt, overflow:"hidden", padding:"120px 0 48px", position:"relative" }}>
+        <section style={{ background:"#F4EFE6", overflow:"hidden", padding:"96px 0 48px", position:"relative" }}>
           <div className="pk-hero-shell pk-section-stage" data-pk-section-drift>
             <div className="pk-hero-grid">
               <div className="pk-hero-copy">
@@ -399,14 +394,14 @@ export default function LandingPage() {
                 </div>
 
                 <div className="pk-reveal pk-d1">
-                  <h1 style={{ fontSize:"clamp(48px, 6.4vw, 88px)", fontWeight:700, lineHeight:0.98, letterSpacing:"-2.8px", color:CDk, marginBottom:22, maxWidth:760 }}>
+                  <h1 style={{ fontSize:"clamp(44px, 6vw, 80px)", fontWeight:600, lineHeight:1.06, letterSpacing:"-0.03em", color:CDk, marginBottom:22, maxWidth:760 }}>
                     Run your freelance
                     <br />
                     business from
                     <br />
                     <span style={{ color:C }}>one place.</span>
                   </h1>
-                  <p style={{ fontSize:19, color:"#52525B", lineHeight:1.74, maxWidth:560, marginBottom:32 }}>
+                  <p style={{ fontSize:19, color:"#52525B", lineHeight:1.65, maxWidth:"34em", marginBottom:32 }}>
                     Proposals, contracts, invoices, time tracking, scheduling, and a client portal — everything you need to manage clients and get paid. Starting at £5/mo.
                   </p>
                 </div>
@@ -580,12 +575,12 @@ export default function LandingPage() {
         </section>
 
         {/* ── Problem ──────────────────────────────────── */}
-        <section style={{ background:"#F8FAFC", padding:"120px 0" }}>
+        <section style={{ background:"#EDE7DB", padding:"120px 0" }}>
           <div className="pk-shell pk-section-stage" data-pk-section-drift>
             <div className="pk-reveal pk-split-intro pk-split-intro-problem" style={{ marginBottom:44 }}>
               <div>
                 <p style={{ fontSize:12, fontWeight:700, color:C, textTransform:"uppercase", letterSpacing:1.5, marginBottom:14 }}>The problem</p>
-                <h2 style={{ fontSize:"clamp(34px, 4.6vw, 64px)", fontWeight:700, color:CDk, letterSpacing:"-1.6px", lineHeight:1.02, marginBottom:14 }}>
+                <h2 style={{ fontSize:"clamp(32px, 4.4vw, 58px)", fontWeight:600, color:CDk, letterSpacing:"-0.025em", lineHeight:1.12, marginBottom:14 }}>
                   Freelancing is great.
                   <br />
                   <span style={{ color:"#94A3B8" }}>Client management isn&apos;t.</span>
@@ -792,7 +787,7 @@ export default function LandingPage() {
         </section>
 
         {/* ── Feature 3 — Tasks ────────────────────────── */}
-        <section style={{ background:BLt, padding:"120px 0", position:"relative", overflow:"hidden" }}>
+        <section style={{ background:"#EDE7DB", padding:"120px 0", position:"relative", overflow:"hidden" }}>
           <ParallaxImageCard
             src="https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?w=720&h=960&q=80&auto=format&fit=crop"
             alt="Project planning notes and laptop"
@@ -959,7 +954,7 @@ export default function LandingPage() {
         </section>
 
         {/* ── Everything You Need ──────────────────────── */}
-        <section style={{ background:"#F8FAFC", padding:"120px 0" }}>
+        <section style={{ background:"#EDE7DB", padding:"120px 0" }}>
           <div className="pk-shell pk-section-stage" data-pk-section-drift>
             <div className="pk-reveal" style={{ textAlign:"center", marginBottom:52 }}>
               <p style={{ fontSize:12, fontWeight:700, color:C, textTransform:"uppercase", letterSpacing:1.5, marginBottom:12 }}>Everything you need</p>
@@ -1305,7 +1300,7 @@ export default function LandingPage() {
 
         {/* ── Email Capture ────────────────────────────── */}
         {/* TODO: Connect to ConvertKit/Mailchimp */}
-        <section style={{ background:"#F8FAFC", padding:"80px 0", borderTop:"1px solid #EBEBEB", borderBottom:"1px solid #EBEBEB" }}>
+        <section style={{ background:"#EDE7DB", padding:"80px 0", borderTop:"1px solid #E4DDD2", borderBottom:"1px solid #E4DDD2" }}>
           <div className="pk-shell">
             <div className="pk-reveal" style={{ maxWidth:520, margin:"0 auto", textAlign:"center" }}>
               <p style={{ fontSize:20, fontWeight:700, color:CDk, marginBottom:8 }}>Get freelancer tips &amp; product updates</p>
@@ -1314,10 +1309,14 @@ export default function LandingPage() {
                 onSubmit={(e) => { e.preventDefault(); const email = e.target.email.value; if (email) { fetch("/api/newsletter/subscribe", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ email }) }).catch(() => {}); e.target.reset(); } }}
                 style={{ display:"flex", gap:10, flexWrap:"wrap", justifyContent:"center" }}
               >
+                <label htmlFor="mk-newsletter-email" className="mk-sr-only">Email address</label>
                 <input
+                  id="mk-newsletter-email"
                   type="email"
                   name="email"
                   required
+                  autoComplete="email"
+                  aria-required="true"
                   placeholder="your@email.com"
                   style={{ flex:"1 1 240px", minWidth:0, border:"1.5px solid #D1D5DB", borderRadius:10, padding:"12px 16px", fontSize:15, outline:"none", color:CDk, background:"#fff" }}
                 />
@@ -1342,7 +1341,7 @@ export default function LandingPage() {
                     <span style={{ fontSize:13, fontWeight:600, color:"#fff" }}>Early access — free forever on one project</span>
                   </div>
                 </div>
-                <h2 style={{ fontSize:"clamp(28px, 4vw, 52px)", fontWeight:900, color:"#fff", letterSpacing:"-1px", marginBottom:16, lineHeight:1.1 }}>
+                <h2 style={{ fontSize:"clamp(28px, 4vw, 52px)", fontWeight:600, color:"#fff", letterSpacing:"-0.025em", marginBottom:16, lineHeight:1.12 }}>
                   Ready to stop chasing?
                 </h2>
                 <p style={{ fontSize:17, color:"rgba(255,255,255,.8)", maxWidth:460, margin:"0 auto 36px", lineHeight:1.65 }}>
@@ -1360,74 +1359,6 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
-
-        {/* ── Footer ───────────────────────────────────── */}
-        <footer style={{ borderTop:"1px solid #EBEBEB", background:"#fff", padding:"56px 0 32px" }}>
-          <div className="pk-shell">
-            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(160px, 1fr))", gap:40, marginBottom:48 }}>
-              {/* Col 1 — Brand */}
-              <div>
-                <BrandLogo markClassName="h-7 w-7" textClassName="text-[15px] font-black text-[#111111]" />
-                <p style={{ fontSize:13, color:"#AAAAAA", marginTop:12, lineHeight:1.65 }}>Built for freelancers who want to get paid.</p>
-                <p style={{ fontSize:12, color:"#C0C0C0", marginTop:10, lineHeight:1.65, fontStyle:"italic" }}>Built by a freelancer who got tired of paying too much for tools he barely used.</p>
-                {/* Social links */}
-                <div style={{ display:"flex", gap:12, marginTop:16 }}>
-                  <a href="https://x.com/solopad_io" target="_blank" rel="noopener noreferrer" aria-label="Twitter / X" style={{ color:"#AAAAAA", display:"inline-flex", alignItems:"center", justifyContent:"center", width:32, height:32, borderRadius:8, border:"1px solid #EBEBEB", background:"#FAFAFA", transition:"color .15s" }}>
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.259 5.63 5.905-5.63zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-                  </a>
-                  <a href="https://linkedin.com/company/solopad" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" style={{ color:"#AAAAAA", display:"inline-flex", alignItems:"center", justifyContent:"center", width:32, height:32, borderRadius:8, border:"1px solid #EBEBEB", background:"#FAFAFA", transition:"color .15s" }}>
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-                  </a>
-                </div>
-              </div>
-              {/* Col 2 — Product */}
-              <div>
-                <p style={{ fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1.2, color:"#94A3B8", marginBottom:16 }}>Product</p>
-                <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
-                  {[
-                    { label:"Features",      href:"#features" },
-                    { label:"Pricing",       href:"#pricing" },
-                    { label:"How it works",  href:"#how-it-works" },
-                  ].map(({ label, href }) => (
-                    <Link key={label} href={href} style={{ fontSize:14, color:"#555", textDecoration:"none" }}>{label}</Link>
-                  ))}
-                </div>
-              </div>
-              {/* Col 3 — Resources */}
-              <div>
-                <p style={{ fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1.2, color:"#94A3B8", marginBottom:16 }}>Resources</p>
-                <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
-                  {[
-                    { label:"Blog",         href:"/blog" },
-                    { label:"Help & Support", href:"mailto:ayaturrehman2050@gmail.com" },
-                    { label:"Contact",      href:"mailto:ayaturrehman2050@gmail.com" },
-                  ].map(({ label, href }) => (
-                    <Link key={label} href={href} style={{ fontSize:14, color:"#555", textDecoration:"none" }}>{label}</Link>
-                  ))}
-                </div>
-              </div>
-              {/* Col 4 — Legal */}
-              <div>
-                <p style={{ fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1.2, color:"#94A3B8", marginBottom:16 }}>Legal</p>
-                <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
-                  {[
-                    { label:"Privacy Policy",    href:"/privacy" },
-                    { label:"Terms of Service",  href:"/terms" },
-                  ].map(({ label, href }) => (
-                    <Link key={label} href={href} style={{ fontSize:14, color:"#555", textDecoration:"none" }}>{label}</Link>
-                  ))}
-                </div>
-              </div>
-            </div>
-            <div style={{ borderTop:"1px solid #F0F0F0", paddingTop:24, display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:12 }}>
-              <span style={{ fontSize:13, color:"#AAAAAA" }}>© 2026 SoloPad. All rights reserved.</span>
-              <div style={{ display:"flex", gap:20 }}>
-                <Link href={authHref} style={{ fontSize:13, color:"#AAAAAA", textDecoration:"none" }}>Log in</Link>
-                <Link href="/signup" style={{ fontSize:13, color:"#AAAAAA", textDecoration:"none" }}>Sign up</Link>
-              </div>
-            </div>
-          </div>
-        </footer>
 
       </div>
     </>

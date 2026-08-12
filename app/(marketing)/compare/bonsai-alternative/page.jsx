@@ -154,7 +154,7 @@ export default function BonsaiComparison() {
 
       {/* Hero Section */}
       <section style={{
-        background: 'linear-gradient(135deg, #EFF6FF 0%, #F8FAFC 100%)',
+        background: '#EDE7DB',
         borderBottom: '1px solid #DBEAFE',
         padding: '60px 20px',
       }}>

@@ -132,25 +132,26 @@ export default async function BlogPostPage({ params }) {
         dangerouslySetInnerHTML={{
           __html: `
             .blog-post-page {
-              --bp-fg: #111;
-              --bp-fg-soft: #222;
-              --bp-body: #444;
-              --bp-muted: #555;
-              --bp-faint: #888;
-              --bp-ghost: #999;
-              --bp-card: #ffffff;
-              --bp-card-border: #F1F5F9;
-              --bp-surface: #F8FAFC;
-              --bp-surface-2: #FAFBFC;
-              --bp-line: #E2E8F0;
+              --bp-fg: #141B24;
+              --bp-fg-soft: #1C2530;
+              --bp-body: #3F4751;
+              --bp-muted: #5C6570;
+              --bp-faint: #8A929C;
+              --bp-ghost: #8A929C;
+              --bp-card: #FFFcf7;
+              --bp-card-border: #E4DDD2;
+              --bp-surface: #F4EFE6;
+              --bp-surface-2: #FAF6EF;
+              --bp-line: #E4DDD2;
               --bp-accent-soft: #EFF6FF;
-              --bp-accent-border: #DBEAFE;
-              --bp-hero-bg: linear-gradient(135deg, #EFF6FF 0%, #F0F4FF 50%, #F8FAFF 100%);
-              --bp-tag-bg: #F8FAFC;
-              --bp-tag-fg: #666;
-              --bp-related-hover-shadow: rgba(0,0,0,0.06);
-              --bp-img-bg: #F8FAFC;
-              --bp-th-fg: #666;
+              --bp-accent-border: #E4DDD2;
+              --bp-hero-bg: #EDE7DB;
+              --bp-tag-bg: #FAF6EF;
+              --bp-tag-fg: #5C6570;
+              --bp-related-hover-shadow: rgba(20,27,36,0.06);
+              --bp-img-bg: #FAF6EF;
+              --bp-th-fg: #5C6570;
+              font-family: var(--font-body), "Source Sans 3", ui-sans-serif, sans-serif;
             }
             html[data-theme="dark"] .blog-post-page {
               --bp-fg: #f4f4f5;
@@ -240,32 +241,35 @@ export default async function BlogPostPage({ params }) {
             .blog-back-link svg { transition: transform 0.2s ease; }
 
             .bp-h2 {
-              font-size: 26px; font-weight: 700; margin-top: 52px; margin-bottom: 16px;
-              line-height: 1.35; color: var(--bp-fg); letter-spacing: -0.02em;
-              display: flex; align-items: center; gap: 0;
+              font-family: var(--font-display), Newsreader, Georgia, serif;
+              font-size: 1.65rem; font-weight: 600; margin-top: 2.4em; margin-bottom: 0.55em;
+              line-height: 1.25; color: var(--bp-fg); letter-spacing: -0.022em;
+              text-wrap: balance;
             }
             .bp-h3 {
-              font-size: 20px; font-weight: 600; margin-top: 36px; margin-bottom: 12px;
-              line-height: 1.4; color: var(--bp-fg-soft);
+              font-family: var(--font-display), Newsreader, Georgia, serif;
+              font-size: 1.25rem; font-weight: 600; margin-top: 1.8em; margin-bottom: 0.5em;
+              line-height: 1.35; color: var(--bp-fg-soft);
             }
             .bp-p {
-              font-size: 17px; line-height: 1.85; margin-bottom: 24px;
-              color: var(--bp-body); font-weight: 400;
+              font-size: 1.125rem; line-height: 1.65; margin-bottom: 1.35em;
+              color: var(--bp-body); font-weight: 400; max-width: 65ch;
             }
-            .bp-ul, .bp-ol { margin-bottom: 24px; padding-left: 24px; }
+            .bp-ul, .bp-ol { margin-bottom: 1.35em; padding-left: 1.4em; max-width: 65ch; }
             .bp-li {
-              font-size: 17px; line-height: 1.85; margin-bottom: 8px; color: var(--bp-body);
+              font-size: 1.125rem; line-height: 1.65; margin-bottom: 0.45em; color: var(--bp-body);
             }
             .bp-strong { font-weight: 600; color: var(--bp-fg); }
             .bp-a {
-              color: #2563EB; text-decoration: none; border-bottom: 1px solid #93C5FD;
-              transition: border-color 0.2s, color 0.2s;
+              color: #1D4ED8; text-decoration: underline; text-underline-offset: 3px;
+              text-decoration-thickness: 1px; border-bottom: none;
             }
             html[data-theme="dark"] .bp-a { border-bottom-color: #1e3a5f; color: #60a5fa; }
             .bp-quote {
-              border-left: 3px solid #2563EB; padding-left: 24px; margin-left: 0;
-              margin-bottom: 24px; color: var(--bp-muted); font-style: italic;
-              font-size: 18px; line-height: 1.7;
+              font-family: var(--font-display), Newsreader, Georgia, serif;
+              border-left: 2px solid #F05A37; padding-left: 1.25rem; margin-left: 0;
+              margin-bottom: 1.5em; color: var(--bp-muted); font-style: italic;
+              font-size: 1.2rem; line-height: 1.5; max-width: 58ch;
             }
             .bp-hr {
               border: none; height: 1px; margin: 48px 0;
@@ -293,7 +297,7 @@ export default async function BlogPostPage({ params }) {
         }}
       />
 
-      <main className="blog-post-page" style={{ maxWidth: 680, margin: "0 auto", padding: "60px 24px 120px" }}>
+      <main className="blog-post-page" style={{ maxWidth: "42rem", margin: "0 auto", padding: "60px 24px 120px" }}>
         <div className="blog-post-hero">
           {/* Back to blog */}
           <Link
@@ -320,8 +324,8 @@ export default async function BlogPostPage({ params }) {
             className="blog-hero-banner"
             style={{
               position: "relative",
-              borderRadius: 20,
-              padding: "40px 36px 36px",
+              borderRadius: 12,
+              padding: "36px 32px 32px",
               marginBottom: 40,
               overflow: "hidden",
             }}
@@ -375,13 +379,15 @@ export default async function BlogPostPage({ params }) {
 
               <h1
                 style={{
-                  fontSize: 34,
-                  fontWeight: 800,
-                  lineHeight: 1.2,
-                  letterSpacing: "-0.03em",
+                  fontFamily: "var(--font-display), Newsreader, Georgia, serif",
+                  fontSize: "clamp(2rem, 1.5rem + 1.6vw, 2.65rem)",
+                  fontWeight: 600,
+                  lineHeight: 1.15,
+                  letterSpacing: "-0.022em",
                   color: "var(--bp-fg)",
                   marginBottom: 20,
-                  maxWidth: "85%",
+                  maxWidth: "18ch",
+                  textWrap: "balance",
                 }}
               >
                 {post.title}
@@ -452,8 +458,8 @@ export default async function BlogPostPage({ params }) {
             style={{
               marginTop: 64,
               padding: "48px 40px",
-              borderRadius: 20,
-              background: "linear-gradient(135deg, #1E40AF, #2563EB)",
+              borderRadius: 12,
+              background: "#141B24",
               textAlign: "center",
               position: "relative",
               overflow: "hidden",
@@ -481,7 +487,7 @@ export default async function BlogPostPage({ params }) {
               </svg>
             </div>
 
-            <p style={{ fontSize: 24, fontWeight: 700, color: "white", marginBottom: 8, position: "relative" }}>
+            <p style={{ fontFamily: "var(--font-display), Newsreader, Georgia, serif", fontSize: "1.65rem", fontWeight: 600, color: "white", marginBottom: 8, position: "relative", letterSpacing: "-0.02em" }}>
               Try SoloPad free for 30 days
             </p>
             <p style={{ fontSize: 15, color: "rgba(255,255,255,0.65)", marginBottom: 28, position: "relative", lineHeight: 1.6 }}>
@@ -493,11 +499,11 @@ export default async function BlogPostPage({ params }) {
               style={{
                 display: "inline-block",
                 background: "white",
-                color: "#1E40AF",
+                color: "#141B24",
                 fontWeight: 700,
                 fontSize: 15,
-                padding: "12px 32px",
-                borderRadius: 100,
+                padding: "12px 28px",
+                borderRadius: 8,
                 textDecoration: "none",
                 position: "relative",
               }}

@@ -173,11 +173,11 @@ export default function HoneybookAlternativePage() {
         }}
       />
 
-      <main style={{ width: '100%', backgroundColor: '#fff' }}>
+      <main style={{ width: '100%', backgroundColor: '#F4EFE6' }}>
         {/* Hero Section */}
         <section
           style={{
-            background: 'linear-gradient(135deg, #EFF6FF 0%, #F0F4FF 50%, #F8FAFF 100%)',
+            background: '#EDE7DB',
             padding: '60px 20px',
             textAlign: 'center',
             borderBottom: '1px solid #DBEAFE',

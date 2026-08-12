@@ -150,7 +150,7 @@ export default function DubsadoAlternativePage() {
 
       {/* Hero Section */}
       <div style={{
-        background: "linear-gradient(135deg, #EFF6FF 0%, #F0F4FF 50%, #F8FAFF 100%)",
+        background: "#EDE7DB",
         paddingTop: "48px",
         paddingBottom: "64px",
         borderBottom: "1px solid #DBEAFE"
