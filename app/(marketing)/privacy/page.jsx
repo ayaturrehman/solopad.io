@@ -1,7 +1,10 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "Privacy Policy — SoloPad",
+  title: "Privacy Policy",
+  description:
+    "How SoloPad collects, uses, and protects your data when you use our freelance management platform.",
+  alternates: { canonical: "https://www.solopad.io/privacy" },
 };
 
 export default function PrivacyPage() {

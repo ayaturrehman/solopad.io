@@ -12,6 +12,37 @@ import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import { PLAN_ORDER, getPlan, isValidPlan } from "@/lib/plans";
 
+function SignupSeoCopy() {
+  return (
+    <div className="mt-10 max-w-lg text-left text-sm leading-relaxed text-zinc-600">
+      <h2 className="text-base font-semibold text-zinc-900">What you get with SoloPad</h2>
+      <p className="mt-2">
+        Create a free SoloPad account and run your freelance business from one place —
+        invoices with Stripe payments, AI-drafted proposals and contracts, e-signatures,
+        CRM, time tracking, scheduling, and a client portal. Plans start at £5/mo after
+        a 30-day trial. No credit card required to start.
+      </p>
+      <p className="mt-3">
+        Solo freelancers and small teams use SoloPad as a lighter alternative to
+        HoneyBook, Dubsado, Bonsai, Moxie, and Plutio when they want full invoicing and
+        contracts without stacking multiple tools. Compare plans above, or explore{" "}
+        <Link href="/features" className="font-medium text-zinc-900 underline-offset-2 hover:underline">
+          features
+        </Link>
+        ,{" "}
+        <Link href="/compare" className="font-medium text-zinc-900 underline-offset-2 hover:underline">
+          competitor comparisons
+        </Link>
+        , and{" "}
+        <Link href="/blog" className="font-medium text-zinc-900 underline-offset-2 hover:underline">
+          freelance guides
+        </Link>{" "}
+        before you sign up.
+      </p>
+    </div>
+  );
+}
+
 function SignupContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -48,14 +79,18 @@ function SignupContent() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 px-4">
+    <div className="flex min-h-screen items-center justify-center bg-zinc-50 px-4 py-12">
       <div className="w-full max-w-sm">
         <div className="mb-8 flex flex-col items-center">
           <Link href="/" className="mb-6 flex items-center gap-2">
             <BrandLogo markClassName="h-8 w-8" />
           </Link>
           <h1 className="text-2xl font-bold text-zinc-900">Create your account</h1>
-          <p className="mt-1 text-sm text-zinc-500">{plan.name} plan selected · {plan.price}{plan.period}</p>
+          <p className="mt-2 text-center text-sm text-zinc-500">
+            Sign up free for SoloPad — invoicing, contracts, proposals, CRM, and AI
+            drafting for freelancers. {plan.name} plan selected · {plan.price}
+            {plan.period}.
+          </p>
         </div>
 
         <div className="rounded border border-zinc-200 bg-white p-6 shadow-sm">
@@ -65,7 +100,10 @@ function SignupContent() {
                 <p className="text-sm font-semibold text-zinc-900">{plan.name}</p>
                 <p className="text-xs text-zinc-500">{plan.description}</p>
               </div>
-              <span className="text-sm font-semibold text-zinc-900">{plan.price}{plan.period}</span>
+              <span className="text-sm font-semibold text-zinc-900">
+                {plan.price}
+                {plan.period}
+              </span>
             </div>
             <div className="mt-3 flex flex-wrap gap-2">
               {PLAN_ORDER.map((planId) => {
@@ -126,6 +164,8 @@ function SignupContent() {
             Sign in
           </Link>
         </p>
+
+        <SignupSeoCopy />
       </div>
     </div>
   );
@@ -133,16 +173,17 @@ function SignupContent() {
 
 function SignupFallback() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 px-4">
+    <div className="flex min-h-screen items-center justify-center bg-zinc-50 px-4 py-12">
       <div className="w-full max-w-sm">
         <div className="mb-8 flex flex-col items-center">
           <BrandLogo markClassName="h-8 w-8" />
           <h1 className="mt-6 text-2xl font-bold text-zinc-900">Create your account</h1>
-          <p className="mt-1 text-sm text-zinc-500">
+          <p className="mt-2 text-center text-sm text-zinc-500">
             Sign up free for SoloPad — invoicing, contracts, proposals, CRM, and AI
             drafting for freelancers. No credit card required for your 30-day trial.
           </p>
         </div>
+        <SignupSeoCopy />
       </div>
     </div>
   );

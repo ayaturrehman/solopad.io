@@ -207,15 +207,35 @@ export default function BlogPage() {
             Everything you need to run a better freelance business — proposals,
             contracts, invoicing, and more.
           </p>
-          <p style={{ fontSize: 15, color: "var(--bp-faint)", lineHeight: 1.7, fontWeight: 400, maxWidth: 680 }}>
+          <p style={{ fontSize: 15, color: "var(--bp-faint)", lineHeight: 1.7, fontWeight: 400, maxWidth: 680, marginBottom: 16 }}>
             This is where we write down what actually works for solo freelancers and
             small teams — not theory, but the proposals that won real clients, the
             contract clauses that prevented real disputes, and the invoicing habits
             that got people paid faster. We test freelance management tools like
             HoneyBook, Dubsado, and Bonsai directly against SoloPad so you can see
             honest pricing and feature comparisons before you commit to a platform.
-            New guides on pricing, client management, and freelance business tools
-            go up regularly, so check back if you don&apos;t see your question answered yet.
+          </p>
+          <p style={{ fontSize: 15, color: "var(--bp-faint)", lineHeight: 1.7, fontWeight: 400, maxWidth: 680, marginBottom: 16 }}>
+            Browse guides on writing freelance proposals, free contract template
+            checklists, invoice examples that get paid faster, AI proposal drafting,
+            time tracking software, and cheap alternatives to expensive freelance CRMs.
+            Each article is written from real client work — what we kept, what we
+            dropped, and what we would tell a friend starting out tomorrow.
+          </p>
+          <p style={{ fontSize: 15, color: "var(--bp-faint)", lineHeight: 1.7, fontWeight: 400, maxWidth: 680 }}>
+            New posts on pricing, client onboarding, scheduling, and freelance
+            business operations go up regularly. If you are comparing platforms,
+            start with our HoneyBook, Dubsado, and Bonsai comparisons, then dig into
+            the how-to guides for the workflows that matter day to day. Prefer a
+            product tour first? See{" "}
+            <Link href="/features" style={{ color: "#2563EB", textDecoration: "none", fontWeight: 500 }}>
+              SoloPad features
+            </Link>{" "}
+            or{" "}
+            <Link href="/compare" style={{ color: "#2563EB", textDecoration: "none", fontWeight: 500 }}>
+              compare SoloPad
+            </Link>{" "}
+            with the tools you already know.
           </p>
         </div>
 

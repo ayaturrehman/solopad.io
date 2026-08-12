@@ -16,6 +16,7 @@ Disallow: /scheduler
 Disallow: /services
 Disallow: /calendar
 Disallow: /api/
+Disallow: /login
 Disallow: /payment
 Disallow: /p/
 Disallow: /join/

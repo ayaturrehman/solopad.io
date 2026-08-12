@@ -134,10 +134,19 @@ export default function ComparePage() {
             <h1 style={{ fontSize: 48, fontWeight: 700, color: "var(--cp-fg)", margin: "0 0 16px 0", lineHeight: 1.2 }}>
               SoloPad Comparisons
             </h1>
-            <p style={{ fontSize: 20, color: "var(--cp-muted)", margin: 0, lineHeight: 1.6, maxWidth: 640 }}>
+            <p style={{ fontSize: 20, color: "var(--cp-muted)", margin: "0 0 20px 0", lineHeight: 1.6, maxWidth: 720 }}>
               Freelance management tools all promise the same thing. Here&apos;s an honest,
               side-by-side breakdown of price and features so you can pick the one that
               actually fits how you work.
+            </p>
+            <p style={{ fontSize: 16, color: "var(--cp-muted)", margin: 0, lineHeight: 1.7, maxWidth: 720 }}>
+              Most freelancers end up juggling HoneyBook, Dubsado, Bonsai, Moxie, or Plutio —
+              then discovering invoicing is locked behind a higher tier, contracts need a
+              separate tool, or the monthly bill quietly climbs past £20–£50. SoloPad is built
+              as a flat-rate alternative: invoices, contracts, proposals, CRM, time tracking,
+              scheduling, and a client portal in one place, starting at £5/mo. Use the
+              comparisons below to see what you actually get for the money, and which tool
+              fits solo freelancers versus agencies.
             </p>
           </div>
         </section>
@@ -171,6 +180,34 @@ export default function ComparePage() {
                   </span>
                 </Link>
               ))}
+            </div>
+
+            <div style={{ marginTop: 64, maxWidth: 760 }}>
+              <h2 style={{ fontSize: 28, fontWeight: 700, color: "var(--cp-fg)", margin: "0 0 16px 0" }}>
+                How to choose a freelance management tool
+              </h2>
+              <p style={{ fontSize: 16, color: "var(--cp-muted)", lineHeight: 1.7, margin: "0 0 16px 0" }}>
+                Start with the workflows you open every week: sending proposals, getting
+                contracts signed, tracking hours, and issuing invoices. If those live in
+                four different apps, you are paying for complexity you do not need. Next,
+                check what is included on the cheapest paid plan — many competitors hide
+                contracts or invoicing behind mid-tier pricing. Finally, look at learning
+                curve: agency-grade workflow builders are powerful, but solo freelancers
+                usually need something they can set up in an afternoon.
+              </p>
+              <p style={{ fontSize: 16, color: "var(--cp-muted)", lineHeight: 1.7, margin: 0 }}>
+                Each comparison page covers pricing, core features, who the tool is built
+                for, and where SoloPad is the better fit. Prefer a feature walkthrough first?
+                Visit{" "}
+                <Link href="/features" style={{ color: "var(--cp-accent)", textDecoration: "none", fontWeight: 600 }}>
+                  SoloPad features
+                </Link>
+                {" "}or read practical guides on the{" "}
+                <Link href="/blog" style={{ color: "var(--cp-accent)", textDecoration: "none", fontWeight: 600 }}>
+                  blog
+                </Link>
+                .
+              </p>
             </div>
           </div>
         </section>

@@ -1,7 +1,10 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "Terms of Service — SoloPad",
+  title: "Terms of Service",
+  description:
+    "Terms of Service for using SoloPad — accounts, payments, cancellations, and acceptable use.",
+  alternates: { canonical: "https://www.solopad.io/terms" },
 };
 
 export default function TermsPage() {
