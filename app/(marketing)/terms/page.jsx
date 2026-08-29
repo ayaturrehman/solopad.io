@@ -28,7 +28,7 @@ export default function TermsPage() {
         <h2>Termination</h2>
         <p>We may suspend or terminate your access to SoloPad at any time for violation of these Terms.</p>
         <h2>Contact</h2>
-        <p>If you have any questions about these Terms, please contact us at <a href="mailto:ayaturrehman2050@gmail.com">ayaturrehman2050@gmail.com</a>.</p>
+        <p>If you have any questions about these Terms, please contact us at <a href="mailto:info@solopad.io">info@solopad.io</a>.</p>
         <p className="mk-note">
           This is a placeholder terms of service. Full legal terms are coming soon.
         </p>

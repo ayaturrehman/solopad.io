@@ -1091,7 +1091,7 @@ export default function LandingPage() {
           <div className="pk-shell pk-section-stage" data-pk-section-drift>
             <div className="pk-reveal" style={{ textAlign:"center", marginBottom:52 }}>
               <p style={{ fontSize:12, fontWeight:700, color:C, textTransform:"uppercase", letterSpacing:1.5, marginBottom:12 }}>What freelancers say</p>
-              <h2 style={{ fontSize:"clamp(26px, 3.4vw, 44px)", fontWeight:700, color:CDk, letterSpacing:"-0.8px" }}>Built by a freelancer. Loved by freelancers.</h2>
+              <h2 style={{ fontSize:"clamp(26px, 3.4vw, 44px)", fontWeight:700, color:CDk, letterSpacing:"-0.8px" }}>Built by Ayat Ur Rehman, Doncaster. Loved by freelancers.</h2>
             </div>
             <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(280px, 1fr))", gap:22 }}>
               {[
