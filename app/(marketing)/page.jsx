@@ -1089,55 +1089,8 @@ export default function LandingPage() {
         {/* TODO: Replace with real testimonials */}
         <section style={{ background:"#fff", padding:"120px 0" }}>
           <div className="pk-shell pk-section-stage" data-pk-section-drift>
-            <div className="pk-reveal" style={{ textAlign:"center", marginBottom:52 }}>
-              <p style={{ fontSize:12, fontWeight:700, color:C, textTransform:"uppercase", letterSpacing:1.5, marginBottom:12 }}>What freelancers say</p>
-              <h2 style={{ fontSize:"clamp(26px, 3.4vw, 44px)", fontWeight:700, color:CDk, letterSpacing:"-0.8px" }}>Built by Ayat Ur Rehman, Doncaster. Loved by freelancers.</h2>
-            </div>
-            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(280px, 1fr))", gap:22 }}>
-              {[
-                {
-                  quote:"I was paying £30/mo for HoneyBook and using maybe 20% of it. SoloPad gives me everything I need for £5.",
-                  name:"Alex R.",
-                  role:"Freelance Designer",
-                  avatar:"photo-1573496359142-b8d87734a5a2",
-                },
-                {
-                  quote:"I set it up in 10 minutes and sent my first client portal the same day. My clients love it.",
-                  name:"James K.",
-                  role:"Web Developer",
-                  avatar:"photo-1552058544-f2b08422138a",
-                },
-                {
-                  quote:"My clients pay faster now because the invoice is right there in the portal. No more chasing.",
-                  name:"Sarah M.",
-                  role:"Marketing Consultant",
-                  avatar:"photo-1580489944761-15a19d654956",
-                },
-              ].map(({ quote, name, role, avatar }, i) => (
-                <div
-                  key={name}
-                  className={`pk-reveal pk-d${i + 1}`}
-                  style={{ background:"#FAFAFA", border:"1px solid #EBEBEB", borderRadius:20, padding:"28px 26px", boxShadow:"0 4px 18px rgba(15,23,42,.05)" }}
-                >
-                  <div style={{ display:"flex", gap:4, marginBottom:16 }}>
-                    {[1,2,3,4,5].map(s => <span key={s} style={{ color:"#F59E0B", fontSize:14 }}>★</span>)}
-                  </div>
-                  <p style={{ fontSize:15, color:"#334155", lineHeight:1.72, marginBottom:22 }}>&ldquo;{quote}&rdquo;</p>
-                  <div style={{ display:"flex", alignItems:"center", gap:12 }}>
-                    <Image
-                      src={`https://images.unsplash.com/${avatar}?w=64&h=64&q=80&auto=format&fit=crop&crop=face`}
-                      alt={name}
-                      width={40}
-                      height={40}
-                      style={{ borderRadius:"50%", border:"2px solid #E2E8F0" }}
-                    />
-                    <div>
-                      <p style={{ fontSize:14, fontWeight:700, color:CDk, marginBottom:2 }}>{name}</p>
-                      <p style={{ fontSize:12, color:CMute }}>{role}</p>
-                    </div>
-                  </div>
-                </div>
-              ))}
+            <div className="pk-reveal" style={{ textAlign:"center" }}>
+              <h2 style={{ fontSize:"clamp(26px, 3.4vw, 44px)", fontWeight:700, color:CDk, letterSpacing:"-0.8px" }}>Built by Ayat Ur Rehman, Doncaster.</h2>
             </div>
           </div>
         </section>
