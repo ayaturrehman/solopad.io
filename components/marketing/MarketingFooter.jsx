@@ -147,6 +147,7 @@ export default function MarketingFooter() {
             <div className="mk-footer-col">
               <Link href="/privacy">Privacy Policy</Link>
               <Link href="/terms">Terms of Service</Link>
+              <Link href="/changelog">Changelog</Link>
             </div>
           </div>
         </div>
