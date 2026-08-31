@@ -1,0 +1,62 @@
+<svg viewBox="0 0 1200 400" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1200" height="400" fill="#f8f9fa"/>
+  
+  <!-- Title -->
+  <text x="600" y="40" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="700" fill="#1e293b">Three Pillars of a Solid Freelance Contract</text>
+  <text x="600" y="65" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#64748b">Scope, payment, and protection  the foundation every freelancer needs</text>
+  
+  <!-- Card 1: Scope & Deliverables -->
+  <g transform="translate(150, 120)">
+    <rect x="0" y="0" width="280" height="220" rx="8" fill="#fff" stroke="#cbd5e1" stroke-width="2"/>
+    
+    <!-- Icon: Document with checkmarks -->
+    <rect x="110" y="20" width="60" height="70" rx="3" fill="#e0e7ff" stroke="#6366f1" stroke-width="2"/>
+    <line x1="125" y1="40" x2="135" y2="50" stroke="#6366f1" stroke-width="3" stroke-linecap="round"/>
+    <line x1="135" y1="50" x2="155" y2="30" stroke="#6366f1" stroke-width="3" stroke-linecap="round"/>
+    <line x1="125" y1="60" x2="135" y2="70" stroke="#6366f1" stroke-width="3" stroke-linecap="round"/>
+    <line x1="135" y1="70" x2="155" y2="50" stroke="#6366f1" stroke-width="3" stroke-linecap="round"/>
+    
+    <text x="140" y="120" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="700" fill="#1e293b">Scope &amp; Deliverables</text>
+    
+    <text x="20" y="150" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#64748b"> Exact work described</text>
+    <text x="20" y="170" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#64748b"> Timeline &amp; milestones</text>
+    <text x="20" y="190" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#64748b"> Revision limits</text>
+    <text x="20" y="210" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#64748b"> Change process</text>
+  </g>
+  
+  <!-- Card 2: Payment Terms -->
+  <g transform="translate(460, 120)">
+    <rect x="0" y="0" width="280" height="220" rx="8" fill="#fff" stroke="#cbd5e1" stroke-width="2"/>
+    
+    <!-- Icon: Pound sign in circle -->
+    <circle cx="140" cy="55" r="35" fill="#dcfce7" stroke="#22c55e" stroke-width="2"/>
+    <text x="140" y="70" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="32" font-weight="700" fill="#22c55e">£</text>
+    
+    <text x="140" y="120" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="700" fill="#1e293b">Payment Terms</text>
+    
+    <text x="20" y="150" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#64748b"> Total fee &amp; currency</text>
+    <text x="20" y="170" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#64748b"> Deposit (4050%)</text>
+    <text x="20" y="190" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#64748b"> Payment schedule</text>
+    <text x="20" y="210" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#64748b"> Late fee clause</text>
+  </g>
+  
+  <!-- Card 3: Legal Protection -->
+  <g transform="translate(770, 120)">
+    <rect x="0" y="0" width="280" height="220" rx="8" fill="#fff" stroke="#cbd5e1" stroke-width="2"/>
+    
+    <!-- Icon: Shield -->
+    <path d="M 140,20 L 170,30 L 170,55 Q 170,80 140,90 Q 110,80 110,55 L 110,30 Z" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+    <path d="M 125,50 L 135,60 L 155,40" fill="none" stroke="#f59e0b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    
+    <text x="140" y="120" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="700" fill="#1e293b">Legal Protection</text>
+    
+    <text x="20" y="150" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#64748b"> IP transfers on payment</text>
+    <text x="20" y="170" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#64748b"> Kill fee protection</text>
+    <text x="20" y="190" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#64748b"> Confidentiality</text>
+    <text x="20" y="210" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#64748b"> Governing law (UK)</text>
+  </g>
+  
+  <!-- Bottom note -->
+  <text x="600" y="370" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#94a3b8">A clear contract sets expectations and protects both parties when things don't go to plan</text>
+</svg>
