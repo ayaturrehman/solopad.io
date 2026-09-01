@@ -1,0 +1,64 @@
+<svg viewBox="0 0 1200 400" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1200" height="400" fill="#f8f9fa"/>
+  
+  <!-- Title -->
+  <text x="600" y="40" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="700" fill="#1e293b">Three Steps to a Complete Freelance Invoice</text>
+  <text x="600" y="65" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#64748b">Required fields, worked examples, and pre-send checks</text>
+  
+  <!-- Card 1: Required Fields -->
+  <g transform="translate(150, 120)">
+    <rect x="0" y="0" width="280" height="220" rx="8" fill="#fff" stroke="#cbd5e1" stroke-width="2"/>
+    
+    <!-- Icon: Checklist -->
+    <rect x="110" y="20" width="60" height="70" rx="3" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/>
+    <line x1="120" y1="38" x2="160" y2="38" stroke="#3b82f6" stroke-width="2"/>
+    <circle cx="123" cy="38" r="3" fill="#3b82f6"/>
+    <line x1="120" y1="55" x2="160" y2="55" stroke="#3b82f6" stroke-width="2"/>
+    <circle cx="123" cy="55" r="3" fill="#3b82f6"/>
+    <line x1="120" y1="72" x2="160" y2="72" stroke="#3b82f6" stroke-width="2"/>
+    <circle cx="123" cy="72" r="3" fill="#3b82f6"/>
+    
+    <text x="140" y="120" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="700" fill="#1e293b">Required Fields</text>
+    
+    <text x="20" y="150" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#64748b"> Invoice number &amp; dates</text>
+    <text x="20" y="170" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#64748b"> Your details &amp; client details</text>
+    <text x="20" y="190" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#64748b"> Line items &amp; amounts</text>
+    <text x="20" y="210" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#64748b"> Payment method &amp; terms</text>
+  </g>
+  
+  <!-- Card 2: UK Example -->
+  <g transform="translate(460, 120)">
+    <rect x="0" y="0" width="280" height="220" rx="8" fill="#fff" stroke="#cbd5e1" stroke-width="2"/>
+    
+    <!-- Icon: Invoice document with £ -->
+    <rect x="110" y="20" width="60" height="70" rx="3" fill="#dcfce7" stroke="#22c55e" stroke-width="2"/>
+    <text x="140" y="65" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="700" fill="#22c55e">£</text>
+    
+    <text x="140" y="120" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="700" fill="#1e293b">UK Examples</text>
+    
+    <text x="20" y="150" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#64748b"> Fixed project (GBP)</text>
+    <text x="20" y="170" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#64748b"> Hourly with PO number</text>
+    <text x="20" y="190" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#64748b"> Monthly retainer</text>
+    <text x="20" y="210" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#64748b"> VAT-registered version</text>
+  </g>
+  
+  <!-- Card 3: Send Checklist -->
+  <g transform="translate(770, 120)">
+    <rect x="0" y="0" width="280" height="220" rx="8" fill="#fff" stroke="#cbd5e1" stroke-width="2"/>
+    
+    <!-- Icon: Send arrow in circle -->
+    <circle cx="140" cy="55" r="35" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+    <path d="M 125,55 L 155,55 M 145,45 L 155,55 L 145,65" fill="none" stroke="#f59e0b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    
+    <text x="140" y="120" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="700" fill="#1e293b">Before You Send</text>
+    
+    <text x="20" y="150" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#64748b"> Unique number used</text>
+    <text x="20" y="170" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#64748b"> Calendar due date shown</text>
+    <text x="20" y="190" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#64748b"> Sort code visible</text>
+    <text x="20" y="210" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#64748b"> PDF looks clean</text>
+  </g>
+  
+  <!-- Bottom note -->
+  <text x="600" y="370" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#94a3b8">A complete invoice answers finance's questions before they ask them</text>
+</svg>
