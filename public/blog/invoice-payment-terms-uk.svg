@@ -1,0 +1,116 @@
+<svg viewBox="0 0 1200 600" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1200" height="600" fill="#f8f9fa"/>
+  
+  <!-- Title -->
+  <text x="600" y="40" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="700" fill="#1e293b">Invoice Payment Terms Decision Tree</text>
+  <text x="600" y="65" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#64748b">Choose the right payment terms to protect your cashflow</text>
+  
+  <!-- Main question box -->
+    10|  <g transform="translate(600, 120)">
+    <rect x="-150" y="-30" width="300" height="60" rx="8" fill="#fff" stroke="#2563eb" stroke-width="2"/>
+    <text x="0" y="-5" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#1e293b">What type of project?</text>
+    <text x="0" y="15" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#64748b">Size and client type determine terms</text>
+  </g>
+  
+  <!-- Branch lines from main question -->
+  <line x1="600" y1="180" x2="200" y2="280" stroke="#cbd5e1" stroke-width="2"/>
+  <line x1="600" y1="180" x2="400" y2="280" stroke="#cbd5e1" stroke-width="2"/>
+    20|  <line x1="600" y1="180" x2="600" y2="280" stroke="#cbd5e1" stroke-width="2"/>
+  <line x1="600" y1="180" x2="800" y2="280" stroke="#cbd5e1" stroke-width="2"/>
+  <line x1="600" y1="180" x2="1000" y2="280" stroke="#cbd5e1" stroke-width="2"/>
+  
+  <!-- Option 1: Due on receipt -->
+  <g transform="translate(200, 310)">
+    <rect x="-90" y="-25" width="180" height="100" rx="6" fill="#dcfce7" stroke="#22c55e" stroke-width="2"/>
+    <text x="0" y="-5" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700" fill="#15803d">Due on Receipt</text>
+    <text x="0" y="15" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#166534">Small jobs &lt; £500</text>
+    30|    <text x="0" y="30" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#166534">Monthly retainers</text>
+    <text x="0" y="45" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#166534">Trusted clients</text>
+    <text x="0" y="65" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600" fill="#22c55e">Fastest cashflow</text>
+  </g>
+  
+  <!-- Option 2: Net 7 -->
+  <g transform="translate(400, 310)">
+    <rect x="-80" y="-25" width="160" height="100" rx="6" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/>
+    <text x="0" y="-5" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700" fill="#1e40af">Net 7</text>
+    <text x="0" y="15" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#1e3a8a">Projects &lt; £3,000</text>
+    40|    <text x="0" y="30" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#1e3a8a">New clients</text>
+    <text x="0" y="45" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#1e3a8a">Quick turnaround</text>
+    <text x="0" y="65" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600" fill="#3b82f6">Good default</text>
+  </g>
+  
+  <!-- Option 3: Net 14 -->
+  <g transform="translate(600, 310)">
+    <rect x="-80" y="-25" width="160" height="100" rx="6" fill="#dbeafe" stroke="#2563eb" stroke-width="3"/>
+    <text x="0" y="-5" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700" fill="#1e40af">Net 14</text>
+    <text x="0" y="15" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#1e3a8a">£1k£5k projects</text>
+    50|    <text x="0" y="30" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#1e3a8a">Mid-size clients</text>
+    <text x="0" y="45" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#1e3a8a">Most common</text>
+    <text x="0" y="65" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="700" fill="#2563eb">P SWEET SPOT</text>
+  </g>
+  
+  <!-- Option 4: Net 30 -->
+  <g transform="translate(800, 310)">
+    <rect x="-80" y="-25" width="160" height="100" rx="6" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+    <text x="0" y="-5" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700" fill="#b45309">Net 30</text>
+    <text x="0" y="15" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#92400e">Large corporates</text>
+    60|    <text x="0" y="30" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#92400e">Public sector</text>
+    <text x="0" y="45" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#92400e">Projects &gt; £5k</text>
+    <text x="0" y="65" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600" fill="#f59e0b">Slower cashflow</text>
+  </g>
+  
+  <!-- Option 5: Net 60+ (avoid) -->
+  <g transform="translate(1000, 310)">
+    <rect x="-80" y="-25" width="160" height="100" rx="6" fill="#fee2e2" stroke="#ef4444" stroke-width="2"/>
+    <text x="0" y="-5" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700" fill="#b91c1c">Net 60+</text>
+    <text x="0" y="15" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#991b1b">Push back hard</text>
+    70|    <text x="0" y="30" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#991b1b">or walk away</text>
+    <text x="0" y="45" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#991b1b">Kills cashflow</text>
+    <text x="0" y="65" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600" fill="#ef4444">  AVOID</text>
+  </g>
+  
+  <!-- Cashflow protection section -->
+  <g transform="translate(600, 460)">
+    <rect x="-350" y="-20" width="700" height="110" rx="8" fill="#ede7db" stroke="#a78bfa" stroke-width="2"/>
+    <text x="0" y="0" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="700" fill="#1e293b">Cashflow Protection: Deposits + Milestones</text>
+    80|    
+    <!-- Deposit box -->
+    <g transform="translate(-200, 25)">
+      <rect x="-80" y="0" width="160" height="50" rx="4" fill="#fff" stroke="#8b5cf6" stroke-width="2"/>
+      <text x="0" y="20" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600" fill="#6d28d9">4050% Deposit</text>
+      <text x="0" y="35" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#7c3aed">Projects over £1k</text>
+    </g>
+    
+    <text x="0" y="55" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#64748b">+</text>
+    90|    
+    <!-- Milestone box -->
+    <g transform="translate(200, 25)">
+      <rect x="-90" y="0" width="180" height="50" rx="4" fill="#fff" stroke="#8b5cf6" stroke-width="2"/>
+      <text x="0" y="20" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600" fill="#6d28d9">Milestone Invoicing</text>
+      <text x="0" y="35" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#7c3aed">23 invoices per project</text>
+    </g>
+  </g>
+  
+  <!-- Bottom key -->
+  <g transform="translate(100, 580)">
+   100|    <circle cx="0" cy="-3" r="5" fill="#22c55e"/>
+    <text x="15" y="0" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#64748b">Fastest payment</text>
+  </g>
+  <g transform="translate(270, 580)">
+    <circle cx="0" cy="-3" r="5" fill="#3b82f6"/>
+    <text x="15" y="0" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#64748b">Good balance</text>
+  </g>
+  <g transform="translate(420, 580)">
+    <circle cx="0" cy="-3" r="5" fill="#f59e0b"/>
+   110|    <text x="15" y="0" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#64748b">Corporate standard</text>
+  </g>
+  <g transform="translate(600, 580)">
+    <circle cx="0" cy="-3" r="5" fill="#ef4444"/>
+    <text x="15" y="0" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#64748b">Risky for cashflow</text>
+  </g>
+  <g transform="translate(800, 580)">
+    <circle cx="0" cy="-3" r="5" fill="#8b5cf6"/>
+    <text x="15" y="0" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#64748b">Protects your cashflow</text>
+   120|  </g>
+</svg>
