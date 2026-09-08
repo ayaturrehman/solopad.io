@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400" aria-labelledby="client-onboarding-flow-title">
+  <title id="client-onboarding-flow-title">Client onboarding flow diagram showing five phases from contract signed to kickoff to first invoice paid</title>
+  
+  <!-- Background -->
+  <rect width="800" height="400" fill="#f8f9fa"/>
+  
+  <!-- Step 1: Contract Signed -->
+  <g>
+    <rect x="40" y="80" width="120" height="100" rx="8" fill="#e8f5e9" stroke="#388e3c" stroke-width="2"/>
+    <text x="100" y="120" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#2e7d32">Contract</text>
+    <text x="100" y="140" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#2e7d32">Signed</text>
+    <text x="100" y="160" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#424242">client says yes</text>
+  </g>
+  
+  <!-- Arrow 1 -->
+  <g>
+    <line x1="160" y1="130" x2="200" y2="130" stroke="#424242" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <text x="180" y="120" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#616161">onboard</text>
+  </g>
+  
+  <!-- Step 2: Deposit Sent -->
+  <g>
+    <rect x="200" y="80" width="120" height="100" rx="8" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+    <text x="260" y="120" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#1565c0">Deposit</text>
+    <text x="260" y="140" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#1565c0">Invoice</text>
+    <text x="260" y="160" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#424242">sent + paid</text>
+  </g>
+  
+  <!-- Arrow 2 -->
+  <g>
+    <line x1="320" y1="130" x2="360" y2="130" stroke="#424242" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <text x="340" y="120" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#616161">setup</text>
+  </g>
+  
+  <!-- Step 3: Setup Phase -->
+  <g>
+    <rect x="360" y="80" width="120" height="100" rx="8" fill="#fff3e0" stroke="#f57c00" stroke-width="2"/>
+    <text x="420" y="120" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#e65100">Setup</text>
+    <text x="420" y="140" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#e65100">Phase</text>
+    <text x="420" y="160" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#424242">folders + CRM</text>
+  </g>
+  
+  <!-- Arrow 3 -->
+  <g>
+    <line x1="480" y1="130" x2="520" y2="130" stroke="#424242" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <text x="500" y="120" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#616161">kickoff</text>
+  </g>
+  
+  <!-- Step 4: Kickoff Meeting -->
+  <g>
+    <rect x="520" y="80" width="120" height="100" rx="8" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="2"/>
+    <text x="580" y="120" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#6a1b9a">Kickoff</text>
+    <text x="580" y="140" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#6a1b9a">Meeting</text>
+    <text x="580" y="160" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#424242">3045 min</text>
+  </g>
+  
+  <!-- Arrow 4 down -->
+  <g>
+    <line x1="580" y1="180" x2="580" y2="220" stroke="#424242" stroke-width="2" marker-end="url(#arrowhead)"/>
+  </g>
+  
+  <!-- Step 5: Work Begins -->
+  <g>
+    <rect x="520" y="220" width="120" height="100" rx="8" fill="#e8f5e9" stroke="#388e3c" stroke-width="2"/>
+    <text x="580" y="255" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#2e7d32">Work</text>
+    <text x="580" y="275" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#2e7d32">Begins</text>
+    <text x="580" y="295" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#424242">billable hours</text>
+  </g>
+  
+  <!-- Note box at bottom -->
+  <g>
+    <rect x="40" y="230" width="440" height="80" rx="6" fill="#fff9c4" stroke="#f9a825" stroke-width="1.5"/>
+    <text x="260" y="252" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600" fill="#f57f17">Before you start billable work, collect:</text>
+    <text x="260" y="272" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#424242"> Signed contract or SOW    Deposit invoice paid and cleared</text>
+    <text x="260" y="287" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#424242"> Billing contact details    Project folders created    Kickoff scheduled</text>
+    <text x="260" y="302" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#424242">Don't start work until the deposit has cleared in your account</text>
+  </g>
+  
+  <!-- Arrow marker definition -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#424242"/>
+    </marker>
+  </defs>
+</svg>
