@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400" aria-labelledby="project-brief-flow-title">
+  <title id="project-brief-flow-title">Project brief workflow showing journey from vague enquiry through structured brief to accurate proposal and protected scope</title>
+  
+  <!-- Background -->
+  <rect width="800" height="400" fill="#f8f9fa"/>
+  
+  <!-- Step 1: Vague Enquiry -->
+  <g>
+    <rect x="40" y="80" width="140" height="100" rx="8" fill="#ffebee" stroke="#c62828" stroke-width="2"/>
+    <text x="110" y="115" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#b71c1c">Vague</text>
+    <text x="110" y="135" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#b71c1c">Enquiry</text>
+    <text x="110" y="155" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#424242">"Need a website"</text>
+  </g>
+  
+  <!-- Arrow 1 -->
+  <g>
+    <line x1="180" y1="130" x2="230" y2="130" stroke="#424242" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <text x="205" y="120" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#616161">send</text>
+  </g>
+  
+  <!-- Step 2: Project Brief -->
+  <g>
+    <rect x="230" y="80" width="140" height="100" rx="8" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+    <text x="300" y="115" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#1565c0">Project</text>
+    <text x="300" y="135" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#1565c0">Brief Form</text>
+    <text x="300" y="155" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#424242">structured intake</text>
+  </g>
+  
+  <!-- Arrow 2 -->
+  <g>
+    <line x1="370" y1="130" x2="420" y2="130" stroke="#424242" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <text x="395" y="120" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#616161">filled</text>
+  </g>
+  
+  <!-- Step 3: Clear Requirements -->
+  <g>
+    <rect x="420" y="80" width="140" height="100" rx="8" fill="#e8f5e9" stroke="#388e3c" stroke-width="2"/>
+    <text x="490" y="115" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#2e7d32">Clear</text>
+    <text x="490" y="135" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#2e7d32">Requirements</text>
+    <text x="490" y="155" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#424242">scope + budget</text>
+  </g>
+  
+  <!-- Arrow 3 -->
+  <g>
+    <line x1="560" y1="130" x2="610" y2="130" stroke="#424242" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <text x="585" y="120" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#616161">write</text>
+  </g>
+  
+  <!-- Step 4: Accurate Proposal -->
+  <g>
+    <rect x="610" y="80" width="140" height="100" rx="8" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="2"/>
+    <text x="680" y="115" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#6a1b9a">Accurate</text>
+    <text x="680" y="135" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#6a1b9a">Proposal</text>
+    <text x="680" y="155" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#424242">precise quote</text>
+  </g>
+  
+  <!-- Arrow down from proposal -->
+  <g>
+    <line x1="680" y1="180" x2="680" y2="220" stroke="#424242" stroke-width="2" marker-end="url(#arrowhead)"/>
+  </g>
+  
+  <!-- Step 5: Protected Scope -->
+  <g>
+    <rect x="610" y="220" width="140" height="100" rx="8" fill="#fff3e0" stroke="#f57c00" stroke-width="2"/>
+    <text x="680" y="255" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#e65100">Protected</text>
+    <text x="680" y="275" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#e65100">Scope</text>
+    <text x="680" y="295" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#424242">no scope creep</text>
+  </g>
+  
+  <!-- Benefit box -->
+  <g>
+    <rect x="40" y="230" width="540" height="80" rx="6" fill="#e8f5e9" stroke="#388e3c" stroke-width="1.5"/>
+    <text x="310" y="255" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="600" fill="#2e7d32"> Brief captures what you need BEFORE quoting</text>
+    <text x="310" y="275" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#424242"> Proposal is accurate (no unpaid revisions later)</text>
+    <text x="310" y="295" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#424242"> Scope creep stopped at the enquiry stage</text>
+  </g>
+  
+  <!-- Arrow marker definition -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#424242"/>
+    </marker>
+  </defs>
+</svg>
