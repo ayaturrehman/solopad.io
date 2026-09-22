@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" aria-labelledby="proforma-invoice-flow-title">
+  <title id="proforma-invoice-flow-title">Proforma invoice decision flow showing when to use quote vs proforma vs deposit vs tax invoice</title>
+  
+  <!-- Background -->
+  <rect width="800" height="450" fill="#f8f9fa"/>
+  
+  <!-- Title -->
+  <text x="400" y="35" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="700" fill="#1a1a1a">UK Freelancer Invoice Types</text>
+  
+  <!-- Step 1: Quote -->
+  <g>
+    <rect x="40" y="70" width="140" height="110" rx="8" fill="#e8f5e9" stroke="#388e3c" stroke-width="2"/>
+    <text x="110" y="100" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#2e7d32">Quote</text>
+    <text x="110" y="125" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#424242">Price estimate</text>
+    <text x="110" y="142" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#424242">Not a demand</text>
+    <text x="110" y="159" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#424242">Can change</text>
+  </g>
+  
+  <!-- Arrow 1 -->
+  <g>
+    <line x1="180" y1="125" x2="230" y2="125" stroke="#424242" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <text x="205" y="117" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#616161">agreed</text>
+  </g>
+  
+  <!-- Step 2: Proforma Invoice -->
+  <g>
+    <rect x="230" y="70" width="140" height="110" rx="8" fill="#fff3e0" stroke="#f57c00" stroke-width="2"/>
+    <text x="300" y="100" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#e65100">Proforma</text>
+    <text x="300" y="117" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#e65100">Invoice</text>
+    <text x="300" y="137" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#424242">Fixed estimate</text>
+    <text x="300" y="154" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#424242">Not a VAT invoice</text>
+    <text x="300" y="171" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#757575">For approval</text>
+  </g>
+  
+  <!-- Arrow 2 -->
+  <g>
+    <line x1="370" y1="125" x2="420" y2="125" stroke="#424242" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <text x="395" y="117" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#616161">approved</text>
+  </g>
+  
+  <!-- Step 3: Deposit Invoice (Optional) -->
+  <g>
+    <rect x="420" y="70" width="140" height="110" rx="8" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+    <text x="490" y="100" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#1565c0">Deposit</text>
+    <text x="490" y="117" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#1565c0">Invoice</text>
+    <text x="490" y="137" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#424242">40-50% upfront</text>
+    <text x="490" y="154" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#424242">Real VAT invoice</text>
+    <text x="490" y="171" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#757575">(Optional)</text>
+  </g>
+  
+  <!-- Arrow 3 -->
+  <g>
+    <line x1="560" y1="125" x2="610" y2="125" stroke="#424242" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <text x="585" y="117" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#616161">work done</text>
+  </g>
+  
+  <!-- Step 4: Tax/Final Invoice -->
+  <g>
+    <rect x="610" y="70" width="140" height="110" rx="8" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="2"/>
+    <text x="680" y="100" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#6a1b9a">Tax Invoice</text>
+    <text x="680" y="117" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#6a1b9a">(Final)</text>
+    <text x="680" y="137" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#424242">Full amount due</text>
+    <text x="680" y="154" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#424242">Real VAT invoice</text>
+    <text x="680" y="171" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#757575">Demand payment</text>
+  </g>
+  
+  <!-- Decision Note 1 -->
+  <g>
+    <rect x="230" y="210" width="140" height="85" rx="6" fill="#fff9c4" stroke="#f9a825" stroke-width="1.5"/>
+    <text x="300" y="228" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600" fill="#f57f17">When to use</text>
+    <text x="300" y="243" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#424242">Client needs approval</text>
+    <text x="300" y="256" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#424242">Procurement process</text>
+    <text x="300" y="269" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#424242">Not ready to pay yet</text>
+    <text x="300" y="285" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-style="italic" fill="#757575">NOT a request for money</text>
+  </g>
+  
+  <!-- Decision Note 2 -->
+  <g>
+    <rect x="420" y="210" width="140" height="85" rx="6" fill="#e1f5fe" stroke="#0277bd" stroke-width="1.5"/>
+    <text x="490" y="228" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600" fill="#01579b">When to use</text>
+    <text x="490" y="243" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#424242">Project over £1,000</text>
+    <text x="490" y="256" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#424242">New client</text>
+    <text x="490" y="269" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#424242">Protect cashflow</text>
+    <text x="490" y="285" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-style="italic" fill="#757575">Request payment NOW</text>
+  </g>
+  
+  <!-- Decision Note 3 -->
+  <g>
+    <rect x="610" y="210" width="140" height="85" rx="6" fill="#fce4ec" stroke="#c2185b" stroke-width="1.5"/>
+    <text x="680" y="228" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600" fill="#880e4f">When to use</text>
+    <text x="680" y="243" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#424242">Work completed</text>
+    <text x="680" y="256" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#424242">Balance due after deposit</text>
+    <text x="680" y="269" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#424242">Monthly retainer</text>
+    <text x="680" y="285" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-style="italic" fill="#757575">Legally binding</text>
+  </g>
+  
+  <!-- Key difference box -->
+  <g>
+    <rect x="40" y="330" width="720" height="90" rx="8" fill="#ffffff" stroke="#616161" stroke-width="2" stroke-dasharray="5,5"/>
+    <text x="400" y="355" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="700" fill="#1a1a1a">Key Difference: Proforma vs Tax Invoice</text>
+    <text x="400" y="377" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#424242">Proforma: "This is what you WILL owe IF you proceed" (not a demand, not a VAT invoice)</text>
+    <text x="400" y="395" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#424242">Tax Invoice: "This is what you OWE NOW" (legally binding, proper VAT invoice if VAT registered)</text>
+    <text x="400" y="413" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-style="italic" fill="#757575">Always label proforma: "This is not a VAT invoice"</text>
+  </g>
+  
+  <!-- Arrow marker definition -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#424242"/>
+    </marker>
+  </defs>
+</svg>
