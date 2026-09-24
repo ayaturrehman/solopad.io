@@ -1,0 +1,90 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#FAF6EF"/>
+  
+  <!-- Subtle grid pattern -->
+  <defs>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#E4DDD2" stroke-width="0.5" opacity="0.3"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+  
+  <!-- Title -->
+  <text x="600" y="80" font-family="system-ui, -apple-system, sans-serif" font-size="36" font-weight="600" fill="#141B24" text-anchor="middle">
+    UK Freelance Retainer Agreement
+  </text>
+  
+  <!-- Step 1: Hours Bank -->
+  <g transform="translate(120, 180)">
+    <rect width="280" height="260" rx="16" fill="white" stroke="#E4DDD2" stroke-width="2"/>
+    <circle cx="140" cy="80" r="40" fill="#EFF6FF" stroke="#2563EB" stroke-width="2"/>
+    <text x="140" y="70" font-family="system-ui" font-size="32" font-weight="600" fill="#2563EB" text-anchor="middle">10</text>
+    <text x="140" y="95" font-family="system-ui" font-size="14" fill="#5C6570" text-anchor="middle">hours</text>
+    
+    <text x="140" y="150" font-family="system-ui" font-size="18" font-weight="600" fill="#141B24" text-anchor="middle">Hours Bank</text>
+    <text x="140" y="180" font-family="system-ui" font-size="14" fill="#5C6570" text-anchor="middle">Pre-agreed monthly</text>
+    <text x="140" y="200" font-family="system-ui" font-size="14" fill="#5C6570" text-anchor="middle">allocation</text>
+    <text x="140" y="230" font-family="system-ui" font-size="13" font-weight="500" fill="#2563EB" text-anchor="middle"> Predictable capacity</text>
+  </g>
+  
+  <!-- Arrow 1 -->
+  <g transform="translate(420, 305)">
+    <line x1="0" y1="0" x2="80" y2="0" stroke="#2563EB" stroke-width="3" marker-end="url(#arrowhead)"/>
+  </g>
+  
+  <!-- Step 2: Monthly Invoice -->
+  <g transform="translate(520, 180)">
+    <rect width="280" height="260" rx="16" fill="white" stroke="#E4DDD2" stroke-width="2"/>
+    <rect x="80" y="50" width="120" height="140" rx="8" fill="#FAF6EF" stroke="#2563EB" stroke-width="2"/>
+    <line x1="100" y1="80" x2="180" y2="80" stroke="#2563EB" stroke-width="2"/>
+    <line x1="100" y1="100" x2="180" y2="100" stroke="#5C6570" stroke-width="1.5"/>
+    <line x1="100" y1="120" x2="160" y2="120" stroke="#5C6570" stroke-width="1.5"/>
+    <text x="140" y="160" font-family="system-ui" font-size="16" font-weight="700" fill="#2563EB" text-anchor="middle">£650</text>
+    
+    <text x="140" y="215" font-family="system-ui" font-size="18" font-weight="600" fill="#141B24" text-anchor="middle">Monthly Invoice</text>
+    <text x="140" y="245" font-family="system-ui" font-size="13" font-weight="500" fill="#2563EB" text-anchor="middle"> Recurring revenue</text>
+  </g>
+  
+  <!-- Arrow 2 -->
+  <g transform="translate(820, 305)">
+    <line x1="0" y1="0" x2="80" y2="0" stroke="#2563EB" stroke-width="3" marker-end="url(#arrowhead)"/>
+  </g>
+  
+  <!-- Step 3: Renew / Notice -->
+  <g transform="translate(920, 180)">
+    <rect width="240" height="260" rx="16" fill="white" stroke="#E4DDD2" stroke-width="2"/>
+    <path d="M 120 70 A 30 30 0 1 1 120 130" stroke="#2563EB" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M 115 125 L 120 130 L 125 125" stroke="#2563EB" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    
+    <text x="120" y="170" font-family="system-ui" font-size="18" font-weight="600" fill="#141B24" text-anchor="middle">Rolling Term</text>
+    <text x="120" y="200" font-family="system-ui" font-size="14" fill="#5C6570" text-anchor="middle">30-day notice</text>
+    <text x="120" y="220" font-family="system-ui" font-size="14" fill="#5C6570" text-anchor="middle">to cancel</text>
+    <text x="120" y="245" font-family="system-ui" font-size="13" font-weight="500" fill="#2563EB" text-anchor="middle"> Flexible exit</text>
+  </g>
+  
+  <!-- Bottom features -->
+  <g transform="translate(0, 510)">
+    <text x="200" y="0" font-family="system-ui" font-size="14" font-weight="500" fill="#5C6570">Unused hours rollover</text>
+    <circle cx="185" cy="-4" r="3" fill="#F05A37"/>
+    
+    <text x="500" y="0" font-family="system-ui" font-size="14" font-weight="500" fill="#5C6570">Overage billing</text>
+    <circle cx="485" cy="-4" r="3" fill="#F05A37"/>
+    
+    <text x="750" y="0" font-family="system-ui" font-size="14" font-weight="500" fill="#5C6570">VAT clarity</text>
+    <circle cx="735" cy="-4" r="3" fill="#F05A37"/>
+    
+    <text x="950" y="0" font-family="system-ui" font-size="14" font-weight="500" fill="#5C6570">GBP examples</text>
+    <circle cx="935" cy="-4" r="3" fill="#F05A37"/>
+  </g>
+  
+  <!-- Arrow marker definition -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#2563EB"/>
+    </marker>
+  </defs>
+  
+  <!-- SoloPad branding -->
+  <text x="600" y="590" font-family="system-ui" font-size="16" font-weight="600" fill="#8A929C" text-anchor="middle">solopad.io/blog</text>
+</svg>
