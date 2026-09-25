@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" aria-labelledby="credit-note-flow-title">
+  <title id="credit-note-flow-title">Credit note flow diagram showing three paths from mistake to resolution</title>
+  
+  <!-- Background -->
+  <rect width="800" height="450" fill="#f8f9fa"/>
+  
+  <!-- Title -->
+  <text x="400" y="35" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="700" fill="#1a1a1a">UK Credit Note Decision Flow</text>
+  
+  <!-- Step 1: Mistake/Error -->
+  <g>
+    <rect x="340" y="70" width="120" height="100" rx="8" fill="#ffebee" stroke="#c62828" stroke-width="2"/>
+    <text x="400" y="110" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#b71c1c">Invoice</text>
+    <text x="400" y="130" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#b71c1c">Mistake</text>
+    <text x="400" y="150" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#424242">overcharge</text>
+  </g>
+  
+  <!-- Arrow down -->
+  <g>
+    <line x1="400" y1="170" x2="400" y2="210" stroke="#424242" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <text x="425" y="195" text-anchor="start" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#616161">fix it</text>
+  </g>
+  
+  <!-- Step 2: Credit Note -->
+  <g>
+    <rect x="340" y="210" width="120" height="100" rx="8" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+    <text x="400" y="250" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#1565c0">Credit</text>
+    <text x="400" y="270" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#1565c0">Note</text>
+    <text x="400" y="290" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#424242">issued</text>
+  </g>
+  
+  <!-- Three arrows splitting -->
+  <g>
+    <!-- Left arrow -->
+    <line x1="340" y1="280" x2="180" y2="340" stroke="#424242" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <!-- Middle arrow -->
+    <line x1="400" y1="310" x2="400" y2="340" stroke="#424242" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <!-- Right arrow -->
+    <line x1="460" y1="280" x2="620" y2="340" stroke="#424242" stroke-width="2" marker-end="url(#arrowhead)"/>
+  </g>
+  
+  <!-- Option 1: Refund Cash -->
+  <g>
+    <rect x="60" y="340" width="120" height="90" rx="8" fill="#e8f5e9" stroke="#388e3c" stroke-width="2"/>
+    <text x="120" y="375" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#2e7d32">Refund</text>
+    <text x="120" y="395" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#2e7d32">Cash</text>
+    <text x="120" y="415" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#424242">bank transfer</text>
+  </g>
+  
+  <!-- Option 2: Apply to Next Invoice -->
+  <g>
+    <rect x="340" y="340" width="120" height="90" rx="8" fill="#fff3e0" stroke="#f57c00" stroke-width="2"/>
+    <text x="400" y="370" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#e65100">Apply to</text>
+    <text x="400" y="390" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#e65100">Next Invoice</text>
+    <text x="400" y="410" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#424242">credit on account</text>
+  </g>
+  
+  <!-- Option 3: Write Off -->
+  <g>
+    <rect x="620" y="340" width="120" height="90" rx="8" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="2"/>
+    <text x="680" y="380" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#6a1b9a">Write Off</text>
+    <text x="680" y="400" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#6a1b9a">(Goodwill)</text>
+    <text x="680" y="420" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#424242">no refund</text>
+  </g>
+  
+  <!-- Bottom notes -->
+  <g>
+    <rect x="40" y="70" width="240" height="110" rx="6" fill="#fff9c4" stroke="#f9a825" stroke-width="1.5"/>
+    <text x="160" y="93" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600" fill="#f57f17">NEVER delete or edit invoice</text>
+    <text x="160" y="113" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#424242">Original invoice stays on record</text>
+    <text x="160" y="128" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#424242">Credit note adjusts what client owes</text>
+    <text x="160" y="143" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#424242">HMRC audit trail stays clean</text>
+    <text x="160" y="163" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-style="italic" fill="#757575">Credit note = accounting fix</text>
+  </g>
+  
+  <g>
+    <rect x="520" y="70" width="240" height="110" rx="6" fill="#e1f5fe" stroke="#0277bd" stroke-width="1.5"/>
+    <text x="640" y="93" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600" fill="#01579b">VAT on credit notes</text>
+    <text x="640" y="113" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#424242">If VAT registered: credit VAT too</text>
+    <text x="640" y="128" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#424242">Show net + VAT separately</text>
+    <text x="640" y="143" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#424242">Same rate as original invoice</text>
+    <text x="640" y="163" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-style="italic" fill="#757575">Not VAT reg? No VAT on credit note</text>
+  </g>
+  
+  <!-- Arrow marker definition -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#424242"/>
+    </marker>
+  </defs>
+</svg>
