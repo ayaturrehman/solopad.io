@@ -1,0 +1,146 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 400" aria-labelledby="cold-email-workflow-title">
+  <title id="cold-email-workflow-title">Cold email workflow showing five stages: cold email sent, reply received, discovery call, brief completed, proposal sent, work won</title>
+  
+  <!-- Background -->
+  <rect width="900" height="400" fill="#f8f9fa"/>
+  
+  <!-- Title -->
+  <text x="450" y="35" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="700" fill="#1a1a1a">Cold Email to Project Workflow</text>
+  
+  <!-- Stage 1: Cold Email -->
+  <g>
+    <circle cx="90" cy="120" r="35" fill="#1976d2" stroke="#1565c0" stroke-width="2.5"/>
+    <text x="90" y="115" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="600" fill="#ffffff">1</text>
+    <text x="90" y="185" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="700" fill="#1a1a1a">Cold Email</text>
+    <text x="90" y="205" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#616161">Targeted</text>
+    <text x="90" y="220" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#616161">Researched</text>
+    <text x="90" y="235" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#616161">50-75 words</text>
+  </g>
+  
+  <!-- Arrow 1 -->
+  <g>
+    <line x1="125" y1="120" x2="205" y2="120" stroke="#9e9e9e" stroke-width="2.5" stroke-dasharray="5,5"/>
+    <polygon points="205,120 195,115 195,125" fill="#9e9e9e"/>
+  </g>
+  
+  <!-- Stage 2: Reply -->
+  <g>
+    <circle cx="270" cy="120" r="35" fill="#7b1fa2" stroke="#6a1b9a" stroke-width="2.5"/>
+    <text x="270" y="115" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="600" fill="#ffffff">2</text>
+    <text x="270" y="185" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="700" fill="#1a1a1a">Reply</text>
+    <text x="270" y="205" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#616161">Interest</text>
+    <text x="270" y="220" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#616161">confirmed</text>
+    <text x="270" y="235" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#616161">5-15% rate</text>
+  </g>
+  
+  <!-- Arrow 2 -->
+  <g>
+    <line x1="305" y1="120" x2="385" y2="120" stroke="#9e9e9e" stroke-width="2.5" stroke-dasharray="5,5"/>
+    <polygon points="385,120 375,115 375,125" fill="#9e9e9e"/>
+  </g>
+  
+  <!-- Stage 3: Discovery -->
+  <g>
+    <circle cx="450" cy="120" r="35" fill="#f57c00" stroke="#ef6c00" stroke-width="2.5"/>
+    <text x="450" y="115" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="600" fill="#ffffff">3</text>
+    <text x="450" y="185" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="700" fill="#1a1a1a">Discovery</text>
+    <text x="450" y="205" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#616161">5-15 min call</text>
+    <text x="450" y="220" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#616161">or send brief</text>
+    <text x="450" y="235" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#616161">immediately</text>
+  </g>
+  
+  <!-- Arrow 3 -->
+  <g>
+    <line x1="485" y1="120" x2="565" y2="120" stroke="#9e9e9e" stroke-width="2.5" stroke-dasharray="5,5"/>
+    <polygon points="565,120 555,115 555,125" fill="#9e9e9e"/>
+  </g>
+  
+  <!-- Stage 4: Brief -->
+  <g>
+    <circle cx="630" cy="120" r="35" fill="#0288d1" stroke="#0277bd" stroke-width="2.5"/>
+    <text x="630" y="115" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="600" fill="#ffffff">4</text>
+    <text x="630" y="185" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="700" fill="#1a1a1a">Brief</text>
+    <text x="630" y="205" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#616161">Scope</text>
+    <text x="630" y="220" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#616161">Budget</text>
+    <text x="630" y="235" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#616161">Timeline</text>
+  </g>
+  
+  <!-- Arrow 4 -->
+  <g>
+    <line x1="665" y1="120" x2="745" y2="120" stroke="#9e9e9e" stroke-width="2.5" stroke-dasharray="5,5"/>
+    <polygon points="745,120 735,115 735,125" fill="#9e9e9e"/>
+  </g>
+  
+  <!-- Stage 5: Proposal -->
+  <g>
+    <circle cx="810" cy="120" r="35" fill="#388e3c" stroke="#2e7d32" stroke-width="2.5"/>
+    <text x="810" y="115" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="600" fill="#ffffff">5</text>
+    <text x="810" y="185" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="700" fill="#1a1a1a">Proposal</text>
+    <text x="810" y="205" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#616161">1-page</text>
+    <text x="810" y="220" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#616161">GBP pricing</text>
+    <text x="810" y="235" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#616161">Clear scope</text>
+  </g>
+  
+  <!-- Key tips section -->
+  <g transform="translate(0, 270)">
+    <rect x="40" y="0" width="820" height="110" rx="8" fill="#ffffff" stroke="#e0e0e0" stroke-width="2"/>
+    <text x="450" y="25" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="700" fill="#1a1a1a">Key Success Factors</text>
+    
+    <!-- Left column -->
+    <g transform="translate(60, 45)">
+      <circle cx="8" cy="-3" r="7" fill="#4caf50"/>
+      <path d="M5,-3 L7,0 L11,-6" stroke="#ffffff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="25" y="0" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#424242">Research each recipient (5 min/email)</text>
+    </g>
+    
+    <g transform="translate(60, 68)">
+      <circle cx="8" cy="-3" r="7" fill="#4caf50"/>
+      <path d="M5,-3 L7,0 L11,-6" stroke="#ffffff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="25" y="0" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#424242">Open with one line about THEM</text>
+    </g>
+    
+    <g transform="translate(60, 91)">
+      <circle cx="8" cy="-3" r="7" fill="#4caf50"/>
+      <path d="M5,-3 L7,0 L11,-6" stroke="#ffffff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="25" y="0" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#424242">Keep under 75 words total</text>
+    </g>
+    
+    <!-- Middle column -->
+    <g transform="translate(310, 45)">
+      <circle cx="8" cy="-3" r="7" fill="#4caf50"/>
+      <path d="M5,-3 L7,0 L11,-6" stroke="#ffffff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="25" y="0" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#424242">Include one proof point or example</text>
+    </g>
+    
+    <g transform="translate(310, 68)">
+      <circle cx="8" cy="-3" r="7" fill="#4caf50"/>
+      <path d="M5,-3 L7,0 L11,-6" stroke="#ffffff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="25" y="0" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#424242">Low-friction CTA (5-min call or examples)</text>
+    </g>
+    
+    <g transform="translate(310, 91)">
+      <circle cx="8" cy="-3" r="7" fill="#4caf50"/>
+      <path d="M5,-3 L7,0 L11,-6" stroke="#ffffff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="25" y="0" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#424242">Follow up Day 3 + Day 7 max</text>
+    </g>
+    
+    <!-- Right column -->
+    <g transform="translate(610, 45)">
+      <circle cx="8" cy="-3" r="7" fill="#4caf50"/>
+      <path d="M5,-3 L7,0 L11,-6" stroke="#ffffff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="25" y="0" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#424242">B2B business emails only (UK PECR)</text>
+    </g>
+    
+    <g transform="translate(610, 68)">
+      <circle cx="8" cy="-3" r="7" fill="#4caf50"/>
+      <path d="M5,-3 L7,0 L11,-6" stroke="#ffffff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="25" y="0" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#424242">Include unsubscribe option always</text>
+    </g>
+    
+    <g transform="translate(610, 91)">
+      <circle cx="8" cy="-3" r="7" fill="#4caf50"/>
+      <path d="M5,-3 L7,0 L11,-6" stroke="#ffffff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="25" y="0" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#424242">Send brief ’ proposal ’ deposit invoice</text>
+    </g>
+  </g>
+</svg>
