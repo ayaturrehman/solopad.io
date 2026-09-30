@@ -1,0 +1,155 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" aria-labelledby="statement-of-account-flow-title">
+  <title id="statement-of-account-flow-title">Statement of account flow showing invoices, running balance, ageing summary, and escalation path</title>
+  
+  <!-- Background -->
+  <rect width="800" height="450" fill="#f8f9fa"/>
+  
+  <!-- Title -->
+  <text x="400" y="35" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="700" fill="#1a1a1a">UK Statement of Account Flow</text>
+  
+  <!-- Step 1: Multiple Invoices -->
+  <g>
+    <rect x="60" y="70" width="140" height="140" rx="8" fill="#ffebee" stroke="#c62828" stroke-width="2"/>
+    <text x="130" y="95" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="600" fill="#b71c1c">Multiple Invoices</text>
+    
+    <!-- Invoice lines -->
+    <rect x="75" y="105" width="110" height="18" rx="3" fill="#fff" stroke="#d32f2f" stroke-width="1"/>
+    <text x="130" y="117" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#424242">INV-078: £1,400</text>
+    
+    <rect x="75" y="128" width="110" height="18" rx="3" fill="#fff" stroke="#d32f2f" stroke-width="1"/>
+    <text x="130" y="140" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#424242">INV-081: £1,600</text>
+    
+    <rect x="75" y="151" width="110" height="18" rx="3" fill="#fff" stroke="#d32f2f" stroke-width="1"/>
+    <text x="130" y="163" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#424242">INV-089: £1,400</text>
+    
+    <text x="130" y="188" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600" fill="#b71c1c">+ payments</text>
+    <text x="130" y="201" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#616161">some paid, some not</text>
+  </g>
+  
+  <!-- Arrow to Statement -->
+  <line x1="200" y1="140" x2="250" y2="140" stroke="#424242" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <text x="225" y="133" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#616161">summarise</text>
+  
+  <!-- Step 2: Statement of Account -->
+  <g>
+    <rect x="250" y="70" width="300" height="260" rx="8" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+    <text x="400" y="95" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#1565c0">Statement of Account</text>
+    
+    <!-- Running balance table -->
+    <rect x="265" y="105" width="270" height="130" rx="4" fill="#fff" stroke="#1976d2" stroke-width="1"/>
+    
+    <!-- Header -->
+    <rect x="265" y="105" width="270" height="20" rx="4" fill="#bbdefb" stroke="#1976d2" stroke-width="1"/>
+    <text x="280" y="118" text-anchor="start" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600" fill="#0d47a1">Date</text>
+    <text x="340" y="118" text-anchor="start" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600" fill="#0d47a1">Invoice</text>
+    <text x="420" y="118" text-anchor="start" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600" fill="#0d47a1">Amount</text>
+    <text x="490" y="118" text-anchor="end" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600" fill="#0d47a1">Balance</text>
+    
+    <!-- Row 1 -->
+    <text x="280" y="141" text-anchor="start" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#424242">10 Aug</text>
+    <text x="340" y="141" text-anchor="start" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#424242">INV-078</text>
+    <text x="420" y="141" text-anchor="start" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#424242">£1,400</text>
+    <text x="520" y="141" text-anchor="end" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#424242">£1,400</text>
+    
+    <!-- Row 2 -->
+    <text x="280" y="158" text-anchor="start" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#424242">22 Aug</text>
+    <text x="340" y="158" text-anchor="start" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#424242">Payment</text>
+    <text x="420" y="158" text-anchor="start" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#2e7d32">(£1,400)</text>
+    <text x="520" y="158" text-anchor="end" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#424242">£0</text>
+    
+    <!-- Row 3 -->
+    <text x="280" y="175" text-anchor="start" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#424242">5 Sep</text>
+    <text x="340" y="175" text-anchor="start" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#424242">INV-081</text>
+    <text x="420" y="175" text-anchor="start" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#424242">£1,600</text>
+    <text x="520" y="175" text-anchor="end" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#424242">£1,600</text>
+    
+    <!-- Row 4 -->
+    <text x="280" y="192" text-anchor="start" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#424242">12 Sep</text>
+    <text x="340" y="192" text-anchor="start" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#424242">INV-089</text>
+    <text x="420" y="192" text-anchor="start" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#424242">£1,400</text>
+    <text x="520" y="192" text-anchor="end" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#424242">£3,000</text>
+    
+    <!-- Row 5 -->
+    <text x="280" y="209" text-anchor="start" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#424242">18 Sep</text>
+    <text x="340" y="209" text-anchor="start" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#424242">Payment</text>
+    <text x="420" y="209" text-anchor="start" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#2e7d32">(£1,000)</text>
+    <text x="520" y="209" text-anchor="end" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#424242">£2,000</text>
+    
+    <!-- Total row -->
+    <rect x="265" y="215" width="270" height="20" rx="4" fill="#90caf9" stroke="#1976d2" stroke-width="1"/>
+    <text x="340" y="228" text-anchor="start" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="700" fill="#0d47a1">Total balance due:</text>
+    <text x="520" y="228" text-anchor="end" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="700" fill="#0d47a1">£2,000</text>
+    
+    <!-- Ageing summary -->
+    <text x="400" y="253" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600" fill="#1565c0">Ageing Summary</text>
+    
+    <g transform="translate(265, 260)">
+      <!-- Current -->
+      <rect x="0" y="0" width="60" height="28" rx="4" fill="#e8f5e9" stroke="#388e3c" stroke-width="1"/>
+      <text x="30" y="11" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="8" fill="#2e7d32">Current</text>
+      <text x="30" y="22" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600" fill="#2e7d32">£0</text>
+      
+      <!-- 30 days -->
+      <rect x="70" y="0" width="60" height="28" rx="4" fill="#fff3e0" stroke="#f57c00" stroke-width="1"/>
+      <text x="100" y="11" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="8" fill="#e65100">30 days</text>
+      <text x="100" y="22" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600" fill="#e65100">£1,400</text>
+      
+      <!-- 60 days -->
+      <rect x="140" y="0" width="60" height="28" rx="4" fill="#ffe0b2" stroke="#ff6f00" stroke-width="1"/>
+      <text x="170" y="11" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="8" fill="#e65100">60 days</text>
+      <text x="170" y="22" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600" fill="#e65100">£600</text>
+      
+      <!-- 90+ days -->
+      <rect x="210" y="0" width="60" height="28" rx="4" fill="#ffcdd2" stroke="#d32f2f" stroke-width="1"/>
+      <text x="240" y="11" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="8" fill="#b71c1c">90+ days</text>
+      <text x="240" y="22" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600" fill="#b71c1c">£0</text>
+    </g>
+    
+    <text x="400" y="315" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-style="italic" fill="#757575">Shows full picture: all invoices + payments + balance</text>
+  </g>
+  
+  <!-- Decision fork -->
+  <g>
+    <line x1="400" y1="330" x2="400" y2="355" stroke="#424242" stroke-width="2"/>
+    
+    <!-- Left arrow -->
+    <line x1="400" y1="355" x2="200" y2="385" stroke="#424242" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <text x="285" y="370" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#616161">client pays</text>
+    
+    <!-- Right arrow -->
+    <line x1="400" y1="355" x2="600" y2="385" stroke="#424242" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <text x="515" y="370" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#616161">ignored</text>
+  </g>
+  
+  <!-- Outcome 1: Paid -->
+  <g>
+    <rect x="80" y="385" width="120" height="50" rx="8" fill="#e8f5e9" stroke="#388e3c" stroke-width="2"/>
+    <text x="140" y="408" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="600" fill="#2e7d32">Paid</text>
+    <text x="140" y="424" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#424242">Done</text>
+  </g>
+  
+  <!-- Outcome 2: Escalate to LBA -->
+  <g>
+    <rect x="540" y="385" width="180" height="50" rx="8" fill="#ffebee" stroke="#c62828" stroke-width="2"/>
+    <text x="630" y="405" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="600" fill="#b71c1c">Letter Before Action</text>
+    <text x="630" y="420" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#424242">+ statutory interest</text>
+    <text x="630" y="432" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#424242">+ recovery costs</text>
+  </g>
+  
+  <!-- Side note: When to use -->
+  <g>
+    <rect x="40" y="240" width="180" height="80" rx="6" fill="#fff9c4" stroke="#f9a825" stroke-width="1.5"/>
+    <text x="130" y="258" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600" fill="#f57f17">When to send a statement:</text>
+    <text x="130" y="273" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#424242"> Multiple invoices (paid/unpaid)</text>
+    <text x="130" y="286" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#424242"> Client asks "what do I owe?"</text>
+    <text x="130" y="299" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#424242"> Monthly routine for retainer</text>
+    <text x="130" y="312" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#424242"> Before escalating to LBA</text>
+  </g>
+  
+  <!-- Arrow marker definition -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#424242"/>
+    </marker>
+  </defs>
+</svg>
