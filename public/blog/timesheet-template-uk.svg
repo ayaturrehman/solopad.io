@@ -1,0 +1,90 @@
+<svg width="800" height="300" viewBox="0 0 800 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Title -->
+  <text x="400" y="35" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="700" fill="#111827" text-anchor="middle">UK Freelance Timesheet Workflow</text>
+  
+  <!-- Card 1: Log Hours -->
+  <rect x="40" y="70" width="200" height="180" rx="8" fill="#F3F4F6" stroke="#1976d2" stroke-width="2.5"/>
+  <rect x="40" y="70" width="200" height="45" rx="8" fill="#1976d2"/>
+  <text x="140" y="98" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="15" font-weight="700" fill="#ffffff">1. Log Hours</text>
+  
+  <!-- Clock icon -->
+  <circle cx="140" cy="145" r="18" stroke="#1976d2" stroke-width="2.5" fill="none"/>
+  <path d="M140 132 L140 145 L148 145" stroke="#1976d2" stroke-width="2.5" stroke-linecap="round"/>
+  
+  <!-- Checkmarks -->
+  <g transform="translate(60, 185)">
+    <circle cx="8" cy="-3" r="8" fill="#4caf50"/>
+    <path d="M5,-3 L7,0 L11,-6" stroke="#ffffff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="25" y="0" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#424242">Track daily work</text>
+  </g>
+  
+  <g transform="translate(60, 210)">
+    <circle cx="8" cy="-3" r="8" fill="#4caf50"/>
+    <path d="M5,-3 L7,0 L11,-6" stroke="#ffffff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="25" y="0" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#424242">Note tasks</text>
+  </g>
+  
+  <!-- Arrow 1 -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#7b1fa2"/>
+    </marker>
+  </defs>
+  <path d="M250 160 L290 160" stroke="#7b1fa2" stroke-width="2.5" marker-end="url(#arrowhead)"/>
+  
+  <!-- Card 2: Review Billable -->
+  <rect x="300" y="70" width="200" height="180" rx="8" fill="#F3F4F6" stroke="#7b1fa2" stroke-width="2.5"/>
+  <rect x="300" y="70" width="200" height="45" rx="8" fill="#7b1fa2"/>
+  <text x="400" y="98" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="15" font-weight="700" fill="#ffffff">2. Review Billable</text>
+  
+  <!-- Filter icon -->
+  <path d="M380 130 L420 130 L410 145 L410 158" stroke="#7b1fa2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <path d="M390 130 L400 145 L400 158" stroke="#7b1fa2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <circle cx="405" cy="160" r="4" fill="#7b1fa2"/>
+  
+  <!-- Checkmarks -->
+  <g transform="translate(320, 185)">
+    <circle cx="8" cy="-3" r="8" fill="#4caf50"/>
+    <path d="M5,-3 L7,0 L11,-6" stroke="#ffffff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="25" y="0" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#424242">Mark client hours</text>
+  </g>
+  
+  <g transform="translate(320, 210)">
+    <circle cx="8" cy="-3" r="8" fill="#4caf50"/>
+    <path d="M5,-3 L7,0 L11,-6" stroke="#ffffff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="25" y="0" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#424242">Calculate rate × hrs</text>
+  </g>
+  
+  <!-- Arrow 2 -->
+  <path d="M510 160 L550 160" stroke="#f57c00" stroke-width="2.5" marker-end="url(#arrowhead2)"/>
+  <defs>
+    <marker id="arrowhead2" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#f57c00"/>
+    </marker>
+  </defs>
+  
+  <!-- Card 3: Invoice -->
+  <rect x="560" y="70" width="200" height="180" rx="8" fill="#F3F4F6" stroke="#f57c00" stroke-width="2.5"/>
+  <rect x="560" y="70" width="200" height="45" rx="8" fill="#f57c00"/>
+  <text x="660" y="98" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="15" font-weight="700" fill="#ffffff">3. Invoice</text>
+  
+  <!-- Document icon -->
+  <rect x="642" y="130" width="36" height="44" rx="2" stroke="#f57c00" stroke-width="2.5" fill="none"/>
+  <path d="M648 138 L672 138 M648 145 L672 145 M648 152 L664 152" stroke="#f57c00" stroke-width="2" stroke-linecap="round"/>
+  
+  <!-- Checkmarks -->
+  <g transform="translate(580, 185)">
+    <circle cx="8" cy="-3" r="8" fill="#4caf50"/>
+    <path d="M5,-3 L7,0 L11,-6" stroke="#ffffff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="25" y="0" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#424242">Attach timesheet</text>
+  </g>
+  
+  <g transform="translate(580, 210)">
+    <circle cx="8" cy="-3" r="8" fill="#4caf50"/>
+    <path d="M5,-3 L7,0 L11,-6" stroke="#ffffff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="25" y="0" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#424242">Send to client</text>
+  </g>
+  
+  <!-- Bottom note -->
+  <text x="400" y="280" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="600" fill="#1976d2">Clear audit trail for UK freelancers  no manual Excel exports</text>
+</svg>
