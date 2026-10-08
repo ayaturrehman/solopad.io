@@ -1,0 +1,133 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#FAF6EF"/>
+  
+  <!-- Decorative elements -->
+  <circle cx="120" cy="120" r="90" fill="#EFF6FF" opacity="0.6"/>
+  <circle cx="1080" cy="510" r="110" fill="#FFF7ED" opacity="0.5"/>
+  
+  <!-- Title area -->
+  <text x="600" y="70" font-family="system-ui, -apple-system, sans-serif" font-size="32" font-weight="600" fill="#141B24" text-anchor="middle">Remittance Advice Reconciliation</text>
+  <text x="600" y="105" font-family="system-ui, -apple-system, sans-serif" font-size="18" fill="#5C6570" text-anchor="middle">How freelancers match payment notifications to invoices</text>
+  
+  <!-- Step 1: Client Sends Remittance -->
+  <g transform="translate(70, 160)">
+    <rect width="240" height="320" rx="16" fill="white" stroke="#E4DDD2" stroke-width="2"/>
+    <rect width="240" height="50" rx="16" fill="#DBEAFE"/>
+    <text x="120" y="33" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="700" fill="#1E40AF" text-anchor="middle">1. Remittance Advice</text>
+    
+    <!-- Document icon -->
+    <g transform="translate(65, 80)">
+      <rect width="110" height="140" rx="8" fill="white" stroke="#2563EB" stroke-width="3"/>
+      <text x="55" y="25" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600" fill="#1E40AF" text-anchor="middle">Client Ltd</text>
+      <line x1="15" y1="40" x2="95" y2="40" stroke="#2563EB" stroke-width="1" opacity="0.3"/>
+      <line x1="15" y1="50" x2="95" y2="50" stroke="#2563EB" stroke-width="1" opacity="0.3"/>
+      
+      <!-- Invoice list -->
+      <rect x="10" y="60" width="90" height="20" rx="3" fill="#F0F9FF"/>
+      <text x="55" y="73" font-family="Monaco, monospace" font-size="10" fill="#1E40AF" text-anchor="middle">INV-078 £1,200</text>
+      
+      <rect x="10" y="85" width="90" height="20" rx="3" fill="#F0F9FF"/>
+      <text x="55" y="98" font-family="Monaco, monospace" font-size="10" fill="#1E40AF" text-anchor="middle">INV-081 £2,400</text>
+      
+      <line x1="15" y1="115" x2="95" y2="115" stroke="#1E40AF" stroke-width="2"/>
+      <text x="55" y="130" font-family="Monaco, monospace" font-size="11" font-weight="700" fill="#1E40AF" text-anchor="middle">Total: £3,600</text>
+    </g>
+    
+    <text x="120" y="255" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#5C6570" text-anchor="middle">Client emails:</text>
+    <text x="120" y="275" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#5C6570" text-anchor="middle">"Payment sent for</text>
+    <text x="120" y="292" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#5C6570" text-anchor="middle">these invoices"</text>
+  </g>
+  
+  <!-- Arrow 1 -->
+  <g transform="translate(330, 310)">
+    <path d="M 0 0 L 60 0" stroke="#F05A37" stroke-width="3" marker-end="url(#arrowhead)"/>
+  </g>
+  
+  <!-- Step 2: Match to Invoices -->
+  <g transform="translate(410, 160)">
+    <rect width="240" height="320" rx="16" fill="white" stroke="#E4DDD2" stroke-width="2"/>
+    <rect width="240" height="50" rx="16" fill="#FEFCE8"/>
+    <text x="120" y="33" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="700" fill="#854D0E" text-anchor="middle">2. Match Invoices</text>
+    
+    <!-- Checklist -->
+    <g transform="translate(40, 80)">
+      <!-- Check 1 -->
+      <circle cx="8" cy="8" r="8" fill="#22C55E"/>
+      <path d="M 5 8 L 7 10 L 11 6" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="25" y="13" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#3F4751">INV-078  £1,200</text>
+      
+      <!-- Check 2 -->
+      <g transform="translate(0, 35)">
+        <circle cx="8" cy="8" r="8" fill="#22C55E"/>
+        <path d="M 5 8 L 7 10 L 11 6" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <text x="25" y="13" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#3F4751">INV-081  £2,400</text>
+      </g>
+      
+      <!-- Pending -->
+      <g transform="translate(0, 70)">
+        <circle cx="8" cy="8" r="8" fill="#E4DDD2"/>
+        <text x="25" y="13" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#8A929C">INV-085 ñ £1,600</text>
+      </g>
+      
+      <!-- Total box -->
+      <g transform="translate(0, 115)">
+        <rect width="160" height="40" rx="6" fill="#F4EFE6"/>
+        <text x="80" y="18" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="500" fill="#5C6570" text-anchor="middle">Expected in bank:</text>
+        <text x="80" y="33" font-family="Monaco, monospace" font-size="15" font-weight="700" fill="#141B24" text-anchor="middle">£3,600</text>
+      </g>
+    </g>
+    
+    <text x="120" y="255" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#5C6570" text-anchor="middle">Check invoice dates,</text>
+    <text x="120" y="275" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#5C6570" text-anchor="middle">amounts & payment</text>
+    <text x="120" y="292" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#5C6570" text-anchor="middle">reference</text>
+  </g>
+  
+  <!-- Arrow 2 -->
+  <g transform="translate(670, 310)">
+    <path d="M 0 0 L 60 0" stroke="#F05A37" stroke-width="3" marker-end="url(#arrowhead)"/>
+  </g>
+  
+  <!-- Step 3: Check Bank -->
+  <g transform="translate(750, 160)">
+    <rect width="240" height="320" rx="16" fill="white" stroke="#E4DDD2" stroke-width="2"/>
+    <rect width="240" height="50" rx="16" fill="#D1FAE5"/>
+    <text x="120" y="33" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="700" fill="#065F46" text-anchor="middle">3. Check Bank</text>
+    
+    <!-- Bank statement -->
+    <g transform="translate(30, 80)">
+      <rect width="180" height="140" rx="8" fill="#F0FDF4" stroke="#22C55E" stroke-width="2"/>
+      
+      <text x="90" y="25" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600" fill="#065F46" text-anchor="middle">Bank Statement</text>
+      <line x1="20" y1="35" x2="160" y2="35" stroke="#22C55E" stroke-width="1" opacity="0.3"/>
+      
+      <!-- Transaction -->
+      <g transform="translate(15, 50)">
+        <text x="0" y="0" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#3F4751">11 Oct 2026</text>
+        <text x="0" y="18" font-family="Monaco, monospace" font-size="10" fill="#5C6570">BACS LUMEN-OCT26</text>
+        <text x="150" y="9" font-family="Monaco, monospace" font-size="13" font-weight="700" fill="#16A34A" text-anchor="end">£3,600.00</text>
+        
+        <rect x="0" y="28" width="150" height="20" rx="4" fill="#A7F3D0"/>
+        <text x="75" y="41" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600" fill="#065F46" text-anchor="middle"> Cleared</text>
+      </g>
+    </g>
+    
+    <text x="120" y="255" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#5C6570" text-anchor="middle">BACS takes 1-3 days.</text>
+    <text x="120" y="275" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#5C6570" text-anchor="middle">Match reference to</text>
+    <text x="120" y="292" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#5C6570" text-anchor="middle">remittance advice</text>
+  </g>
+  
+  <!-- Bottom note box -->
+  <g transform="translate(240, 520)">
+    <rect width="720" height="70" rx="12" fill="#FFFBEB" stroke="#FCD34D" stroke-width="2"/>
+    <text x="360" y="30" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="600" fill="#92400E" text-anchor="middle">Key takeaway</text>
+    <text x="360" y="52" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#78350F" text-anchor="middle">Remittance advice tells you what to expect  always check your bank to confirm the money has arrived</text>
+  </g>
+  
+  <!-- Arrow marker definition -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#F05A37"/>
+    </marker>
+  </defs>
+</svg>
