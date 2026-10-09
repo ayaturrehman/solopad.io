@@ -1,0 +1,69 @@
+<svg viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="800" height="400" fill="#f8fafc"/>
+  
+  <!-- Title -->
+  <text x="400" y="40" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="600" fill="#1e293b">Use of Home as Office: Two Methods</text>
+  
+  <!-- Left side: Flat Rate Method -->
+  <g transform="translate(80, 80)">
+    <!-- Card background -->
+    <rect width="280" height="270" rx="8" fill="white" stroke="#e2e8f0" stroke-width="2"/>
+    
+    <!-- Header -->
+    <rect width="280" height="50" rx="8" fill="#3b82f6"/>
+    <text x="140" y="32" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="600" fill="white">Flat Rate</text>
+    
+    <!-- Calculator icon -->
+    <g transform="translate(100, 70)">
+      <rect width="80" height="100" rx="4" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/>
+      <rect x="10" y="10" width="60" height="20" rx="2" fill="#93c5fd"/>
+      <circle cx="25" cy="50" r="8" fill="#60a5fa"/>
+      <circle cx="45" cy="50" r="8" fill="#60a5fa"/>
+      <circle cx="65" cy="50" r="8" fill="#60a5fa"/>
+      <circle cx="25" cy="70" r="8" fill="#60a5fa"/>
+      <circle cx="45" cy="70" r="8" fill="#60a5fa"/>
+      <circle cx="65" cy="70" r="8" fill="#60a5fa"/>
+    </g>
+    
+    <!-- Text content -->
+    <text x="140" y="195" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="500" fill="#475569">Hours-based bands:</text>
+    <text x="140" y="215" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#64748b">25-50h: £10/month</text>
+    <text x="140" y="233" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#64748b">51-100h: £18/month</text>
+    <text x="140" y="251" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#64748b">101+h: £26/month</text>
+  </g>
+  
+  <!-- Right side: Actual Costs Method -->
+  <g transform="translate(440, 80)">
+    <!-- Card background -->
+    <rect width="280" height="270" rx="8" fill="white" stroke="#e2e8f0" stroke-width="2"/>
+    
+    <!-- Header -->
+    <rect width="280" height="50" rx="8" fill="#10b981"/>
+    <text x="140" y="32" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="600" fill="white">Actual Costs</text>
+    
+    <!-- Receipt/document icon -->
+    <g transform="translate(100, 70)">
+      <rect width="80" height="100" rx="4" fill="#d1fae5" stroke="#10b981" stroke-width="2"/>
+      <line x1="15" y1="20" x2="65" y2="20" stroke="#34d399" stroke-width="2"/>
+      <line x1="15" y1="35" x2="65" y2="35" stroke="#34d399" stroke-width="2"/>
+      <line x1="15" y1="50" x2="50" y2="50" stroke="#34d399" stroke-width="2"/>
+      <line x1="15" y1="65" x2="65" y2="65" stroke="#34d399" stroke-width="2"/>
+      <line x1="15" y1="80" x2="45" y2="80" stroke="#34d399" stroke-width="2"/>
+    </g>
+    
+    <!-- Text content -->
+    <text x="140" y="195" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="500" fill="#475569">Proportion of bills:</text>
+    <text x="140" y="215" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#64748b">Heating, electricity</text>
+    <text x="140" y="233" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#64748b">Rent, mortgage interest</text>
+    <text x="140" y="251" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#64748b">Council tax, insurance</text>
+  </g>
+  
+  <!-- Arrow between methods -->
+  <g transform="translate(380, 210)">
+    <text x="0" y="0" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="600" fill="#64748b">vs</text>
+  </g>
+  
+  <!-- Bottom note -->
+  <text x="400" y="375" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#64748b">Both methods: claim broadband and phone separately</text>
+</svg>
