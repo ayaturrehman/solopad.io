@@ -1,0 +1,43 @@
+<svg width="800" height="320" viewBox="0 0 800 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Card 1: Website T&Cs -->
+  <g>
+    <rect x="20" y="60" width="220" height="200" rx="12" fill="#FEF3C7" stroke="#F59E0B" stroke-width="2"/>
+    <circle cx="130" cy="105" r="26" fill="#F59E0B"/>
+    <path d="M118 105L128 95L142 109M118 109L128 99L142 113" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="130" y="160" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="17" font-weight="600" fill="#92400e">Website T&amp;Cs</text>
+    <text x="130" y="185" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#b45309">For site visitors</text>
+    <text x="130" y="205" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#b45309">Privacy, cookies,</text>
+    <text x="130" y="225" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#b45309">acceptable use</text>
+  </g>
+
+  <!-- Card 2: Standard Terms -->
+  <g>
+    <rect x="290" y="60" width="220" height="200" rx="12" fill="#EFF6FF" stroke="#2563EB" stroke-width="2"/>
+    <circle cx="400" cy="105" r="26" fill="#2563EB"/>
+    <path d="M392 105L397 110L408 99" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M392 115L397 120L408 109" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="400" y="160" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="17" font-weight="600" fill="#1e40af">Standard Terms</text>
+    <text x="400" y="185" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#3b82f6">For every service job</text>
+    <text x="400" y="205" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#3b82f6">Payment, revisions,</text>
+    <text x="400" y="225" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#3b82f6">liability, IP, cancellation</text>
+  </g>
+
+  <!-- Card 3: Project Contract -->
+  <g>
+    <rect x="560" y="60" width="220" height="200" rx="12" fill="#D1FAE5" stroke="#10B981" stroke-width="2"/>
+    <circle cx="670" cy="105" r="26" fill="#10B981"/>
+    <rect x="660" y="95" width="20" height="3" rx="1.5" fill="white"/>
+    <rect x="660" y="102" width="20" height="3" rx="1.5" fill="white"/>
+    <rect x="660" y="109" width="14" height="3" rx="1.5" fill="white"/>
+    <text x="670" y="160" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="17" font-weight="600" fill="#065f46">Project Contract</text>
+    <text x="670" y="185" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#059669">For specific scope</text>
+    <text x="670" y="205" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#059669">Deliverables, timeline,</text>
+    <text x="670" y="225" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#059669">milestones, £ breakdown</text>
+  </g>
+
+  <!-- Title -->
+  <text x="400" y="35" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="600" fill="#374151">Three Types of Terms: Which Do You Need?</text>
+
+  <!-- Bottom note -->
+  <text x="400" y="290" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#6B7280">Freelancers need Standard Terms (middle) for all client work. Add Project Contract (right) for complex jobs.</text>
+</svg>
