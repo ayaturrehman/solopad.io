@@ -441,7 +441,7 @@ export default function ClientPortal({ project, files, comments: initialComments
   }
 
   return (
-    <div className="min-h-screen bg-zinc-50">
+    <div className="client-portal min-h-screen bg-zinc-50">
       {/* Header */}
       <header className="sticky top-0 z-30 border-b border-zinc-200 bg-white">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">

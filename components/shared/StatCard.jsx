@@ -18,9 +18,9 @@ export function StatCard({ label, value, note, color, delay = 0 }) {
       className="dash-fade-up px-4 py-4"
       style={delay ? { animationDelay: `${delay}ms` } : undefined}
     >
-      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-400">{label}</p>
+      <p className="text-xs font-medium uppercase tracking-[0.12em] text-zinc-400">{label}</p>
       <p
-        className={cn("dash-count mt-2 text-2xl md:text-3xl tracking-tight", color || "text-zinc-900")}
+        className={cn("dash-count mt-2 text-2xl md:text-3xl font-semibold tabular-nums tracking-tight", color || "text-zinc-900")}
         style={delay ? { animationDelay: `${delay + 80}ms` } : undefined}
       >
         {value}

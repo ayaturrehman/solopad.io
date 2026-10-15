@@ -73,7 +73,7 @@ html[data-theme="dark"] .text-zinc-500 {
 }
 
 html[data-theme="dark"] .text-zinc-400 {
-  color: #71717a !important;
+  color: #a1a1aa !important;
 }
 
 html[data-theme="dark"] .hover\:bg-zinc-50:hover,
@@ -319,4 +319,29 @@ html[data-theme="dark"] .document-paper .bg-zinc-50 {
 
 html[data-theme="dark"] .booking-page {
   background: #09090b;
+}
+
+/* Application typography and interaction baseline. Kumbh Sans remains the
+   brand family; readable supporting text must work on both surface themes. */
+html:not([data-theme="dark"]) :is(.app-shell, .client-portal) .text-zinc-400 {
+  color: #71717a;
+}
+:is(.app-shell, .client-portal) :is(a, button, input, select, textarea):focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 3px;
+}
+@media (max-width: 767px) {
+  :is(.app-shell, .client-portal) :is(input, select, textarea) {
+    font-size: 16px;
+  }
+  :is(.app-shell, .client-portal) button:not([role="switch"]) {
+    min-height: 44px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dash-fade-up, .dash-fade-in, .dash-count {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
 }

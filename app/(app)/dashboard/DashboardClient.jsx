@@ -130,7 +130,7 @@ export default function DashboardClient({
       {/* Greeting */}
       <div className="dash-fade-in flex items-center justify-between" style={delay(0)}>
         <div>
-          <p className="text-2xl tracking-tight text-zinc-900">{greeting}, {firstName}</p>
+          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900">{greeting}, {firstName}</h1>
           <p className="mt-1 text-sm text-zinc-400">{dateLabel}</p>
         </div>
       </div>

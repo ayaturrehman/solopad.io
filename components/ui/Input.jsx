@@ -14,7 +14,7 @@ export const textareaClassName =
 
 export function FormLabel({ children, required, htmlFor, id }) {
   return (
-    <label id={id} htmlFor={htmlFor} className="mb-1 block text-xs font-medium text-zinc-700">
+    <label id={id} htmlFor={htmlFor} className="mb-1.5 block text-sm font-medium text-zinc-700">
       {children}
       {required && <span className="ml-0.5 text-red-500">*</span>}
     </label>
