@@ -4,6 +4,7 @@ import { Suspense, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Card, CardHeader, CardBody } from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
+import { formatCurrency } from "@/lib/utils";
 import { PLAN_ORDER, getPlan } from "@/lib/plans";
 import { AlertCircle, CheckCircle2, CreditCard, Clock, Shield, Sparkles } from "lucide-react";
 
@@ -339,7 +340,7 @@ function BillingContent({ plan: initialPlan, billingStatus: initialBillingStatus
                       </div>
                       <div className="flex items-center gap-3">
                         <span className={`text-sm font-medium ${inv.status === "paid" ? "text-green-600" : inv.status === "open" ? "text-amber-600" : "text-red-600"}`}>
-                          £{inv.amount?.toFixed(2)}
+                          {formatCurrency(inv.amount || 0, inv.currency)}
                         </span>
                         {inv.receiptUrl && (
                           <a href={inv.receiptUrl} target="_blank" rel="noopener noreferrer" className="text-xs font-medium text-zinc-500 hover:text-zinc-900">View</a>

@@ -19,6 +19,7 @@ import {
   STATUS_COLORS as PROJECT_STATUS_COLORS,
   STATUS_LABELS as PROJECT_STATUS_LABELS,
   formatCurrency,
+  formatCurrencyTotals,
   formatDate,
 } from "@/lib/utils";
 
@@ -254,10 +255,10 @@ function ProjectsTab({ contact, newProjectHref }) {
           {contact.projects.map((project) => {
             const paidRevenue = project.invoices
               .filter((invoice) => invoice.status === "paid")
-              .reduce((sum, invoice) => sum + invoice.total, 0);
+              ;
             const unpaid = project.invoices
               .filter((invoice) => invoice.status !== "paid" && invoice.status !== "cancelled")
-              .reduce((sum, invoice) => sum + invoice.total, 0);
+              ;
 
             return (
               <div key={project.id} className="py-5 first:pt-0 last:pb-0">
@@ -291,8 +292,8 @@ function ProjectsTab({ contact, newProjectHref }) {
 
                   <div className="shrink-0 text-left lg:min-w-[170px] lg:text-right">
                     <p className="text-[11px] uppercase tracking-[0.16em] text-zinc-400">Outstanding</p>
-                    <p className="mt-1 text-lg font-medium text-zinc-900">{formatCurrency(unpaid)}</p>
-                    <p className="mt-1 text-xs text-zinc-500">Paid {formatCurrency(paidRevenue)}</p>
+                    <p className="mt-1 text-lg font-medium text-zinc-900">{formatCurrencyTotals(unpaid)}</p>
+                    <p className="mt-1 text-xs text-zinc-500">Paid {formatCurrencyTotals(paidRevenue)}</p>
                   </div>
                 </div>
               </div>
@@ -332,8 +333,8 @@ export default async function ContactDetailPage({ params, searchParams }) {
       projects: {
         // Only load full invoices on the projects tab; overview/notes just need counts
         include: tab === "projects"
-          ? { invoices: { select: { id: true, total: true, status: true } } }
-          : { invoices: { select: { total: true, status: true } } },
+          ? { invoices: { select: { id: true, total: true, currency: true, status: true } } }
+          : { invoices: { select: { total: true, currency: true, status: true } } },
         orderBy: { updatedAt: "desc" },
         take: 50,
       },
@@ -345,12 +346,12 @@ export default async function ContactDetailPage({ params, searchParams }) {
   const totalRevenue = contact.projects
     .flatMap((project) => project.invoices)
     .filter((invoice) => invoice.status === "paid")
-    .reduce((sum, invoice) => sum + invoice.total, 0);
+    ;
 
   const totalOutstanding = contact.projects
     .flatMap((project) => project.invoices)
     .filter((invoice) => invoice.status !== "paid" && invoice.status !== "cancelled")
-    .reduce((sum, invoice) => sum + invoice.total, 0);
+    ;
 
   const companyAddress = [
     contact.companyAddressLine1,
@@ -437,13 +438,13 @@ export default async function ContactDetailPage({ params, searchParams }) {
           />
           <StatTile
             label="Revenue"
-            value={formatCurrency(totalRevenue)}
-            note={totalRevenue > 0 ? "Collected across paid invoices" : "No paid invoices yet"}
+            value={formatCurrencyTotals(totalRevenue)}
+            note={totalRevenue.some(invoice => invoice.total > 0) ? "Collected across paid invoices" : "No paid invoices yet"}
           />
           <StatTile
             label="Outstanding"
-            value={formatCurrency(totalOutstanding)}
-            note={totalOutstanding > 0 ? "Open invoice balance" : "Nothing outstanding"}
+            value={formatCurrencyTotals(totalOutstanding)}
+            note={totalOutstanding.some(invoice => invoice.total > 0) ? "Open invoice balance" : "Nothing outstanding"}
           />
         </div>
       </div>

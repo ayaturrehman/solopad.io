@@ -33,6 +33,7 @@ import {
   INVOICE_STATUS_COLORS,
   INVOICE_STATUS_LABELS,
   formatCurrency,
+  formatCurrencyTotals,
   formatDate,
 } from "@/lib/utils";
 import { normalizeTask } from "@/lib/tasks";
@@ -267,8 +268,8 @@ function InvoicesCard({ invoices, outstanding }) {
             <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-500">{invoices.length}</span>
           )}
         </div>
-        {outstanding > 0 && (
-          <span className="text-xs font-medium text-red-500">{formatCurrency(outstanding)} due</span>
+        {outstanding.some(item => item.total > 0) && (
+          <span className="text-xs font-medium text-red-500">{formatCurrencyTotals(outstanding)} due</span>
         )}
       </CardHeader>
       <CardBody className="p-0">
@@ -353,11 +354,11 @@ function OverviewPanel({ project, tasks, files, invoices, proposals, contracts, 
         />
         <StatCard
           label="Outstanding"
-          value={formatCurrency(outstanding)}
+          value={formatCurrencyTotals(outstanding)}
           note={invoices.filter((i) => i.status !== "paid" && i.status !== "cancelled").length
             ? `${invoices.filter((i) => i.status !== "paid" && i.status !== "cancelled").length} unpaid invoices`
             : "All invoices settled"}
-          accent={outstanding > 0 ? "text-red-500" : undefined}
+          accent={outstanding.some(item => item.total > 0) ? "text-red-500" : undefined}
         />
       </div>
 
@@ -635,7 +636,8 @@ export default async function ProjectPage({ params, searchParams }) {
       take: 50,
     }),
     // DB-level aggregate for outstanding instead of in-memory filter+reduce
-    db.invoice.aggregate({
+    db.invoice.groupBy({
+      by: ["currency"],
       where: { projectId: id, status: { notIn: ["paid", "cancelled"] } },
       _sum: { total: true },
     }),
@@ -650,7 +652,7 @@ export default async function ProjectPage({ params, searchParams }) {
 
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "";
   const portalUrl = `${baseUrl}/p/${project.portalToken}`;
-  const outstanding = outstandingAgg._sum.total || 0;
+  const outstanding = outstandingAgg.map(group => ({ currency: group.currency, total: group._sum.total || 0 }));
   const totalLoggedSeconds = timeAgg._sum.duration || 0;
 
   const activityItems = [
