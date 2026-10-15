@@ -104,8 +104,10 @@ model User {
   timezone        String         @default("UTC")
   currency        String         @default("USD")
   paymentMethods    String         @default("card")
-  stripeAccountId   String?
+  stripeAccountId   String?        @unique
   stripeOnboarded   Boolean        @default(false)
+  bankTransferEnabled Boolean      @default(false)
+  bankDetails         Json?
   createdAt         DateTime       @default(now())
 
   // Multi-tenancy — nullable during onboarding; set once business is created/joined
@@ -283,6 +285,8 @@ model Invoice {
   paidAt                DateTime?
   lastReminderAt        DateTime?
   recurringInvoiceId    String?
+  amountPaid            Float         @default(0)
+  payments              InvoicePayment[]
   paymentPlans          PaymentPlan[]
 
   @@index([projectId])
@@ -326,11 +330,31 @@ model RecurringInvoice {
 // ─── PaymentPlan ──────────────────────────────────────────────────────────────
 // Scoped through Invoice → Project → businessId
 
+model InvoicePayment {
+  id              String   @id @default(cuid())
+  invoiceId       String
+  invoice         Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  milestoneId     String?
+  method          String
+  status          String   @default("paid")
+  amount          Float
+  currency        String
+  receivedAt      DateTime @default(now())
+  reference       String?
+  recordedById    String?
+  idempotencyKey  String   @unique
+  stripeSessionId String?  @unique
+  createdAt       DateTime @default(now())
+
+  @@index([invoiceId, status])
+}
+
 model PaymentPlan {
   id        String    @id @default(cuid())
   invoiceId String
   invoice   Invoice   @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
   label     String?
+  amountPaid Float   @default(0)
   amount    Float
   dueDate   DateTime?
   status    String    @default("upcoming")
