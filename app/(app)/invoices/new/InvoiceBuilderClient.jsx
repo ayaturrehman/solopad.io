@@ -1,5 +1,6 @@
 "use client";
 
+import { useUnsavedChanges } from "@/lib/use-unsaved-changes";
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -27,6 +28,7 @@ function emptyMilestone() {
 
 export default function InvoiceBuilderClient({ projects, services, user }) {
   const router = useRouter();
+  const { markDirty, markSaved } = useUnsavedChanges();
   const searchParams = useSearchParams();
 
   const [projectId, setProjectId] = useState(searchParams.get("projectId") || "");
@@ -169,6 +171,7 @@ export default function InvoiceBuilderClient({ projects, services, user }) {
         throw new Error(`Server error (${res.status}). Please try again.`);
       }
       if (!res.ok) throw new Error(data?.error || "Failed to create invoice.");
+      markSaved();
       router.push(`/invoices/${data.id}`);
     } catch (err) {
       setError(err.message);
@@ -179,7 +182,7 @@ export default function InvoiceBuilderClient({ projects, services, user }) {
   const selectedProject = projects.find((p) => p.id === projectId);
 
   return (
-    <div className="px-4 py-4 md:px-6">
+    <div onChangeCapture={markDirty} className="px-4 py-4 md:px-6">
       {/* Top bar */}
       <div className="mb-6 flex items-center justify-between">
         <Link href="/finance?tab=invoices" className="inline-flex items-center gap-2 text-sm text-zinc-500 hover:text-zinc-900">
