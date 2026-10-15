@@ -41,7 +41,7 @@ export default async function PortalPage({ params, searchParams }) {
   const [files, comments, invoices, notes, contracts, proposals] = await Promise.all([
     db.file.findMany({ where: { projectId: project.id, visibleToClient: true }, orderBy: { createdAt: "desc" } }),
     db.comment.findMany({ where: { projectId: project.id }, orderBy: { createdAt: "asc" } }),
-    db.invoice.findMany({ where: { projectId: project.id }, orderBy: { createdAt: "desc" }, include: { paymentPlans: { orderBy: { createdAt: "asc" } } } }),
+    db.invoice.findMany({ where: { projectId: project.id, status: { not: "draft" } }, orderBy: { createdAt: "desc" }, include: { paymentPlans: { orderBy: { createdAt: "asc" } } } }),
     db.note.findMany({ where: { projectId: project.id, visibleToClient: true }, orderBy: { createdAt: "desc" } }),
     db.contract.findMany({
       where: { projectId: project.id, status: { in: ["sent", "signed"] } },

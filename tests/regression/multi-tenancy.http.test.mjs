@@ -893,4 +893,16 @@ test("cross-tenant service mutation blocked — Tenant B can't DELETE Tenant A's
 
   assert.equal(deleteForeignService.status, 404);
 });
+
+test("client portals never disclose or offer payment for draft invoices", async () => {
+  const draft = await prisma.invoice.create({ data: {
+    projectId: seed.projectA.id, invoiceNumber: "PRIVATE-DRAFT-QA", status: "draft",
+    total: 123, currency: "GBP", lineItems: "[]",
+  } });
+  const page = await textRequest(`/p/${seed.projectA.portalToken}?tab=invoices`);
+  assert.equal(page.status, 200);
+  assert.doesNotMatch(page.body, /PRIVATE-DRAFT-QA/);
+  assert.doesNotMatch(page.body, new RegExp(draft.id));
+});
+
 }
