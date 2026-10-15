@@ -1,0 +1,364 @@
+{
+  "date": "2026-10-15",
+  "branch": "fix/qa-audit",
+  "base": "3e7b95647b55b54b5c6d1675a2cb03e22bf72abe",
+  "testedApplicationCommit": "f5be3eef37eeb292c2d7771ba4ff382551b60e4a",
+  "beforeTag": "qa-before-audit-fixes-2026-10-15",
+  "afterTag": "qa-audit-fixes-tested-2026-10-15",
+  "deployment": "Not merged to main or deployed to production",
+  "verification": {
+    "unit": {
+      "passed": 105,
+      "failed": 0
+    },
+    "regression": {
+      "passed": 76,
+      "failed": 0,
+      "skipped": 0,
+      "database": "Isolated PGlite PostgreSQL-compatible socket server; synthetic fixtures"
+    },
+    "lint": {
+      "errors": 0,
+      "warnings": 15
+    },
+    "productionBuild": "passed"
+  },
+  "limits": [
+    "No real payment, refund, subscription change, signature or customer email was submitted.",
+    "Stripe interactions in regression tests are mocked; live webhook and payout settlement still require sandbox end-to-end acceptance.",
+    "Physical mobile, tablet and full screen-reader coverage remain unverified. Fixed the hard-coded 1280px app viewport.",
+    "External reference failures now comprise four access-blocked 403 URLs and two unreachable URLs; these are not confirmed product defects."
+  ],
+  "rollback": {
+    "individual": "git revert <commit-sha>",
+    "group": "Revert the commits for the selected fix newest first, then rerun its tests. Shared helpers may require reverting dependent fixes together.",
+    "wholeRelease": "Redeploy qa-before-audit-fixes-2026-10-15 to restore the previous application version. Keep this fix branch for recovery."
+  },
+  "findings": [
+    {
+      "id": "F01",
+      "fix": "Invoice checkout total",
+      "commits": [
+        "1f93112e8d08a2d4fd1a2dee7d7c6dcf13a59cd1",
+        "315b5892a816cc66c3ab7cd33a1adf0a840cd811",
+        "65c50880bc43b2708b428769274b59b3b5b616ad"
+      ]
+    },
+    {
+      "id": "F02",
+      "fix": "Connected payout readiness",
+      "commits": [
+        "98b8513d324de3609004613ea52fd58a02e80b78"
+      ]
+    },
+    {
+      "id": "F03",
+      "fix": "Billing API, saved card, loading and pending trials",
+      "commits": [
+        "371b26f7bd16eb868d5bde223f822c15a246fa9e",
+        "cce8819ae5531cae8b7cf381eb03386cf27d001c",
+        "8249f729ee69738ef239ab748fb22077a6a5d25c",
+        "6fd4bc457c319ce6492831d7c8e44eac8f825c16",
+        "ce3f276d291ee507be7db2cc86e7b4cf3d507861"
+      ]
+    },
+    {
+      "id": "F04",
+      "fix": "Currency totals",
+      "commits": [
+        "39fcf8694952ac6b588e472be59937c52f2fc548"
+      ]
+    },
+    {
+      "id": "F05",
+      "fix": "Dark document readability",
+      "commits": [
+        "757602d1551a8c95c7f82c89cd97984845060c0d",
+        "6a9bb05b93f6fc93aef9e49ec51d2c2535f2cf05"
+      ]
+    },
+    {
+      "id": "F06",
+      "fix": "Annual signup selection",
+      "commits": [
+        "5a909036a1736fd8876483afae393cd4e189ab35"
+      ]
+    },
+    {
+      "id": "F07",
+      "fix": "Implemented pricing and fees",
+      "commits": [
+        "28509c1ad1ff401e776ec4a5578cfc336b512124",
+        "5b71f1a15e6659280c8b1caa224d38692ab2f7b0"
+      ]
+    },
+    {
+      "id": "F08",
+      "fix": "Accessible labels and controls",
+      "commits": [
+        "71c85afc098d7e27df0726c5aebe5bbe648b19dc",
+        "bb0fdc4e5a165d9fc5571c5045701214f0adebff",
+        "026b3d5f69573679ef786f90d7d0fee8235fada7",
+        "b61b01c08713502aca27af7f2fb69d154e5622f8",
+        "71d733d209c713e9f946ad3cbb2cb30215722432"
+      ]
+    },
+    {
+      "id": "F09",
+      "fix": "Signup links, anchors and references",
+      "commits": [
+        "37490a8ff30d90021dcd9dff77d6e5300e4a5884",
+        "4676f64f50f975ec4850550ffc60b88c04059f1e",
+        "511c404e5a6e8453d33fb4de7e2f59918e271ffd",
+        "e35d2e221c4fe858db550abf6da52919b88ddc1e"
+      ]
+    },
+    {
+      "id": "F10",
+      "fix": "Checkout cancellation recovery",
+      "commits": [
+        "a87d2cde77ba29b17bbdb1e696e42614c364d0b9",
+        "8c7d1e6e079ddf9ba715733402f72ed60e3abba8"
+      ]
+    },
+    {
+      "id": "F11",
+      "fix": "Password recovery",
+      "commits": [
+        "f618d57ff2340507e5a6e0aab715f77e4290bceb",
+        "355b1f472e883d3c3d40ab60e40c0a94d35136be",
+        "9cf20ba04db12f86344dbd24050a12150b37b60a"
+      ]
+    },
+    {
+      "id": "F12",
+      "fix": "Booking empty states and branding",
+      "commits": [
+        "d07dc394c04328096b7c1922a3b58f2714f33340",
+        "f5be3eef37eeb292c2d7771ba4ff382551b60e4a"
+      ]
+    },
+    {
+      "id": "F13",
+      "fix": "Unsaved invoice changes",
+      "commits": [
+        "ea4039a1cfb811f7e48ea5f36108cdd1607d0316",
+        "2bbe67b1632b83284c2328e0cf1d5b969571d821"
+      ]
+    },
+    {
+      "id": "F14",
+      "fix": "Lint and regression harness",
+      "commits": [
+        "7151ec2249c5128c99861b631ea4415febf40cb0",
+        "99391502f7df99427e2e9706a7e0384cfcdaddb8",
+        "0983f30690ab0e5c03f2aac22e19ce2417ecc494",
+        "054ef828a58bf23e89b3c1ebbd3dc42305c44ece",
+        "0ab5efa0680785640d1b260da1e0a75096ccbe1b",
+        "d44be6c52868093cbbcdc94f1f6f43960366719a"
+      ]
+    },
+    {
+      "id": "QA15",
+      "fix": "Responsive viewport",
+      "commits": [
+        "39a2d29151c6e42d1967f19faee7438ae618f8e2"
+      ]
+    },
+    {
+      "id": "QA16",
+      "fix": "API JSON authentication responses",
+      "commits": [
+        "ab991e4f3cad1b66fe33fbeee6d62c44cdb47b90"
+      ]
+    },
+    {
+      "id": "QA17",
+      "fix": "Contact details API error",
+      "commits": [
+        "46620710aac3dde06b1767fb2f2ee1729a841152"
+      ]
+    },
+    {
+      "id": "QA18",
+      "fix": "Draft invoice privacy",
+      "commits": [
+        "e6787453ed773f0e65ecae79803c548df1bb311f"
+      ]
+    }
+  ],
+  "commits": [
+    {
+      "sha": "1f93112e8d08a2d4fd1a2dee7d7c6dcf13a59cd1",
+      "subject": "Fix invoice checkout totals including tax and discounts"
+    },
+    {
+      "sha": "98b8513d324de3609004613ea52fd58a02e80b78",
+      "subject": "Block client checkout until connected payouts are ready"
+    },
+    {
+      "sha": "371b26f7bd16eb868d5bde223f822c15a246fa9e",
+      "subject": "Use supported Stripe invoice preview API in billing details"
+    },
+    {
+      "sha": "cce8819ae5531cae8b7cf381eb03386cf27d001c",
+      "subject": "Read subscription default card before customer billing defaults"
+    },
+    {
+      "sha": "8249f729ee69738ef239ab748fb22077a6a5d25c",
+      "subject": "Show billing loading and failures instead of false missing-card warnings"
+    },
+    {
+      "sha": "39fcf8694952ac6b588e472be59937c52f2fc548",
+      "subject": "Keep invoice balances separated and labelled by their currencies"
+    },
+    {
+      "sha": "6fd4bc457c319ce6492831d7c8e44eac8f825c16",
+      "subject": "Preserve signup trials with pending Stripe customer references"
+    },
+    {
+      "sha": "757602d1551a8c95c7f82c89cd97984845060c0d",
+      "subject": "Keep document editor paper readable in dark mode"
+    },
+    {
+      "sha": "5a909036a1736fd8876483afae393cd4e189ab35",
+      "subject": "Carry annual billing selection through signup and trial setup"
+    },
+    {
+      "sha": "28509c1ad1ff401e776ec4a5578cfc336b512124",
+      "subject": "Align trial pricing and fee disclosures with implemented billing"
+    },
+    {
+      "sha": "37490a8ff30d90021dcd9dff77d6e5300e4a5884",
+      "subject": "Point Plutio comparison signup links to the active app domain"
+    },
+    {
+      "sha": "4676f64f50f975ec4850550ffc60b88c04059f1e",
+      "subject": "Restore legacy feature anchor targets used by inbound links"
+    },
+    {
+      "sha": "a87d2cde77ba29b17bbdb1e696e42614c364d0b9",
+      "subject": "Return cancelled checkouts to the client invoice portal"
+    },
+    {
+      "sha": "71c85afc098d7e27df0726c5aebe5bbe648b19dc",
+      "subject": "Give forms switches pagination and collection headings accessible names"
+    },
+    {
+      "sha": "f618d57ff2340507e5a6e0aab715f77e4290bceb",
+      "subject": "Add expiring single-use emailed password recovery"
+    },
+    {
+      "sha": "ea4039a1cfb811f7e48ea5f36108cdd1607d0316",
+      "subject": "Warn before leaving invoice drafts with unsaved changes"
+    },
+    {
+      "sha": "d07dc394c04328096b7c1922a3b58f2714f33340",
+      "subject": "Explain empty booking availability and use SoloPad branding"
+    },
+    {
+      "sha": "39a2d29151c6e42d1967f19faee7438ae618f8e2",
+      "subject": "Use the device width for responsive app layouts"
+    },
+    {
+      "sha": "511c404e5a6e8453d33fb4de7e2f59918e271ffd",
+      "subject": "Replace broken government and court reference URLs"
+    },
+    {
+      "sha": "5b71f1a15e6659280c8b1caa224d38692ab2f7b0",
+      "subject": "Update pricing checks to require implemented promotions only"
+    },
+    {
+      "sha": "7151ec2249c5128c99861b631ea4415febf40cb0",
+      "subject": "Correct stale regression assertions for navigation and public booking POST"
+    },
+    {
+      "sha": "99391502f7df99427e2e9706a7e0384cfcdaddb8",
+      "subject": "Resolve lint errors in navigation text and template lifecycle"
+    },
+    {
+      "sha": "ab991e4f3cad1b66fe33fbeee6d62c44cdb47b90",
+      "subject": "Return JSON authentication errors for API calls and allow public booking POST"
+    },
+    {
+      "sha": "0983f30690ab0e5c03f2aac22e19ce2417ecc494",
+      "subject": "Refresh HTTP regression fixtures and start the test server directly"
+    },
+    {
+      "sha": "46620710aac3dde06b1767fb2f2ee1729a841152",
+      "subject": "Remove nonexistent project revenue field from contact detail API"
+    },
+    {
+      "sha": "054ef828a58bf23e89b3c1ebbd3dc42305c44ece",
+      "subject": "Exercise current CRUD payloads and explicit member permissions in HTTP tests"
+    },
+    {
+      "sha": "0ab5efa0680785640d1b260da1e0a75096ccbe1b",
+      "subject": "Verify persisted project updates and associate member fixture with its user"
+    },
+    {
+      "sha": "315b5892a816cc66c3ab7cd33a1adf0a840cd811",
+      "subject": "Render legacy invoice lines tax and discounts correctly in the client portal"
+    },
+    {
+      "sha": "bb0fdc4e5a165d9fc5571c5045701214f0adebff",
+      "subject": "Label contact notes and the business currency selector"
+    },
+    {
+      "sha": "355b1f472e883d3c3d40ab60e40c0a94d35136be",
+      "subject": "Keep recovery and client portal URLs out of initial marketing analytics"
+    },
+    {
+      "sha": "d44be6c52868093cbbcdc94f1f6f43960366719a",
+      "subject": "Assert the project PATCH update count and persisted data"
+    },
+    {
+      "sha": "2bbe67b1632b83284c2328e0cf1d5b969571d821",
+      "subject": "Protect invoice edits and button-driven draft changes before navigation"
+    },
+    {
+      "sha": "9cf20ba04db12f86344dbd24050a12150b37b60a",
+      "subject": "Cover password recovery privacy invalid tokens and concurrent reuse"
+    },
+    {
+      "sha": "ce3f276d291ee507be7db2cc86e7b4cf3d507861",
+      "subject": "Show outstanding subscription invoice amounts instead of zero paid amounts"
+    },
+    {
+      "sha": "6a9bb05b93f6fc93aef9e49ec51d2c2535f2cf05",
+      "subject": "Keep rich text ink readable on the document paper in dark mode"
+    },
+    {
+      "sha": "026b3d5f69573679ef786f90d7d0fee8235fada7",
+      "subject": "Expose document rich text areas to assistive technology"
+    },
+    {
+      "sha": "65c50880bc43b2708b428769274b59b3b5b616ad",
+      "subject": "Respect Stripe whole-unit charge rules for UGX and ISK"
+    },
+    {
+      "sha": "e35d2e221c4fe858db550abf6da52919b88ddc1e",
+      "subject": "Point VAT references at the verified credit notes section"
+    },
+    {
+      "sha": "b61b01c08713502aca27af7f2fb69d154e5622f8",
+      "subject": "Name task and record action buttons and invoice editing fields"
+    },
+    {
+      "sha": "8c7d1e6e079ddf9ba715733402f72ed60e3abba8",
+      "subject": "Open the invoices tab when returning from cancelled checkout"
+    },
+    {
+      "sha": "e6787453ed773f0e65ecae79803c548df1bb311f",
+      "subject": "Keep draft invoices private from the client portal"
+    },
+    {
+      "sha": "71d733d209c713e9f946ad3cbb2cb30215722432",
+      "subject": "Name contract clause removal controls"
+    },
+    {
+      "sha": "f5be3eef37eeb292c2d7771ba4ff382551b60e4a",
+      "subject": "Keep public booking text readable against its dark theme background"
+    }
+  ]
+}
