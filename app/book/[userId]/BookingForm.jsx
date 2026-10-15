@@ -97,7 +97,7 @@ export default function BookingForm({ userId, userName, rules, existingBookings 
 
   if (submitted) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-slate-100 px-4">
+      <div className="booking-page flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-slate-100 px-4">
         <div className="w-full max-w-sm rounded-2xl bg-white p-10 shadow-xl text-center">
           <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-blue-100">
             <Check className="h-8 w-8 text-blue-600" />
@@ -115,7 +115,7 @@ export default function BookingForm({ userId, userName, rules, existingBookings 
   const step = !selectedDate ? 1 : !selectedSlot ? 2 : 3;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-slate-100 flex items-start justify-center px-4 py-10">
+    <div className="booking-page min-h-screen bg-gradient-to-br from-blue-50 via-white to-slate-100 flex items-start justify-center px-4 py-10">
       <div className="w-full max-w-6xl">
 
         {/* Header */}

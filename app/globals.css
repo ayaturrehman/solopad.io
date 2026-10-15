@@ -316,3 +316,7 @@ html[data-theme="dark"] .document-paper .proposal-rich-text-view :is(h2, h3) {
 html[data-theme="dark"] .document-paper .bg-zinc-50 {
   background: #fafafa !important;
 }
+
+html[data-theme="dark"] .booking-page {
+  background: #09090b;
+}
