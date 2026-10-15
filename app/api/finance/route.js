@@ -1,3 +1,4 @@
+import { NON_OUTSTANDING_STATUSES, outstandingInvoiceAmount } from "@/lib/invoice-status";
 import { NextResponse } from "next/server";
 import { requirePermission } from "@/lib/permissions";
 import { getTenantFilter } from "@/lib/tenant";
@@ -36,7 +37,7 @@ export async function GET(req) { try {
       db.invoice.findMany({
         where: {
           project: filter,
-          status: { not: "paid" },
+          status: { notIn: NON_OUTSTANDING_STATUSES },
         },
         include: { project: { select: { title: true, contact: { select: { name: true } } } } },
       }),
@@ -45,8 +46,7 @@ export async function GET(req) { try {
     const totalRevenue = paidInvoices.reduce((s, inv) => s + inv.total, 0);
     const totalExpenses = expenses.reduce((s, e) => s + e.amount, 0);
     const totalOutstanding = unpaidInvoices
-      .filter((i) => i.status !== "cancelled" && i.status !== "draft")
-      .reduce((s, inv) => s + inv.total, 0);
+      .reduce((s, inv) => s + outstandingInvoiceAmount(inv), 0);
 
     return NextResponse.json({
       revenue: totalRevenue,
