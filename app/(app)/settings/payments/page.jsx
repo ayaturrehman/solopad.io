@@ -30,7 +30,7 @@ export default async function PaymentsPage() {
       }}
       initialBank={{ enabled: user.bankTransferEnabled, details: user.bankDetails || {} }}
       stripePaymentsEnabled={user.stripePaymentsEnabled}
-      existingStripeAvailable={!!process.env.STRIPE_CONNECT_CLIENT_ID}
+      existingStripeAvailable={!!(process.env.STRIPE_CONNECT_CLIENT_ID || process.env.STRIPE_CLIENT_ID)}
       paymentMethods={(user.paymentMethods || "card").split(",")}
     />
   );

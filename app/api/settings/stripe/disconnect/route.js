@@ -20,8 +20,8 @@ export async function POST() {
       // Standard OAuth access can be revoked without deleting the business's
       // Stripe account. Express accounts remain intact for balances/disputes.
       if (account.type === "standard") {
-        if (!process.env.STRIPE_CONNECT_CLIENT_ID) return NextResponse.json({ error: "Stripe connection configuration is missing." }, { status: 503 });
-        await stripe.oauth.deauthorize({ client_id: process.env.STRIPE_CONNECT_CLIENT_ID, stripe_user_id: account.id });
+        if (!(process.env.STRIPE_CONNECT_CLIENT_ID || process.env.STRIPE_CLIENT_ID)) return NextResponse.json({ error: "Stripe connection configuration is missing." }, { status: 503 });
+        await stripe.oauth.deauthorize({ client_id: (process.env.STRIPE_CONNECT_CLIENT_ID || process.env.STRIPE_CLIENT_ID), stripe_user_id: account.id });
       }
     } catch (err) {
       // Preserve the connection on transient errors so the user can retry.
