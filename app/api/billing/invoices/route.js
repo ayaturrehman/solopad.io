@@ -58,7 +58,7 @@ export async function GET() {
       number: inv.number,
       date: inv.created ? new Date(inv.created * 1000).toISOString() : null,
       description: inv.lines?.data?.[0]?.description || inv.description || "Subscription",
-      amount: (inv.amount_paid || 0) / 100,
+      amount: (inv.status === "paid" ? inv.amount_paid || 0 : inv.amount_due || 0) / 100,
       currency: inv.currency?.toUpperCase() || "USD",
       status: inv.status,
       receiptUrl: inv.invoice_pdf || null,

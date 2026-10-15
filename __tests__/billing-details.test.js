@@ -50,3 +50,8 @@ it('preserves a local signup trial before a Stripe customer has been created', a
   m.subscription.mockResolvedValue({ stripeCustomerId: 'pending_business', status: 'trialing' });
   expect((await GET()).status).toBe(200); expect(m.customer).not.toHaveBeenCalled();
 });
+
+it('shows the amount due on an unpaid subscription invoice', async () => {
+  m.list.mockResolvedValue({ data: [{ id: 'inv_open', status: 'open', amount_paid: 0, amount_due: 500, currency: 'gbp' }] });
+  expect((await (await GET()).json()).invoices[0].amount).toBe(5);
+});
