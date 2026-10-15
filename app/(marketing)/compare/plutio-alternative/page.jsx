@@ -192,7 +192,7 @@ export default function PlutioAlternativePage() {
             gap: '16px',
             flexWrap: 'wrap',
           }}>
-            <a href="https://app.solopad.io/signup" style={{
+            <a href="/signup" style={{
               display: 'inline-block',
               padding: '12px 28px',
               background: '#2563EB',
@@ -866,7 +866,7 @@ export default function PlutioAlternativePage() {
             flexWrap: 'wrap',
             opacity: 0,
           }}>
-            <a href="https://app.solopad.io/signup" style={{
+            <a href="/signup" style={{
               display: 'inline-block',
               padding: '14px 32px',
               background: 'white',
