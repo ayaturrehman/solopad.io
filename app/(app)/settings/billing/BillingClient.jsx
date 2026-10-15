@@ -318,7 +318,7 @@ function BillingContent({ plan: initialPlan, billingStatus: initialBillingStatus
               <div className="rounded-lg border border-zinc-200 p-4">
                 <p className="text-xs font-medium text-zinc-400 uppercase tracking-wide mb-1.5">Next charge</p>
                 <p className="text-sm font-semibold text-zinc-900">
-                  {billingData.upcoming.currency === "gbp" ? "£" : "$"}{billingData.upcoming.amount?.toFixed(2)}
+                  {formatCurrency(billingData.upcoming.amount || 0, billingData.upcoming.currency)}
                   {billingData.upcoming.date && <span className="font-normal text-zinc-400"> on {new Date(billingData.upcoming.date).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}</span>}
                 </p>
                 {billingData.upcoming.discount && (
