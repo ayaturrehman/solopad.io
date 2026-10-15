@@ -14,7 +14,7 @@ export default async function PaymentSuccessPage({ searchParams }) {
         <div className={`mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-full ${paid ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
           <Icon className="h-7 w-7" aria-hidden="true" />
         </div>
-        <h1 className="text-2xl font-semibold tracking-tight text-zinc-900">{paid ? 'Payment successful' : 'Payment not confirmed yet'}</h1>
+        <h1 className="text-2xl font-semibold tracking-tight text-zinc-900">{paid ? 'Payment successful' : 'Payment not confirmed'}</h1>
         <p className="mt-3 text-sm leading-6 text-zinc-600">
           {paid ? 'Thank you. Your payment has been received and your invoice is updated.' : 'We could not confirm a completed payment. Check your invoice before trying again to avoid a duplicate payment.'}
         </p>
