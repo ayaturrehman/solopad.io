@@ -9,6 +9,7 @@ import {
   FileSignature, FileCheck2, ExternalLink,
   Image, FileSpreadsheet, FileCode, Film, Music, Archive, File,
 } from "lucide-react";
+import { invoiceLineAmounts } from "@/lib/invoice-payment";
 import { formatCurrency, formatCurrencyTotals, formatDate, formatBytes } from "@/lib/utils";
 import { sanitizeHtml } from "@/lib/sanitize";
 import { motion, AnimatePresence } from "framer-motion";
@@ -140,7 +141,7 @@ function InvoiceCard({ invoice }) {
   const isPaid = invoice.status === "paid";
   const isCancelled = invoice.status === "cancelled";
   const lineItems = Array.isArray(invoice.lineItems) ? invoice.lineItems : [];
-  const subtotal = lineItems.reduce((s, item) => s + (item.quantity || 1) * (item.unitPrice || 0), 0);
+  const subtotal = invoice.subtotal ?? lineItems.reduce((s, item) => s + invoiceLineAmounts(item).amount, 0);
   const hasLineItems = lineItems.length > 0;
 
   return (
@@ -202,26 +203,30 @@ function InvoiceCard({ invoice }) {
                 <tr key={i}>
                   <td className="py-2.5 pr-4 text-zinc-700">{item.description || "—"}</td>
                   <td className="py-2.5 text-center text-zinc-500">{item.quantity ?? 1}</td>
-                  <td className="py-2.5 text-right text-zinc-500">{formatCurrency(item.unitPrice || 0, invoice.currency)}</td>
+                  <td className="py-2.5 text-right text-zinc-500">{formatCurrency(invoiceLineAmounts(item).unitPrice, invoice.currency)}</td>
                   <td className="py-2.5 text-right font-medium text-zinc-900">
-                    {formatCurrency((item.quantity || 1) * (item.unitPrice || 0), invoice.currency)}
+                    {formatCurrency(invoiceLineAmounts(item).amount, invoice.currency)}
                   </td>
                 </tr>
               ))}
             </tbody>
             <tfoot>
-              {invoice.tax > 0 && (
+              {(invoice.taxAmount > 0 || invoice.discountAmount > 0) && (
                 <>
                   <tr>
                     <td colSpan={3} className="pt-3 text-right text-xs text-zinc-400">Subtotal</td>
                     <td className="pt-3 text-right text-sm text-zinc-700">{formatCurrency(subtotal, invoice.currency)}</td>
                   </tr>
                   <tr>
-                    <td colSpan={3} className="py-1 text-right text-xs text-zinc-400">Tax ({invoice.tax}%)</td>
-                    <td className="py-1 text-right text-sm text-zinc-700">{formatCurrency(invoice.total - subtotal, invoice.currency)}</td>
+                    <td colSpan={3} className="py-1 text-right text-xs text-zinc-400">Tax ({invoice.taxRate || 0}%)</td>
+                    <td className="py-1 text-right text-sm text-zinc-700">{formatCurrency(invoice.taxAmount || 0, invoice.currency)}</td>
                   </tr>
                 </>
               )}
+              {invoice.discountAmount > 0 && <tr>
+                <td colSpan={3} className="py-1 text-right text-xs text-zinc-400">Discount</td>
+                <td className="py-1 text-right text-sm text-zinc-700">−{formatCurrency(invoice.discountAmount, invoice.currency)}</td>
+              </tr>}
               <tr className="border-t border-zinc-200">
                 <td colSpan={3} className="pt-2.5 text-right text-sm font-semibold text-zinc-900">Total</td>
                 <td className="pt-2.5 text-right text-sm font-bold text-zinc-900">{formatCurrency(invoice.total, invoice.currency)}</td>

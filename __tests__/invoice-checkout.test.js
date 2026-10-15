@@ -3,7 +3,7 @@ const m = vi.hoisted(() => ({ find: vi.fn(), update: vi.fn(), create: vi.fn(), r
 vi.mock('@/lib/db', () => ({ default: { invoice: { findUnique: m.find, update: m.update } } }));
 vi.mock('@/lib/stripe', () => ({ requireStripe: () => ({ checkout: { sessions: { create: m.create, retrieve: m.retrieve, expire: m.expire } } }), calculatePlatformFee: (amount) => Math.round(amount * .02) }));
 import { POST } from '@/app/api/invoices/checkout/route';
-import { invoicePaymentAmount } from '@/lib/invoice-payment';
+import { invoicePaymentAmount, invoiceLineAmounts } from '@/lib/invoice-payment';
 let invoice;
 beforeEach(() => {
   vi.resetAllMocks();
@@ -52,4 +52,10 @@ it('blocks payment while connected-account onboarding is incomplete', async () =
   invoice.project.user.stripeOnboarded = false;
   expect((await POST(request())).status).toBe(409);
   expect(m.create).not.toHaveBeenCalled();
+});
+
+it('renders legacy and current line amounts without multiplying a saved line total again', () => {
+  expect(invoiceLineAmounts({ quantity: 57, rate: 23, amount: 1311 })).toEqual({ quantity: 57, unitPrice: 23, amount: 1311 });
+  expect(invoiceLineAmounts({ quantity: 1.5, unitPrice: 100 })).toEqual({ quantity: 1.5, unitPrice: 100, amount: 150 });
+  expect(invoiceLineAmounts({ quantity: 2, amount: 100 })).toEqual({ quantity: 2, unitPrice: 50, amount: 100 });
 });
