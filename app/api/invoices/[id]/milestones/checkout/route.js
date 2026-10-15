@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireStripe, calculatePlatformFee } from "@/lib/stripe";
 import db from "@/lib/db";
+import { invoicePaymentAmount } from "@/lib/invoice-payment";
 
 /**
  * POST /api/invoices/[id]/milestones/checkout
@@ -49,12 +50,14 @@ export async function POST(req, { params }) {
     }
 
     const invoice = milestone.invoice;
+    if (["draft", "cancelled", "paid", "refunded", "partially_refunded"].includes(invoice.status)) {
+      return NextResponse.json({ error: "Invoice is not available for payment." }, { status: 400 });
+    }
     const freelancer = invoice.project?.user;
     if (!freelancer?.stripeAccountId || !freelancer.stripeOnboarded) {
       return NextResponse.json({ error: "Online payments are not available yet. Please contact the business to arrange payment." }, { status: 409 });
     }
-    const currency = invoice.currency?.toLowerCase() || "gbp";
-    const amountCents = Math.round(milestone.amount * 100);
+    const { currency, amount: amountCents } = invoicePaymentAmount({ currency: invoice.currency, total: milestone.amount });
 
     const sessionOptions = {
       mode: "payment",
