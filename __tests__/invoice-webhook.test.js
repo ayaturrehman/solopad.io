@@ -1,7 +1,7 @@
 import { beforeEach, expect, it, vi } from 'vitest';
-const m=vi.hoisted(()=>({event:null,find:vi.fn(),update:vi.fn(),notification:vi.fn(),processed:vi.fn(),mark:vi.fn()}));
+const m=vi.hoisted(()=>({event:null,find:vi.fn(),update:vi.fn(),updateMany:vi.fn(),notification:vi.fn(),processed:vi.fn(),mark:vi.fn()}));
 vi.mock('@/lib/stripe',()=>({requireStripe:()=>({webhooks:{constructEvent:()=>m.event}})}));
-vi.mock('@/lib/db',()=>({default:{invoice:{findUnique:m.find,update:m.update},notification:{create:m.notification}}}));
+vi.mock('@/lib/db',()=>({default:{invoice:{findUnique:m.find,update:m.update,updateMany:m.updateMany},notification:{create:m.notification}}}));
 vi.mock('@/lib/email',()=>({sendNotificationEmail:vi.fn()}));
 vi.mock('@/lib/webhook-events',()=>({isEventProcessed:m.processed,markEventProcessed:m.mark}));
 import {POST} from '@/app/api/webhooks/stripe/route';
@@ -13,3 +13,5 @@ it('acknowledges successful processing and skips duplicate deliveries',async()=>
 it('keeps unpaid completed checkouts pending until settlement',async()=>{m.event.data.object.payment_status='unpaid';expect((await POST(req())).status).toBe(200);expect(m.update).not.toHaveBeenCalled();});
 it('marks a delayed payment paid only after async success',async()=>{m.event.type='checkout.session.async_payment_succeeded';expect((await POST(req())).status).toBe(200);expect(m.update).toHaveBeenCalledWith(expect.objectContaining({data:expect.objectContaining({status:'paid'})}));});
 it('does not mark an async failed payment paid',async()=>{m.event.type='checkout.session.async_payment_failed';m.event.data.object.payment_status='unpaid';expect((await POST(req())).status).toBe(200);expect(m.update).not.toHaveBeenCalled();});
+
+it('does not clear a replacement checkout when an older session expires',async()=>{m.event.type='checkout.session.expired';m.event.data.object.id='cs_old';expect((await POST(req())).status).toBe(200);expect(m.updateMany).toHaveBeenCalledWith({where:{id:'qa-invoice',stripeSessionId:'cs_old',status:{not:'paid'}},data:{stripeSessionId:null}});});

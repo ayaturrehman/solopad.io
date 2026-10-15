@@ -132,7 +132,7 @@ async function handleCheckoutExpired(session) {
   if (!invoiceId) return;
 
   await db.invoice.updateMany({
-    where: { id: invoiceId, status: { not: "paid" } },
+    where: { id: invoiceId, stripeSessionId: session.id, status: { not: "paid" } },
     data: { stripeSessionId: null },
   });
 }
