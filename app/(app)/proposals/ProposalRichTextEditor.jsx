@@ -129,6 +129,9 @@ export default function ProposalRichTextEditor({
       attributes: {
         class: cn("proposal-rich-text proposal-rich-text-editor px-0 py-0 text-[13px] leading-relaxed text-zinc-700 focus:outline-none", minHeightClassName),
         "data-placeholder": placeholder,
+        role: "textbox",
+        "aria-label": placeholder || "Document text",
+        "aria-multiline": "true",
       },
     },
   });
