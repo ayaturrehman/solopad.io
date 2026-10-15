@@ -34,9 +34,9 @@ export default async function FinancePage({ searchParams }) {
   // Single query to get currency (was 2 sequential queries)
   const user = await db.user.findUnique({
     where: { id: userId },
-    select: { businessId: true, business: { select: { currency: true } } },
+    select: { currency: true, businessId: true, business: { select: { currency: true } } },
   });
-  const currency = user?.business?.currency || "USD";
+  const currency = user?.business?.currency || user?.currency || "USD";
   const yearStart = new Date(now.getFullYear(), 0, 1);
   const hasExtendedExpenseModels = supportsExtendedExpenseModels();
 
