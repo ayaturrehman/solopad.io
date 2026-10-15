@@ -169,8 +169,8 @@ function buildStyles(template) {
     },
     clientName: { fontSize: fontSize + 2, fontFamily: bold, color: "#111827", marginBottom: 2 },
     clientDetail: { fontSize: fontSize - 1, color: "#6b7280", marginBottom: 1 },
-    detailRow: { flexDirection: "row", marginBottom: 3 },
-    detailLabel: { fontSize: fontSize - 1, color: "#9ca3af", width: 70 },
+    detailRow: { width: "100%", flexDirection: "row", marginBottom: 3 },
+    detailLabel: { fontSize: fontSize - 1, color: "#9ca3af", width: 65, flexShrink: 0 },
     detailValue: { fontSize: fontSize - 1, color: "#374151", flex: 1 },
     // Table
     tableHeader: {
@@ -390,14 +390,14 @@ export function InvoicePDF({ invoice, template, style }) {
 
         <View style={styles.body}>
           <View style={styles.billToRow}>
-            <View>
+            <View style={{ width: "48%" }}>
               <Text style={styles.sectionLabel}>Billed To</Text>
-              <Text style={styles.clientName}>{invoice.project?.clientName || ""}</Text>
-              {invoice.project?.clientEmail ? (
-                <Text style={styles.clientDetail}>{invoice.project.clientEmail}</Text>
+              <Text style={styles.clientName}>{invoice.project?.contact?.name || ""}</Text>
+              {invoice.project?.contact?.email ? (
+                <Text style={styles.clientDetail}>{invoice.project.contact.email}</Text>
               ) : null}
             </View>
-            <View style={{ alignItems: "flex-end" }}>
+            <View style={{ width: "48%" }}>
               <Text style={styles.sectionLabel}>Invoice Details</Text>
               {invoice.invoiceNumber ? (
                 <View style={styles.detailRow}>
@@ -427,15 +427,15 @@ export function InvoicePDF({ invoice, template, style }) {
           {/* Line items table */}
           <View style={styles.tableHeader}>
             {showNumbers ? (
-              <Text style={[styles.tableHeaderText, styles.tableIdx]}>#</Text>
+              <Text style={[styles.tableIdx, styles.tableHeaderText]}>#</Text>
             ) : null}
             <Text style={[styles.tableHeaderText, { flex: 1 }]}>Description</Text>
-            <Text style={[styles.tableHeaderText, styles.tableNum]}>Qty</Text>
-            <Text style={[styles.tableHeaderText, styles.tableNum]}>Rate</Text>
+            <Text style={[styles.tableNum, styles.tableHeaderText]}>Qty</Text>
+            <Text style={[styles.tableNum, styles.tableHeaderText]}>Rate</Text>
             {showTax ? (
-              <Text style={[styles.tableHeaderText, styles.tableTax]}>Tax</Text>
+              <Text style={[styles.tableTax, styles.tableHeaderText]}>Tax</Text>
             ) : null}
-            <Text style={[styles.tableHeaderText, styles.tableAmt]}>Amount</Text>
+            <Text style={[styles.tableAmt, styles.tableHeaderText]}>Amount</Text>
           </View>
           {lineItems.map((item, i) => {
             const qty = parseFloat(item.quantity) || 1;
