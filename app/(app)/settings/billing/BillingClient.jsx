@@ -32,21 +32,41 @@ function BillingContent({ plan: initialPlan, billingStatus: initialBillingStatus
   const [savingPlan, setSavingPlan] = useState(false);
   const [billingStatus, setBillingStatus] = useState(initialBillingStatus);
   const [billingData, setBillingData] = useState({ invoices: [], upcoming: null, paymentMethod: null });
+  const [detailsState, setDetailsState] = useState("loading");
+  const [detailsError, setDetailsError] = useState("");
   const [portalLoading, setPortalLoading] = useState(false);
   const [postCheckoutSyncing, setPostCheckoutSyncing] = useState(false);
 
   useEffect(() => {
-    Promise.all([
-      fetch("/api/billing/status").then((r) => r.json()).catch(() => ({ plan: "starter", status: "active", subscription: null })),
-      fetch("/api/billing/invoices").then((r) => r.json()).catch(() => ({ invoices: [], upcoming: null, paymentMethod: null })),
-    ]).then(([statusData, invoiceData]) => {
-      if (statusData) {
-        setBillingStatus(statusData);
-        if (statusData.plan) setPlan(statusData.plan);
-        if (statusData.interval) setInterval(statusData.interval);
+    let cancelled = false;
+    async function load() {
+      const results = await Promise.allSettled([
+        fetch("/api/billing/status").then(async r => {
+          if (!r.ok) throw new Error("Could not load subscription status.");
+          return r.json();
+        }),
+        fetch("/api/billing/invoices").then(async r => {
+          if (!r.ok) throw new Error("Could not load billing details. Open Manage subscription to check your card, or reload to try again.");
+          return r.json();
+        }),
+      ]);
+      if (cancelled) return;
+      const [status, details] = results;
+      if (status.status === "fulfilled") {
+        setBillingStatus(status.value);
+        if (status.value.plan) setPlan(status.value.plan);
+        if (status.value.interval) setInterval(status.value.interval);
+      } else setDetailsError(status.reason.message);
+      if (details.status === "fulfilled") {
+        setBillingData(details.value);
+        setDetailsState("ready");
+      } else {
+        setDetailsState("error");
+        setDetailsError(details.reason.message);
       }
-      if (invoiceData) setBillingData(invoiceData);
-    });
+    }
+    load();
+    return () => { cancelled = true; };
   }, []);
 
   useEffect(() => {
@@ -231,11 +251,11 @@ function BillingContent({ plan: initialPlan, billingStatus: initialBillingStatus
                   {billingStatus.subscription?.trialEnd
                     ? `Your trial ends on ${new Date(billingStatus.subscription.trialEnd).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}. `
                     : ""}
-                  {billingData.paymentMethod
+                  {detailsState !== "ready" ? "Payment method details are not yet available." : billingData.paymentMethod
                     ? "Your card will be charged automatically when the trial ends."
                     : "No payment method on file — add one before your trial ends to keep your plan."}
                 </p>
-                {!billingData.paymentMethod && hasSubscription && (
+                {detailsState === "ready" && !billingData.paymentMethod && hasSubscription && (
                   <Button size="sm" variant="primary" className="mt-3" loading={portalLoading} onClick={openBillingPortal}>
                     Add payment method
                   </Button>
@@ -267,6 +287,8 @@ function BillingContent({ plan: initialPlan, billingStatus: initialBillingStatus
         </CardBody>
       </Card>
 
+      {detailsState === "loading" && <p role="status" className="text-sm text-zinc-500">Loading billing details…</p>}
+      {detailsError && <p role="alert" className="text-sm text-red-600">{detailsError}</p>}
       {/* Payment Method & Billing */}
       {(billingData.paymentMethod || billingData.upcoming || billingData.invoices?.length > 0) && (
         <Card>
