@@ -106,6 +106,7 @@ model User {
   paymentMethods    String         @default("card")
   stripeAccountId   String?        @unique
   stripeOnboarded   Boolean        @default(false)
+  stripePaymentsEnabled Boolean    @default(true)
   bankTransferEnabled Boolean      @default(false)
   bankDetails         Json?
   createdAt         DateTime       @default(now())
@@ -285,6 +286,7 @@ model Invoice {
   paidAt                DateTime?
   lastReminderAt        DateTime?
   recurringInvoiceId    String?
+  paymentReference      String        @unique @default(dbgenerated("('SP-'::text || substr(replace((gen_random_uuid())::text, '-'::text, ''::text), 1, 15))"))
   amountPaid            Float         @default(0)
   payments              InvoicePayment[]
   paymentPlans          PaymentPlan[]
