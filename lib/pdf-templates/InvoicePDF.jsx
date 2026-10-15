@@ -1,3 +1,5 @@
+import { bankDetailLines, bankPaymentReference } from "@/lib/bank-transfer";
+import { remainingInvoiceAmount } from "@/lib/invoice-receipts";
 import React from "react";
 import {
   Document,
@@ -489,6 +491,7 @@ export function InvoicePDF({ invoice, template, style }) {
             </View>
           </View>
 
+          {invoice.project?.user?.bankTransferEnabled && invoice.project.user.bankDetails ? <View style={styles.notes} wrap={false}><Text style={styles.notesLabel}>Bank transfer</Text>{bankDetailLines(invoice.project.user.bankDetails).map(([label,value])=><Text key={label} style={styles.notesText}>{label}: {value}</Text>)}<Text style={styles.notesText}>Reference: {bankPaymentReference(invoice)}</Text><Text style={styles.notesText}>Remaining: {formatMoney(remainingInvoiceAmount(invoice), invoice.currency)}</Text><Text style={styles.notesText}>Payment is confirmed after funds reach the freelancer’s account.</Text></View> : null}
           {/* Notes */}
           {invoice.notes ? (
             <View style={styles.notes}>

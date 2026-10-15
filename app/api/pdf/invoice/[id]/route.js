@@ -14,13 +14,13 @@ export async function GET(request, { params }) {
   const invoice = await db.invoice.findFirst({
     where: { id },
     include: {
+      paymentPlans: true,
       project: {
         select: {
           id: true,
           title: true,
-          clientName: true,
-          clientEmail: true,
           userId: true,
+          user: { select: { bankTransferEnabled: true, bankDetails: true } },
           contact: { select: { name: true, email: true } },
         },
       },

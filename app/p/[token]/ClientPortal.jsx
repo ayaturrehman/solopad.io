@@ -1,4 +1,6 @@
 "use client";
+import { bankDetailLines, bankPaymentReference } from "@/lib/bank-transfer";
+import { remainingInvoiceAmount, remainingMilestoneAmount, receivedInvoiceAmount } from "@/lib/invoice-receipts";
 
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
@@ -90,7 +92,7 @@ function FileRow({ file }) {
   );
 }
 
-function InvoiceCard({ invoice }) {
+function InvoiceCard({ invoice, paymentOptions, token }) {
   const [loading, setLoading] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [error, setError] = useState(null);
@@ -102,7 +104,7 @@ function InvoiceCard({ invoice }) {
       const res = await fetch("/api/invoices/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ invoiceId: invoice.id }),
+        body: JSON.stringify({ invoiceId: invoice.id, token }),
       });
       const data = await res.json();
 
@@ -242,13 +244,18 @@ function InvoiceCard({ invoice }) {
       )}
       </AnimatePresence>
 
+      {receivedInvoiceAmount(invoice) > 0 && !isPaid && !isRefunded && <p className="px-5 pb-4 text-sm text-zinc-600">Received {formatCurrency(receivedInvoiceAmount(invoice), invoice.currency)} · Remaining {formatCurrency(remainingInvoiceAmount(invoice), invoice.currency)}</p>}
+      {!isPaid && !isCancelled && !isRefunded && paymentOptions.bankDetails && <section className="space-y-3 px-5 pb-5" aria-label="Bank transfer details"><h3 className="text-sm font-semibold text-zinc-900">Pay by bank transfer</h3><dl className="grid gap-2 text-sm sm:grid-cols-2">{bankDetailLines(paymentOptions.bankDetails).map(([label,value])=><div key={label}><dt className="text-zinc-500">{label}</dt><dd className="break-all font-medium text-zinc-900">{value}</dd></div>)}</dl><p className="text-sm text-zinc-700">Reference: <strong className="break-all">{bankPaymentReference(invoice)}</strong></p><p className="text-sm text-zinc-500">Use this reference when transferring {formatCurrency(remainingInvoiceAmount(invoice), invoice.currency)}. Your invoice updates after the freelancer confirms receipt. For milestones, pay the amount shown for the milestone you are settling.</p></section>}
+      {!isPaid && !isCancelled && !isRefunded && !paymentOptions.online && !paymentOptions.bankDetails && <p className="px-5 pb-5 text-sm text-zinc-500">Contact the freelancer to arrange payment.</p>}
+      {invoice.payments?.length > 0 && <details className="px-5 pb-4 text-sm text-zinc-600"><summary className="cursor-pointer font-medium">Payment history</summary><ul className="mt-2 space-y-2">{invoice.payments.map(p=><li key={p.id}>{formatDate(p.receivedAt)} · {p.method === 'bank_transfer' ? 'Bank transfer' : 'Stripe'} · {formatCurrency(p.amount, invoice.currency)}</li>)}</ul></details>}
+
       {/* Milestone payments */}
       {invoice.paymentPlans?.length > 0 && !isCancelled && (
-        <MilestoneList milestones={invoice.paymentPlans} invoiceId={invoice.id} currency={invoice.currency} />
+        <MilestoneList milestones={invoice.paymentPlans} invoiceId={invoice.id} currency={invoice.currency} online={paymentOptions.online && !isRefunded && !isPaid} token={token} />
       )}
 
       {/* Pay button — only show for non-milestone invoices */}
-      {!isPaid && !isCancelled && !isRefunded && (!invoice.paymentPlans || invoice.paymentPlans.length === 0) && (
+      {paymentOptions.online && !isPaid && !isCancelled && !isRefunded && (!invoice.paymentPlans || invoice.paymentPlans.length === 0) && (
         <div className="border-t border-zinc-100 px-5 pb-5 pt-4">
           {error && (
             <div className="mb-3 flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 dark:border-red-900 dark:bg-red-950 p-3 text-sm text-red-700">
@@ -263,7 +270,7 @@ function InvoiceCard({ invoice }) {
               </button>
             )}
             <button onClick={handlePay} disabled={loading} className="rounded bg-green-600 px-5 py-2 text-sm font-semibold text-white hover:bg-green-700 disabled:opacity-50 shadow-sm">
-              {loading ? "Redirecting…" : error ? "Try again" : `Pay ${formatCurrency(invoice.total, invoice.currency)}`}
+              {loading ? "Redirecting…" : error ? "Try again" : `Pay ${formatCurrency(remainingInvoiceAmount(invoice), invoice.currency)}`}
             </button>
           </div>
         </div>
@@ -279,7 +286,7 @@ function InvoiceCard({ invoice }) {
   );
 }
 
-function MilestoneList({ milestones, invoiceId, currency }) {
+function MilestoneList({ milestones, invoiceId, currency, online, token }) {
   const [loadingId, setLoadingId] = useState(null);
   const [error, setError] = useState(null);
 
@@ -290,7 +297,7 @@ function MilestoneList({ milestones, invoiceId, currency }) {
       const res = await fetch(`/api/invoices/${invoiceId}/milestones/checkout`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ milestoneId }),
+        body: JSON.stringify({ milestoneId, token }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -338,9 +345,9 @@ function MilestoneList({ milestones, invoiceId, currency }) {
               </div>
               <div className="flex items-center gap-3">
                 <span className={`text-sm font-semibold ${isPaid ? "text-green-700 dark:text-green-400" : "text-zinc-900"}`}>
-                  {formatCurrency(m.amount, currency)}
+                  {formatCurrency(isPaid ? m.amount : remainingMilestoneAmount(m), currency)}
                 </span>
-                {!isPaid && (
+                {online && !isPaid && (
                   <button
                     onClick={() => handlePayMilestone(m.id)}
                     disabled={loadingId === m.id}
@@ -358,7 +365,7 @@ function MilestoneList({ milestones, invoiceId, currency }) {
   );
 }
 
-export default function ClientPortal({ project, files, comments: initialComments, invoices, notes = [], contracts = [], proposals = [], initialTab = "overview" }) {
+export default function ClientPortal({ project, files, comments: initialComments, invoices, notes = [], contracts = [], proposals = [], initialTab = "overview", paymentOptions }) {
   const storedName = typeof window !== "undefined" ? localStorage.getItem("portalClientName") : "";
   const [clientName, setClientName] = useState(storedName || "");
   const [body, setBody] = useState("");
@@ -889,7 +896,7 @@ export default function ClientPortal({ project, files, comments: initialComments
           <div>
             <h2 className="mb-5 text-lg font-semibold text-zinc-900">Invoices</h2>
             <div className="space-y-4 max-w-xl">
-              {invoices.map((invoice) => <InvoiceCard key={invoice.id} invoice={invoice} />)}
+              {invoices.map((invoice) => <InvoiceCard key={invoice.id} invoice={invoice} paymentOptions={paymentOptions} token={project.portalToken} />)}
             </div>
           </div>
         )}
