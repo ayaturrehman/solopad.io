@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import db from "@/lib/db";
 import ClientPortal from "./ClientPortal";
 
-export default async function PortalPage({ params }) {
+export default async function PortalPage({ params, searchParams }) {
   const { token } = await params;
 
   const project = await db.project.findUnique({
@@ -62,6 +62,7 @@ export default async function PortalPage({ params }) {
 
   return (
     <ClientPortal
+      initialTab={(await searchParams)?.tab === "invoices" ? "invoices" : "overview"}
       project={project}
       files={files}
       comments={comments}

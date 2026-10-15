@@ -357,13 +357,13 @@ function MilestoneList({ milestones, invoiceId, currency }) {
   );
 }
 
-export default function ClientPortal({ project, files, comments: initialComments, invoices, notes = [], contracts = [], proposals = [] }) {
+export default function ClientPortal({ project, files, comments: initialComments, invoices, notes = [], contracts = [], proposals = [], initialTab = "overview" }) {
   const storedName = typeof window !== "undefined" ? localStorage.getItem("portalClientName") : "";
   const [clientName, setClientName] = useState(storedName || "");
   const [body, setBody] = useState("");
   const [sending, setSending] = useState(false);
   const [nameEntered, setNameEntered] = useState(!!storedName);
-  const [activeTab, setActiveTab] = useState("overview");
+  const [activeTab, setActiveTab] = useState(initialTab);
   const [expandedNoteId, setExpandedNoteId] = useState(null);
   const [messages, setMessages] = useState(initialComments);
   const messagesEndRef = useRef(null);
