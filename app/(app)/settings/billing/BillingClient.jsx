@@ -132,7 +132,7 @@ function BillingContent({ plan: initialPlan, billingStatus: initialBillingStatus
   }, [billingParam, billingStatus]);
 
   const trialDaysLeft = getTrialDaysLeft(billingStatus?.subscription?.trialEnd);
-  const isTrialing = billingStatus?.status === "trialing" || trialDaysLeft > 0;
+  const isTrialing = billingStatus?.status === "trialing";
   const hasSubscription = !!billingStatus?.subscription;
   const planInfo = getPlan(plan);
   const isCurrentYearly = billingStatus?.interval === "yearly";
@@ -241,6 +241,12 @@ function BillingContent({ plan: initialPlan, billingStatus: initialBillingStatus
               </Button>
             )}
           </div>
+
+          {billingStatus.status === "past_due" && (
+            <div role="alert" className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+              Your latest payment failed. Open Manage subscription to update your card and pay the outstanding invoice.
+            </div>
+          )}
 
           {/* Trial banner */}
           {isTrialing && (
