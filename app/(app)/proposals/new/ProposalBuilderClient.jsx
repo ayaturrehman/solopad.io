@@ -230,6 +230,7 @@ export default function ProposalBuilderClient({
         }
       `}</style>
 
+      <h1 className="sr-only">Proposal editor</h1>
       {/* ── Top bar ─────────────────────────────────────────────── */}
       <div className="flex h-11 shrink-0 items-center gap-3 border-b border-zinc-200 bg-white px-4">
         <input aria-label="Document title"
@@ -262,33 +263,33 @@ export default function ProposalBuilderClient({
         <div className="shrink-0 border-b border-zinc-100 bg-zinc-50 px-4 py-3">
           <div className="mx-auto grid max-w-3xl grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
             <div>
-              <label className="mb-1 block text-[10px] font-semibold uppercase tracking-widest text-zinc-400">Client</label>
-              <input aria-label="Client name" value={clientName} onChange={(e) => setClientName(e.target.value)} placeholder="Name" className="h-7 w-full rounded border border-zinc-200 bg-white px-2 text-xs text-zinc-900 outline-none focus:border-zinc-400" />
+              <label htmlFor="proposal-client-name" className="mb-1.5 block text-sm font-medium text-zinc-700">Client</label>
+              <input id="proposal-client-name" aria-label="Client name" value={clientName} onChange={(e) => setClientName(e.target.value)} placeholder="Name" className="h-9 w-full rounded border border-zinc-200 bg-white px-3 text-sm text-zinc-900 outline-none focus:border-zinc-400" />
             </div>
             <div>
-              <label className="mb-1 block text-[10px] font-semibold uppercase tracking-widest text-zinc-400">Email</label>
-              <input aria-label="Client email" type="email" value={clientEmail} onChange={(e) => setClientEmail(e.target.value)} placeholder="email@co.com" className="h-7 w-full rounded border border-zinc-200 bg-white px-2 text-xs text-zinc-900 outline-none focus:border-zinc-400" />
+              <label htmlFor="proposal-client-email" className="mb-1.5 block text-sm font-medium text-zinc-700">Email</label>
+              <input id="proposal-client-email" aria-label="Client email" type="email" value={clientEmail} onChange={(e) => setClientEmail(e.target.value)} placeholder="email@co.com" className="h-9 w-full rounded border border-zinc-200 bg-white px-3 text-sm text-zinc-900 outline-none focus:border-zinc-400" />
             </div>
             <div>
-              <label className="mb-1 block text-[10px] font-semibold uppercase tracking-widest text-zinc-400"><FolderOpen className="inline h-3 w-3 mr-0.5" />Project</label>
-              <select aria-label="Project" value={projectId} onChange={(e) => handleProjectChange(e.target.value)} className={selectClassName}>
+              <label htmlFor="proposal-project" className="mb-1.5 block text-sm font-medium text-zinc-700"><FolderOpen className="inline h-3 w-3 mr-0.5" />Project</label>
+              <select id="proposal-project" aria-label="Project" value={projectId} onChange={(e) => handleProjectChange(e.target.value)} className={selectClassName}>
                 <option value="">None</option>
                 {projects.map((p) => <option key={p.id} value={p.id}>{p.title}</option>)}
               </select>
             </div>
             <div>
-              <label className="mb-1 block text-[10px] font-semibold uppercase tracking-widest text-zinc-400"><CalendarDays className="inline h-3 w-3 mr-0.5" />Valid until</label>
-              <input aria-label="Valid until" type="date" value={validUntil} onChange={(e) => setValidUntil(e.target.value)} className="h-7 w-full rounded border border-zinc-200 bg-white px-2 text-xs text-zinc-900 outline-none focus:border-zinc-400" />
+              <label htmlFor="proposal-valid-until" className="mb-1.5 block text-sm font-medium text-zinc-700"><CalendarDays className="inline h-3 w-3 mr-0.5" />Valid until</label>
+              <input id="proposal-valid-until" aria-label="Valid until" type="date" value={validUntil} onChange={(e) => setValidUntil(e.target.value)} className="h-9 w-full rounded border border-zinc-200 bg-white px-3 text-sm text-zinc-900 outline-none focus:border-zinc-400" />
             </div>
             <div>
-              <label className="mb-1 block text-[10px] font-semibold uppercase tracking-widest text-zinc-400"><CircleDollarSign className="inline h-3 w-3 mr-0.5" />Currency</label>
-              <select aria-label="Currency" value={currency} onChange={(e) => setCurrency(e.target.value)} className={selectClassName}>
+              <label htmlFor="proposal-currency" className="mb-1.5 block text-sm font-medium text-zinc-700"><CircleDollarSign className="inline h-3 w-3 mr-0.5" />Currency</label>
+              <select id="proposal-currency" aria-label="Currency" value={currency} onChange={(e) => setCurrency(e.target.value)} className={selectClassName}>
                 {CURRENCIES.map((c) => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
             <div>
-              <label className="mb-1 block text-[10px] font-semibold uppercase tracking-widest text-zinc-400">Tax %</label>
-              <input aria-label="Tax rate" type="number" min="0" max="100" step="0.1" value={taxRate} onChange={(e) => setTaxRate(e.target.value)} className="h-7 w-full rounded border border-zinc-200 bg-white px-2 text-xs text-zinc-900 outline-none focus:border-zinc-400" />
+              <label htmlFor="proposal-tax-rate" className="mb-1.5 block text-sm font-medium text-zinc-700">Tax %</label>
+              <input id="proposal-tax-rate" aria-label="Tax rate" type="number" min="0" max="100" step="0.1" value={taxRate} onChange={(e) => setTaxRate(e.target.value)} className="h-9 w-full rounded border border-zinc-200 bg-white px-3 text-sm text-zinc-900 outline-none focus:border-zinc-400" />
             </div>
           </div>
         </div>
