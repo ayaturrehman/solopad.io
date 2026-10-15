@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@source not "../work";
 
 /* Tell Tailwind v4 that `dark:` classes activate when html has data-theme="dark" */
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));

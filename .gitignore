@@ -42,3 +42,6 @@ next-env.d.ts
 
 /lib/generated/prisma
 .env*.local
+
+# Local QA fixtures, logs and disposable dependency caches
+/work/
