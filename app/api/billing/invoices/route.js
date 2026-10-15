@@ -43,12 +43,14 @@ export async function GET() {
     }
 
     // Run ALL Stripe API calls in parallel instead of sequentially (was 2.5s → ~800ms)
-    const [stripeInvoices, upcomingResult, customerResult] = await Promise.all([
+    const [stripeInvoices, upcomingResult, stripeSubscription] = await Promise.all([
       stripe.invoices.list({ customer: customerId, limit: 20 }),
       subscription.stripeSubscriptionId && subscription.status !== "canceled"
         ? stripe.invoices.createPreview({ customer: customerId, subscription: subscription.stripeSubscriptionId }).catch(() => null)
         : Promise.resolve(null),
-      Promise.resolve(customerCheck), // already fetched above
+      subscription.stripeSubscriptionId
+        ? stripe.subscriptions.retrieve(subscription.stripeSubscriptionId)
+        : Promise.resolve(null),
     ]);
 
     const invoices = stripeInvoices.data.map((inv) => ({
@@ -85,11 +87,13 @@ export async function GET() {
 
     // Extract payment method from the already-fetched customer (no extra API call)
     let paymentMethod = null;
-    if (customerResult?.invoice_settings?.default_payment_method) {
+    const defaultMethod = stripeSubscription?.default_payment_method
+      || customerCheck.invoice_settings?.default_payment_method;
+    if (defaultMethod) {
       try {
-        const pm = await stripe.paymentMethods.retrieve(
-          customerResult.invoice_settings.default_payment_method
-        );
+        const pm = typeof defaultMethod === "string"
+          ? await stripe.paymentMethods.retrieve(defaultMethod)
+          : defaultMethod;
         if (pm.card) {
           paymentMethod = {
             brand: pm.card.brand,
@@ -99,7 +103,7 @@ export async function GET() {
           };
         }
       } catch {
-        // Non-fatal
+        return NextResponse.json({ error: "Could not load payment method details. Please try again." }, { status: 502 });
       }
     }
 
