@@ -45,3 +45,8 @@ it('reports an unavailable card lookup rather than claiming no card exists', asy
   m.paymentMethod.mockRejectedValue(new Error('unavailable'));
   expect((await GET()).status).toBe(502);
 });
+
+it('preserves a local signup trial before a Stripe customer has been created', async () => {
+  m.subscription.mockResolvedValue({ stripeCustomerId: 'pending_business', status: 'trialing' });
+  expect((await GET()).status).toBe(200); expect(m.customer).not.toHaveBeenCalled();
+});

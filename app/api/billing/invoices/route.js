@@ -22,7 +22,7 @@ export async function GET() {
       where: { businessId: user.businessId },
     });
 
-    if (!subscription?.stripeCustomerId) {
+    if (!subscription?.stripeCustomerId || subscription.stripeCustomerId.startsWith("pending_")) {
       return NextResponse.json({ invoices: [], upcoming: null, paymentMethod: null });
     }
 
