@@ -232,7 +232,7 @@ async function handleAccountUpdated(account) {
   });
   if (!user) return;
 
-  const chargesEnabled = account.charges_enabled === true;
+  const chargesEnabled = account.charges_enabled === true && account.payouts_enabled === true;
 
   // Only update if status actually changed
   if (user.stripeOnboarded !== chargesEnabled) {
