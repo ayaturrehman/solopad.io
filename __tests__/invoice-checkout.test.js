@@ -1,6 +1,6 @@
 import { beforeEach, expect, it, vi } from 'vitest';
 const m = vi.hoisted(() => ({ find: vi.fn(), update: vi.fn(), create: vi.fn(), retrieve: vi.fn(), expire: vi.fn() }));
-vi.mock('@/lib/db', () => { const tx = { $queryRaw: vi.fn(), invoice: { findUnique: m.find, update: m.update }, invoicePayment: { findMany: async()=>[], count: async()=>0, create: vi.fn(), updateMany: vi.fn() } }; return { default: { ...tx, $transaction: fn=>fn(tx) } }; });
+vi.mock('@/lib/db', () => { const tx = { $queryRaw: vi.fn(), invoice: { findUnique: m.find, update: m.update }, invoicePayment: { findUnique:async()=>null, findMany: async()=>[], count: async()=>0, create: vi.fn(), updateMany: vi.fn() } }; return { default: { ...tx, $transaction: fn=>fn(tx) } }; });
 vi.mock('@/lib/stripe', () => ({ requireStripe: () => ({ checkout: { sessions: { create: m.create, retrieve: m.retrieve, expire: m.expire } } }), calculatePlatformFee: (amount) => Math.round(amount * .02) }));
 import { POST } from '@/app/api/invoices/checkout/route';
 import { invoicePaymentAmount, invoiceLineAmounts } from '@/lib/invoice-payment';
