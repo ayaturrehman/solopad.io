@@ -1,7 +1,7 @@
 import { beforeEach, expect, it, vi } from 'vitest';
-const m=vi.hoisted(()=>({event:null,find:vi.fn(),update:vi.fn(),updateMany:vi.fn(),notification:vi.fn(),processed:vi.fn(),mark:vi.fn()}));
+const m=vi.hoisted(()=>({event:null,find:vi.fn(),findFirst:vi.fn(),update:vi.fn(),updateMany:vi.fn(),notification:vi.fn(),processed:vi.fn(),mark:vi.fn()}));
 vi.mock('@/lib/stripe',()=>({requireStripe:()=>({webhooks:{constructEvent:()=>m.event}})}));
-vi.mock('@/lib/db',()=>({default:{invoice:{findUnique:m.find,update:m.update,updateMany:m.updateMany},notification:{create:m.notification}}}));
+vi.mock('@/lib/db',()=>({default:{invoice:{findUnique:m.find,findFirst:m.findFirst,update:m.update,updateMany:m.updateMany},notification:{create:m.notification}}}));
 vi.mock('@/lib/email',()=>({sendNotificationEmail:vi.fn()}));
 vi.mock('@/lib/webhook-events',()=>({isEventProcessed:m.processed,markEventProcessed:m.mark}));
 import {POST} from '@/app/api/webhooks/stripe/route';
@@ -15,3 +15,6 @@ it('marks a delayed payment paid only after async success',async()=>{m.event.typ
 it('does not mark an async failed payment paid',async()=>{m.event.type='checkout.session.async_payment_failed';m.event.data.object.payment_status='unpaid';expect((await POST(req())).status).toBe(200);expect(m.update).not.toHaveBeenCalled();});
 
 it('does not clear a replacement checkout when an older session expires',async()=>{m.event.type='checkout.session.expired';m.event.data.object.id='cs_old';expect((await POST(req())).status).toBe(200);expect(m.updateMany).toHaveBeenCalledWith({where:{id:'qa-invoice',stripeSessionId:'cs_old',status:{not:'paid'}},data:{stripeSessionId:null}});});
+
+it('uses invoice currency in payment notifications',async()=>{m.update.mockResolvedValue({total:12,currency:'GBP',project:{id:'project',title:'QA',user:{id:'user',businessId:'business'},contact:{name:'Client'}}});await POST(req());expect(m.notification).toHaveBeenCalledWith(expect.objectContaining({data:expect.objectContaining({body:expect.stringContaining('£12.00')})}));});
+it('recognizes a full zero-decimal currency refund',async()=>{m.event.type='charge.refunded';m.event.data.object={payment_intent:'pi_qa',amount_refunded:1500};m.findFirst.mockResolvedValue({id:'invoice',total:1500,currency:'JPY'});await POST(req());expect(m.update).toHaveBeenCalledWith({where:{id:'invoice'},data:{status:'refunded'}});});

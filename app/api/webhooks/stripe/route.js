@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireStripe } from "@/lib/stripe";
+import { formatCurrency } from "@/lib/utils";
+import { invoicePaymentAmount } from "@/lib/invoice-payment";
 import db from "@/lib/db";
 import { sendNotificationEmail } from "@/lib/email";
 import { isEventProcessed, markEventProcessed } from "@/lib/webhook-events";
@@ -104,7 +106,7 @@ async function handleCheckoutCompleted(session) {
         businessId: invoice.project.user.businessId,
         type: "invoice_paid",
         title: "Payment received",
-        body: `${invoice.project.contact?.name || "Client"} paid $${invoice.total.toFixed(2)} for "${invoice.project.title}"`,
+        body: `${invoice.project.contact?.name || "Client"} paid ${formatCurrency(invoice.total, invoice.currency)} for "${invoice.project.title}"`,
         link: `/projects/${invoice.project.id}`,
       },
     });
@@ -118,7 +120,7 @@ async function handleCheckoutCompleted(session) {
       to: invoice.project.user.email,
       variables: {
         clientName: invoice.project.contact?.name || "Client",
-        amount: `$${invoice.total.toFixed(2)}`,
+        amount: `${formatCurrency(invoice.total, invoice.currency)}`,
         projectTitle: invoice.project.title,
       },
     });
@@ -150,7 +152,7 @@ async function handleChargeRefunded(charge) {
   if (!invoice) return;
 
   const refundedAmountCents = charge.amount_refunded || 0;
-  const isFullRefund = refundedAmountCents >= Math.round(invoice.total * 100);
+  const isFullRefund = refundedAmountCents >= invoicePaymentAmount(invoice).amount;
 
   // Update invoice status
   await db.invoice.update({
@@ -160,14 +162,14 @@ async function handleChargeRefunded(charge) {
 
   // Notify freelancer
   if (invoice.project?.user?.id) {
-    const refundAmount = (refundedAmountCents / 100).toFixed(2);
+    const refundAmount = formatCurrency(refundedAmountCents * invoice.total / invoicePaymentAmount(invoice).amount, invoice.currency);
     await db.notification.create({
       data: {
         userId: invoice.project.user.id,
         businessId: invoice.project.user.businessId,
         type: "invoice_refunded",
         title: isFullRefund ? "Payment refunded" : "Partial refund processed",
-        body: `$${refundAmount} refunded for "${invoice.project.title}" — ${invoice.project.contact?.name || "Client"}`,
+        body: `${refundAmount} refunded for "${invoice.project.title}" — ${invoice.project.contact?.name || "Client"}`,
         link: `/projects/${invoice.project.id}`,
       },
     });
@@ -175,13 +177,13 @@ async function handleChargeRefunded(charge) {
 
   // Email notification (respects notification preferences)
   if (invoice.project?.user?.email) {
-    const refundAmount = (refundedAmountCents / 100).toFixed(2);
+    const refundAmount = formatCurrency(refundedAmountCents * invoice.total / invoicePaymentAmount(invoice).amount, invoice.currency);
     await sendNotificationEmail({
       businessId: invoice.project.user.businessId,
       type: "refund_processed",
       to: invoice.project.user.email,
       variables: {
-        amount: `$${refundAmount}`,
+        amount: refundAmount,
         projectTitle: invoice.project.title,
       },
     });
@@ -208,7 +210,7 @@ async function handleDisputeCreated(dispute) {
         businessId: invoice.project.user.businessId,
         type: "invoice_disputed",
         title: "Payment disputed",
-        body: `A dispute was filed for $${invoice.total.toFixed(2)} on "${invoice.project.title}". Respond in Stripe Dashboard.`,
+        body: `A dispute was filed for ${formatCurrency(invoice.total, invoice.currency)} on "${invoice.project.title}". Respond in Stripe Dashboard.`,
         link: `/projects/${invoice.project.id}`,
       },
     });
@@ -221,7 +223,7 @@ async function handleDisputeCreated(dispute) {
       type: "dispute_alert",
       to: invoice.project.user.email,
       variables: {
-        amount: `$${invoice.total.toFixed(2)}`,
+        amount: `${formatCurrency(invoice.total, invoice.currency)}`,
         projectTitle: invoice.project.title,
       },
     });
@@ -298,8 +300,8 @@ async function handleMilestonePayment(invoiceId, milestoneId, paymentIntentId) {
         type: "milestone_paid",
         title: allPaid ? "All milestones paid!" : "Milestone payment received",
         body: allPaid
-          ? `All payments completed for "${invoice.project.title}" — $${invoice.total.toFixed(2)} total`
-          : `${invoice.project.contact?.name || "Client"} paid $${(milestone?.amount || 0).toFixed(2)} milestone for "${invoice.project.title}"`,
+          ? `All payments completed for "${invoice.project.title}" — ${formatCurrency(invoice.total, invoice.currency)} total`
+          : `${invoice.project.contact?.name || "Client"} paid ${formatCurrency(milestone?.amount || 0, invoice.currency)} milestone for "${invoice.project.title}"`,
         link: `/projects/${invoice.project.id}`,
       },
     });
