@@ -4,7 +4,7 @@ import db from "@/lib/db";
 import AppShell from "@/components/shared/AppShell";
 
 export const viewport = {
-  width: 1280,
+  width: "device-width",
 };
 
 export default async function AppLayout({ children }) {
