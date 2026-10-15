@@ -269,7 +269,7 @@ before(async () => {
   });
 
   await prisma.teamMember.create({ data: {
-    businessId: businessA.id, userId: ownerA.id, name: memberA.name,
+    businessId: businessA.id, userId: memberA.id, name: memberA.name,
     email: memberA.email, role: "collaborator", permissions: "view_contacts", status: "active",
   } });
 
@@ -864,8 +864,10 @@ test("project CRUD — Create and update project, verify tenant stamping", async
   });
 
   assert.equal(updateProject.status, 200);
-  assert.equal(updateProject.body.title, "Tenant A Updated Project");
-  assert.equal(updateProject.body.businessId, seed.businessA.id);
+  assert.equal(updateProject.body.success, true);
+  const updated = await prisma.project.findUnique({ where: { id: projectId } });
+  assert.equal(updated.title, "Tenant A Updated Project");
+  assert.equal(updated.businessId, seed.businessA.id);
 });
 
 test("cross-tenant task mutation blocked — Tenant B can't PATCH Tenant A's task", async () => {
