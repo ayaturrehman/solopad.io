@@ -1,0 +1,14 @@
+import {beforeEach,expect,it,vi} from 'vitest';
+const m=vi.hoisted(()=>({invoice:vi.fn(),update:vi.fn(),milestone:vi.fn(),milestoneUpdate:vi.fn(),milestones:vi.fn(),retrieve:vi.fn()}));
+vi.mock('@/lib/db',()=>({default:{invoice:{findUnique:m.invoice,update:m.update},paymentPlan:{findUnique:m.milestone,update:m.milestoneUpdate,findMany:m.milestones}}}));
+vi.mock('@/lib/stripe',()=>({requireStripe:()=>({checkout:{sessions:{retrieve:m.retrieve}}})}));
+import {confirmInvoicePayment} from '@/lib/payment-confirmation';
+beforeEach(()=>{vi.resetAllMocks();m.invoice.mockResolvedValue({status:'sent',stripeSessionId:'cs_test'});m.retrieve.mockResolvedValue({payment_status:'paid',metadata:{invoiceId:'invoice'},payment_intent:'pi_test'});});
+it('does not confirm a bare return URL or unknown invoice',async()=>{expect(await confirmInvoicePayment()).toBe(false);m.invoice.mockResolvedValue(null);expect(await confirmInvoicePayment('unknown')).toBe(false);});
+it('does not confirm unpaid Stripe sessions',async()=>{m.retrieve.mockResolvedValue({payment_status:'unpaid'});expect(await confirmInvoicePayment('invoice')).toBe(false);expect(m.update).not.toHaveBeenCalled();});
+it('confirms exact paid invoice sessions and saves the payment reference',async()=>{expect(await confirmInvoicePayment('invoice')).toBe(true);expect(m.update).toHaveBeenCalledWith(expect.objectContaining({data:expect.objectContaining({status:'paid',stripePaymentIntentId:'pi_test'})}));});
+it('rejects sessions belonging to another invoice',async()=>{expect(await confirmInvoicePayment('other')).toBe(false);expect(m.update).not.toHaveBeenCalled();});
+it('uses the persisted paid webhook result without a Stripe request',async()=>{m.invoice.mockResolvedValue({status:'paid'});expect(await confirmInvoicePayment('invoice')).toBe(true);expect(m.retrieve).not.toHaveBeenCalled();});
+it('does not report success during a Stripe outage',async()=>{m.retrieve.mockRejectedValue(new Error('Unavailable'));expect(await confirmInvoicePayment('invoice')).toBe(false);});
+it('verifies the exact milestone session rather than the latest five sessions',async()=>{m.milestone.mockResolvedValue({invoiceId:'invoice',status:'upcoming'});m.retrieve.mockResolvedValue({payment_status:'paid',metadata:{invoiceId:'invoice',milestoneId:'milestone'},payment_intent:'pi_m'});m.milestones.mockResolvedValue([{status:'paid'}]);expect(await confirmInvoicePayment('invoice','milestone','cs_exact')).toBe(true);expect(m.retrieve).toHaveBeenCalledWith('cs_exact');expect(m.update).toHaveBeenCalled();});
+it('rejects a milestone that belongs to another invoice',async()=>{m.milestone.mockResolvedValue({invoiceId:'other',status:'paid'});expect(await confirmInvoicePayment('invoice','milestone','cs_exact')).toBe(false);});

@@ -1,104 +1,26 @@
-import { CheckCircle } from "lucide-react";
-import { requireStripe } from "@/lib/stripe";
-import db from "@/lib/db";
-
-// Sync invoice/milestone status by verifying DIRECTLY with Stripe.
-// Cannot be exploited — Stripe is the source of truth, not the URL.
-async function syncPaymentStatus(invoiceId, milestoneId) {
-  if (!invoiceId) return;
-
-  try {
-    const stripe = requireStripe();
-
-    if (milestoneId) {
-      // Milestone payment — find the milestone and check its checkout session
-      const milestone = await db.paymentPlan.findUnique({
-        where: { id: milestoneId },
-        select: { status: true, invoiceId: true },
-      });
-
-      if (!milestone || milestone.status === "paid") return;
-
-      // Find the checkout session for this milestone
-      const sessions = await stripe.checkout.sessions.list({
-        limit: 5,
-      });
-
-      for (const session of sessions.data) {
-        if (
-          session.metadata?.invoiceId === invoiceId &&
-          session.metadata?.milestoneId === milestoneId &&
-          session.payment_status === "paid"
-        ) {
-          // Mark milestone as paid
-          await db.paymentPlan.update({
-            where: { id: milestoneId },
-            data: { status: "paid", paidAt: new Date() },
-          });
-
-          // Check if all milestones for this invoice are now paid
-          const allMilestones = await db.paymentPlan.findMany({
-            where: { invoiceId },
-            select: { status: true },
-          });
-
-          const allPaid = allMilestones.length > 0 && allMilestones.every((m) => m.status === "paid");
-
-          if (allPaid) {
-            await db.invoice.update({
-              where: { id: invoiceId },
-              data: {
-                status: "paid",
-                paidAt: new Date(),
-                stripePaymentIntentId: session.payment_intent,
-              },
-            });
-          }
-          break;
-        }
-      }
-    } else {
-      // Regular invoice payment
-      const invoice = await db.invoice.findUnique({
-        where: { id: invoiceId },
-        select: { status: true, stripeSessionId: true },
-      });
-
-      if (!invoice || invoice.status === "paid" || !invoice.stripeSessionId) return;
-
-      const session = await stripe.checkout.sessions.retrieve(invoice.stripeSessionId);
-
-      if (session.payment_status === "paid") {
-        await db.invoice.update({
-          where: { id: invoiceId },
-          data: {
-            status: "paid",
-            paidAt: new Date(),
-            stripePaymentIntentId: session.payment_intent,
-          },
-        });
-      }
-    }
-  } catch (err) {
-    console.error("[Payment Success] Sync failed:", err.message);
-  }
-}
+import Link from 'next/link';
+import { CheckCircle, Clock } from 'lucide-react';
+import { confirmInvoicePayment } from '@/lib/payment-confirmation';
+import { safePaymentReturn } from '@/lib/payment-return';
 
 export default async function PaymentSuccessPage({ searchParams }) {
-  const { invoiceId, milestone } = await searchParams;
-
-  await syncPaymentStatus(invoiceId, milestone);
-
+  const { invoiceId, milestone, session_id: sessionId, returnTo } = await searchParams;
+  const paid = await confirmInvoicePayment(invoiceId, milestone, sessionId);
+  const returnPath = safePaymentReturn(returnTo);
+  const Icon = paid ? CheckCircle : Clock;
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 px-4">
-      <div className="w-full max-w-sm text-center">
-        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
-          <CheckCircle className="h-8 w-8 text-green-600" />
+    <div className="flex min-h-screen items-center justify-center bg-zinc-50 px-4 py-12">
+      <div className="w-full max-w-md rounded-xl border border-zinc-200 bg-white p-8 text-center shadow-sm">
+        <div className={`mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-full ${paid ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
+          <Icon className="h-7 w-7" aria-hidden="true" />
         </div>
-        <h1 className="text-2xl font-bold text-zinc-900">Payment successful!</h1>
-        <p className="mt-2 text-zinc-500">
-          Thank you. Your payment has been received and the freelancer has been notified.
+        <h1 className="text-2xl font-semibold tracking-tight text-zinc-900">{paid ? 'Payment successful' : 'Payment not confirmed yet'}</h1>
+        <p className="mt-3 text-sm leading-6 text-zinc-600">
+          {paid ? 'Thank you. Your payment has been received and your invoice is updated.' : 'We could not confirm a completed payment. Check your invoice before trying again to avoid a duplicate payment.'}
         </p>
+        <Link href={returnPath || '/'} className="mt-6 inline-flex min-h-11 items-center justify-center rounded bg-zinc-900 px-5 text-sm font-medium text-white hover:bg-zinc-700">
+          {returnPath ? 'Return to invoice' : 'Return to SoloPad'}
+        </Link>
       </div>
     </div>
   );
