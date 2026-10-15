@@ -46,7 +46,7 @@ export async function GET(req) { try {
 
     const user = await db.user.findUnique({ where: { id: session.user.id }, select: { currency: true, business: { select: { currency: true } } } });
     const currency = user?.business?.currency || user?.currency || "USD";
-    const totalsByCurrency = summarizeInvoiceMoney(paidInvoices, expenses, currency);
+    const totalsByCurrency = summarizeInvoiceMoney([...paidInvoices, ...unpaidInvoices], expenses, currency);
     totalsByCurrency.outstanding = summarizeInvoiceMoney(unpaidInvoices, [], currency).outstanding;
     const baseTotal = key => totalsByCurrency[key].find(item => item.currency === currency.toUpperCase())?.total || 0;
     const totalRevenue = baseTotal("revenue");

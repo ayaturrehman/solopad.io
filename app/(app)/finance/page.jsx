@@ -1,5 +1,4 @@
 import { summarizeInvoiceMoney } from "@/lib/invoice-money";
-import { isOutstandingInvoice } from "@/lib/invoice-status";
 import { Suspense } from "react";
 import { getSession } from "@/lib/session";
 import db from "@/lib/db";
@@ -54,6 +53,7 @@ export default async function FinancePage({ searchParams }) {
           where: { project: { userId }, createdAt: { gte: yearStart } },
           include: {
             project: { select: { title: true, contact: { select: { name: true } } } },
+            payments: { where: { status: "paid" } },
             paymentPlans: { select: { id: true, label: true, amount: true, status: true, paidAt: true } },
           },
           orderBy: { createdAt: "desc" },
@@ -113,40 +113,24 @@ export default async function FinancePage({ searchParams }) {
   }));
 
   // Paid invoices = fully paid OR has any paid milestones
-  const paid = invoices.filter((i) => i.status === "paid");
 
   const currencyTotals = summarizeInvoiceMoney(invoices, expenses, currency);
 
-  // Payments list = fully paid invoices + individual paid milestones
-  const allPayments = [
-    ...paid.map((i) => ({ ...i, paymentType: "invoice" })),
-    ...invoices
-      .filter((i) => isOutstandingInvoice(i) && i.paymentPlans?.length > 0)
-      .flatMap((i) => i.paymentPlans
-        .filter((m) => m.status === "paid")
-        .map((m) => ({
-          id: m.id,
-          invoiceNumber: i.invoiceNumber ? `${i.invoiceNumber} — ${m.label}` : m.label,
-          total: m.amount,
-          currency: i.currency,
-          paidAt: m.paidAt,
-          createdAt: m.paidAt || i.createdAt,
-          updatedAt: m.paidAt || i.updatedAt,
-          project: i.project,
-          paymentType: "milestone",
-        }))
-      ),
-  ];
-
-  // Monthly breakdown — include milestone payments
+  // New receipts keep partial bank/Stripe payment dates. Legacy invoices retain
+  // their paid invoice/milestone entries without double-counting new receipts.
+  const allPayments = invoices.flatMap(i => {
+    if (['refunded','partially_refunded','cancelled','draft'].includes(i.status)) return [];
+    if (i.payments?.length) {
+      const rows = i.payments.map(p => ({ ...i, id: p.id, total: p.amount, paidAt: p.receivedAt, createdAt: p.receivedAt, paymentType: p.method === 'bank_transfer' ? 'bank transfer' : 'invoice' }));
+      const legacy = Number(i.amountPaid || 0) - i.payments.reduce((sum,p)=>sum+p.amount,0);
+      return legacy > 0.000001 ? [...rows, {...i, id: `${i.id}-legacy`, total: legacy, paymentType: 'invoice'}] : rows;
+    }
+    if (i.status === 'paid') return [{ ...i, paymentType: 'invoice' }];
+    return (i.paymentPlans || []).filter(m=>m.status==='paid').map(m=>({...i,id:m.id,total:m.amount,paidAt:m.paidAt,createdAt:m.paidAt||i.createdAt,paymentType:'milestone'}));
+  });
   const monthlyRevenue = Array(12).fill(0);
   const monthlyExpenses = Array(12).fill(0);
-  paid.filter(i => (i.currency || currency) === currency).forEach((i) => { monthlyRevenue[new Date(i.paidAt || i.createdAt).getMonth()] += i.total; });
-  invoices
-    .filter((i) => isOutstandingInvoice(i) && (i.currency || currency) === currency && i.paymentPlans?.length > 0)
-    .forEach((i) => i.paymentPlans.filter((m) => m.status === "paid").forEach((m) => {
-      monthlyRevenue[new Date(m.paidAt || i.createdAt).getMonth()] += m.amount;
-    }));
+  allPayments.filter(i => (i.currency || currency) === currency).forEach(i => { monthlyRevenue[new Date(i.paidAt || i.createdAt).getMonth()] += i.total; });
   expenses.forEach((e) => { monthlyExpenses[new Date(e.date).getMonth()] += e.amount; });
   const maxBar = Math.max(...monthlyRevenue, ...monthlyExpenses, 1);
 

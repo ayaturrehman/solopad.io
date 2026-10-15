@@ -3,6 +3,7 @@ import { requireStripe } from "@/lib/stripe";
 import { formatCurrency } from "@/lib/utils";
 import { invoicePaymentAmount } from "@/lib/invoice-payment";
 import db from "@/lib/db";
+import { settleStripeReceipt } from "@/lib/invoice-receipts";
 import { sendNotificationEmail } from "@/lib/email";
 import { isEventProcessed, markEventProcessed } from "@/lib/webhook-events";
 
@@ -37,6 +38,11 @@ export async function POST(req) {
         await handleCheckoutCompleted(event.data.object);
         break;
 
+      case "checkout.session.async_payment_failed":
+        await db.invoicePayment.updateMany({ where: { stripeSessionId: event.data.object.id, status: 'pending' }, data: { status: 'failed' } });
+        await handleCheckoutExpired(event.data.object);
+        break;
+
       case "checkout.session.expired":
         await handleCheckoutExpired(event.data.object);
         break;
@@ -51,6 +57,10 @@ export async function POST(req) {
 
       case "account.updated":
         await handleAccountUpdated(event.data.object);
+        break;
+
+      case "account.application.deauthorized":
+        if (event.account) await db.user.updateMany({ where: { stripeAccountId: event.account }, data: { stripeAccountId: null, stripeOnboarded: false } });
         break;
 
       default:
@@ -75,28 +85,8 @@ async function handleCheckoutCompleted(session) {
   // Delayed payment methods complete checkout before funds settle.
   if (session.payment_status !== "paid") return;
 
-  const { invoiceId, milestoneId } = session.metadata || {};
-  if (!invoiceId) return;
-
-  // Handle milestone-specific payment
-  if (milestoneId) {
-    await handleMilestonePayment(invoiceId, milestoneId, session.payment_intent);
-    return;
-  }
-
-  // Idempotency: skip if already paid
-  const existing = await db.invoice.findUnique({ where: { id: invoiceId }, select: { status: true } });
-  if (existing?.status === "paid") return;
-
-  const invoice = await db.invoice.update({
-    where: { id: invoiceId },
-    data: {
-      status: "paid",
-      paidAt: new Date(),
-      stripePaymentIntentId: session.payment_intent,
-    },
-    include: { project: { include: { user: true, contact: { select: { name: true } } } } },
-  });
+  const invoice = await settleStripeReceipt(db, session);
+  if (!invoice) return;
 
   // In-app notification
   if (invoice.project?.user?.id) {
@@ -106,7 +96,7 @@ async function handleCheckoutCompleted(session) {
         businessId: invoice.project.user.businessId,
         type: "invoice_paid",
         title: "Payment received",
-        body: `${invoice.project.contact?.name || "Client"} paid ${formatCurrency(invoice.total, invoice.currency)} for "${invoice.project.title}"`,
+        body: `${invoice.project.contact?.name || "Client"} paid ${formatCurrency(session.amount_total / invoicePaymentAmount({total: 1, currency: invoice.currency}).amount, invoice.currency)} for "${invoice.project.title}"`,
         link: `/projects/${invoice.project.id}`,
       },
     });
@@ -133,6 +123,7 @@ async function handleCheckoutExpired(session) {
   const { invoiceId } = session.metadata || {};
   if (!invoiceId) return;
 
+  await db.invoicePayment.updateMany({ where: { stripeSessionId: session.id, status: 'pending' }, data: { status: 'expired' } });
   await db.invoice.updateMany({
     where: { id: invoiceId, stripeSessionId: session.id, status: { not: "paid" } },
     data: { stripeSessionId: null },
@@ -252,58 +243,3 @@ async function handleAccountUpdated(account) {
   }
 }
 
-// ─── Milestone payment ──────────────────────────────────────────
-// Mark a specific milestone as paid. If all milestones for the invoice
-// are now paid, auto-mark the parent invoice as paid.
-async function handleMilestonePayment(invoiceId, milestoneId, paymentIntentId) {
-  // Idempotency: skip if already paid
-  const existing = await db.paymentPlan.findUnique({ where: { id: milestoneId }, select: { status: true } });
-  if (existing?.status === "paid") return;
-
-  // Mark milestone as paid
-  await db.paymentPlan.update({
-    where: { id: milestoneId },
-    data: { status: "paid", paidAt: new Date() },
-  });
-
-  // Check if all milestones for this invoice are now paid
-  const allMilestones = await db.paymentPlan.findMany({
-    where: { invoiceId },
-    select: { status: true },
-  });
-
-  const allPaid = allMilestones.length > 0 && allMilestones.every((m) => m.status === "paid");
-
-  if (allPaid) {
-    await db.invoice.update({
-      where: { id: invoiceId },
-      data: {
-        status: "paid",
-        paidAt: new Date(),
-        stripePaymentIntentId: paymentIntentId,
-      },
-    });
-  }
-
-  // Fetch invoice for notification
-  const invoice = await db.invoice.findUnique({
-    where: { id: invoiceId },
-    include: { project: { include: { user: true, contact: { select: { name: true } } } } },
-  });
-
-  if (invoice?.project?.user?.id) {
-    const milestone = await db.paymentPlan.findUnique({ where: { id: milestoneId } });
-    await db.notification.create({
-      data: {
-        userId: invoice.project.user.id,
-        businessId: invoice.project.user.businessId,
-        type: "milestone_paid",
-        title: allPaid ? "All milestones paid!" : "Milestone payment received",
-        body: allPaid
-          ? `All payments completed for "${invoice.project.title}" — ${formatCurrency(invoice.total, invoice.currency)} total`
-          : `${invoice.project.contact?.name || "Client"} paid ${formatCurrency(milestone?.amount || 0, invoice.currency)} milestone for "${invoice.project.title}"`,
-        link: `/projects/${invoice.project.id}`,
-      },
-    });
-  }
-}

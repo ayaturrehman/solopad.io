@@ -55,7 +55,7 @@ export default async function DashboardPage() {
     // Keep each currency and deduct paid milestones instead of adding unlike money.
     db.invoice.findMany({
       where: { project: { userId }, status: { notIn: NON_OUTSTANDING_STATUSES } },
-      select: { total: true, currency: true, status: true, paymentPlans: { select: { amount: true, status: true } } },
+      select: { total: true, amountPaid: true, currency: true, status: true, paymentPlans: { select: { amount: true, status: true } } },
     }),
     // DB-level groupBy for project status counts instead of 4x .filter().length
     db.project.groupBy({
