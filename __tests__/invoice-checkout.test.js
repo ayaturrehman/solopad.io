@@ -42,3 +42,14 @@ it('does not return a mismatched Stripe session', async () => {
   m.create.mockResolvedValue({ id: 'cs_bad', currency: 'usd', amount_total: 1 });
   expect((await POST(request())).status).toBe(500); expect(m.expire).toHaveBeenCalledWith('cs_bad');
 });
+
+it('blocks payment when the freelancer has not connected payouts', async () => {
+  invoice.project.user.stripeAccountId = null;
+  expect((await POST(request())).status).toBe(409);
+  expect(m.create).not.toHaveBeenCalled();
+});
+it('blocks payment while connected-account onboarding is incomplete', async () => {
+  invoice.project.user.stripeOnboarded = false;
+  expect((await POST(request())).status).toBe(409);
+  expect(m.create).not.toHaveBeenCalled();
+});

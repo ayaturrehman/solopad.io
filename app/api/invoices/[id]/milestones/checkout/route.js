@@ -50,6 +50,9 @@ export async function POST(req, { params }) {
 
     const invoice = milestone.invoice;
     const freelancer = invoice.project?.user;
+    if (!freelancer?.stripeAccountId || !freelancer.stripeOnboarded) {
+      return NextResponse.json({ error: "Online payments are not available yet. Please contact the business to arrange payment." }, { status: 409 });
+    }
     const currency = invoice.currency?.toLowerCase() || "gbp";
     const amountCents = Math.round(milestone.amount * 100);
 
