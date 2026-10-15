@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { requirePermission } from "@/lib/permissions";
 import { requireStripe } from "@/lib/stripe";
 import db from "@/lib/db";
+import { getSubscriptionPeriod } from "@/lib/stripe-billing";
 
 export async function GET() {
   try {
@@ -127,6 +128,7 @@ async function reconcileSubscriptionFromStripe(subscription) {
     mapPriceIdToPlan(stripeSub.items?.data?.[0]?.price?.id) ||
     subscription.plan;
 
+  const period = getSubscriptionPeriod(stripeSub);
   const updated = await db.subscription.update({
     where: { id: subscription.id },
     data: {
@@ -134,8 +136,8 @@ async function reconcileSubscriptionFromStripe(subscription) {
       stripePriceId: stripeSub.items?.data?.[0]?.price?.id || null,
       plan,
       status: stripeSub.status,
-      currentPeriodStart: stripeSub.current_period_start ? new Date(stripeSub.current_period_start * 1000) : null,
-      currentPeriodEnd: stripeSub.current_period_end ? new Date(stripeSub.current_period_end * 1000) : null,
+      currentPeriodStart: period.start ? new Date(period.start * 1000) : null,
+      currentPeriodEnd: period.end ? new Date(period.end * 1000) : null,
       cancelAtPeriodEnd: stripeSub.cancel_at_period_end || false,
       trialEnd: stripeSub.trial_end ? new Date(stripeSub.trial_end * 1000) : null,
     },

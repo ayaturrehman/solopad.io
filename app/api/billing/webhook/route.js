@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { requireStripe } from "@/lib/stripe";
 import db from "@/lib/db";
+import { getSubscriptionPeriod, getInvoiceSubscriptionId } from "@/lib/stripe-billing";
 import { isEventProcessed, markEventProcessed } from "@/lib/webhook-events";
 import { Resend } from "resend";
 
@@ -95,6 +96,7 @@ async function handleSubscriptionChange(sub) {
   if (!subscription) return;
 
   const plan = sub.metadata?.plan || mapPriceIdToPlan(sub.items?.data?.[0]?.price?.id);
+  const period = getSubscriptionPeriod(sub);
 
   await db.subscription.update({
     where: { id: subscription.id },
@@ -103,8 +105,8 @@ async function handleSubscriptionChange(sub) {
       stripePriceId: sub.items?.data?.[0]?.price?.id || null,
       plan: plan || subscription.plan,
       status: sub.status, // active | past_due | trialing | incomplete | canceled
-      currentPeriodStart: sub.current_period_start ? new Date(sub.current_period_start * 1000) : null,
-      currentPeriodEnd: sub.current_period_end ? new Date(sub.current_period_end * 1000) : null,
+      currentPeriodStart: period.start ? new Date(period.start * 1000) : null,
+      currentPeriodEnd: period.end ? new Date(period.end * 1000) : null,
       cancelAtPeriodEnd: sub.cancel_at_period_end || false,
       trialEnd: sub.trial_end ? new Date(sub.trial_end * 1000) : null,
     },
@@ -184,7 +186,8 @@ async function handleSubscriptionDeleted(sub) {
 // ─── Invoice payment succeeded ──────────────────────────────────
 async function handlePaymentSucceeded(invoice) {
   // Only handle subscription invoices (not one-time payments)
-  if (!invoice.subscription) return;
+  const invoiceSubscriptionId = getInvoiceSubscriptionId(invoice);
+  if (!invoiceSubscriptionId) return;
 
   const customerId = typeof invoice.customer === "string" ? invoice.customer : invoice.customer?.id;
   if (!customerId) return;
@@ -195,20 +198,18 @@ async function handlePaymentSucceeded(invoice) {
   });
   if (!subscription) return;
 
-  // If status was behind on payment or still trialing, activation is now confirmed
-  if (subscription.status === "past_due" || subscription.status === "trialing" || subscription.status === "incomplete") {
-    await db.subscription.update({
-      where: { id: subscription.id },
-      data: { status: "active", trialEnd: null },
-    });
+  if (subscription.stripeSubscriptionId !== invoiceSubscriptionId) return;
 
-    revalidateBillingViews();
-  }
+  // A zero-value trial invoice is paid too. Stripe's current subscription
+  // status decides access, rather than assuming every paid invoice is active.
+  const current = await requireStripe().subscriptions.retrieve(invoiceSubscriptionId);
+  await handleSubscriptionChange(current);
 }
 
 // ─── Invoice payment failed ─────────────────────────────────────
 async function handlePaymentFailed(invoice) {
-  if (!invoice.subscription) return;
+  const invoiceSubscriptionId = getInvoiceSubscriptionId(invoice);
+  if (!invoiceSubscriptionId) return;
 
   const customerId = typeof invoice.customer === "string" ? invoice.customer : invoice.customer?.id;
   if (!customerId) return;
@@ -218,6 +219,7 @@ async function handlePaymentFailed(invoice) {
     include: { business: { select: { ownerId: true } } },
   });
   if (!subscription) return;
+  if (subscription.stripeSubscriptionId !== invoiceSubscriptionId) return;
 
   await db.subscription.update({
     where: { id: subscription.id },
