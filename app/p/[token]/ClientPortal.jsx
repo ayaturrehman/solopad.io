@@ -251,7 +251,7 @@ function InvoiceCard({ invoice }) {
       {!isPaid && !isCancelled && !isRefunded && (!invoice.paymentPlans || invoice.paymentPlans.length === 0) && (
         <div className="border-t border-zinc-100 px-5 pb-5 pt-4">
           {error && (
-            <div className="mb-3 flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+            <div className="mb-3 flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 dark:border-red-900 dark:bg-red-950 p-3 text-sm text-red-700">
               <svg className="mt-0.5 h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
               <span>{error}</span>
             </div>
@@ -269,7 +269,7 @@ function InvoiceCard({ invoice }) {
         </div>
       )}
       {isPaid && (
-        <div className="border-t border-green-100 px-5 pb-4 pt-3">
+        <div className="border-t border-green-100 dark:border-green-900 px-5 pb-4 pt-3">
           <p className="flex items-center gap-1.5 text-sm font-medium text-green-700 dark:text-green-400">
             <CheckCircle className="h-4 w-4" /> Payment received — thank you!
           </p>
@@ -317,21 +317,21 @@ function MilestoneList({ milestones, invoiceId, currency }) {
         Payment milestones ({paidCount}/{milestones.length} paid)
       </p>
       {error && (
-        <div className="mb-2 rounded border border-red-200 bg-red-50 p-2 text-xs text-red-700">{error}</div>
+        <div className="mb-2 rounded border border-red-200 bg-red-50 dark:border-red-900 dark:bg-red-950 p-2 text-xs text-red-700">{error}</div>
       )}
       <div className="space-y-2">
         {milestones.map((m) => {
           const isPaid = m.status === "paid";
           const isOverdue = !isPaid && m.dueDate && new Date(m.dueDate) < new Date();
           return (
-            <div key={m.id} className={`flex items-center justify-between rounded border p-3 ${isPaid ? "border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950" : isOverdue ? "border-red-200 bg-red-50" : "border-zinc-200"}`}>
+            <div key={m.id} className={`flex items-center justify-between rounded border p-3 ${isPaid ? "border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950" : isOverdue ? "border-red-200 bg-red-50 dark:border-red-900 dark:bg-red-950" : "border-zinc-200"}`}>
               <div>
-                <p className={`text-sm font-medium ${isPaid ? "text-green-700" : "text-zinc-900"}`}>
+                <p className={`text-sm font-medium ${isPaid ? "text-green-700 dark:text-green-300" : "text-zinc-900"}`}>
                   {isPaid && <CheckCircle className="mr-1 inline h-3.5 w-3.5" />}
                   {m.label || "Milestone"}
                 </p>
                 {m.dueDate && (
-                  <p className={`text-xs ${isOverdue ? "text-red-500 font-medium" : "text-zinc-400"}`}>
+                  <p className={`text-xs ${isOverdue ? "text-red-600 dark:text-red-300 font-medium" : "text-zinc-400"}`}>
                     {isOverdue ? "Overdue — " : ""}Due {formatDate(m.dueDate)}
                   </p>
                 )}
@@ -446,7 +446,8 @@ export default function ClientPortal({ project, files, comments: initialComments
       {/* Header */}
       <header className="sticky top-0 z-30 border-b border-zinc-200 bg-white">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
-          <BrandLogo className="gap-0 opacity-90" markClassName="h-5 w-5" textClassName="text-base font-black text-zinc-700" />
+          <BrandLogo className="gap-0 dark:hidden" markClassName="h-5 w-5" />
+          <BrandLogo dark className="hidden gap-0 dark:flex" markClassName="h-5 w-5" />
           <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
             project.status === "complete"    ? "bg-green-100 text-green-700" :
             project.status === "in_review"   ? "bg-blue-100 text-blue-700" :
