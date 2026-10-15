@@ -3,6 +3,8 @@ import { revalidatePath } from "next/cache";
 import { requirePermission } from "@/lib/permissions";
 import { getTenantFilter } from "@/lib/tenant";
 import db from "@/lib/db";
+import { withInvoiceLock, retireInvoiceCheckouts, receivedInvoiceAmount, paymentError } from "@/lib/invoice-receipts";
+import { requireStripe } from "@/lib/stripe";
 
 // GET /api/invoices/[id]
 export async function GET(req, { params }) { try {
@@ -34,7 +36,7 @@ export async function GET(req, { params }) { try {
 
   } catch (err) {
     console.error("[GET /api/invoices/[id]]", err);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json({ error: err.status ? err.message : "Internal server error" }, { status: err.status || 500 });
   }
 }
 
@@ -64,9 +66,14 @@ export async function PATCH(req, { params }) {
   }
 
   try {
+    return await withInvoiceLock(db, id, async (tx, invoice) => {
+    if (receivedInvoiceAmount(invoice) > 0 || ['paid','refunded','partially_refunded'].includes(invoice.status)) throw paymentError('Invoices with received payments cannot be edited or cancelled.');
+    const hasLinks = invoice.stripeSessionId || await tx.invoicePayment.count({ where: { invoiceId: id, method: 'stripe', status: 'pending' } });
+    await retireInvoiceCheckouts(tx, invoice, hasLinks ? requireStripe() : null);
     // Status-only update (mark sent / cancel)
-    if (body.statusOnly) {
-      const updated = await db.invoice.update({
+    if (body.statusOnly || (Object.keys(body).length === 1 && body.status)) {
+      if (!['sent','cancelled'].includes(body.status) || invoice.status === 'cancelled') throw paymentError('Use payment records to mark an invoice paid.', 400);
+      const updated = await tx.invoice.update({
         where: { id },
         data: {
           status: body.status ?? invoice.status,
@@ -97,7 +104,7 @@ export async function PATCH(req, { params }) {
     else if (dtype === "fixed") discountAmt = Math.min(dval, subtotal);
     const total = Math.max(0, subtotal + taxAmt - discountAmt);
 
-    const updated = await db.invoice.update({
+    const updated = await tx.invoice.update({
       where: { id },
       data: {
         invoiceNumber: invoiceNumber?.trim() ?? invoice.invoiceNumber,
@@ -119,9 +126,9 @@ export async function PATCH(req, { params }) {
 
     // Replace payment plan milestones if provided
     if (paymentType === "installments" && Array.isArray(paymentPlan)) {
-      await db.paymentPlan.deleteMany({ where: { invoiceId: id } });
+      await tx.paymentPlan.deleteMany({ where: { invoiceId: id } });
       if (paymentPlan.length > 0) {
-        await db.paymentPlan.createMany({
+        await tx.paymentPlan.createMany({
           data: paymentPlan.map((m) => ({
             invoiceId: id,
             label: m.label || null,
@@ -133,7 +140,7 @@ export async function PATCH(req, { params }) {
       }
     } else if (paymentType === "lump_sum") {
       // Clear any existing milestones if switching to lump sum
-      await db.paymentPlan.deleteMany({ where: { invoiceId: id } });
+      await tx.paymentPlan.deleteMany({ where: { invoiceId: id } });
     }
 
     revalidatePath("/dashboard");
@@ -141,9 +148,10 @@ export async function PATCH(req, { params }) {
     revalidatePath("/calendar");
 
     return NextResponse.json(updated);
+    });
   } catch (err) {
     console.error("[PATCH /api/invoices/[id]]", err);
-    return NextResponse.json({ error: err.message || "Internal server error" }, { status: 500 });
+    return NextResponse.json({ error: err.message || "Internal server error" }, { status: err.status || 500 });
   }
 }
 
@@ -165,7 +173,12 @@ export async function DELETE(req, { params }) { try {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
 
-    await db.invoice.delete({ where: { id } });
+    await withInvoiceLock(db, id, async (tx, locked) => {
+      if (receivedInvoiceAmount(locked) > 0 || await tx.invoicePayment.count({ where: { invoiceId: id, status: 'paid' } })) throw paymentError('Invoices with payment history cannot be deleted.');
+      const hasLinks = locked.stripeSessionId || await tx.invoicePayment.count({ where: { invoiceId: id, method: 'stripe', status: 'pending' } });
+      await retireInvoiceCheckouts(tx, locked, hasLinks ? requireStripe() : null);
+      await tx.invoice.delete({ where: { id } });
+    });
 
     revalidatePath("/dashboard");
     revalidatePath("/finance");
@@ -175,6 +188,6 @@ export async function DELETE(req, { params }) { try {
 
   } catch (err) {
     console.error("[Invoices DELETE]", err);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json({ error: err.status ? err.message : "Internal server error" }, { status: err.status || 500 });
   }
 }
