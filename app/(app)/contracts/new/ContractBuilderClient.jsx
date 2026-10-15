@@ -83,7 +83,7 @@ function ContactPicker({ contacts = [], value, onChange }) {
       ) : (
         <div className="flex h-7 items-center gap-1 rounded border border-zinc-200 bg-white px-2">
           <Search className="h-3 w-3 shrink-0 text-zinc-400" />
-          <input
+          <input aria-label="Search contacts…"
             value={query}
             onChange={(e) => { setQuery(e.target.value); setOpen(true); }}
             onFocus={() => setOpen(true)}
@@ -275,7 +275,7 @@ export default function ContractBuilderClient({
 
       {/* ── Top bar ─────────────────────────────────────────────── */}
       <div className="flex h-11 shrink-0 items-center gap-3 border-b border-zinc-200 bg-white px-4">
-        <input
+        <input aria-label="Document title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           className="min-w-0 flex-1 border-0 bg-transparent text-sm font-semibold text-zinc-900 outline-none placeholder:text-zinc-400"
@@ -344,7 +344,7 @@ export default function ContractBuilderClient({
                 <FolderOpen className="inline h-3 w-3 mr-0.5" />
                 Project
               </label>
-              <select
+              <select aria-label="Project"
                 value={projectId}
                 onChange={(e) => handleProjectChange(e.target.value)}
                 className={selectClassName}
@@ -355,7 +355,7 @@ export default function ContractBuilderClient({
             </div>
             <div>
               <label className="mb-1 block text-[10px] font-semibold uppercase tracking-widest text-zinc-400">Signature name</label>
-              <input
+              <input aria-label="Name on signature line"
                 value={signatureName}
                 onChange={(e) => setSignatureName(e.target.value)}
                 placeholder="Name on signature line"
@@ -406,7 +406,7 @@ export default function ContractBuilderClient({
                 <div style={{ fontSize: 10, fontWeight: 600, color: "#9ca3af", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 8 }}>
                   Service Agreement
                 </div>
-                <input
+                <input aria-label="Document title"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   style={{ width: "100%", border: 0, background: "transparent", fontSize: 26, fontWeight: 700, color: "#111827", outline: "none", padding: 0, lineHeight: 1.2 }}
@@ -432,7 +432,7 @@ export default function ContractBuilderClient({
                   {clauses.map((clause, i) => (
                     <div key={`clause-${i}`} style={{ paddingBottom: 24, marginBottom: 24 }}>
                       <div style={{ display: "flex", alignItems: "flex-start", gap: 8, marginBottom: 8 }}>
-                        <input
+                        <input aria-label="Clause heading"
                           value={clause.heading}
                           onChange={(e) => updateClause(i, "heading", e.target.value)}
                           style={{ flex: 1, border: 0, background: "transparent", fontSize: 14, fontWeight: 700, color: "#111827", outline: "none", padding: 0 }}
@@ -511,7 +511,7 @@ export default function ContractBuilderClient({
             </button>
             {briefOpen && (
               <div className="px-4 pb-4 space-y-2 border-t border-zinc-100">
-                <textarea
+                <textarea aria-label="AI drafting brief"
                   value={brief}
                   onChange={(e) => setBrief(e.target.value)}
                   rows={4}

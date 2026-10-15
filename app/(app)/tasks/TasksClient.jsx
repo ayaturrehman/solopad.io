@@ -606,7 +606,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
           {editData.subtasks.map((subtask) => (
             <div key={subtask.id} className="flex items-center gap-2">
               <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2 border-zinc-200" />
-              <input
+              <input aria-label="Subtask title"
                 value={subtask.title}
                 onChange={(e) => updateEditSubtask(subtask.id, e.target.value)}
                 placeholder="Subtask title"
@@ -901,7 +901,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
                     <X className="h-3.5 w-3.5" />
                   </button>
                 </div>
-                <textarea
+                <textarea aria-label="e.g. Build a landing page for a SaaS product — design, copywriting, development and deployment by end of month"
                   autoFocus
                   rows={3}
                   value={aiPrompt}
@@ -1038,7 +1038,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
             {formData.subtasks.map((subtask) => (
               <div key={subtask.id} className="flex items-center gap-2">
                 <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2 border-zinc-200" />
-                <input
+                <input aria-label="Subtask title"
                   value={subtask.title}
                   onChange={(e) => updateFormSubtask(subtask.id, e.target.value)}
                   placeholder="Subtask title"

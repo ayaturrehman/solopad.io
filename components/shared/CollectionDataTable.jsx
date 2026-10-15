@@ -314,6 +314,7 @@ export function CollectionTablePagination({
         <div className="flex items-center gap-1">
           <button
             type="button"
+            aria-label="Previous page"
             onClick={() => onPageChange(Math.max(1, currentPage - 1))}
             disabled={currentPage === 1 || isPending}
             className="inline-flex h-8 w-8 items-center justify-center rounded border border-zinc-200 text-zinc-500 transition-colors hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-40"
@@ -346,6 +347,7 @@ export function CollectionTablePagination({
           </div>
           <button
             type="button"
+            aria-label="Next page"
             onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
             disabled={currentPage === totalPages || isPending}
             className="inline-flex h-8 w-8 items-center justify-center rounded border border-zinc-200 text-zinc-500 transition-colors hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-40"

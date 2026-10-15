@@ -232,7 +232,7 @@ export default function ProposalBuilderClient({
 
       {/* ── Top bar ─────────────────────────────────────────────── */}
       <div className="flex h-11 shrink-0 items-center gap-3 border-b border-zinc-200 bg-white px-4">
-        <input
+        <input aria-label="Document title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           className="min-w-0 flex-1 border-0 bg-transparent text-sm font-semibold text-zinc-900 outline-none placeholder:text-zinc-400"
@@ -263,32 +263,32 @@ export default function ProposalBuilderClient({
           <div className="mx-auto grid max-w-3xl grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
             <div>
               <label className="mb-1 block text-[10px] font-semibold uppercase tracking-widest text-zinc-400">Client</label>
-              <input value={clientName} onChange={(e) => setClientName(e.target.value)} placeholder="Name" className="h-7 w-full rounded border border-zinc-200 bg-white px-2 text-xs text-zinc-900 outline-none focus:border-zinc-400" />
+              <input aria-label="Client name" value={clientName} onChange={(e) => setClientName(e.target.value)} placeholder="Name" className="h-7 w-full rounded border border-zinc-200 bg-white px-2 text-xs text-zinc-900 outline-none focus:border-zinc-400" />
             </div>
             <div>
               <label className="mb-1 block text-[10px] font-semibold uppercase tracking-widest text-zinc-400">Email</label>
-              <input type="email" value={clientEmail} onChange={(e) => setClientEmail(e.target.value)} placeholder="email@co.com" className="h-7 w-full rounded border border-zinc-200 bg-white px-2 text-xs text-zinc-900 outline-none focus:border-zinc-400" />
+              <input aria-label="Client email" type="email" value={clientEmail} onChange={(e) => setClientEmail(e.target.value)} placeholder="email@co.com" className="h-7 w-full rounded border border-zinc-200 bg-white px-2 text-xs text-zinc-900 outline-none focus:border-zinc-400" />
             </div>
             <div>
               <label className="mb-1 block text-[10px] font-semibold uppercase tracking-widest text-zinc-400"><FolderOpen className="inline h-3 w-3 mr-0.5" />Project</label>
-              <select value={projectId} onChange={(e) => handleProjectChange(e.target.value)} className={selectClassName}>
+              <select aria-label="Project" value={projectId} onChange={(e) => handleProjectChange(e.target.value)} className={selectClassName}>
                 <option value="">None</option>
                 {projects.map((p) => <option key={p.id} value={p.id}>{p.title}</option>)}
               </select>
             </div>
             <div>
               <label className="mb-1 block text-[10px] font-semibold uppercase tracking-widest text-zinc-400"><CalendarDays className="inline h-3 w-3 mr-0.5" />Valid until</label>
-              <input type="date" value={validUntil} onChange={(e) => setValidUntil(e.target.value)} className="h-7 w-full rounded border border-zinc-200 bg-white px-2 text-xs text-zinc-900 outline-none focus:border-zinc-400" />
+              <input aria-label="Valid until" type="date" value={validUntil} onChange={(e) => setValidUntil(e.target.value)} className="h-7 w-full rounded border border-zinc-200 bg-white px-2 text-xs text-zinc-900 outline-none focus:border-zinc-400" />
             </div>
             <div>
               <label className="mb-1 block text-[10px] font-semibold uppercase tracking-widest text-zinc-400"><CircleDollarSign className="inline h-3 w-3 mr-0.5" />Currency</label>
-              <select value={currency} onChange={(e) => setCurrency(e.target.value)} className={selectClassName}>
+              <select aria-label="Currency" value={currency} onChange={(e) => setCurrency(e.target.value)} className={selectClassName}>
                 {CURRENCIES.map((c) => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
             <div>
               <label className="mb-1 block text-[10px] font-semibold uppercase tracking-widest text-zinc-400">Tax %</label>
-              <input type="number" min="0" max="100" step="0.1" value={taxRate} onChange={(e) => setTaxRate(e.target.value)} className="h-7 w-full rounded border border-zinc-200 bg-white px-2 text-xs text-zinc-900 outline-none focus:border-zinc-400" />
+              <input aria-label="Tax rate" type="number" min="0" max="100" step="0.1" value={taxRate} onChange={(e) => setTaxRate(e.target.value)} className="h-7 w-full rounded border border-zinc-200 bg-white px-2 text-xs text-zinc-900 outline-none focus:border-zinc-400" />
             </div>
           </div>
         </div>
@@ -332,7 +332,7 @@ export default function ProposalBuilderClient({
               {/* Title */}
               <div style={{ marginBottom: 32, paddingBottom: 24, borderBottom: "1px solid #e5e7eb" }}>
                 <div style={{ fontSize: 11, fontWeight: 600, color: "#9ca3af", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 8 }}>Proposal</div>
-                <input
+                <input aria-label="Document title"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   style={{ width: "100%", border: 0, background: "transparent", fontSize: 26, fontWeight: 700, color: "#111827", outline: "none", padding: 0, lineHeight: 1.2 }}
@@ -367,14 +367,14 @@ export default function ProposalBuilderClient({
                   {sections.map((section, i) => (
                     <div key={`section-${i}`} className="proposal-print-section group" style={{ paddingBottom: 20 }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-                        <input
+                        <input aria-label="Section heading"
                           value={section.heading}
                           onChange={(e) => updateSection(i, "heading", e.target.value)}
                           style={{ flex: 1, border: 0, background: "transparent", fontSize: 14, fontWeight: 700, color: "#111827", outline: "none", padding: 0 }}
                           placeholder="Section heading"
                         />
                         {sections.length > 1 && (
-                          <button type="button" onClick={() => removeSection(i)} className="h-6 w-6 inline-flex items-center justify-center rounded text-zinc-200 opacity-0 group-hover:opacity-100 hover:text-red-400 transition-all">
+                          <button aria-label="Remove section" type="button" onClick={() => removeSection(i)} className="h-6 w-6 inline-flex items-center justify-center rounded text-zinc-200 opacity-0 group-hover:opacity-100 hover:text-red-400 transition-all">
                             <Trash2 className="h-3.5 w-3.5" />
                           </button>
                         )}
@@ -426,19 +426,19 @@ export default function ProposalBuilderClient({
                       return (
                         <tr key={`pricing-${i}`} style={{ borderBottom: "1px solid #f3f4f6" }} className="group">
                           <td style={{ padding: "7px 0" }}>
-                            <input value={row.description} onChange={(e) => updatePricingRow(i, "description", e.target.value)}
+                            <input aria-label="Line description" value={row.description} onChange={(e) => updatePricingRow(i, "description", e.target.value)}
                               style={{ width: "100%", border: 0, background: "transparent", fontSize: 13, color: "#374151", outline: "none" }}
                               placeholder="Line item description" />
                           </td>
                           <td style={{ padding: "7px 0", textAlign: "right" }}>
-                            <input type="number" min="0" step="1" value={row.qty} onChange={(e) => updatePricingRow(i, "qty", e.target.value)}
+                            <input aria-label="Line quantity" type="number" min="0" step="1" value={row.qty} onChange={(e) => updatePricingRow(i, "qty", e.target.value)}
                               style={{ width: "100%", border: 0, background: "transparent", fontSize: 13, color: "#374151", outline: "none", textAlign: "right" }}
                               placeholder="-" />
                           </td>
                           <td style={{ padding: "7px 0", textAlign: "right" }}>
                             <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 2 }}>
                               {row.rate && <span style={{ fontSize: 12, color: "#9ca3af" }}>{symbol}</span>}
-                              <input type="number" min="0" step="0.01" value={row.rate} onChange={(e) => updatePricingRow(i, "rate", e.target.value)}
+                              <input aria-label="Line unit price" type="number" min="0" step="0.01" value={row.rate} onChange={(e) => updatePricingRow(i, "rate", e.target.value)}
                                 style={{ width: 60, border: 0, background: "transparent", fontSize: 13, color: "#374151", outline: "none", textAlign: "right" }}
                                 placeholder="-" />
                             </div>
@@ -449,7 +449,7 @@ export default function ProposalBuilderClient({
                               {qty && rate ? (
                                 <span style={{ fontSize: 13, fontWeight: 600, color: "#111827" }}>{fmtAmount(rowAmount)}</span>
                               ) : (
-                                <input type="number" min="0" step="0.01" value={row.amount} onChange={(e) => updatePricingRow(i, "amount", e.target.value)}
+                                <input aria-label="Line amount" type="number" min="0" step="0.01" value={row.amount} onChange={(e) => updatePricingRow(i, "amount", e.target.value)}
                                   style={{ width: 80, border: 0, background: "transparent", fontSize: 13, fontWeight: 600, color: "#111827", outline: "none", textAlign: "right" }}
                                   placeholder="0.00" />
                               )}
@@ -457,7 +457,7 @@ export default function ProposalBuilderClient({
                           </td>
                           <td style={{ padding: "7px 0 7px 8px" }}>
                             {pricing.length > 1 && (
-                              <button type="button" onClick={() => removePricingRow(i)}
+                              <button aria-label="Remove line" type="button" onClick={() => removePricingRow(i)}
                                 className="h-5 w-5 inline-flex items-center justify-center text-zinc-200 opacity-0 group-hover:opacity-100 hover:text-red-400 transition-all">
                                 <Trash2 className="h-3.5 w-3.5" />
                               </button>
@@ -505,7 +505,7 @@ export default function ProposalBuilderClient({
             </button>
             {briefOpen && (
               <div className="px-4 pb-4 space-y-2 border-t border-zinc-100">
-                <textarea value={brief} onChange={(e) => setBrief(e.target.value)} rows={4}
+                <textarea aria-label="AI drafting brief" value={brief} onChange={(e) => setBrief(e.target.value)} rows={4}
                   className={cn(textareaClassName, "mt-3 bg-zinc-50 transition")}
                   placeholder="E.g. Brand identity for a cafe. Budget ~£2,500. Logo, guidelines, launch assets in 3 weeks." />
                 <button type="button" onClick={handleDraftFromBrief} disabled={drafting}

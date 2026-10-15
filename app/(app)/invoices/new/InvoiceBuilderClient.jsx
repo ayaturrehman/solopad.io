@@ -214,7 +214,7 @@ export default function InvoiceBuilderClient({ projects, services, user }) {
               <div>
                 <label className="mb-1.5 block text-xs font-medium text-zinc-700">Project *</label>
                 <div className="relative">
-                  <select
+                  <select aria-label="Project"
                     value={projectId}
                     onChange={(e) => setProjectId(e.target.value)}
                     className={selectClassName}
@@ -235,7 +235,7 @@ export default function InvoiceBuilderClient({ projects, services, user }) {
               </div>
               <div>
                 <label className="mb-1.5 block text-xs font-medium text-zinc-700">Invoice number</label>
-                <input
+                <input aria-label="Invoice number"
                   value={invoiceNumber}
                   onChange={(e) => setInvoiceNumber(e.target.value)}
                   placeholder="e.g. INV-2026-001"
@@ -244,7 +244,7 @@ export default function InvoiceBuilderClient({ projects, services, user }) {
               </div>
               <div>
                 <label className="mb-1.5 block text-xs font-medium text-zinc-700">Issue date</label>
-                <input
+                <input aria-label="Issue date"
                   type="date"
                   value={issueDate}
                   onChange={(e) => setIssueDate(e.target.value)}
@@ -254,7 +254,7 @@ export default function InvoiceBuilderClient({ projects, services, user }) {
               {paymentType === "lump_sum" && (
                 <div>
                   <label className="mb-1.5 block text-xs font-medium text-zinc-700">Due date</label>
-                  <input
+                  <input aria-label="Due date"
                     type="date"
                     value={dueDate}
                     onChange={(e) => setDueDate(e.target.value)}
@@ -265,7 +265,7 @@ export default function InvoiceBuilderClient({ projects, services, user }) {
               <div>
                 <label className="mb-1.5 block text-xs font-medium text-zinc-700">Currency</label>
                 <div className="relative">
-                  <select
+                  <select aria-label="Currency"
                     value={currency}
                     onChange={(e) => setCurrency(e.target.value)}
                     className={selectClassName}
@@ -314,13 +314,13 @@ export default function InvoiceBuilderClient({ projects, services, user }) {
             <div className="space-y-2">
               {lineItems.map((line, i) => (
                 <div key={i} className="grid grid-cols-12 items-center gap-2">
-                  <input
+                  <input aria-label="Line description"
                     value={line.description}
                     onChange={(e) => updateLine(i, "description", e.target.value)}
                     placeholder="Service or product description"
                     className={cn(inputClassName, "col-span-5")}
                   />
-                  <input
+                  <input aria-label="Line quantity"
                     type="number"
                     min="0"
                     step="0.01"
@@ -328,7 +328,7 @@ export default function InvoiceBuilderClient({ projects, services, user }) {
                     onChange={(e) => updateLine(i, "quantity", e.target.value)}
                     className={cn(inputClassName, "col-span-2 text-right")}
                   />
-                  <input
+                  <input aria-label="Line unit price"
                     type="number"
                     min="0"
                     step="0.01"
@@ -340,7 +340,7 @@ export default function InvoiceBuilderClient({ projects, services, user }) {
                   <div className="col-span-2 text-right text-sm font-medium text-zinc-700">
                     {formatCurrency(parseFloat(line.amount) || 0, currency)}
                   </div>
-                  <button
+                  <button aria-label="Remove line"
                     type="button"
                     onClick={() => removeLine(i)}
                     disabled={lineItems.length === 1}
@@ -434,7 +434,7 @@ export default function InvoiceBuilderClient({ projects, services, user }) {
                 <div className="space-y-2">
                   {milestones.map((m, i) => (
                     <div key={i} className="grid grid-cols-12 items-center gap-2">
-                      <input
+                      <input aria-label="Installment label"
                         value={m.label}
                         onChange={(e) => updateMilestone(i, "label", e.target.value)}
                         placeholder={i === 0 ? "e.g. Deposit (50%)" : i === milestones.length - 1 ? "e.g. Final payment" : `Milestone ${i + 1}`}
@@ -442,7 +442,7 @@ export default function InvoiceBuilderClient({ projects, services, user }) {
                       />
                       <div className="relative col-span-3">
                         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] font-medium text-zinc-400">{currency}</span>
-                        <input
+                        <input aria-label="Installment amount"
                           type="number"
                           min="0"
                           step="0.01"
@@ -452,13 +452,13 @@ export default function InvoiceBuilderClient({ projects, services, user }) {
                           className={cn(inputClassName, "pl-10 pr-3 text-right")}
                         />
                       </div>
-                      <input
+                      <input aria-label="Installment due date"
                         type="date"
                         value={m.dueDate}
                         onChange={(e) => updateMilestone(i, "dueDate", e.target.value)}
                         className={cn(inputClassName, "col-span-3")}
                       />
-                      <button
+                      <button aria-label="Remove installment"
                         type="button"
                         onClick={() => removeMilestone(i)}
                         disabled={milestones.length === 1}
@@ -498,7 +498,7 @@ export default function InvoiceBuilderClient({ projects, services, user }) {
           {/* Notes */}
           <div className="rounded border border-zinc-200 bg-white p-5">
             <SectionLabel icon={AlignLeft}>Notes & Terms</SectionLabel>
-            <textarea
+            <textarea aria-label="Payment terms, bank details, thank-you note, or any additional information for the client…"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={3}
@@ -518,7 +518,7 @@ export default function InvoiceBuilderClient({ projects, services, user }) {
               <div>
                 <label className="mb-1.5 block text-xs font-medium text-zinc-700">Tax rate (%)</label>
                 <div className="relative">
-                  <input
+                  <input aria-label="Tax rate"
                     type="number"
                     min="0"
                     max="100"
@@ -536,7 +536,7 @@ export default function InvoiceBuilderClient({ projects, services, user }) {
                 <label className="mb-1.5 block text-xs font-medium text-zinc-700">Discount</label>
                 <div className="flex gap-2">
                   <div className="relative">
-                    <select
+                    <select aria-label="Discount type"
                       value={discountType}
                       onChange={(e) => { setDiscountType(e.target.value); setDiscountValue(""); }}
                       className={selectClassName}
@@ -548,7 +548,7 @@ export default function InvoiceBuilderClient({ projects, services, user }) {
                     <ChevronDown className="pointer-events-none absolute right-2 top-3 h-4 w-4 text-zinc-400" />
                   </div>
                   {discountType !== "none" && (
-                    <input
+                    <input aria-label="Discount value"
                       type="number"
                       min="0"
                       step="0.01"
