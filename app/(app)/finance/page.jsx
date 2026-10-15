@@ -121,12 +121,12 @@ export default async function FinancePage({ searchParams }) {
   const allPayments = invoices.flatMap(i => {
     if (['refunded','partially_refunded','cancelled','draft'].includes(i.status)) return [];
     if (i.payments?.length) {
-      const rows = i.payments.map(p => ({ ...i, id: p.id, total: p.amount, paidAt: p.receivedAt, createdAt: p.receivedAt, paymentType: p.method === 'bank_transfer' ? 'bank transfer' : 'invoice' }));
+      const rows = i.payments.map(p => ({ ...i, invoiceId: i.id, id: p.id, total: p.amount, paidAt: p.receivedAt, createdAt: p.receivedAt, updatedAt: p.receivedAt, paymentType: p.method === 'bank_transfer' ? 'bank transfer' : 'invoice' }));
       const legacy = Number(i.amountPaid || 0) - i.payments.reduce((sum,p)=>sum+p.amount,0);
-      return legacy > 0.000001 ? [...rows, {...i, id: `${i.id}-legacy`, total: legacy, paymentType: 'invoice'}] : rows;
+      return legacy > 0.000001 ? [...rows, {...i, id: `${i.id}-legacy`, invoiceId: i.id, updatedAt: i.paidAt || i.createdAt, total: legacy, paymentType: 'invoice'}] : rows;
     }
-    if (i.status === 'paid') return [{ ...i, paymentType: 'invoice' }];
-    return (i.paymentPlans || []).filter(m=>m.status==='paid').map(m=>({...i,id:m.id,total:m.amount,paidAt:m.paidAt,createdAt:m.paidAt||i.createdAt,paymentType:'milestone'}));
+    if (i.status === 'paid') return [{ ...i, invoiceId: i.id, updatedAt: i.paidAt || i.createdAt, paymentType: 'invoice' }];
+    return (i.paymentPlans || []).filter(m=>m.status==='paid').map(m=>({...i,invoiceId:i.id,id:m.id,total:m.amount,updatedAt:m.paidAt||i.createdAt,paidAt:m.paidAt,createdAt:m.paidAt||i.createdAt,paymentType:'milestone'}));
   });
   const monthlyRevenue = Array(12).fill(0);
   const monthlyExpenses = Array(12).fill(0);

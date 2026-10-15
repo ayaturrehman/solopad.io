@@ -380,15 +380,7 @@ export default function ClientPortal({ project, files, comments: initialComments
   const unpaidInvoices = invoices.filter((i) => !["paid", "cancelled", "refunded", "partially_refunded"].includes(i.status));
   const paidInvoices = invoices.filter((i) => i.status === "paid");
 
-  // Calculate outstanding amount — for milestone invoices, only count unpaid milestones
-  function getOutstandingAmount(inv) {
-    if (inv.paymentPlans?.length > 0) {
-      return inv.paymentPlans
-        .filter((m) => m.status !== "paid")
-        .reduce((s, m) => s + m.amount, 0);
-    }
-    return inv.total;
-  }
+  const getOutstandingAmount = remainingInvoiceAmount;
   const outstandingLabel = formatCurrencyTotals(unpaidInvoices.map(i => ({ currency: i.currency, total: getOutstandingAmount(i) })));
 
   // SSE — connect once on mount, receive new messages instantly
