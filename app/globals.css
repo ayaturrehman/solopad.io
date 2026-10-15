@@ -298,3 +298,21 @@ html[data-theme="dark"] select:disabled {
   -webkit-text-fill-color: #d4d4d8;
   opacity: 1;
 }
+
+html[data-theme="dark"] .document-paper .text-zinc-900,
+html[data-theme="dark"] .document-paper .text-zinc-800,
+html[data-theme="dark"] .document-paper .text-zinc-700,
+html[data-theme="dark"] .document-paper .proposal-rich-text {
+  color: #27272a !important;
+}
+html[data-theme="dark"] .document-paper .text-zinc-600,
+html[data-theme="dark"] .document-paper .text-zinc-500,
+html[data-theme="dark"] .document-paper .text-zinc-400 {
+  color: #52525b !important;
+}
+html[data-theme="dark"] .document-paper .proposal-rich-text-view :is(h2, h3) {
+  color: #18181b;
+}
+html[data-theme="dark"] .document-paper .bg-zinc-50 {
+  background: #fafafa !important;
+}
