@@ -325,7 +325,7 @@ export default function ProposalBuilderClient({
             {/* White paper */}
             <div
               ref={paperRef}
-              className="proposal-print-paper bg-white shadow-xl"
+              className="proposal-print-paper document-paper bg-white shadow-xl"
               style={{ width: PAGE_W, minHeight: PAGE_H, paddingLeft: paperPadH, paddingRight: paperPadH, paddingTop: paperPadTop, paddingBottom: paperPadBot, boxSizing: "border-box" }}
             >
 

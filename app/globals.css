@@ -281,3 +281,20 @@ html[data-theme="dark"] .proposal-rich-text-view td {
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
+
+/* Documents keep their paper colours in both app themes. Inline editor ink
+   and exported document colours are deliberately independent of app chrome. */
+html[data-theme="dark"] .document-paper,
+html[data-theme="dark"] .document-paper .bg-white {
+  background: #fff !important;
+  color: #18181b;
+  color-scheme: light;
+}
+html[data-theme="dark"] input:disabled,
+html[data-theme="dark"] textarea:disabled,
+html[data-theme="dark"] select:disabled {
+  background-color: #27272a;
+  color: #d4d4d8;
+  -webkit-text-fill-color: #d4d4d8;
+  opacity: 1;
+}

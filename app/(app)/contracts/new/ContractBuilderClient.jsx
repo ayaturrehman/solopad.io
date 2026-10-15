@@ -397,7 +397,7 @@ export default function ContractBuilderClient({
             {/* White paper */}
             <div
               ref={paperRef}
-              className="bg-white shadow-xl"
+              className="document-paper bg-white shadow-xl"
               style={{ width: PAGE_W, minHeight: PAGE_H, paddingLeft: PAGE_PAD_H, paddingRight: PAGE_PAD_H, paddingTop: PAGE_PAD_TOP, paddingBottom: PAGE_PAD_BOT, boxSizing: "border-box" }}
             >
 
