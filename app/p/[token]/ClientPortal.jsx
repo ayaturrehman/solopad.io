@@ -140,6 +140,7 @@ function InvoiceCard({ invoice }) {
 
   const isPaid = invoice.status === "paid";
   const isCancelled = invoice.status === "cancelled";
+  const isRefunded = ["refunded", "partially_refunded"].includes(invoice.status);
   const lineItems = Array.isArray(invoice.lineItems) ? invoice.lineItems : [];
   const subtotal = invoice.subtotal ?? lineItems.reduce((s, item) => s + invoiceLineAmounts(item).amount, 0);
   const hasLineItems = lineItems.length > 0;
@@ -173,7 +174,7 @@ function InvoiceCard({ invoice }) {
             isCancelled ? "bg-zinc-100 text-zinc-500" :
                           "bg-amber-100 text-amber-700"
           }`}>
-            {isPaid ? "Paid" : isCancelled ? "Cancelled" : invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
+            {isPaid ? "Paid" : isCancelled ? "Cancelled" : invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1).replaceAll("_", " ")}
           </span>
         </div>
       </div>
@@ -247,7 +248,7 @@ function InvoiceCard({ invoice }) {
       )}
 
       {/* Pay button — only show for non-milestone invoices */}
-      {!isPaid && !isCancelled && (!invoice.paymentPlans || invoice.paymentPlans.length === 0) && (
+      {!isPaid && !isCancelled && !isRefunded && (!invoice.paymentPlans || invoice.paymentPlans.length === 0) && (
         <div className="border-t border-zinc-100 px-5 pb-5 pt-4">
           {error && (
             <div className="mb-3 flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
@@ -369,7 +370,7 @@ export default function ClientPortal({ project, files, comments: initialComments
   const messagesEndRef = useRef(null);
 
   const currentStep = STATUS_ORDER.indexOf(project.status);
-  const unpaidInvoices = invoices.filter((i) => i.status !== "paid" && i.status !== "cancelled");
+  const unpaidInvoices = invoices.filter((i) => !["paid", "cancelled", "refunded", "partially_refunded"].includes(i.status));
   const paidInvoices = invoices.filter((i) => i.status === "paid");
 
   // Calculate outstanding amount — for milestone invoices, only count unpaid milestones

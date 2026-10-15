@@ -65,3 +65,5 @@ it('uses Stripe-compatible integer amounts for UGX and ISK', () => {
   expect(invoicePaymentAmount({ currency: 'ISK', total: 5 }).amount).toBe(500);
   expect(() => invoicePaymentAmount({ currency: 'UGX', total: 5.25 })).toThrow();
 });
+
+it.each(['refunded','partially_refunded'])('does not recharge or erase %s state',async status=>{invoice.status=status;invoice.stripeSessionId='cs_paid';m.retrieve.mockResolvedValue({payment_status:'paid'});expect((await POST(request())).status).toBe(400);expect(m.update).not.toHaveBeenCalled();expect(m.create).not.toHaveBeenCalled();});

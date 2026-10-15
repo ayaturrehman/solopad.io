@@ -20,7 +20,7 @@ export async function POST(req) {
 
     if (!invoice) return NextResponse.json({ error: "Invoice not found" }, { status: 404 });
     if (invoice.status === "paid") return NextResponse.json({ error: "Already paid" }, { status: 400 });
-    if (invoice.status === "draft" || invoice.status === "cancelled") {
+    if (["draft", "cancelled", "refunded", "partially_refunded"].includes(invoice.status)) {
       return NextResponse.json({ error: "Invoice is not available for payment" }, { status: 400 });
     }
 
