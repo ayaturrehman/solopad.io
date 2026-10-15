@@ -237,7 +237,7 @@ export default function InvoiceEditClient({ invoice, projects, services }) {
               <div>
                 <label className="mb-1.5 block text-xs font-medium text-zinc-700">Project *</label>
                 <div className="relative">
-                  <select
+                  <select aria-label="Project"
                     value={projectId}
                     onChange={(e) => setProjectId(e.target.value)}
                     className={selectClassName}
@@ -257,7 +257,7 @@ export default function InvoiceEditClient({ invoice, projects, services }) {
               </div>
               <div>
                 <label className="mb-1.5 block text-xs font-medium text-zinc-700">Invoice number</label>
-                <input
+                <input aria-label="Invoice number"
                   value={invoiceNumber}
                   onChange={(e) => setInvoiceNumber(e.target.value)}
                   placeholder="e.g. INV-2026-001"
@@ -274,7 +274,7 @@ export default function InvoiceEditClient({ invoice, projects, services }) {
               {paymentType === "lump_sum" && (
                 <div>
                   <label className="mb-1.5 block text-xs font-medium text-zinc-700">Due date</label>
-                  <input
+                  <input aria-label="Due date"
                     type="date"
                     value={dueDate}
                     onChange={(e) => setDueDate(e.target.value)}
@@ -285,7 +285,7 @@ export default function InvoiceEditClient({ invoice, projects, services }) {
               <div>
                 <label className="mb-1.5 block text-xs font-medium text-zinc-700">Currency</label>
                 <div className="relative">
-                  <select
+                  <select aria-label="Currency"
                     value={currency}
                     onChange={(e) => setCurrency(e.target.value)}
                     className={selectClassName}
@@ -331,18 +331,18 @@ export default function InvoiceEditClient({ invoice, projects, services }) {
             <div className="space-y-2">
               {lineItems.map((line, i) => (
                 <div key={i} className="grid grid-cols-12 items-center gap-2">
-                  <input value={line.description} onChange={(e) => updateLine(i, "description", e.target.value)}
+                  <input aria-label="Line description" value={line.description} onChange={(e) => updateLine(i, "description", e.target.value)}
                     placeholder="Service or product description"
                     className={cn(inputClassName, "col-span-5")} />
-                  <input type="number" min="0" step="0.01" value={line.quantity} onChange={(e) => updateLine(i, "quantity", e.target.value)}
+                  <input aria-label="Line quantity" type="number" min="0" step="0.01" value={line.quantity} onChange={(e) => updateLine(i, "quantity", e.target.value)}
                     className={cn(inputClassName, "col-span-2 text-right")} />
-                  <input type="number" min="0" step="0.01" value={line.rate} onChange={(e) => updateLine(i, "rate", e.target.value)}
+                  <input aria-label="Line unit price" type="number" min="0" step="0.01" value={line.rate} onChange={(e) => updateLine(i, "rate", e.target.value)}
                     placeholder="0.00"
                     className={cn(inputClassName, "col-span-2 text-right")} />
                   <div className="col-span-2 text-right text-sm font-medium text-zinc-700">
                     {formatCurrency(parseFloat(line.amount) || 0, currency)}
                   </div>
-                  <button type="button" onClick={() => removeLine(i)} disabled={lineItems.length === 1}
+                  <button aria-label="Remove line" type="button" onClick={() => removeLine(i)} disabled={lineItems.length === 1}
                     className="col-span-1 flex items-center justify-center text-zinc-300 hover:text-red-400 disabled:opacity-0">
                     <Trash2 className="h-4 w-4" />
                   </button>
@@ -401,19 +401,19 @@ export default function InvoiceEditClient({ invoice, projects, services }) {
                 <div className="space-y-2">
                   {milestones.map((m, i) => (
                     <div key={i} className="grid grid-cols-12 items-center gap-2">
-                      <input value={m.label} onChange={(e) => updateMilestone(i, "label", e.target.value)}
+                      <input aria-label="Installment label" value={m.label} onChange={(e) => updateMilestone(i, "label", e.target.value)}
                         placeholder={i === 0 ? "e.g. Deposit" : i === milestones.length - 1 ? "e.g. Final payment" : `Milestone ${i + 1}`}
                         className={cn(inputClassName, "col-span-5")} />
                       <div className="relative col-span-3">
                         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] font-medium text-zinc-400">{currency}</span>
-                        <input type="number" min="0" step="0.01" value={m.amount}
+                        <input aria-label="Installment amount" type="number" min="0" step="0.01" value={m.amount}
                           onChange={(e) => updateMilestone(i, "amount", e.target.value)}
                           placeholder="0.00"
                           className={cn(inputClassName, "pl-10 pr-3 text-right")} />
                       </div>
-                      <input type="date" value={m.dueDate} onChange={(e) => updateMilestone(i, "dueDate", e.target.value)}
+                      <input aria-label="Installment due date" type="date" value={m.dueDate} onChange={(e) => updateMilestone(i, "dueDate", e.target.value)}
                         className={cn(inputClassName, "col-span-3")} />
-                      <button type="button" onClick={() => removeMilestone(i)} disabled={milestones.length === 1}
+                      <button aria-label="Remove installment" type="button" onClick={() => removeMilestone(i)} disabled={milestones.length === 1}
                         className="col-span-1 flex items-center justify-center text-zinc-300 hover:text-red-400 disabled:opacity-0">
                         <Trash2 className="h-4 w-4" />
                       </button>
@@ -441,7 +441,7 @@ export default function InvoiceEditClient({ invoice, projects, services }) {
           {/* Notes */}
           <div className="rounded border border-zinc-200 bg-white p-6">
             <SectionLabel icon={AlignLeft}>Notes & Terms</SectionLabel>
-            <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={4}
+            <textarea aria-label="Payment terms, bank details, or any notes for the client…" value={notes} onChange={(e) => setNotes(e.target.value)} rows={4}
               placeholder="Payment terms, bank details, or any notes for the client…"
               className={textareaClassName} />
           </div>
@@ -455,7 +455,7 @@ export default function InvoiceEditClient({ invoice, projects, services }) {
               <div>
                 <label className="mb-1.5 block text-xs font-medium text-zinc-700">Tax rate (%)</label>
                 <div className="relative">
-                  <input type="number" min="0" max="100" step="0.01" value={taxRate}
+                  <input aria-label="Tax rate" type="number" min="0" max="100" step="0.01" value={taxRate}
                     onChange={(e) => setTaxRate(e.target.value)}
                     className={cn(inputClassName, "pr-8")} placeholder="0" />
                   <Percent className="pointer-events-none absolute right-3 top-3 h-4 w-4 text-zinc-300" />
@@ -465,7 +465,7 @@ export default function InvoiceEditClient({ invoice, projects, services }) {
                 <label className="mb-1.5 block text-xs font-medium text-zinc-700">Discount</label>
                 <div className="flex gap-2">
                   <div className="relative">
-                    <select value={discountType} onChange={(e) => { setDiscountType(e.target.value); setDiscountValue(""); }}
+                    <select aria-label="Discount type" value={discountType} onChange={(e) => { setDiscountType(e.target.value); setDiscountValue(""); }}
                       className={selectClassName}>
                       <option value="none">None</option>
                       <option value="percent">%</option>
@@ -474,7 +474,7 @@ export default function InvoiceEditClient({ invoice, projects, services }) {
                     <ChevronDown className="pointer-events-none absolute right-2 top-3 h-4 w-4 text-zinc-400" />
                   </div>
                   {discountType !== "none" && (
-                    <input type="number" min="0" step="0.01" value={discountValue}
+                    <input aria-label="Discount value" type="number" min="0" step="0.01" value={discountValue}
                       onChange={(e) => setDiscountValue(e.target.value)} placeholder="0"
                       className={inputClassName} />
                   )}
