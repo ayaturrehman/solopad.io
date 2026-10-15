@@ -268,6 +268,11 @@ before(async () => {
     },
   });
 
+  await prisma.teamMember.create({ data: {
+    businessId: businessA.id, userId: ownerA.id, name: memberA.name,
+    email: memberA.email, role: "collaborator", permissions: "view_contacts", status: "active",
+  } });
+
   const ownerB = await prisma.user.create({
     data: {
       name: "Tenant B Owner",
@@ -616,8 +621,7 @@ test("new records are stamped to the current tenant", async () => {
     cookies: ownerCookies,
     body: {
       title: "Tenant A Fresh Project",
-      clientName: "Fresh Client",
-      clientEmail: "fresh@example.com",
+      contactId: seed.contactA.id,
       description: "Created inside test",
       status: "in_progress",
     },
@@ -723,8 +727,8 @@ test("tasks CRUD and isolation — Tenant A creates a task, Tenant B can't see i
     },
   });
 
-  assert.equal(createTask.status, 200);
-  const freshTaskId = createTask.body.id;
+  assert.equal(createTask.status, 201);
+  const freshTaskId = createTask.body.task.id;
 
   const ownerTasks = await jsonRequest("/api/tasks", { cookies: ownerCookies });
   assert.ok(ownerTasks.body.tasks.some((t) => t.id === freshTaskId));
@@ -747,7 +751,7 @@ test("services CRUD and isolation — Create service as A, verify B can't see it
     },
   });
 
-  assert.equal(createService.status, 200);
+  assert.equal(createService.status, 201);
   const freshServiceId = createService.body.id;
 
   const ownerServices = await jsonRequest("/api/services", { cookies: ownerCookies });
@@ -785,20 +789,20 @@ test("time entries CRUD and isolation — Tenant A creates time entry, B can't s
     cookies: ownerCookies,
     body: {
       projectId: seed.projectA.id,
-      duration: 60,
       description: "Tenant A Fresh Time Entry",
-      date: new Date().toISOString().split("T")[0],
+      startedAt: "2026-10-15T10:00:00Z",
+      endedAt: "2026-10-15T10:01:00Z",
     },
   });
 
-  assert.equal(createTimeEntry.status, 200);
-  const freshTimeEntryId = createTimeEntry.body.id;
+  assert.equal(createTimeEntry.status, 201);
+  const freshTimeEntryId = createTimeEntry.body.entry.id;
 
   const ownerTimeEntries = await jsonRequest("/api/time-entries", { cookies: ownerCookies });
-  assert.ok(ownerTimeEntries.body.some((t) => t.id === freshTimeEntryId));
+  assert.ok(ownerTimeEntries.body.entries.some((t) => t.id === freshTimeEntryId));
 
   const otherTimeEntries = await jsonRequest("/api/time-entries", { cookies: otherCookies });
-  assert.ok(!otherTimeEntries.body.some((t) => t.id === freshTimeEntryId));
+  assert.ok(!otherTimeEntries.body.entries.some((t) => t.id === freshTimeEntryId));
 });
 
 test("expenses CRUD and isolation — Create expense as A, verify B can't see it", async () => {
@@ -816,7 +820,7 @@ test("expenses CRUD and isolation — Create expense as A, verify B can't see it
     },
   });
 
-  assert.equal(createExpense.status, 200);
+  assert.equal(createExpense.status, 201);
   const freshExpenseId = createExpense.body.id;
 
   const ownerExpenses = await jsonRequest("/api/expenses", { cookies: ownerCookies });
@@ -844,8 +848,7 @@ test("project CRUD — Create and update project, verify tenant stamping", async
     cookies: ownerCookies,
     body: {
       title: "Tenant A Stamped Project",
-      clientName: "Stamped Client",
-      clientEmail: "stamped@example.com",
+      contactId: seed.contactA.id,
       description: "Verify tenant ownership",
       status: "active",
     },
