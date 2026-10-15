@@ -350,3 +350,17 @@ html:not([data-theme="dark"]) :is(.app-shell, .client-portal) .text-zinc-400 {
     transform: none !important;
   }
 }
+
+/* Decorative surfaces use elevation, leaving form/control borders untouched. */
+.surface-card {
+  box-shadow: 0 2px 12px rgb(24 24 27 / 0.045);
+}
+.surface-panel {
+  background-color: #fafafa;
+}
+html[data-theme="dark"] .surface-card {
+  box-shadow: 0 2px 12px rgb(0 0 0 / 0.14);
+}
+html[data-theme="dark"] .surface-panel {
+  background-color: #18181b;
+}

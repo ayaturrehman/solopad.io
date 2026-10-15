@@ -90,7 +90,7 @@ function PaymentsContent({ stripe: initialStripe, paymentMethods: initialMethods
                   Connected and active — ready to receive payments
                 </span>
               </div>
-              <div className="rounded border border-zinc-100 bg-zinc-50 px-3 py-2.5">
+              <div className="rounded bg-zinc-50 px-3 py-2.5">
                 <p className="text-xs text-zinc-500">
                   Client payments are processed securely via Stripe. Funds are deposited to your bank account within 2-3 business days after payment. A small platform fee is deducted based on your plan.
                 </p>
@@ -122,7 +122,7 @@ function PaymentsContent({ stripe: initialStripe, paymentMethods: initialMethods
               <p className="text-sm text-zinc-500">
                 Connect your bank account to start accepting client payments. The setup takes about 2 minutes — you&apos;ll need your bank details and basic business information.
               </p>
-              <div className="rounded border border-zinc-100 bg-zinc-50 px-3 py-2.5">
+              <div className="rounded bg-zinc-50 px-3 py-2.5">
                 <p className="text-xs font-medium text-zinc-700 mb-1">How it works</p>
                 <ol className="text-xs text-zinc-500 space-y-1 list-decimal list-inside">
                   <li>You add your bank account details (takes 2 minutes)</li>

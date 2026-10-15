@@ -580,7 +580,7 @@ export default function ClientPortal({ project, files, comments: initialComments
               </div>
 
               {files.length > 0 && (
-                <div className="rounded border border-zinc-200 bg-white p-5">
+                <div className="surface-card rounded bg-white p-5">
                   <div className="mb-4 flex items-center justify-between">
                     <h2 className="font-semibold text-zinc-900">Recent files</h2>
                     <button onClick={() => setActiveTab("files")} className="text-xs text-zinc-400 hover:text-zinc-700">View all</button>
@@ -592,7 +592,7 @@ export default function ClientPortal({ project, files, comments: initialComments
               )}
 
               {messages.length > 0 && (
-                <div className="rounded border border-zinc-200 bg-white p-5">
+                <div className="surface-card rounded bg-white p-5">
                   <div className="mb-4 flex items-center justify-between">
                     <h2 className="font-semibold text-zinc-900">Latest message</h2>
                     <button onClick={() => setActiveTab("messages")} className="text-xs text-zinc-400 hover:text-zinc-700">View all</button>
@@ -618,7 +618,7 @@ export default function ClientPortal({ project, files, comments: initialComments
             {/* Sidebar */}
             <div className="space-y-5">
               {invoices.length > 0 && (
-                <div className="rounded border border-zinc-200 bg-white p-5">
+                <div className="surface-card rounded bg-white p-5">
                   <h2 className="mb-4 font-semibold text-zinc-900">Billing</h2>
                   <dl className="divide-y divide-zinc-100">
                     <div className="flex justify-between py-2.5 text-sm">
@@ -642,7 +642,7 @@ export default function ClientPortal({ project, files, comments: initialComments
                 </div>
               )}
 
-              <div className="rounded border border-zinc-200 bg-white p-5">
+              <div className="surface-card rounded bg-white p-5">
                 <h2 className="mb-1 font-semibold text-zinc-900">Got a question?</h2>
                 <p className="mb-3 text-xs text-zinc-400">Send a message and we&apos;ll get back to you.</p>
                 <button onClick={() => setActiveTab("messages")} className="flex w-full items-center justify-center gap-2 rounded border border-zinc-200 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50">
@@ -664,7 +664,7 @@ export default function ClientPortal({ project, files, comments: initialComments
             ) : (
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {files.map((file) => (
-                  <div key={file.id} className="flex items-start gap-3 rounded border border-zinc-200 bg-white p-4">
+                  <div key={file.id} className="surface-card flex items-start gap-3 rounded bg-white p-4">
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded bg-zinc-100">
                       <FileText className="h-5 w-5 text-zinc-400" />
                     </div>
@@ -695,7 +695,7 @@ export default function ClientPortal({ project, files, comments: initialComments
                 const isExpanded = expandedNoteId === note.id;
                 const isLong = stripHtml(note.body).length > 300;
                 return (
-                  <div key={note.id} className="rounded border border-zinc-200 bg-white p-5">
+                  <div key={note.id} className="surface-card rounded bg-white p-5">
                     {note.title && <p className="mb-2 font-semibold text-zinc-900">{note.title}</p>}
                     <div
                       className={`prose prose-sm max-w-none text-sm text-zinc-600 ${!isExpanded && isLong ? "max-h-32 overflow-hidden" : ""}`}
@@ -718,7 +718,7 @@ export default function ClientPortal({ project, files, comments: initialComments
         {activeTab === "messages" && (
           <div className="mx-auto max-w-2xl">
             <h2 className="mb-5 text-lg font-semibold text-zinc-900">Messages</h2>
-            <div className="rounded border border-zinc-200 bg-white">
+            <div className="surface-card rounded bg-white">
               <div className="max-h-[480px] space-y-4 overflow-y-auto p-5 scrollbar-hide">
                 {messages.length === 0 && (
                   <p className="py-8 text-center text-sm text-zinc-400">No messages yet. Start the conversation below.</p>
@@ -791,7 +791,7 @@ export default function ClientPortal({ project, files, comments: initialComments
                   ? `/contracts/${contract.id}/sign/${contract.signingToken}`
                   : null;
                 return (
-                  <div key={contract.id} className="rounded border border-zinc-200 bg-white p-5">
+                  <div key={contract.id} className="surface-card rounded bg-white p-5">
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex items-start gap-3">
                         <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded ${isSigned ? "bg-green-100" : "bg-zinc-100"}`}>
@@ -860,7 +860,7 @@ export default function ClientPortal({ project, files, comments: initialComments
                   declined: "bg-red-100 text-red-600",
                 };
                 return (
-                  <div key={proposal.id} className="rounded border border-zinc-200 bg-white p-5">
+                  <div key={proposal.id} className="surface-card rounded bg-white p-5">
                     <div className="flex items-start justify-between gap-4">
                       <div>
                         <p className="font-semibold text-zinc-900">{proposal.title}</p>
