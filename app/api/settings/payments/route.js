@@ -10,10 +10,10 @@ export async function GET() { try {
 
     const user = await db.user.findUnique({
       where: { id: session.user.id },
-      select: { paymentMethods: true, bankTransferEnabled: true, bankDetails: true },
+      select: { paymentMethods: true, stripePaymentsEnabled: true, bankTransferEnabled: true, bankDetails: true },
     });
 
-    return NextResponse.json({ paymentMethods: (user?.paymentMethods || "card").split(","), bankTransferEnabled: !!user?.bankTransferEnabled, bankDetails: user?.bankDetails || null });
+    return NextResponse.json({ paymentMethods: (user?.paymentMethods || "card").split(","), stripePaymentsEnabled: user?.stripePaymentsEnabled !== false, bankTransferEnabled: !!user?.bankTransferEnabled, bankDetails: user?.bankDetails || null });
 
   } catch (err) {
     console.error("[Settings Payments GET]", err);
@@ -25,7 +25,7 @@ export async function PATCH(req) { try {
     const { session, error, status: permStatus } = await requirePermission("manage_settings");
     if (error) return NextResponse.json({ error }, { status: permStatus });
 
-    const { paymentMethods, bankTransferEnabled, bankDetails } = await req.json();
+    const { paymentMethods, stripePaymentsEnabled, bankTransferEnabled, bankDetails } = await req.json();
     if (!Array.isArray(paymentMethods)) {
       return NextResponse.json({ error: "paymentMethods must be an array" }, { status: 400 });
     }
@@ -36,12 +36,13 @@ export async function PATCH(req) { try {
 
     let bankData;
     try {
-      if (typeof bankTransferEnabled !== "boolean") throw new Error("Choose whether to enable bank transfers.");
+      if (bankTransferEnabled !== undefined && typeof bankTransferEnabled !== "boolean") throw new Error("Choose whether to enable bank transfers.");
+      if (stripePaymentsEnabled !== undefined && typeof stripePaymentsEnabled !== "boolean") throw new Error("Invalid Stripe payment choice.");
       bankData = bankTransferEnabled ? validateBankDetails(bankDetails) : undefined;
     } catch (err) { return NextResponse.json({ error: err.message }, { status: 400 }); }
     const updated = await db.user.update({
       where: { id: session.user.id },
-      data: { paymentMethods: filtered.join(","), bankTransferEnabled, ...(bankData ? { bankDetails: bankData } : {}) },
+      data: { paymentMethods: filtered.join(","), stripePaymentsEnabled, bankTransferEnabled, ...(bankData ? { bankDetails: bankData } : {}) },
     });
 
     return NextResponse.json({ paymentMethods: updated.paymentMethods.split(",") });
