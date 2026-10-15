@@ -72,3 +72,11 @@ it('charges only the remaining balance after a bank transfer', async()=>{invoice
 it('rejects a request without the private portal token',async()=>{expect((await POST(new Request('http://localhost',{method:'POST',body:JSON.stringify({invoiceId:'invoice-qa'})}))).status).toBe(404);expect(m.create).not.toHaveBeenCalled();});
 it('blocks online payments when disabled without disconnecting Stripe',async()=>{invoice.project.user.stripePaymentsEnabled=false;expect((await POST(request())).status).toBe(409);});
 it('blocks bank recording/new checkout while an existing Stripe session is processing',async()=>{invoice.stripeSessionId='cs_processing';m.retrieve.mockResolvedValue({status:'complete',payment_status:'unpaid'});expect((await POST(request())).status).toBe(409);expect(m.create).not.toHaveBeenCalled();});
+
+it('does not reuse an expired orphan checkout after a database rollback',async()=>{
+  m.update.mockRejectedValueOnce(new Error('Database commit failed'));
+  expect((await POST(request())).status).toBe(500);
+  expect(m.expire).toHaveBeenCalledWith('cs_mock');
+  expect((await POST(request())).status).toBe(200);
+  expect(m.create.mock.calls[0][1].idempotencyKey).not.toBe(m.create.mock.calls[1][1].idempotencyKey);
+});
