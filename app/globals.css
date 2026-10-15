@@ -51,6 +51,7 @@ html[data-theme="dark"] .bg-white {
   background: #111113 !important;
 }
 
+html[data-theme="dark"] .border-zinc-50,
 html[data-theme="dark"] .border-zinc-100,
 html[data-theme="dark"] .border-zinc-200 {
   border-color: #27272a !important;
@@ -87,6 +88,8 @@ html[data-theme="dark"] .border-zinc-200 {
   border-color: #27272a !important;
 }
 
+html[data-theme="dark"] .divide-zinc-50 > * + *,
+html[data-theme="dark"] .divide-zinc-100 > * + *,
 html[data-theme="dark"] .divide-zinc-200 > * + * {
   border-color: #27272a !important;
 }
