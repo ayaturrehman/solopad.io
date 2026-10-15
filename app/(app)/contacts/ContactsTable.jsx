@@ -43,6 +43,7 @@ function relativeDate(dateStr) {
 }
 
 export default function ContactsTable({
+  currency = "GBP",
   contacts,
   counts,
   currentPage,
@@ -507,7 +508,7 @@ export default function ContactsTable({
                     onDoubleClick={(event) => handleRowDoubleClick(event, `/contacts/${contact.id}`)}
                     className="cursor-pointer px-5 py-3.5 text-right text-sm font-semibold text-zinc-900"
                   >
-                    {contact.value ? formatCurrency(contact.value) : <span className="font-normal text-zinc-400">—</span>}
+                    {contact.value ? formatCurrency(contact.value, currency) : <span className="font-normal text-zinc-400">—</span>}
                   </td>
                 ) : null}
                 <td

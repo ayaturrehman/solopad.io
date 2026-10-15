@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import db from "@/lib/db";
-import { isValidPlan } from "@/lib/plans";
+import { isValidPlan, getStripePriceId } from "@/lib/plans";
 import { validatePassword } from "@/lib/passwordValidation";
 import { registerLimiter } from "@/lib/rate-limit";
 import { seedDefaultTemplates } from "@/lib/pdf-templates/seedTemplates";
@@ -15,7 +15,7 @@ export async function POST(req) {
       return NextResponse.json({ error: "Too many attempts. Please try again in a minute." }, { status: 429 });
     }
 
-    const { name, email, password, plan } = await req.json();
+    const { name, email, password, plan, interval } = await req.json();
 
     if (!name || !email || !password) {
       return NextResponse.json({ error: "All fields required" }, { status: 400 });
@@ -52,6 +52,7 @@ export async function POST(req) {
           businessId: business.id,
           stripeCustomerId: `pending_${business.id}`, // placeholder until Stripe checkout
           plan: selectedPlan,
+          stripePriceId: getStripePriceId(selectedPlan, interval === "yearly" ? "yearly" : "monthly"),
           status: "trialing",
           trialEnd,
           currentPeriodStart: new Date(),

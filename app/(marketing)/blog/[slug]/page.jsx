@@ -1,3 +1,4 @@
+import { createElement } from "react";
 import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
@@ -42,8 +43,7 @@ export async function generateMetadata({ params }) {
 }
 
 function PostIcon({ slug, category, size = 48 }) {
-  const Icon = getBlogIcon(slug, category);
-  return <Icon size={size} color="#2563EB" />;
+  return createElement(getBlogIcon(slug, category), { size, color: "#2563EB" });
 }
 
 // Section icons for H2 headings — subtle visual markers

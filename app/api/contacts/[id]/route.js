@@ -21,7 +21,6 @@ export async function GET(req, { params }) { try {
             title: true,
             status: true,
             stage: true,
-            totalRevenue: true,
             updatedAt: true,
             invoices: {
               select: { id: true, total: true, status: true },

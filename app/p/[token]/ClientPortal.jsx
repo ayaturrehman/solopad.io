@@ -9,7 +9,8 @@ import {
   FileSignature, FileCheck2, ExternalLink,
   Image, FileSpreadsheet, FileCode, Film, Music, Archive, File,
 } from "lucide-react";
-import { formatCurrency, formatDate, formatBytes } from "@/lib/utils";
+import { invoiceLineAmounts } from "@/lib/invoice-payment";
+import { formatCurrency, formatCurrencyTotals, formatDate, formatBytes } from "@/lib/utils";
 import { sanitizeHtml } from "@/lib/sanitize";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -126,7 +127,7 @@ function InvoiceCard({ invoice }) {
           setLoading(false);
           return;
         }
-        window.location.href = url;
+        window.location.assign(url);
       } catch {
         setError("Invalid payment link. Please try again.");
         setLoading(false);
@@ -140,7 +141,7 @@ function InvoiceCard({ invoice }) {
   const isPaid = invoice.status === "paid";
   const isCancelled = invoice.status === "cancelled";
   const lineItems = Array.isArray(invoice.lineItems) ? invoice.lineItems : [];
-  const subtotal = lineItems.reduce((s, item) => s + (item.quantity || 1) * (item.unitPrice || 0), 0);
+  const subtotal = invoice.subtotal ?? lineItems.reduce((s, item) => s + invoiceLineAmounts(item).amount, 0);
   const hasLineItems = lineItems.length > 0;
 
   return (
@@ -202,26 +203,30 @@ function InvoiceCard({ invoice }) {
                 <tr key={i}>
                   <td className="py-2.5 pr-4 text-zinc-700">{item.description || "—"}</td>
                   <td className="py-2.5 text-center text-zinc-500">{item.quantity ?? 1}</td>
-                  <td className="py-2.5 text-right text-zinc-500">{formatCurrency(item.unitPrice || 0, invoice.currency)}</td>
+                  <td className="py-2.5 text-right text-zinc-500">{formatCurrency(invoiceLineAmounts(item).unitPrice, invoice.currency)}</td>
                   <td className="py-2.5 text-right font-medium text-zinc-900">
-                    {formatCurrency((item.quantity || 1) * (item.unitPrice || 0), invoice.currency)}
+                    {formatCurrency(invoiceLineAmounts(item).amount, invoice.currency)}
                   </td>
                 </tr>
               ))}
             </tbody>
             <tfoot>
-              {invoice.tax > 0 && (
+              {(invoice.taxAmount > 0 || invoice.discountAmount > 0) && (
                 <>
                   <tr>
                     <td colSpan={3} className="pt-3 text-right text-xs text-zinc-400">Subtotal</td>
                     <td className="pt-3 text-right text-sm text-zinc-700">{formatCurrency(subtotal, invoice.currency)}</td>
                   </tr>
                   <tr>
-                    <td colSpan={3} className="py-1 text-right text-xs text-zinc-400">Tax ({invoice.tax}%)</td>
-                    <td className="py-1 text-right text-sm text-zinc-700">{formatCurrency(invoice.total - subtotal, invoice.currency)}</td>
+                    <td colSpan={3} className="py-1 text-right text-xs text-zinc-400">Tax ({invoice.taxRate || 0}%)</td>
+                    <td className="py-1 text-right text-sm text-zinc-700">{formatCurrency(invoice.taxAmount || 0, invoice.currency)}</td>
                   </tr>
                 </>
               )}
+              {invoice.discountAmount > 0 && <tr>
+                <td colSpan={3} className="py-1 text-right text-xs text-zinc-400">Discount</td>
+                <td className="py-1 text-right text-sm text-zinc-700">−{formatCurrency(invoice.discountAmount, invoice.currency)}</td>
+              </tr>}
               <tr className="border-t border-zinc-200">
                 <td colSpan={3} className="pt-2.5 text-right text-sm font-semibold text-zinc-900">Total</td>
                 <td className="pt-2.5 text-right text-sm font-bold text-zinc-900">{formatCurrency(invoice.total, invoice.currency)}</td>
@@ -293,7 +298,7 @@ function MilestoneList({ milestones, invoiceId, currency }) {
         return;
       }
       if (data.url) {
-        window.location.href = data.url;
+        window.location.assign(data.url);
         return;
       }
       setError("No payment link received.");
@@ -352,13 +357,13 @@ function MilestoneList({ milestones, invoiceId, currency }) {
   );
 }
 
-export default function ClientPortal({ project, files, comments: initialComments, invoices, notes = [], contracts = [], proposals = [] }) {
+export default function ClientPortal({ project, files, comments: initialComments, invoices, notes = [], contracts = [], proposals = [], initialTab = "overview" }) {
   const storedName = typeof window !== "undefined" ? localStorage.getItem("portalClientName") : "";
   const [clientName, setClientName] = useState(storedName || "");
   const [body, setBody] = useState("");
   const [sending, setSending] = useState(false);
   const [nameEntered, setNameEntered] = useState(!!storedName);
-  const [activeTab, setActiveTab] = useState("overview");
+  const [activeTab, setActiveTab] = useState(initialTab);
   const [expandedNoteId, setExpandedNoteId] = useState(null);
   const [messages, setMessages] = useState(initialComments);
   const messagesEndRef = useRef(null);
@@ -376,8 +381,7 @@ export default function ClientPortal({ project, files, comments: initialComments
     }
     return inv.total;
   }
-  const totalOutstanding = unpaidInvoices.reduce((s, i) => s + getOutstandingAmount(i), 0);
-  const outstandingCurrency = unpaidInvoices[0]?.currency || "USD";
+  const outstandingLabel = formatCurrencyTotals(unpaidInvoices.map(i => ({ currency: i.currency, total: getOutstandingAmount(i) })));
 
   // SSE — connect once on mount, receive new messages instantly
   useEffect(() => {
@@ -531,7 +535,7 @@ export default function ClientPortal({ project, files, comments: initialComments
         <div className="border-b border-amber-200 bg-amber-50">
           <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
             <p className="text-sm font-medium text-amber-800">
-              {unpaidInvoices.length} payment{unpaidInvoices.length > 1 ? "s" : ""} outstanding — {formatCurrency(totalOutstanding, outstandingCurrency)} total
+              {unpaidInvoices.length} payment{unpaidInvoices.length > 1 ? "s" : ""} outstanding — {outstandingLabel} total
             </p>
             <button onClick={() => setActiveTab("invoices")} className="shrink-0 rounded bg-amber-700 px-3 py-1.5 text-xs font-semibold text-white hover:bg-amber-800">
               View & Pay
@@ -621,11 +625,11 @@ export default function ClientPortal({ project, files, comments: initialComments
                     </div>
                     <div className="flex justify-between py-2.5 text-sm">
                       <dt className="text-zinc-500">Outstanding</dt>
-                      <dd className="font-semibold text-zinc-900">{formatCurrency(totalOutstanding, outstandingCurrency)}</dd>
+                      <dd className="font-semibold text-zinc-900">{outstandingLabel}</dd>
                     </div>
                     <div className="flex justify-between py-2.5 text-sm">
                       <dt className="text-zinc-500">Paid</dt>
-                      <dd className="font-medium text-green-600">{formatCurrency(paidInvoices.reduce((s, i) => s + i.total, 0))}</dd>
+                      <dd className="font-medium text-green-600">{formatCurrencyTotals(paidInvoices)}</dd>
                     </div>
                   </dl>
                   {unpaidInvoices.length > 0 && (

@@ -181,7 +181,7 @@ before(async () => {
     recursive: true,
     filter(source) {
       const base = path.basename(source);
-      return !["node_modules", ".git", ".next", "output"].includes(base);
+      return !["node_modules", ".git", ".next", "output", "work"].includes(base);
     },
   });
   await fs.symlink(path.join(root, "node_modules"), path.join(appDir, "node_modules"), "dir");
@@ -268,6 +268,11 @@ before(async () => {
     },
   });
 
+  await prisma.teamMember.create({ data: {
+    businessId: businessA.id, userId: memberA.id, name: memberA.name,
+    email: memberA.email, role: "collaborator", permissions: "view_contacts", status: "active",
+  } });
+
   const ownerB = await prisma.user.create({
     data: {
       name: "Tenant B Owner",
@@ -335,8 +340,6 @@ before(async () => {
       userId: ownerA.id,
       contactId: contactA.id,
       title: "Tenant A Project",
-      clientName: "Tenant A Client",
-      clientEmail: "client-a@example.com",
       status: "in_progress",
       stage: "kickoff",
       portalToken: "tenantAProj1",
@@ -349,8 +352,6 @@ before(async () => {
       userId: ownerB.id,
       contactId: contactB.id,
       title: "Tenant B Project",
-      clientName: "Tenant B Client",
-      clientEmail: "client-b@example.com",
       status: "in_progress",
       stage: "kickoff",
       portalToken: "tenantBProj1",
@@ -523,7 +524,7 @@ before(async () => {
   const port = 3400 + Math.floor(Math.random() * 200);
   baseUrl = `http://127.0.0.1:${port}`;
 
-  server = spawn("npx", ["next", "dev", "--webpack", "--port", String(port)], {
+  server = spawn(process.execPath, [path.join(root, "node_modules/next/dist/bin/next"), "dev", "--webpack", "--port", String(port)], {
     cwd: appDir,
     env: {
       ...process.env,
@@ -560,7 +561,7 @@ after(async () => {
     await prisma.$disconnect();
   }
   if (tmpDir) {
-    await fs.rm(tmpDir, { recursive: true, force: true });
+    await fs.rm(tmpDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 });
   }
 });
 
@@ -620,8 +621,7 @@ test("new records are stamped to the current tenant", async () => {
     cookies: ownerCookies,
     body: {
       title: "Tenant A Fresh Project",
-      clientName: "Fresh Client",
-      clientEmail: "fresh@example.com",
+      contactId: seed.contactA.id,
       description: "Created inside test",
       status: "in_progress",
     },
@@ -727,8 +727,8 @@ test("tasks CRUD and isolation — Tenant A creates a task, Tenant B can't see i
     },
   });
 
-  assert.equal(createTask.status, 200);
-  const freshTaskId = createTask.body.id;
+  assert.equal(createTask.status, 201);
+  const freshTaskId = createTask.body.task.id;
 
   const ownerTasks = await jsonRequest("/api/tasks", { cookies: ownerCookies });
   assert.ok(ownerTasks.body.tasks.some((t) => t.id === freshTaskId));
@@ -751,7 +751,7 @@ test("services CRUD and isolation — Create service as A, verify B can't see it
     },
   });
 
-  assert.equal(createService.status, 200);
+  assert.equal(createService.status, 201);
   const freshServiceId = createService.body.id;
 
   const ownerServices = await jsonRequest("/api/services", { cookies: ownerCookies });
@@ -789,20 +789,20 @@ test("time entries CRUD and isolation — Tenant A creates time entry, B can't s
     cookies: ownerCookies,
     body: {
       projectId: seed.projectA.id,
-      duration: 60,
       description: "Tenant A Fresh Time Entry",
-      date: new Date().toISOString().split("T")[0],
+      startedAt: "2026-10-15T10:00:00Z",
+      endedAt: "2026-10-15T10:01:00Z",
     },
   });
 
-  assert.equal(createTimeEntry.status, 200);
-  const freshTimeEntryId = createTimeEntry.body.id;
+  assert.equal(createTimeEntry.status, 201);
+  const freshTimeEntryId = createTimeEntry.body.entry.id;
 
   const ownerTimeEntries = await jsonRequest("/api/time-entries", { cookies: ownerCookies });
-  assert.ok(ownerTimeEntries.body.some((t) => t.id === freshTimeEntryId));
+  assert.ok(ownerTimeEntries.body.entries.some((t) => t.id === freshTimeEntryId));
 
   const otherTimeEntries = await jsonRequest("/api/time-entries", { cookies: otherCookies });
-  assert.ok(!otherTimeEntries.body.some((t) => t.id === freshTimeEntryId));
+  assert.ok(!otherTimeEntries.body.entries.some((t) => t.id === freshTimeEntryId));
 });
 
 test("expenses CRUD and isolation — Create expense as A, verify B can't see it", async () => {
@@ -820,7 +820,7 @@ test("expenses CRUD and isolation — Create expense as A, verify B can't see it
     },
   });
 
-  assert.equal(createExpense.status, 200);
+  assert.equal(createExpense.status, 201);
   const freshExpenseId = createExpense.body.id;
 
   const ownerExpenses = await jsonRequest("/api/expenses", { cookies: ownerCookies });
@@ -848,8 +848,7 @@ test("project CRUD — Create and update project, verify tenant stamping", async
     cookies: ownerCookies,
     body: {
       title: "Tenant A Stamped Project",
-      clientName: "Stamped Client",
-      clientEmail: "stamped@example.com",
+      contactId: seed.contactA.id,
       description: "Verify tenant ownership",
       status: "active",
     },
@@ -865,8 +864,10 @@ test("project CRUD — Create and update project, verify tenant stamping", async
   });
 
   assert.equal(updateProject.status, 200);
-  assert.equal(updateProject.body.title, "Tenant A Updated Project");
-  assert.equal(updateProject.body.businessId, seed.businessA.id);
+  assert.equal(updateProject.body.count, 1);
+  const updated = await prisma.project.findUnique({ where: { id: projectId } });
+  assert.equal(updated.title, "Tenant A Updated Project");
+  assert.equal(updated.businessId, seed.businessA.id);
 });
 
 test("cross-tenant task mutation blocked — Tenant B can't PATCH Tenant A's task", async () => {
@@ -892,4 +893,16 @@ test("cross-tenant service mutation blocked — Tenant B can't DELETE Tenant A's
 
   assert.equal(deleteForeignService.status, 404);
 });
+
+test("client portals never disclose or offer payment for draft invoices", async () => {
+  const draft = await prisma.invoice.create({ data: {
+    projectId: seed.projectA.id, invoiceNumber: "PRIVATE-DRAFT-QA", status: "draft",
+    total: 123, currency: "GBP", lineItems: "[]",
+  } });
+  const page = await textRequest(`/p/${seed.projectA.portalToken}?tab=invoices`);
+  assert.equal(page.status, 200);
+  assert.doesNotMatch(page.body, /PRIVATE-DRAFT-QA/);
+  assert.doesNotMatch(page.body, new RegExp(draft.id));
+});
+
 }

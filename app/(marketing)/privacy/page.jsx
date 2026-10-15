@@ -40,7 +40,7 @@ export default function PrivacyPage() {
         <h2>How We Use Your Information</h2>
         <p>We use your information to:</p>
         <ul>
-          <li>Provide and maintain SoloPad's core features</li>
+          <li>Provide and maintain SoloPad&apos;s core features</li>
           <li>Process payments and send invoices on your behalf</li>
           <li>Communicate with you about your account and provide customer support</li>
           <li>Improve and develop new features for the platform</li>
@@ -63,12 +63,12 @@ export default function PrivacyPage() {
 
         <h2>About SoloPad</h2>
         <p>
-          SoloPad is a young product built to help freelancers manage their business without the complexity of expensive alternatives. We're continuously improving and welcome your feedback.
+          SoloPad is a young product built to help freelancers manage their business without the complexity of expensive alternatives. We&apos;re continuously improving and welcome your feedback.
         </p>
 
         <h2>Changes to This Policy</h2>
         <p>
-          We may update this Privacy Policy from time to time. If we make significant changes, we'll notify you via email or through the platform.
+          We may update this Privacy Policy from time to time. If we make significant changes, we&apos;ll notify you via email or through the platform.
         </p>
 
         <h2>Contact Us</h2>

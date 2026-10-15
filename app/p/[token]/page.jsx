@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import db from "@/lib/db";
 import ClientPortal from "./ClientPortal";
 
-export default async function PortalPage({ params }) {
+export default async function PortalPage({ params, searchParams }) {
   const { token } = await params;
 
   const project = await db.project.findUnique({
@@ -41,7 +41,7 @@ export default async function PortalPage({ params }) {
   const [files, comments, invoices, notes, contracts, proposals] = await Promise.all([
     db.file.findMany({ where: { projectId: project.id, visibleToClient: true }, orderBy: { createdAt: "desc" } }),
     db.comment.findMany({ where: { projectId: project.id }, orderBy: { createdAt: "asc" } }),
-    db.invoice.findMany({ where: { projectId: project.id }, orderBy: { createdAt: "desc" }, include: { paymentPlans: { orderBy: { createdAt: "asc" } } } }),
+    db.invoice.findMany({ where: { projectId: project.id, status: { not: "draft" } }, orderBy: { createdAt: "desc" }, include: { paymentPlans: { orderBy: { createdAt: "asc" } } } }),
     db.note.findMany({ where: { projectId: project.id, visibleToClient: true }, orderBy: { createdAt: "desc" } }),
     db.contract.findMany({
       where: { projectId: project.id, status: { in: ["sent", "signed"] } },
@@ -62,6 +62,7 @@ export default async function PortalPage({ params }) {
 
   return (
     <ClientPortal
+      initialTab={(await searchParams)?.tab === "invoices" ? "invoices" : "overview"}
       project={project}
       files={files}
       comments={comments}

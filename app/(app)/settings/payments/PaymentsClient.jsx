@@ -108,7 +108,7 @@ function PaymentsContent({ stripe: initialStripe, paymentMethods: initialMethods
                 </span>
               </div>
               <p className="text-sm text-zinc-500">
-                You started the setup but didn't finish. Click below to complete adding your bank account details.
+                You started the setup but didn&apos;t finish. Click below to complete adding your bank account details.
               </p>
               <a
                 href="/api/settings/stripe/connect"
@@ -120,7 +120,7 @@ function PaymentsContent({ stripe: initialStripe, paymentMethods: initialMethods
           ) : (
             <div className="space-y-3">
               <p className="text-sm text-zinc-500">
-                Connect your bank account to start accepting client payments. The setup takes about 2 minutes — you'll need your bank details and basic business information.
+                Connect your bank account to start accepting client payments. The setup takes about 2 minutes — you&apos;ll need your bank details and basic business information.
               </p>
               <div className="rounded border border-zinc-100 bg-zinc-50 px-3 py-2.5">
                 <p className="text-xs font-medium text-zinc-700 mb-1">How it works</p>
@@ -128,7 +128,7 @@ function PaymentsContent({ stripe: initialStripe, paymentMethods: initialMethods
                   <li>You add your bank account details (takes 2 minutes)</li>
                   <li>Clients pay your invoices with card, Apple Pay, or Google Pay</li>
                   <li>Money is deposited to your bank within 2-3 business days</li>
-                  <li>Processing fee (2.9% + 30p) is deducted automatically</li>
+                  <li>Stripe processing fees depend on your account, payment method and currency. A plan-based SoloPad platform fee also applies (Starter 3%, Solo 2%, Pro 1%).</li>
                 </ol>
               </div>
               <a

@@ -1,5 +1,6 @@
 "use client";
 
+import { useUnsavedChanges } from "@/lib/use-unsaved-changes";
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -27,6 +28,7 @@ function emptyMilestone() {
 
 export default function InvoiceBuilderClient({ projects, services, user }) {
   const router = useRouter();
+  const { markDirty, markSaved } = useUnsavedChanges();
   const searchParams = useSearchParams();
 
   const [projectId, setProjectId] = useState(searchParams.get("projectId") || "");
@@ -62,14 +64,17 @@ export default function InvoiceBuilderClient({ projects, services, user }) {
   }
 
   function addLine() {
+    markDirty();
     setLineItems((prev) => [...prev, { serviceId: null, description: "", quantity: 1, rate: "", amount: 0 }]);
   }
 
   function removeLine(i) {
+    markDirty();
     setLineItems((prev) => prev.filter((_, idx) => idx !== i));
   }
 
   function applyService(svc) {
+    markDirty();
     setLineItems((prev) => [
       ...prev,
       { serviceId: svc.id, description: svc.name, quantity: 1, rate: svc.defaultRate, amount: svc.defaultRate },
@@ -88,18 +93,22 @@ export default function InvoiceBuilderClient({ projects, services, user }) {
 
   // Milestone helpers
   function updateMilestone(i, key, value) {
+    markDirty();
     setMilestones((prev) => prev.map((m, idx) => idx === i ? { ...m, [key]: value } : m));
   }
 
   function addMilestone() {
+    markDirty();
     setMilestones((prev) => [...prev, emptyMilestone()]);
   }
 
   function removeMilestone(i) {
+    markDirty();
     setMilestones((prev) => prev.filter((_, idx) => idx !== i));
   }
 
   function splitEqually(n) {
+    markDirty();
     const perInstallment = n > 0 ? parseFloat((total / n).toFixed(2)) : 0;
     const newMilestones = Array.from({ length: n }, (_, i) => ({
       label: `Installment ${i + 1}`,
@@ -169,6 +178,7 @@ export default function InvoiceBuilderClient({ projects, services, user }) {
         throw new Error(`Server error (${res.status}). Please try again.`);
       }
       if (!res.ok) throw new Error(data?.error || "Failed to create invoice.");
+      markSaved();
       router.push(`/invoices/${data.id}`);
     } catch (err) {
       setError(err.message);
@@ -179,7 +189,7 @@ export default function InvoiceBuilderClient({ projects, services, user }) {
   const selectedProject = projects.find((p) => p.id === projectId);
 
   return (
-    <div className="px-4 py-4 md:px-6">
+    <div onChangeCapture={markDirty} className="px-4 py-4 md:px-6">
       {/* Top bar */}
       <div className="mb-6 flex items-center justify-between">
         <Link href="/finance?tab=invoices" className="inline-flex items-center gap-2 text-sm text-zinc-500 hover:text-zinc-900">
@@ -214,7 +224,7 @@ export default function InvoiceBuilderClient({ projects, services, user }) {
               <div>
                 <label className="mb-1.5 block text-xs font-medium text-zinc-700">Project *</label>
                 <div className="relative">
-                  <select
+                  <select aria-label="Project"
                     value={projectId}
                     onChange={(e) => setProjectId(e.target.value)}
                     className={selectClassName}
@@ -235,7 +245,7 @@ export default function InvoiceBuilderClient({ projects, services, user }) {
               </div>
               <div>
                 <label className="mb-1.5 block text-xs font-medium text-zinc-700">Invoice number</label>
-                <input
+                <input aria-label="Invoice number"
                   value={invoiceNumber}
                   onChange={(e) => setInvoiceNumber(e.target.value)}
                   placeholder="e.g. INV-2026-001"
@@ -244,7 +254,7 @@ export default function InvoiceBuilderClient({ projects, services, user }) {
               </div>
               <div>
                 <label className="mb-1.5 block text-xs font-medium text-zinc-700">Issue date</label>
-                <input
+                <input aria-label="Issue date"
                   type="date"
                   value={issueDate}
                   onChange={(e) => setIssueDate(e.target.value)}
@@ -254,7 +264,7 @@ export default function InvoiceBuilderClient({ projects, services, user }) {
               {paymentType === "lump_sum" && (
                 <div>
                   <label className="mb-1.5 block text-xs font-medium text-zinc-700">Due date</label>
-                  <input
+                  <input aria-label="Due date"
                     type="date"
                     value={dueDate}
                     onChange={(e) => setDueDate(e.target.value)}
@@ -265,7 +275,7 @@ export default function InvoiceBuilderClient({ projects, services, user }) {
               <div>
                 <label className="mb-1.5 block text-xs font-medium text-zinc-700">Currency</label>
                 <div className="relative">
-                  <select
+                  <select aria-label="Currency"
                     value={currency}
                     onChange={(e) => setCurrency(e.target.value)}
                     className={selectClassName}
@@ -314,13 +324,13 @@ export default function InvoiceBuilderClient({ projects, services, user }) {
             <div className="space-y-2">
               {lineItems.map((line, i) => (
                 <div key={i} className="grid grid-cols-12 items-center gap-2">
-                  <input
+                  <input aria-label="Line description"
                     value={line.description}
                     onChange={(e) => updateLine(i, "description", e.target.value)}
                     placeholder="Service or product description"
                     className={cn(inputClassName, "col-span-5")}
                   />
-                  <input
+                  <input aria-label="Line quantity"
                     type="number"
                     min="0"
                     step="0.01"
@@ -328,7 +338,7 @@ export default function InvoiceBuilderClient({ projects, services, user }) {
                     onChange={(e) => updateLine(i, "quantity", e.target.value)}
                     className={cn(inputClassName, "col-span-2 text-right")}
                   />
-                  <input
+                  <input aria-label="Line unit price"
                     type="number"
                     min="0"
                     step="0.01"
@@ -340,7 +350,7 @@ export default function InvoiceBuilderClient({ projects, services, user }) {
                   <div className="col-span-2 text-right text-sm font-medium text-zinc-700">
                     {formatCurrency(parseFloat(line.amount) || 0, currency)}
                   </div>
-                  <button
+                  <button aria-label="Remove line"
                     type="button"
                     onClick={() => removeLine(i)}
                     disabled={lineItems.length === 1}
@@ -367,7 +377,7 @@ export default function InvoiceBuilderClient({ projects, services, user }) {
             {/* Lump sum vs Installments toggle */}
             <div className="mb-5 flex gap-2">
               <button
-                onClick={() => setPaymentType("lump_sum")}
+                onClick={() => { markDirty(); setPaymentType("lump_sum"); }}
                 className={`flex-1 rounded border py-2.5 text-sm font-medium transition-colors ${
                   paymentType === "lump_sum"
                     ? "border-zinc-900 bg-zinc-900 text-white"
@@ -377,7 +387,7 @@ export default function InvoiceBuilderClient({ projects, services, user }) {
                 Lump sum
               </button>
               <button
-                onClick={() => setPaymentType("installments")}
+                onClick={() => { markDirty(); setPaymentType("installments"); }}
                 className={`flex-1 rounded border py-2.5 text-sm font-medium transition-colors ${
                   paymentType === "installments"
                     ? "border-zinc-900 bg-zinc-900 text-white"
@@ -434,7 +444,7 @@ export default function InvoiceBuilderClient({ projects, services, user }) {
                 <div className="space-y-2">
                   {milestones.map((m, i) => (
                     <div key={i} className="grid grid-cols-12 items-center gap-2">
-                      <input
+                      <input aria-label="Installment label"
                         value={m.label}
                         onChange={(e) => updateMilestone(i, "label", e.target.value)}
                         placeholder={i === 0 ? "e.g. Deposit (50%)" : i === milestones.length - 1 ? "e.g. Final payment" : `Milestone ${i + 1}`}
@@ -442,7 +452,7 @@ export default function InvoiceBuilderClient({ projects, services, user }) {
                       />
                       <div className="relative col-span-3">
                         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] font-medium text-zinc-400">{currency}</span>
-                        <input
+                        <input aria-label="Installment amount"
                           type="number"
                           min="0"
                           step="0.01"
@@ -452,13 +462,13 @@ export default function InvoiceBuilderClient({ projects, services, user }) {
                           className={cn(inputClassName, "pl-10 pr-3 text-right")}
                         />
                       </div>
-                      <input
+                      <input aria-label="Installment due date"
                         type="date"
                         value={m.dueDate}
                         onChange={(e) => updateMilestone(i, "dueDate", e.target.value)}
                         className={cn(inputClassName, "col-span-3")}
                       />
-                      <button
+                      <button aria-label="Remove installment"
                         type="button"
                         onClick={() => removeMilestone(i)}
                         disabled={milestones.length === 1}
@@ -498,7 +508,7 @@ export default function InvoiceBuilderClient({ projects, services, user }) {
           {/* Notes */}
           <div className="rounded border border-zinc-200 bg-white p-5">
             <SectionLabel icon={AlignLeft}>Notes & Terms</SectionLabel>
-            <textarea
+            <textarea aria-label="Payment terms, bank details, thank-you note, or any additional information for the client…"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={3}
@@ -518,7 +528,7 @@ export default function InvoiceBuilderClient({ projects, services, user }) {
               <div>
                 <label className="mb-1.5 block text-xs font-medium text-zinc-700">Tax rate (%)</label>
                 <div className="relative">
-                  <input
+                  <input aria-label="Tax rate"
                     type="number"
                     min="0"
                     max="100"
@@ -536,7 +546,7 @@ export default function InvoiceBuilderClient({ projects, services, user }) {
                 <label className="mb-1.5 block text-xs font-medium text-zinc-700">Discount</label>
                 <div className="flex gap-2">
                   <div className="relative">
-                    <select
+                    <select aria-label="Discount type"
                       value={discountType}
                       onChange={(e) => { setDiscountType(e.target.value); setDiscountValue(""); }}
                       className={selectClassName}
@@ -548,7 +558,7 @@ export default function InvoiceBuilderClient({ projects, services, user }) {
                     <ChevronDown className="pointer-events-none absolute right-2 top-3 h-4 w-4 text-zinc-400" />
                   </div>
                   {discountType !== "none" && (
-                    <input
+                    <input aria-label="Discount value"
                       type="number"
                       min="0"
                       step="0.01"

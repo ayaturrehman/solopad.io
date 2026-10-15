@@ -77,9 +77,13 @@ function TemplateCard({ template, onSelect, onDelete, selected }) {
   );
 }
 
-export default function TemplateGallery({ open, onClose, type, onSelect }) {
+export default function TemplateGallery(props) {
+  return props.open ? <TemplateGalleryContent key={props.type} {...props} /> : null;
+}
+
+function TemplateGalleryContent({ open, onClose, type, onSelect }) {
   const [templates, setTemplates] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("All");
   const [selected, setSelected] = useState(null);
@@ -87,13 +91,10 @@ export default function TemplateGallery({ open, onClose, type, onSelect }) {
 
   useEffect(() => {
     if (!open) return;
-    setLoading(true);
-    setSelected(null);
-    setSearch("");
-    setCategoryFilter("All");
     fetch(`/api/content-templates?type=${type}`)
       .then((r) => r.json())
       .then((d) => setTemplates(d.templates || []))
+      .catch(() => setTemplates([]))
       .finally(() => setLoading(false));
   }, [open, type]);
 

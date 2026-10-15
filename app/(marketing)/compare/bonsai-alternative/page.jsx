@@ -1,3 +1,4 @@
+import Link from "next/link";
 export const metadata = {
   title: 'Bonsai Alternative for Freelancers',
   description: 'Compare Bonsai vs SoloPad. See why 2000+ freelancers switched. All features for £5/mo vs Bonsai\'s expensive per-user pricing and limited Basic plan.',
@@ -161,13 +162,13 @@ export default function BonsaiComparison() {
         <div style={{ maxWidth: '1080px', margin: '0 auto' }}>
           {/* Breadcrumb */}
           <nav style={{ marginBottom: '40px' }}>
-            <a href="/" style={{ color: '#2563EB', textDecoration: 'none', fontSize: '14px' }}>
+            <Link href="/" style={{ color: '#2563EB', textDecoration: 'none', fontSize: '14px' }}>
               Home
-            </a>
+            </Link>
             <span style={{ color: '#999', margin: '0 8px' }}>/</span>
-            <a href="/compare" style={{ color: '#2563EB', textDecoration: 'none', fontSize: '14px' }}>
+            <Link href="/compare" style={{ color: '#2563EB', textDecoration: 'none', fontSize: '14px' }}>
               Compare
-            </a>
+            </Link>
             <span style={{ color: '#999', margin: '0 8px' }}>/</span>
             <span style={{ color: '#666', fontSize: '14px' }}>Bonsai Alternative</span>
           </nav>
@@ -203,7 +204,7 @@ export default function BonsaiComparison() {
                 Basic Plan Missing Core Features
               </h3>
               <p style={{ fontSize: '15px', color: '#666', margin: '0', lineHeight: '1.6' }}>
-                Bonsai's $15/mo Basic tier doesn't include invoicing, contracts, or proposals. You need Essentials ($25/mo) for the basics.
+                Bonsai&apos;s $15/mo Basic tier doesn&apos;t include invoicing, contracts, or proposals. You need Essentials ($25/mo) for the basics.
               </p>
             </div>
 
@@ -218,10 +219,10 @@ export default function BonsaiComparison() {
 
             <div className="fade-up" style={{ padding: '32px', backgroundColor: '#F8FAFC', borderRadius: '8px', border: '1px solid #F1F5F9' }}>
               <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#111', margin: '0 0 12px 0' }}>
-                7-Day Trial Isn't Enough
+                7-Day Trial Isn&apos;t Enough
               </h3>
               <p style={{ fontSize: '15px', color: '#666', margin: '0', lineHeight: '1.6' }}>
-                Bonsai's free trial lasts only 7 days. SoloPad gives you 30 days to test the full platform risk-free.
+                Bonsai&apos;s free trial lasts only 7 days. SoloPad gives you 30 days to test the full platform risk-free.
               </p>
             </div>
           </div>
@@ -413,7 +414,7 @@ export default function BonsaiComparison() {
 
           <div style={{ padding: '32px', backgroundColor: '#F8FAFC', borderRadius: '8px', border: '1px solid #F1F5F9', textAlign: 'center' }}>
             <p style={{ fontSize: '16px', color: '#111', margin: '0', lineHeight: '1.6' }}>
-              <strong>SoloPad is 5x cheaper</strong> than Bonsai's cheapest invoicing plan. Add a team member to Bonsai? That's another $25/month. SoloPad stays £5/mo.
+              <strong>SoloPad is 5x cheaper</strong> than Bonsai&apos;s cheapest invoicing plan. Add a team member to Bonsai? That&apos;s another $25/month. SoloPad stays £5/mo.
             </p>
           </div>
         </div>
@@ -432,7 +433,7 @@ export default function BonsaiComparison() {
                 Tax Preparation
               </h3>
               <p style={{ fontSize: '15px', color: '#666', margin: '0', lineHeight: '1.6' }}>
-                Bonsai includes built-in tax prep and expense tracking. If taxes are your top priority, Bonsai's premium plans offer dedicated tools.
+                Bonsai includes built-in tax prep and expense tracking. If taxes are your top priority, Bonsai&apos;s premium plans offer dedicated tools.
               </p>
             </div>
 
@@ -450,7 +451,7 @@ export default function BonsaiComparison() {
                 More Templates
               </h3>
               <p style={{ fontSize: '15px', color: '#666', margin: '0', lineHeight: '1.6' }}>
-                Bonsai's template library is extensive and is their top driver of user engagement. More options for invoices and contracts.
+                Bonsai&apos;s template library is extensive and is their top driver of user engagement. More options for invoices and contracts.
               </p>
             </div>
 
@@ -479,7 +480,7 @@ export default function BonsaiComparison() {
                 All Features on Cheapest Plan
               </h3>
               <p style={{ fontSize: '15px', color: '#666', margin: '0', lineHeight: '1.6' }}>
-                SoloPad's £5/mo plan includes invoices, contracts, proposals, CRM, time tracking, and client portal. No feature paywall.
+                SoloPad&apos;s £5/mo plan includes invoices, contracts, proposals, CRM, time tracking, and client portal. No feature paywall.
               </p>
             </div>
 
@@ -566,7 +567,7 @@ export default function BonsaiComparison() {
             Start your 30-day free trial. No credit card required. All features included.
           </p>
           <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <a href="/signup" style={{
+            <Link href="/signup" style={{
               display: 'inline-block',
               padding: '14px 32px',
               backgroundColor: '#2563EB',
@@ -582,8 +583,8 @@ export default function BonsaiComparison() {
             className="cta-primary"
             >
               Start Free Trial
-            </a>
-            <a href="/compare" style={{
+            </Link>
+            <Link href="/compare" style={{
               display: 'inline-block',
               padding: '14px 32px',
               backgroundColor: '#FFFFFF',
@@ -599,7 +600,7 @@ export default function BonsaiComparison() {
             className="cta-secondary"
             >
               See All Comparisons
-            </a>
+            </Link>
           </div>
         </div>
       </section>

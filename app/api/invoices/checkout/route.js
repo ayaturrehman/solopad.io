@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { requireStripe, calculatePlatformFee } from "@/lib/stripe";
 import db from "@/lib/db";
+import { invoicePaymentAmount } from "@/lib/invoice-payment";
+import { createHash } from "node:crypto";
 
 export async function POST(req) {
   try {
@@ -22,6 +24,8 @@ export async function POST(req) {
       return NextResponse.json({ error: "Invoice is not available for payment" }, { status: 400 });
     }
 
+    const { currency, amount: totalAmountCents } = invoicePaymentAmount(invoice);
+
     // Safety net: if there's an existing checkout session, check if it was already paid
     // This prevents duplicate charges when the webhook fails to mark the invoice as paid
     if (invoice.stripeSessionId) {
@@ -39,46 +43,42 @@ export async function POST(req) {
           });
           return NextResponse.json({ error: "This invoice has already been paid." }, { status: 400 });
         }
-      } catch {
-        // Session may be expired or invalid — continue with new checkout
+        // Never leave the previously mispriced checkout open for payment.
+        if (existingSession.status === "open") {
+          await stripe.checkout.sessions.expire(existingSession.id);
+        }
+      } catch (err) {
+        if (err.code !== "resource_missing") throw err;
       }
     }
 
-    const lineItems = typeof invoice.lineItems === "string"
-      ? JSON.parse(invoice.lineItems)
-      : invoice.lineItems;
-
     const freelancer = invoice.project?.user;
-    const currency = invoice.currency?.toLowerCase() || "gbp";
+    if (!freelancer?.stripeAccountId || !freelancer.stripeOnboarded) {
+      return NextResponse.json({ error: "Online payments are not available yet. Please contact the business to arrange payment." }, { status: 409 });
+    }
 
     // Build session options
     const sessionOptions = {
       mode: "payment",
-      line_items: lineItems.map((item) => ({
+      // Invoice.total is the persisted, displayed amount after tax and discounts.
+      // A single invoice line also supports fractional service quantities without
+      // reinterpreting legacy `amount` (a line total) as a unit price.
+      line_items: [{
         price_data: {
           currency,
-          product_data: {
-            name: item.description || "Service",
-            metadata: { invoiceId },
-          },
-          unit_amount: Math.round(parseFloat(item.unitPrice ?? item.amount) * 100),
+          product_data: { name: `Invoice ${invoice.invoiceNumber || invoiceId}`, metadata: { invoiceId } },
+          unit_amount: totalAmountCents,
         },
-        quantity: parseInt(item.quantity, 10) || 1,
-      })),
+        quantity: 1,
+      }],
       customer_email: invoice.project?.clientEmail || undefined,
       metadata: { invoiceId },
       success_url: `${process.env.NEXT_PUBLIC_APP_URL}/payment/success?invoiceId=${invoiceId}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/payment/cancel`,
+      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/payment/cancel?returnTo=${encodeURIComponent(`/p/${invoice.project.portalToken}?tab=invoices`)}`,
     };
 
     // Route payments to the freelancer's connected Stripe account
     if (freelancer?.stripeAccountId && freelancer?.stripeOnboarded) {
-      const totalAmountCents = lineItems.reduce((sum, item) => {
-        const qty = parseInt(item.quantity, 10) || 1;
-        const price = parseFloat(item.unitPrice ?? item.amount) || 0;
-        return sum + Math.round(price * qty * 100);
-      }, 0);
-
       // Platform fee based on freelancer's plan tier
       const applicationFeeAmount = calculatePlatformFee(totalAmountCents, freelancer.plan);
 
@@ -88,7 +88,17 @@ export async function POST(req) {
       };
     }
 
-    const session = await stripe.checkout.sessions.create(sessionOptions);
+    const fingerprint = createHash("sha256").update(JSON.stringify({
+      invoiceId, totalAmountCents, currency, updatedAt: invoice.updatedAt,
+      previousSession: invoice.stripeSessionId, destination: freelancer?.stripeAccountId,
+    })).digest("hex");
+    const session = await stripe.checkout.sessions.create(sessionOptions, {
+      idempotencyKey: `invoice-total-v2-${fingerprint}`,
+    });
+    if (session.amount_total !== totalAmountCents || session.currency !== currency) {
+      await stripe.checkout.sessions.expire(session.id);
+      throw new Error("Checkout amount does not match invoice total.");
+    }
 
     await db.invoice.update({
       where: { id: invoiceId },

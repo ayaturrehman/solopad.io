@@ -79,39 +79,12 @@ describe("Pricing - Annual (2 months free = pay for 10)", () => {
   });
 });
 
-describe("Pricing - Promo (50% off first 6 months)", () => {
-  it("Starter promo = £2.50/mo", () => {
-    expect(PLAN_CONFIG.starter.promoPrice).toBe("£2.50");
-  });
-
-  it("Solo promo = £6/mo", () => {
-    expect(PLAN_CONFIG.solo.promoPrice).toBe("£6");
-  });
-
-  it("Pro promo = £14.50/mo", () => {
-    expect(PLAN_CONFIG.pro.promoPrice).toBe("£14.50");
-  });
-});
-
-describe("Pricing - Annual Promo (50% off 6mo + 2mo free)", () => {
-  // Formula: 6 months at half price + 4 months at full price
-  it("Starter annual promo = £35 (6×£2.50 + 4×£5)", () => {
-    expect(PLAN_CONFIG.starter.annualPromoPrice).toBe("£35");
-    // Verify math: 6*2.5 + 4*5 = 15 + 20 = 35
-    const expected = 6 * (5 / 2) + 4 * 5;
-    expect(expected).toBe(35);
-  });
-
-  it("Solo annual promo = £84 (6×£6 + 4×£12)", () => {
-    expect(PLAN_CONFIG.solo.annualPromoPrice).toBe("£84");
-    const expected = 6 * (12 / 2) + 4 * 12;
-    expect(expected).toBe(84);
-  });
-
-  it("Pro annual promo = £203 (6×£14.50 + 4×£29)", () => {
-    expect(PLAN_CONFIG.pro.annualPromoPrice).toBe("£203");
-    const expected = 6 * (29 / 2) + 4 * 29;
-    expect(expected).toBe(203);
+describe("Pricing - promotions", () => {
+  it("does not advertise unapplied automatic discounts", () => {
+    for (const id of ["starter", "solo", "pro"]) {
+      expect(PLAN_CONFIG[id].promoPrice).toBeUndefined();
+      expect(PLAN_CONFIG[id].annualPromoPrice).toBeUndefined();
+    }
   });
 });
 

@@ -103,7 +103,7 @@ export default function InvoiceActions({ invoice }) {
 
       {/* More menu */}
       <button
-        onClick={() => setOpen((v) => !v)}
+        aria-label="Invoice actions" aria-expanded={open} onClick={() => setOpen((v) => !v)}
         className="flex h-9 w-9 items-center justify-center rounded border border-zinc-200 text-zinc-500 hover:bg-zinc-50"
       >
         <MoreHorizontal className="h-4 w-4" />

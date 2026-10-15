@@ -143,7 +143,7 @@ export default function ProfileClient({ profile, business }) {
             <div className="grid gap-4 md:grid-cols-2">
               <div>
                 <label className="mb-1 block text-xs font-medium text-zinc-700">Default currency</label>
-                <select value={currency} onChange={(e) => setCurrency(e.target.value)} className={selectClassName}>
+                <select aria-label="Default currency" value={currency} onChange={(e) => setCurrency(e.target.value)} className={selectClassName}>
                   {CURRENCIES.map((c) => (
                     <option key={c} value={c}>{c} - {CURRENCY_LABELS[c] || c}</option>
                   ))}

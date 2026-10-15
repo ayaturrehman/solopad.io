@@ -606,7 +606,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
           {editData.subtasks.map((subtask) => (
             <div key={subtask.id} className="flex items-center gap-2">
               <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2 border-zinc-200" />
-              <input
+              <input aria-label="Subtask title"
                 value={subtask.title}
                 onChange={(e) => updateEditSubtask(subtask.id, e.target.value)}
                 placeholder="Subtask title"
@@ -614,7 +614,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
               />
               <button
                 type="button"
-                onClick={() => removeEditSubtask(subtask.id)}
+                aria-label="Remove subtask" onClick={() => removeEditSubtask(subtask.id)}
                 className="flex h-9 w-9 shrink-0 items-center justify-center rounded border border-zinc-200 text-zinc-400 transition-colors hover:border-zinc-300 hover:bg-zinc-100 hover:text-zinc-700"
               >
                 <X className="h-3.5 w-3.5" />
@@ -739,7 +739,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
               {hasDetails && editingId !== task.id && (
                 <button
                   type="button"
-                  onClick={() => toggleExpanded(task.id)}
+                  aria-label={`Details for ${task.title}`} aria-expanded={isExpanded} onClick={() => toggleExpanded(task.id)}
                   className={cn(
                     "flex h-7 w-7 shrink-0 items-center justify-center rounded-md transition-colors",
                     hasSubtasks
@@ -766,7 +766,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
                 <div className="relative">
                   <button
                     type="button"
-                    onClick={() => setOpenMenu(openMenu === task.id ? null : task.id)}
+                    aria-label={`Actions for ${task.title}`} aria-expanded={openMenu === task.id} onClick={() => setOpenMenu(openMenu === task.id ? null : task.id)}
                     className="rounded p-1 text-zinc-300 opacity-0 transition-all duration-150 group-hover:opacity-100 hover:bg-zinc-100 hover:text-zinc-600"
                   >
                     <MoreHorizontal className="h-4 w-4" />
@@ -895,13 +895,13 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
                   <span className="text-xs font-semibold text-purple-700">AI Task Generator</span>
                   <button
                     type="button"
-                    onClick={() => { setAiOpen(false); setAiPrompt(""); setAiError(""); }}
+                    aria-label="Close AI drafting" onClick={() => { setAiOpen(false); setAiPrompt(""); setAiError(""); }}
                     className="ml-auto flex h-6 w-6 items-center justify-center rounded text-purple-400 transition-colors hover:bg-purple-100 hover:text-purple-700"
                   >
                     <X className="h-3.5 w-3.5" />
                   </button>
                 </div>
-                <textarea
+                <textarea aria-label="e.g. Build a landing page for a SaaS product — design, copywriting, development and deployment by end of month"
                   autoFocus
                   rows={3}
                   value={aiPrompt}
@@ -1038,7 +1038,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
             {formData.subtasks.map((subtask) => (
               <div key={subtask.id} className="flex items-center gap-2">
                 <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2 border-zinc-200" />
-                <input
+                <input aria-label="Subtask title"
                   value={subtask.title}
                   onChange={(e) => updateFormSubtask(subtask.id, e.target.value)}
                   placeholder="Subtask title"
@@ -1046,7 +1046,7 @@ export default function TasksClient({ tasks: initialTasks, projects, teamMembers
                 />
                 <button
                   type="button"
-                  onClick={() => removeFormSubtask(subtask.id)}
+                  aria-label="Remove subtask" onClick={() => removeFormSubtask(subtask.id)}
                   className="flex h-9 w-9 shrink-0 items-center justify-center rounded border border-zinc-200 text-zinc-400 transition-colors hover:border-zinc-300 hover:bg-zinc-100 hover:text-zinc-700"
                 >
                   <X className="h-3.5 w-3.5" />

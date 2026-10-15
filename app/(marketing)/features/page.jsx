@@ -1,3 +1,4 @@
+import Link from "next/link";
 export const metadata = {
   title: "Features — Invoices, Contracts, Proposals, CRM & More",
   description:
@@ -339,7 +340,7 @@ export default function FeaturesPage() {
           {/* Breadcrumb */}
           <nav aria-label="Breadcrumb" style={{ marginBottom: 32 }}>
             <ol style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", justifyContent: "center", gap: 8, fontSize: 13, color: CMute }}>
-              <li><a href="/" style={{ color: CMute, textDecoration: "none" }}>Home</a></li>
+              <li><Link href="/" style={{ color: CMute, textDecoration: "none" }}>Home</Link></li>
               <li>/</li>
               <li style={{ color: CDk, fontWeight: 600 }}>Features</li>
             </ol>
@@ -361,7 +362,7 @@ export default function FeaturesPage() {
             Proposals, contracts, invoices, scheduling, time tracking, CRM, and a client portal — all connected, all in one app. Starting at £5/mo.
           </p>
           <div className="fade-up fade-up-delay-2" style={{ display: "flex", justifyContent: "center", gap: 12, flexWrap: "wrap" }}>
-            <a href="/signup" style={{
+            <Link href="/signup" style={{
               background: C, color: "#fff", border: "none", cursor: "pointer",
               display: "inline-flex", alignItems: "center", gap: 8,
               borderRadius: 10, padding: "13px 26px", fontSize: 15, fontWeight: 700,
@@ -369,15 +370,15 @@ export default function FeaturesPage() {
             }}>
               Start your free trial
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </a>
-            <a href="/#pricing" style={{
+            </Link>
+            <Link href="/#pricing" style={{
               background: "#fff", color: CDk, border: "1.5px solid #DEDEDE", cursor: "pointer",
               display: "inline-flex", alignItems: "center", gap: 8,
               borderRadius: 10, padding: "12px 24px", fontSize: 15, fontWeight: 600,
               textDecoration: "none",
             }}>
               View pricing
-            </a>
+            </Link>
           </div>
         </div>
       </section>
@@ -430,6 +431,9 @@ export default function FeaturesPage() {
             className="feat-section"
             style={{ background: feat.bg }}
           >
+            {({ contracts: "contracts-e-sign", invoices: "invoicing", crm: "crm-contacts", finance: "finance-expenses" })[feat.id] && (
+              <span id={({ contracts: "contracts-e-sign", invoices: "invoicing", crm: "crm-contacts", finance: "finance-expenses" })[feat.id]} className="block scroll-mt-24" aria-hidden="true" />
+            )}
             <div className={`feat-inner${isReversed ? " feat-inner-reverse" : ""}`}>
               {/* Copy side */}
               <div>
@@ -504,7 +508,7 @@ export default function FeaturesPage() {
               </div>
             ))}
           </div>
-          <a href="/signup" style={{
+          <Link href="/signup" style={{
             background: C, color: "#fff", border: "none", cursor: "pointer",
             display: "inline-flex", alignItems: "center", gap: 8,
             borderRadius: 10, padding: "14px 32px", fontSize: 16, fontWeight: 700,
@@ -512,7 +516,7 @@ export default function FeaturesPage() {
           }}>
             Start your 30-day free trial
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </a>
+          </Link>
         </div>
       </section>
 
@@ -568,7 +572,7 @@ export default function FeaturesPage() {
           <p style={{ fontSize: 16, color: "rgba(255,255,255,0.7)", lineHeight: 1.72, maxWidth: 520, margin: "0 auto 32px", position: "relative" }}>
             Join freelancers who replaced 6+ subscriptions with one app that actually works together.
           </p>
-          <a href="/signup" style={{
+          <Link href="/signup" style={{
             background: "#fff", color: "#141B24", border: "none", cursor: "pointer",
             display: "inline-flex", alignItems: "center", gap: 8,
             borderRadius: 10, padding: "14px 32px", fontSize: 16, fontWeight: 700,
@@ -576,7 +580,7 @@ export default function FeaturesPage() {
           }}>
             Start your free trial
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </a>
+          </Link>
         </div>
       </section>
     </>

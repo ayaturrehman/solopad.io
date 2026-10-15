@@ -304,10 +304,10 @@ test("ContactFormModal has onBlur validation with touched state", () => {
 
 // === K. BUTTON CONSISTENCY ===
 
-test("InvoicesClient uses Button component (not raw button)", () => {
+test("InvoicesClient provides a semantic navigation link for new invoices", () => {
   const source = read("app/(app)/invoices/InvoicesClient.jsx");
-  assert.match(source, /import.*Button/);
-  assert.match(source, /<Button/);
+  assert.match(source, /import Link from "next\/link"/);
+  assert.match(source, /href="\/invoices\/new"/);
 });
 
 test("ProjectsClient uses Button component", () => {

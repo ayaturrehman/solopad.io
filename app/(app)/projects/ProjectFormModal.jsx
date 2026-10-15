@@ -130,7 +130,7 @@ function ContactPicker({ contacts, value, onChange, error, onBlur }) {
           <div className="border-b border-zinc-100 px-3 py-2">
             <div className="flex items-center gap-2">
               <Search className="h-3.5 w-3.5 shrink-0 text-zinc-400" />
-              <input
+              <input aria-label="Search by name, email, or company…"
                 ref={inputRef}
                 type="text"
                 value={search}
@@ -335,7 +335,7 @@ export default function ProjectFormModal({ open, onClose, project = null, contac
 
         <div className="flex flex-col gap-1.5">
           <label className="text-sm font-medium text-zinc-700">Description</label>
-          <textarea
+          <textarea aria-label="Optional project description…"
             value={form.description}
             onChange={(e) => set("description", e.target.value)}
             rows={3}

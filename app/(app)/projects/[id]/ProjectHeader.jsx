@@ -121,7 +121,7 @@ export default function ProjectHeader({ project, portalUrl, contacts = [] }) {
           </button>
           <div className="relative">
           <button
-            onClick={() => setShowMenu((v) => !v)}
+            aria-label="Project actions" aria-expanded={showMenu} onClick={() => setShowMenu((v) => !v)}
             className="rounded border border-zinc-200 p-2 hover:bg-zinc-50"
           >
             <MoreHorizontal className="h-4 w-4 text-zinc-500" />

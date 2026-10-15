@@ -53,6 +53,9 @@ function SignupContent() {
   const [loading, setLoading] = useState(false);
   const selectedPlan = isValidPlan(searchParams.get("plan")) ? searchParams.get("plan") : "starter";
   const plan = getPlan(selectedPlan);
+  const interval = searchParams.get("interval") === "yearly" ? "yearly" : "monthly";
+  const selectedPrice = interval === "yearly" ? plan.annualPrice : plan.price;
+  const selectedPeriod = interval === "yearly" ? "/yr" : plan.period;
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -62,7 +65,7 @@ function SignupContent() {
     const res = await fetch("/api/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password, plan: selectedPlan }),
+      body: JSON.stringify({ name, email, password, plan: selectedPlan, interval }),
     });
 
     const data = await res.json();
@@ -88,8 +91,8 @@ function SignupContent() {
           <h1 className="text-2xl font-bold text-zinc-900">Create your account</h1>
           <p className="mt-2 text-center text-sm text-zinc-500">
             Sign up free for SoloPad — invoicing, contracts, proposals, CRM, and AI
-            drafting for freelancers. {plan.name} plan selected · {plan.price}
-            {plan.period}.
+            drafting for freelancers. {plan.name} plan selected · {selectedPrice}
+            {selectedPeriod}.
           </p>
         </div>
 
@@ -101,8 +104,8 @@ function SignupContent() {
                 <p className="text-xs text-zinc-500">{plan.description}</p>
               </div>
               <span className="text-sm font-semibold text-zinc-900">
-                {plan.price}
-                {plan.period}
+                {selectedPrice}
+                {selectedPeriod}
               </span>
             </div>
             <div className="mt-3 flex flex-wrap gap-2">
@@ -112,7 +115,7 @@ function SignupContent() {
                 return (
                   <Link
                     key={planId}
-                    href={`/signup?plan=${planId}`}
+                    href={`/signup?plan=${planId}&interval=${interval}`}
                     className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
                       active ? "bg-zinc-900 text-white" : "bg-white text-zinc-600 hover:bg-zinc-100"
                     }`}

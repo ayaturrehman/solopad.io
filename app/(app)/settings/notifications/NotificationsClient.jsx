@@ -22,11 +22,12 @@ const NOTIFICATION_TYPES = [
   { key: "notifyTaskOverdue", label: "Task overdue", description: "When a task passes its due date" },
 ];
 
-function Toggle({ checked, onChange, disabled }) {
+function Toggle({ checked, onChange, disabled, label }) {
   return (
     <button
       type="button"
       role="switch"
+      aria-label={label}
       aria-checked={checked}
       disabled={disabled}
       onClick={() => onChange(!checked)}
@@ -52,11 +53,7 @@ function TemplateEditor({ template, onSave, onReset, saving }) {
   const [previewing, setPreviewing] = useState(false);
   const [dirty, setDirty] = useState(false);
 
-  useEffect(() => {
-    setSubject(template.subject);
-    setBody(template.body);
-    setDirty(false);
-  }, [template.subject, template.body]);
+
 
   function handleSubjectChange(val) {
     setSubject(val);
@@ -133,7 +130,7 @@ function TemplateEditor({ template, onSave, onReset, saving }) {
           {/* Subject */}
           <div>
             <label className="mb-1 block text-xs font-medium text-zinc-700">Subject line</label>
-            <input
+            <input aria-label="Email subject..."
               type="text"
               value={subject}
               onChange={(e) => handleSubjectChange(e.target.value)}
@@ -165,7 +162,7 @@ function TemplateEditor({ template, onSave, onReset, saving }) {
                 />
               </div>
             ) : (
-              <textarea
+              <textarea aria-label="<p>Hi {{clientName}},</p>..."
                 value={body}
                 onChange={(e) => handleBodyChange(e.target.value)}
                 rows={6}
@@ -372,7 +369,7 @@ export default function NotificationsClient({ settings: initialSettings, hasBusi
                 <p className="text-sm font-medium text-zinc-900">Overdue invoice reminders</p>
                 <p className="text-xs text-zinc-500">Send emails to clients when invoices are past due</p>
               </div>
-              <Toggle
+              <Toggle label="Overdue invoice reminders"
                 checked={settings.overdueRemindersEnabled}
                 onChange={(v) => updateSetting("overdueRemindersEnabled", v)}
               />
@@ -383,7 +380,7 @@ export default function NotificationsClient({ settings: initialSettings, hasBusi
                 <label className="mb-1 block text-xs font-medium text-zinc-700">
                   Re-send reminder every
                 </label>
-                <select
+                <select aria-label="Overdue Reminder Days"
                   value={settings.overdueReminderDays}
                   onChange={(e) => updateSetting("overdueReminderDays", parseInt(e.target.value, 10))}
                   className={selectClassName + " max-w-[200px]"}
@@ -406,7 +403,7 @@ export default function NotificationsClient({ settings: initialSettings, hasBusi
                 <p className="text-sm font-medium text-zinc-900">Pre-due payment reminders</p>
                 <p className="text-xs text-zinc-500">Send gentle reminders before the invoice due date</p>
               </div>
-              <Toggle
+              <Toggle label="Pre-due payment reminders"
                 checked={settings.preDueRemindersEnabled}
                 onChange={(v) => updateSetting("preDueRemindersEnabled", v)}
               />
@@ -456,7 +453,7 @@ export default function NotificationsClient({ settings: initialSettings, hasBusi
               <p className="text-sm font-medium text-zinc-900">Enable email notifications</p>
               <p className="text-xs text-zinc-500">Turn off to only receive in-app notifications</p>
             </div>
-            <Toggle
+            <Toggle label="Enable email notifications"
               checked={settings.emailNotifications}
               onChange={(v) => updateSetting("emailNotifications", v)}
             />
@@ -470,7 +467,7 @@ export default function NotificationsClient({ settings: initialSettings, hasBusi
                   <p className="text-sm font-medium text-zinc-900">{label}</p>
                   <p className="text-xs text-zinc-500">{description}</p>
                 </div>
-                <Toggle
+                <Toggle label={label}
                   checked={settings[key]}
                   onChange={(v) => updateSetting(key, v)}
                   disabled={!settings.emailNotifications}
@@ -499,7 +496,7 @@ export default function NotificationsClient({ settings: initialSettings, hasBusi
             <div className="space-y-2">
               {templates.map((t) => (
                 <TemplateEditor
-                  key={t.type}
+                  key={`${t.type}:${t.subject}:${t.body}`}
                   template={t}
                   onSave={saveTemplate}
                   onReset={resetTemplate}
@@ -523,7 +520,7 @@ export default function NotificationsClient({ settings: initialSettings, hasBusi
         <CardBody>
           <div className="rounded border border-zinc-200 bg-zinc-50 px-4 py-3">
             <p className="text-sm text-zinc-600">
-              In-app notifications are always enabled for all activity types. You'll see them in the notification bell when payments are received, invoices are viewed, and more.
+              In-app notifications are always enabled for all activity types. You&apos;ll see them in the notification bell when payments are received, invoices are viewed, and more.
             </p>
           </div>
         </CardBody>

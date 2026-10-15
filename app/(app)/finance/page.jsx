@@ -1,3 +1,4 @@
+import { isOutstandingInvoice } from "@/lib/invoice-status";
 import { Suspense } from "react";
 import { getSession } from "@/lib/session";
 import db from "@/lib/db";
@@ -124,7 +125,7 @@ export default async function FinancePage({ searchParams }) {
 
   // Outstanding = unpaid invoice amounts, minus any paid milestones
   const outstanding = invoices
-    .filter((i) => i.status !== "paid" && i.status !== "cancelled")
+    .filter(isOutstandingInvoice)
     .reduce((s, i) => {
       if (i.paymentPlans?.length > 0) {
         return s + i.paymentPlans.filter((m) => m.status !== "paid").reduce((ms, m) => ms + m.amount, 0);

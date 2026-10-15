@@ -1,3 +1,4 @@
+import Link from "next/link";
 export const metadata = {
   title: 'Plutio Alternative for Freelancers',
   description: 'Compare Plutio vs SoloPad. Better pricing, no client limits, AI drafting, and simpler freelance management. Switch to SoloPad for £5/mo.',
@@ -155,13 +156,13 @@ export default function PlutioAlternativePage() {
             marginBottom: '32px',
             fontSize: '14px',
           }}>
-            <a href="/" style={{ color: '#2563EB', textDecoration: 'none', fontWeight: '500' }}>
+            <Link href="/" style={{ color: '#2563EB', textDecoration: 'none', fontWeight: '500' }}>
               Home
-            </a>
+            </Link>
             <span style={{ color: '#999', margin: '0 8px' }}>/</span>
-            <a href="/compare" style={{ color: '#2563EB', textDecoration: 'none', fontWeight: '500' }}>
+            <Link href="/compare" style={{ color: '#2563EB', textDecoration: 'none', fontWeight: '500' }}>
               Compare
-            </a>
+            </Link>
             <span style={{ color: '#999', margin: '0 8px' }}>/</span>
             <span style={{ color: '#666' }}>Plutio Alternative</span>
           </nav>
@@ -192,7 +193,7 @@ export default function PlutioAlternativePage() {
             gap: '16px',
             flexWrap: 'wrap',
           }}>
-            <a href="https://app.solopad.io/signup" style={{
+            <Link href="/signup" style={{
               display: 'inline-block',
               padding: '12px 28px',
               background: '#2563EB',
@@ -208,7 +209,7 @@ export default function PlutioAlternativePage() {
             className="cta-primary"
             >
               Start Free Trial
-            </a>
+            </Link>
             <a href="#comparison" style={{
               display: 'inline-block',
               padding: '12px 28px',
@@ -575,7 +576,7 @@ export default function PlutioAlternativePage() {
             fontSize: '14px',
             marginTop: '32px',
           }}>
-            SoloPad is 4x cheaper. That's £240/year saved vs Plutio's Core plan at $228/year (rough USD-GBP equivalent).
+            SoloPad is 4x cheaper. That&apos;s £240/year saved vs Plutio&apos;s Core plan at $228/year (rough USD-GBP equivalent).
           </p>
         </div>
       </section>
@@ -605,7 +606,7 @@ export default function PlutioAlternativePage() {
             marginBottom: '32px',
             maxWidth: '700px',
           }}>
-            Plutio is a mature platform. We won't pretend it doesn't have strengths.
+            Plutio is a mature platform. We won&apos;t pretend it doesn&apos;t have strengths.
           </p>
 
           <div style={{
@@ -689,7 +690,7 @@ export default function PlutioAlternativePage() {
             marginBottom: '32px',
             maxWidth: '700px',
           }}>
-            SoloPad is built for the modern solo freelancer. These advantages matter if you're not a team.
+            SoloPad is built for the modern solo freelancer. These advantages matter if you&apos;re not a team.
           </p>
 
           <div style={{
@@ -856,7 +857,7 @@ export default function PlutioAlternativePage() {
             margin: '0 auto',
             lineHeight: '1.6',
           }}>
-            SoloPad makes freelance management simple. Start free, no credit card required. Import your Plutio data whenever you're ready.
+            SoloPad makes freelance management simple. Start free, no credit card required. Import your Plutio data whenever you&apos;re ready.
           </p>
 
           <div className="fade-up fade-up-delay-2" style={{
@@ -866,7 +867,7 @@ export default function PlutioAlternativePage() {
             flexWrap: 'wrap',
             opacity: 0,
           }}>
-            <a href="https://app.solopad.io/signup" style={{
+            <Link href="/signup" style={{
               display: 'inline-block',
               padding: '14px 32px',
               background: 'white',
@@ -882,7 +883,7 @@ export default function PlutioAlternativePage() {
             className="cta-light"
             >
               Start Free Trial
-            </a>
+            </Link>
             <a href="mailto:support@solopad.io" style={{
               display: 'inline-block',
               padding: '14px 32px',
@@ -918,7 +919,7 @@ export default function PlutioAlternativePage() {
           margin: '0 auto',
           lineHeight: '1.6',
         }}>
-          Pricing accurate as of March 2026. SoloPad and Plutio pricing may change. All feature comparisons based on official documentation. Learn more about <a href="/" style={{ color: '#2563EB', textDecoration: 'none' }}>SoloPad features</a>.
+          Pricing accurate as of March 2026. SoloPad and Plutio pricing may change. All feature comparisons based on official documentation. Learn more about <Link href="/" style={{ color: '#2563EB', textDecoration: 'none' }}>SoloPad features</Link>.
         </p>
       </section>
     </>
