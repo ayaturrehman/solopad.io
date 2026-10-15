@@ -1,5 +1,6 @@
 "use client";
 
+import { useUnsavedChanges } from "@/lib/use-unsaved-changes";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -27,6 +28,7 @@ function emptyMilestone() {
 
 export default function InvoiceEditClient({ invoice, projects, services }) {
   const router = useRouter();
+  const { markDirty, markSaved } = useUnsavedChanges();
 
   const [invoiceNumber, setInvoiceNumber] = useState(invoice.invoiceNumber);
   const [projectId, setProjectId] = useState(invoice.projectId);
@@ -72,14 +74,17 @@ export default function InvoiceEditClient({ invoice, projects, services }) {
   }
 
   function addLine() {
+    markDirty();
     setLineItems((prev) => [...prev, { serviceId: null, description: "", quantity: 1, rate: "", amount: 0 }]);
   }
 
   function removeLine(i) {
+    markDirty();
     setLineItems((prev) => prev.filter((_, idx) => idx !== i));
   }
 
   function applyService(svc) {
+    markDirty();
     setLineItems((prev) => [
       ...prev,
       { serviceId: svc.id, description: svc.name, quantity: 1, rate: svc.defaultRate, amount: svc.defaultRate },
@@ -97,12 +102,14 @@ export default function InvoiceEditClient({ invoice, projects, services }) {
   const total = Math.max(0, subtotal + taxAmt - discAmt);
 
   function updateMilestone(i, key, value) {
+    markDirty();
     setMilestones((prev) => prev.map((m, idx) => idx === i ? { ...m, [key]: value } : m));
   }
   function addMilestone() { setMilestones((prev) => [...prev, emptyMilestone()]); }
   function removeMilestone(i) { setMilestones((prev) => prev.filter((_, idx) => idx !== i)); }
 
   function splitEqually(n) {
+    markDirty();
     const per = n > 0 ? parseFloat((total / n).toFixed(2)) : 0;
     setMilestones(Array.from({ length: n }, (_, i) => ({
       label: `Installment ${i + 1}`,
@@ -167,6 +174,7 @@ export default function InvoiceEditClient({ invoice, projects, services }) {
       let data;
       try { data = await res.json(); } catch { throw new Error(`Server error (${res.status})`); }
       if (!res.ok) throw new Error(data?.error || "Failed to save invoice.");
+      markSaved();
       router.push(`/invoices/${invoice.id}`);
     } catch (err) {
       setError(err.message);
@@ -177,7 +185,7 @@ export default function InvoiceEditClient({ invoice, projects, services }) {
   const selectedProject = projects.find((p) => p.id === projectId);
 
   return (
-    <div className="px-4 py-4 md:px-6">
+    <div onChangeCapture={markDirty} className="px-4 py-4 md:px-6">
       {/* Top bar */}
       <div className="mb-6 flex items-center justify-between">
         <Link

@@ -64,14 +64,17 @@ export default function InvoiceBuilderClient({ projects, services, user }) {
   }
 
   function addLine() {
+    markDirty();
     setLineItems((prev) => [...prev, { serviceId: null, description: "", quantity: 1, rate: "", amount: 0 }]);
   }
 
   function removeLine(i) {
+    markDirty();
     setLineItems((prev) => prev.filter((_, idx) => idx !== i));
   }
 
   function applyService(svc) {
+    markDirty();
     setLineItems((prev) => [
       ...prev,
       { serviceId: svc.id, description: svc.name, quantity: 1, rate: svc.defaultRate, amount: svc.defaultRate },
@@ -90,18 +93,22 @@ export default function InvoiceBuilderClient({ projects, services, user }) {
 
   // Milestone helpers
   function updateMilestone(i, key, value) {
+    markDirty();
     setMilestones((prev) => prev.map((m, idx) => idx === i ? { ...m, [key]: value } : m));
   }
 
   function addMilestone() {
+    markDirty();
     setMilestones((prev) => [...prev, emptyMilestone()]);
   }
 
   function removeMilestone(i) {
+    markDirty();
     setMilestones((prev) => prev.filter((_, idx) => idx !== i));
   }
 
   function splitEqually(n) {
+    markDirty();
     const perInstallment = n > 0 ? parseFloat((total / n).toFixed(2)) : 0;
     const newMilestones = Array.from({ length: n }, (_, i) => ({
       label: `Installment ${i + 1}`,
@@ -370,7 +377,7 @@ export default function InvoiceBuilderClient({ projects, services, user }) {
             {/* Lump sum vs Installments toggle */}
             <div className="mb-5 flex gap-2">
               <button
-                onClick={() => setPaymentType("lump_sum")}
+                onClick={() => { markDirty(); setPaymentType("lump_sum"); }}
                 className={`flex-1 rounded border py-2.5 text-sm font-medium transition-colors ${
                   paymentType === "lump_sum"
                     ? "border-zinc-900 bg-zinc-900 text-white"
@@ -380,7 +387,7 @@ export default function InvoiceBuilderClient({ projects, services, user }) {
                 Lump sum
               </button>
               <button
-                onClick={() => setPaymentType("installments")}
+                onClick={() => { markDirty(); setPaymentType("installments"); }}
                 className={`flex-1 rounded border py-2.5 text-sm font-medium transition-colors ${
                   paymentType === "installments"
                     ? "border-zinc-900 bg-zinc-900 text-white"
