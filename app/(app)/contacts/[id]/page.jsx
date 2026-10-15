@@ -1,3 +1,4 @@
+import { getBusinessCurrency } from "@/lib/business-currency";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -140,6 +141,7 @@ function EmptyState({ title, description, action }) {
 }
 
 function OverviewTab({
+  currency,
   companyAddress,
   contact,
   latestProjectUpdate,
@@ -199,7 +201,7 @@ function OverviewTab({
               <MetricRow label="Lead source" value={contact.source} />
               <MetricRow
                 label="Est. value"
-                value={typeof contact.value === "number" ? formatCurrency(contact.value) : null}
+                value={typeof contact.value === "number" ? formatCurrency(contact.value, currency) : null}
               />
               <MetricRow label="Created" value={formatDate(contact.createdAt)} />
               <MetricRow label="Last updated" value={formatDate(contact.updatedAt)} />
@@ -325,6 +327,7 @@ export default async function ContactDetailPage({ params, searchParams }) {
   const session = await getSession();
   if (!session?.user) redirect("/login");
 
+  const currency = await getBusinessCurrency(session);
   const filter = await getTenantFilter(session);
 
   const contact = await db.contact.findFirst({
@@ -474,6 +477,7 @@ export default async function ContactDetailPage({ params, searchParams }) {
 
       {tab === "overview" && (
         <OverviewTab
+          currency={currency}
           companyAddress={companyAddress}
           contact={contact}
           latestProjectUpdate={latestProjectUpdate}

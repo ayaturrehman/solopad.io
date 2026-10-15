@@ -1,3 +1,4 @@
+import { getBusinessCurrency } from "@/lib/business-currency";
 import { Suspense } from "react";
 import { cookies } from "next/headers";
 import { getSession } from "@/lib/session";
@@ -18,6 +19,7 @@ export default async function ContactsPage({ searchParams }) {
   const session = await getSession();
   if (!session?.user) redirect("/login");
 
+  const currency = await getBusinessCurrency(session);
   const params = await searchParams;
   const filter = await getTenantFilter(session);
   const query = typeof params?.q === "string" ? params.q.trim() : "";
@@ -88,6 +90,7 @@ export default async function ContactsPage({ searchParams }) {
   return (
     <Suspense fallback={null}>
       <ContactsTable
+        currency={currency}
         contacts={contacts}
         counts={{
           all: allCount,
