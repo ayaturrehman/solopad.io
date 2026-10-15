@@ -75,7 +75,7 @@ export async function POST(req) {
     }
   } catch (err) {
     console.error(`[Billing Webhook] Error in ${event.type}:`, err);
-    return NextResponse.json({ received: true, error: err.message });
+    return NextResponse.json({ error: "Webhook processing failed" }, { status: 500 });
   }
 
   // Record only after successful handling so failed events can be retried.
@@ -137,6 +137,9 @@ async function handleSubscriptionDeleted(sub) {
   });
   if (!subscription) return;
 
+  // A delayed deletion for a previous subscription must not revoke the new one.
+  if (subscription.stripeSubscriptionId !== sub.id) return;
+
   await db.subscription.update({
     where: { id: subscription.id },
     data: {
@@ -145,6 +148,9 @@ async function handleSubscriptionDeleted(sub) {
       stripeSubscriptionId: null,
       stripePriceId: null,
       cancelAtPeriodEnd: false,
+      currentPeriodStart: null,
+      currentPeriodEnd: null,
+      trialEnd: null,
     },
   });
 

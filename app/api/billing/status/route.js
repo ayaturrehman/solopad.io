@@ -102,16 +102,21 @@ async function reconcileSubscriptionFromStripe(subscription) {
     }
   }
 
-  if (!stripeSub) {
+  // Retrieving an old canceled subscription succeeds. Still search the
+  // customer for a replacement rather than remaining stuck on that record.
+  if (!stripeSub || !["active", "trialing"].includes(stripeSub.status)) {
     try {
       const list = await stripe.subscriptions.list({
         customer: subscription.stripeCustomerId,
         status: "all",
         limit: 10,
       });
-      stripeSub = pickBestSubscription(list.data || []);
+      stripeSub = pickBestSubscription([
+        ...(list.data || []),
+        ...(stripeSub ? [stripeSub] : []),
+      ]);
     } catch {
-      stripeSub = null;
+      // Preserve the retrieved subscription if listing temporarily fails.
     }
   }
 
