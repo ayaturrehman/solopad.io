@@ -46,7 +46,7 @@ export async function GET() {
     const [stripeInvoices, upcomingResult, customerResult] = await Promise.all([
       stripe.invoices.list({ customer: customerId, limit: 20 }),
       subscription.stripeSubscriptionId && subscription.status !== "canceled"
-        ? stripe.invoices.retrieveUpcoming({ customer: customerId }).catch(() => null)
+        ? stripe.invoices.createPreview({ customer: customerId, subscription: subscription.stripeSubscriptionId }).catch(() => null)
         : Promise.resolve(null),
       Promise.resolve(customerCheck), // already fetched above
     ]);
