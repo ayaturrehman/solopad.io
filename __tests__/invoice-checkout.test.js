@@ -59,3 +59,9 @@ it('renders legacy and current line amounts without multiplying a saved line tot
   expect(invoiceLineAmounts({ quantity: 1.5, unitPrice: 100 })).toEqual({ quantity: 1.5, unitPrice: 100, amount: 150 });
   expect(invoiceLineAmounts({ quantity: 2, amount: 100 })).toEqual({ quantity: 2, unitPrice: 50, amount: 100 });
 });
+
+it('uses Stripe-compatible integer amounts for UGX and ISK', () => {
+  expect(invoicePaymentAmount({ currency: 'UGX', total: 5 }).amount).toBe(500);
+  expect(invoicePaymentAmount({ currency: 'ISK', total: 5 }).amount).toBe(500);
+  expect(() => invoicePaymentAmount({ currency: 'UGX', total: 5.25 })).toThrow();
+});
