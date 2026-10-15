@@ -221,7 +221,7 @@ function BillingContent({ plan: initialPlan, billingStatus: initialBillingStatus
         </CardHeader>
         <CardBody className="space-y-4">
           {/* Plan + Status row */}
-          <div className="flex items-start justify-between gap-4 rounded-lg border border-zinc-200 p-5">
+          <div className="flex flex-col gap-4 rounded-lg border border-zinc-200 p-5 sm:flex-row sm:items-start sm:justify-between">
             <div className="flex-1">
               <div className="flex items-center gap-2.5">
                 <h3 className="text-lg font-semibold text-zinc-900 capitalize">{plan} Plan</h3>

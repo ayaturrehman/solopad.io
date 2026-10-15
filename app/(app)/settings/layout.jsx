@@ -64,13 +64,13 @@ export default function SettingsLayout({ children }) {
 
       <div className="grid gap-6 lg:grid-cols-[220px_minmax(0,1fr)]">
         {/* Sidebar navigation */}
-        <nav className="space-y-1">
+        <nav aria-label="Settings" className="flex gap-1 overflow-x-auto pb-2 lg:flex-col lg:gap-1 lg:overflow-visible lg:pb-0">
           {settingsNav.map(({ href, label, icon: Icon }) => (
             <Link
               key={href}
               href={href}
               className={cn(
-                "flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                "flex min-h-11 shrink-0 items-center gap-2.5 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium transition-colors",
                 isActive(href)
                   ? "bg-zinc-900 text-white"
                   : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
