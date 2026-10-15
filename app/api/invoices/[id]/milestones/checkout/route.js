@@ -75,7 +75,7 @@ export async function POST(req, { params }) {
       customer_email: invoice.project?.contact?.email || undefined,
       metadata: { invoiceId, milestoneId },
       success_url: `${process.env.NEXT_PUBLIC_APP_URL}/payment/success?invoiceId=${invoiceId}&milestone=${milestoneId}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/payment/cancel`,
+      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/payment/cancel?returnTo=${encodeURIComponent(`/p/${invoice.project.portalToken}?tab=invoices`)}`,
     };
 
     // Route to freelancer's connected Stripe account
