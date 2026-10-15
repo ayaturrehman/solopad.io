@@ -83,7 +83,6 @@ function BillingContent({ plan: initialPlan, billingStatus: initialBillingStatus
     }
 
     postCheckoutSyncAttemptedRef.current = true;
-    setPostCheckoutSyncing(true);
 
     let attempts = 0;
     let timer;
@@ -121,7 +120,10 @@ function BillingContent({ plan: initialPlan, billingStatus: initialBillingStatus
       timer = setTimeout(syncStatus, 1500);
     };
 
-    timer = setTimeout(syncStatus, 800);
+    timer = setTimeout(() => {
+      setPostCheckoutSyncing(true);
+      syncStatus();
+    }, 800);
 
     return () => {
       cancelled = true;
@@ -146,7 +148,7 @@ function BillingContent({ plan: initialPlan, billingStatus: initialBillingStatus
       try {
         const res = await fetch("/api/billing/portal", { method: "POST" });
         const data = await res.json();
-        if (data.url) { window.location.href = data.url; return; }
+        if (data.url) { window.location.assign(data.url); return; }
       } catch {}
       setSavingPlan(false);
       return;
@@ -163,10 +165,10 @@ function BillingContent({ plan: initialPlan, billingStatus: initialBillingStatus
       if (data.updated) {
         setPlan(nextPlan);
         setBillingStatus((prev) => ({ ...prev, plan: nextPlan }));
-        window.location.href = data.url;
+        window.location.assign(data.url);
         return;
       }
-      if (data.url) { window.location.href = data.url; return; }
+      if (data.url) { window.location.assign(data.url); return; }
       if (data.error) alert(data.error);
     } catch {
       alert("Could not start checkout. Please try again.");
@@ -179,7 +181,7 @@ function BillingContent({ plan: initialPlan, billingStatus: initialBillingStatus
     try {
       const res = await fetch("/api/billing/portal", { method: "POST" });
       const data = await res.json();
-      if (data.url) { window.location.href = data.url; return; }
+      if (data.url) { window.location.assign(data.url); return; }
       // If portal fails for trial users, redirect to checkout for current plan instead
       if (isTrialing) {
         const checkoutRes = await fetch("/api/billing/checkout", {
@@ -188,7 +190,7 @@ function BillingContent({ plan: initialPlan, billingStatus: initialBillingStatus
           body: JSON.stringify({ plan, interval }),
         });
         const checkoutData = await checkoutRes.json();
-        if (checkoutData.url) { window.location.href = checkoutData.url; return; }
+        if (checkoutData.url) { window.location.assign(checkoutData.url); return; }
       }
       alert(data.error || "Could not open billing portal.");
     } catch {

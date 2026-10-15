@@ -100,7 +100,7 @@ export default function ProposalStartPicker({ projects, user, defaultTemplate, r
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-xl font-bold text-zinc-900">New Proposal</h1>
-          <p className="mt-1 text-sm text-zinc-500">Choose how you'd like to start</p>
+          <p className="mt-1 text-sm text-zinc-500">Choose how you&apos;d like to start</p>
         </div>
 
         {/* 3 options */}

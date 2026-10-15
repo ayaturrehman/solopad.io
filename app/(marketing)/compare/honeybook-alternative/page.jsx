@@ -1,3 +1,4 @@
+import Link from "next/link";
 export const metadata = {
   title: 'Best HoneyBook Alternative for Freelancers (2026)',
   description:
@@ -194,13 +195,13 @@ export default function HoneybookAlternativePage() {
                 gap: '4px',
               }}
             >
-              <a href="/" style={{ color: '#2563EB', textDecoration: 'none' }}>
+              <Link href="/" style={{ color: '#2563EB', textDecoration: 'none' }}>
                 Home
-              </a>
+              </Link>
               <span>/</span>
-              <a href="/compare" style={{ color: '#2563EB', textDecoration: 'none' }}>
+              <Link href="/compare" style={{ color: '#2563EB', textDecoration: 'none' }}>
                 Compare
-              </a>
+              </Link>
               <span>/</span>
               <span>HoneyBook Alternative</span>
             </nav>
@@ -280,7 +281,7 @@ export default function HoneybookAlternativePage() {
             }}
           >
             <p>
-              HoneyBook was built for studios and agencies. Team collaboration. Complex workflows. Booking pages that close deals. Those features are powerful. But as a solo freelancer, I was paying for features I never used. I didn't have a team to collaborate with. I didn't need sophisticated booking flows. I just needed to send invoices, manage clients, and track my time.
+              HoneyBook was built for studios and agencies. Team collaboration. Complex workflows. Booking pages that close deals. Those features are powerful. But as a solo freelancer, I was paying for features I never used. I didn&apos;t have a team to collaborate with. I didn&apos;t need sophisticated booking flows. I just needed to send invoices, manage clients, and track my time.
             </p>
           </div>
 
@@ -586,7 +587,7 @@ export default function HoneybookAlternativePage() {
               fontWeight: '500',
             }}
           >
-            <strong>You save £{annualSavings}/year</strong> by switching to SoloPad. That's enough for groceries, a client dinner, or reinvesting in your business.
+            <strong>You save £{annualSavings}/year</strong> by switching to SoloPad. That&apos;s enough for groceries, a client dinner, or reinvesting in your business.
           </div>
 
           <p
@@ -629,7 +630,7 @@ export default function HoneybookAlternativePage() {
               marginBottom: '20px',
             }}
           >
-            Honesty matters. HoneyBook isn't perfect, but it does some things really well.
+            Honesty matters. HoneyBook isn&apos;t perfect, but it does some things really well.
           </p>
 
           <ul
@@ -653,7 +654,7 @@ export default function HoneybookAlternativePage() {
               >
                 +
               </span>
-              <strong style={{ color: '#111' }}>Automation engine:</strong> HoneyBook's automation rules are more sophisticated. Conditional logic, multi-step workflows, and complex triggers.
+              <strong style={{ color: '#111' }}>Automation engine:</strong> HoneyBook&apos;s automation rules are more sophisticated. Conditional logic, multi-step workflows, and complex triggers.
             </li>
             <li style={{ marginBottom: '16px', paddingLeft: '24px', position: 'relative' }}>
               <span
@@ -666,7 +667,7 @@ export default function HoneybookAlternativePage() {
               >
                 +
               </span>
-              <strong style={{ color: '#111' }}>Booking pages:</strong> HoneyBook's calendar scheduling and booking pages are beautiful and convert well. Great if you need to close deals faster.
+              <strong style={{ color: '#111' }}>Booking pages:</strong> HoneyBook&apos;s calendar scheduling and booking pages are beautiful and convert well. Great if you need to close deals faster.
             </li>
             <li style={{ marginBottom: '16px', paddingLeft: '24px', position: 'relative' }}>
               <span
@@ -692,7 +693,7 @@ export default function HoneybookAlternativePage() {
               >
                 +
               </span>
-              <strong style={{ color: '#111' }}>Brand history:</strong> HoneyBook's been around longer. More case studies, bigger community, more content.
+              <strong style={{ color: '#111' }}>Brand history:</strong> HoneyBook&apos;s been around longer. More case studies, bigger community, more content.
             </li>
           </ul>
         </section>
@@ -738,7 +739,7 @@ export default function HoneybookAlternativePage() {
               >
                 +
               </span>
-              <strong style={{ color: '#111' }}>Price:</strong> £5/month vs $36/month. That's £660/year in your pocket, not HoneyBook's.
+              <strong style={{ color: '#111' }}>Price:</strong> £5/month vs $36/month. That&apos;s £660/year in your pocket, not HoneyBook&apos;s.
             </li>
             <li style={{ marginBottom: '16px', paddingLeft: '24px', position: 'relative' }}>
               <span
@@ -751,7 +752,7 @@ export default function HoneybookAlternativePage() {
               >
                 +
               </span>
-              <strong style={{ color: '#111' }}>AI Drafting:</strong> Write contracts, proposals, and emails in seconds. HoneyBook doesn't have this.
+              <strong style={{ color: '#111' }}>AI Drafting:</strong> Write contracts, proposals, and emails in seconds. HoneyBook doesn&apos;t have this.
             </li>
             <li style={{ marginBottom: '16px', paddingLeft: '24px', position: 'relative' }}>
               <span
@@ -764,7 +765,7 @@ export default function HoneybookAlternativePage() {
               >
                 +
               </span>
-              <strong style={{ color: '#111' }}>Time Tracking:</strong> Built-in time tracking for hourly work. HoneyBook doesn't offer this at all.
+              <strong style={{ color: '#111' }}>Time Tracking:</strong> Built-in time tracking for hourly work. HoneyBook doesn&apos;t offer this at all.
             </li>
             <li style={{ marginBottom: '16px', paddingLeft: '24px', position: 'relative' }}>
               <span
@@ -777,7 +778,7 @@ export default function HoneybookAlternativePage() {
               >
                 +
               </span>
-              <strong style={{ color: '#111' }}>Simplicity:</strong> Built for solo freelancers. No feature overload. Everything you need, nothing you don't.
+              <strong style={{ color: '#111' }}>Simplicity:</strong> Built for solo freelancers. No feature overload. Everything you need, nothing you don&apos;t.
             </li>
             <li style={{ paddingLeft: '24px', position: 'relative' }}>
               <span
@@ -790,7 +791,7 @@ export default function HoneybookAlternativePage() {
               >
                 +
               </span>
-              <strong style={{ color: '#111' }}>No feature gates:</strong> Everything included at one price. No "upgrade to add team members" or "pay extra for X."
+              <strong style={{ color: '#111' }}>No feature gates:</strong> Everything included at one price. No &quot;upgrade to add team members&quot; or &quot;pay extra for X.&quot;
             </li>
           </ul>
         </section>
@@ -918,7 +919,7 @@ export default function HoneybookAlternativePage() {
             Try SoloPad free for 30 days. No credit card. No commitment. Just sign up and start managing your freelance business better.
           </p>
 
-          <a
+          <Link
             href="/signup"
             style={{
               display: 'inline-block',
@@ -936,7 +937,7 @@ export default function HoneybookAlternativePage() {
             className="cta-primary"
           >
             Start Free Trial
-          </a>
+          </Link>
 
           <p
             style={{
@@ -945,7 +946,7 @@ export default function HoneybookAlternativePage() {
               margin: '20px 0 0 0',
             }}
           >
-            You'll save £660/year compared to HoneyBook Starter.
+            You&apos;ll save £660/year compared to HoneyBook Starter.
           </p>
         </section>
       </main>

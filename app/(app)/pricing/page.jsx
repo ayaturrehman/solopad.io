@@ -46,7 +46,7 @@ export default function PricingPage() {
       });
       const data = await res.json();
       if (data.url) {
-        window.location.href = data.url;
+        window.location.assign(data.url);
         return;
       }
       alert(data.error || "Could not start checkout.");

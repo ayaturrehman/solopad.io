@@ -1,3 +1,4 @@
+import Link from "next/link";
 export const metadata = {
   title: "Dubsado Alternative — £5/mo Freelance Management",
   description: "Compare Dubsado vs SoloPad. Save £180/year with SoloPad's all-in-one freelance management tool. Invoices, contracts, proposals, CRM, time tracking & more.",
@@ -170,9 +171,9 @@ export default function DubsadoAlternativePage() {
             fontSize: "14px",
             color: "#666"
           }}>
-            <a href="/" style={{ color: "#2563EB", textDecoration: "none" }}>Home</a>
+            <Link href="/" style={{ color: "#2563EB", textDecoration: "none" }}>Home</Link>
             <span>/</span>
-            <a href="/compare" style={{ color: "#2563EB", textDecoration: "none" }}>Compare</a>
+            <Link href="/compare" style={{ color: "#2563EB", textDecoration: "none" }}>Compare</Link>
             <span>/</span>
             <span style={{ color: "#111" }}>Dubsado Alternative</span>
           </nav>
@@ -234,19 +235,19 @@ export default function DubsadoAlternativePage() {
             color: "#111"
           }}>
             <p style={{ margin: "0" }}>
-              Dubsado is a powerful tool, but it's built for agencies and complex workflows. If you're a solo freelancer, you're paying for features you'll never use and spending hours learning a confusing interface.
+              Dubsado is a powerful tool, but it&apos;s built for agencies and complex workflows. If you&apos;re a solo freelancer, you&apos;re paying for features you&apos;ll never use and spending hours learning a confusing interface.
             </p>
 
             <p style={{ margin: "0" }}>
-              The learning curve is steep. Dubsado's documentation is scattered, and the setup process involves navigating nested settings, custom fields, and workflow configurations. Most freelancers give up halfway through onboarding. SoloPad takes minutes to set up. Everything is where you'd expect it to be.
+              The learning curve is steep. Dubsado&apos;s documentation is scattered, and the setup process involves navigating nested settings, custom fields, and workflow configurations. Most freelancers give up halfway through onboarding. SoloPad takes minutes to set up. Everything is where you&apos;d expect it to be.
             </p>
 
             <p style={{ margin: "0" }}>
-              Pricing adds up fast. Dubsado's free tier caps you at 3 clients. Beyond that, the Starter plan costs $20/month, and the Premier plan jumps to $40/month. Add extra users at $25–60/month each, and you're quickly paying more than you earn on smaller projects. SoloPad costs £5/month, regardless of how many clients you have.
+              Pricing adds up fast. Dubsado&apos;s free tier caps you at 3 clients. Beyond that, the Starter plan costs $20/month, and the Premier plan jumps to $40/month. Add extra users at $25–60/month each, and you&apos;re quickly paying more than you earn on smaller projects. SoloPad costs £5/month, regardless of how many clients you have.
             </p>
 
             <p style={{ margin: "0" }}>
-              Dubsado is overkill for most solo work. You don't need custom forms, advanced workflow automations, or a white-label client portal. You need to send invoices, track time, and stay organized. SoloPad does exactly that—without the bloat.
+              Dubsado is overkill for most solo work. You don&apos;t need custom forms, advanced workflow automations, or a white-label client portal. You need to send invoices, track time, and stay organized. SoloPad does exactly that—without the bloat.
             </p>
           </div>
         </section>
@@ -523,7 +524,7 @@ export default function DubsadoAlternativePage() {
                 lineHeight: "1.6",
                 margin: "0"
               }}>
-                If you need complex conditional workflows, Dubsado's automation engine is more powerful. It can trigger actions based on multiple criteria.
+                If you need complex conditional workflows, Dubsado&apos;s automation engine is more powerful. It can trigger actions based on multiple criteria.
               </p>
             </div>
             <div>
@@ -561,7 +562,7 @@ export default function DubsadoAlternativePage() {
                 lineHeight: "1.6",
                 margin: "0"
               }}>
-                Fully customizable white-label options. Good if you're reselling services or want a branded experience for premium clients.
+                Fully customizable white-label options. Good if you&apos;re reselling services or want a branded experience for premium clients.
               </p>
             </div>
             <div>
@@ -580,7 +581,7 @@ export default function DubsadoAlternativePage() {
                 lineHeight: "1.6",
                 margin: "0"
               }}>
-                Dubsado's been around longer. The community is larger, there's more third-party integrations, and the platform is battle-tested.
+                Dubsado&apos;s been around longer. The community is larger, there&apos;s more third-party integrations, and the platform is battle-tested.
               </p>
             </div>
           </div>
@@ -620,7 +621,7 @@ export default function DubsadoAlternativePage() {
                 lineHeight: "1.6",
                 margin: "0"
               }}>
-                You're ready to invoice in minutes, not hours. No confusing settings menus or documentation hunts. Everything is intuitive from day one.
+                You&apos;re ready to invoice in minutes, not hours. No confusing settings menus or documentation hunts. Everything is intuitive from day one.
               </p>
             </div>
             <div>
@@ -639,7 +640,7 @@ export default function DubsadoAlternativePage() {
                 lineHeight: "1.6",
                 margin: "0"
               }}>
-                Generate proposal copy, contract templates, and invoice descriptions with AI. Dubsado doesn't have this. It saves hours of writing.
+                Generate proposal copy, contract templates, and invoice descriptions with AI. Dubsado doesn&apos;t have this. It saves hours of writing.
               </p>
             </div>
             <div>
@@ -658,7 +659,7 @@ export default function DubsadoAlternativePage() {
                 lineHeight: "1.6",
                 margin: "0"
               }}>
-                Track time by project or client without integrations. Dubsado doesn't offer time tracking natively. You'll need a separate tool.
+                Track time by project or client without integrations. Dubsado doesn&apos;t offer time tracking natively. You&apos;ll need a separate tool.
               </p>
             </div>
             <div>
@@ -779,7 +780,7 @@ export default function DubsadoAlternativePage() {
           }}>
             Try SoloPad free for 30 days. No credit card required. Set up takes less than 5 minutes.
           </p>
-          <a
+          <Link
             href="/signup"
             style={{
               display: "inline-block",
@@ -797,7 +798,7 @@ export default function DubsadoAlternativePage() {
             className="cta-primary"
           >
             Start free trial
-          </a>
+          </Link>
         </section>
 
       </div>

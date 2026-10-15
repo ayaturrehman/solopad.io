@@ -88,7 +88,7 @@ export default function ContractStartPicker({ projects, contacts, recentContract
       <div className="mx-auto max-w-2xl px-4 py-10 md:px-6">
         <div className="mb-8">
           <h1 className="text-xl font-bold text-zinc-900">New Contract</h1>
-          <p className="mt-1 text-sm text-zinc-500">Choose how you'd like to start</p>
+          <p className="mt-1 text-sm text-zinc-500">Choose how you&apos;d like to start</p>
         </div>
 
         <div className="grid gap-3 sm:grid-cols-3">

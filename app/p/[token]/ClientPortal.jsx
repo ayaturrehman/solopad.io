@@ -126,7 +126,7 @@ function InvoiceCard({ invoice }) {
           setLoading(false);
           return;
         }
-        window.location.href = url;
+        window.location.assign(url);
       } catch {
         setError("Invalid payment link. Please try again.");
         setLoading(false);
@@ -293,7 +293,7 @@ function MilestoneList({ milestones, invoiceId, currency }) {
         return;
       }
       if (data.url) {
-        window.location.href = data.url;
+        window.location.assign(data.url);
         return;
       }
       setError("No payment link received.");

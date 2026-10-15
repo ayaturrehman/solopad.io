@@ -1,3 +1,4 @@
+import Link from "next/link";
 export const metadata = {
   title: 'Moxie Alternative for Freelancers',
   description: 'Compare SoloPad to Moxie. We offer all the features you need at £5/mo including AI drafting, contracts, proposals, invoicing, CRM, time tracking, and more.',
@@ -168,9 +169,9 @@ export default function MoxieAlternativePage() {
         <div style={{ maxWidth: '1080px', margin: '0 auto' }}>
           {/* Breadcrumb */}
           <div style={{ marginBottom: '30px', fontSize: '14px', opacity: 0.9 }}>
-            <a href="/" style={{ color: 'rgba(255,255,255,0.8)', textDecoration: 'none' }}>Home</a>
+            <Link href="/" style={{ color: 'rgba(255,255,255,0.8)', textDecoration: 'none' }}>Home</Link>
             {' / '}
-            <a href="/compare" style={{ color: 'rgba(255,255,255,0.8)', textDecoration: 'none' }}>Compare</a>
+            <Link href="/compare" style={{ color: 'rgba(255,255,255,0.8)', textDecoration: 'none' }}>Compare</Link>
             {' / '}
             <span>Moxie Alternative</span>
           </div>
@@ -307,9 +308,9 @@ export default function MoxieAlternativePage() {
                   </li>
                 ))}
               </ul>
-              <a href="/signup" style={{ display: 'block', backgroundColor: '#2563EB', color: 'white', padding: '12px 24px', borderRadius: '6px', textDecoration: 'none', fontWeight: '600', fontSize: '14px', textAlign: 'center' }}>
+              <Link href="/signup" style={{ display: 'block', backgroundColor: '#2563EB', color: 'white', padding: '12px 24px', borderRadius: '6px', textDecoration: 'none', fontWeight: '600', fontSize: '14px', textAlign: 'center' }}>
                 Start Free Trial
-              </a>
+              </Link>
             </div>
 
             {/* Moxie Pricing */}
@@ -479,9 +480,9 @@ export default function MoxieAlternativePage() {
           </p>
           
           <div style={{ display: 'flex', gap: '15px', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <a href="/signup" style={{ backgroundColor: 'white', color: '#2563EB', padding: '14px 32px', borderRadius: '6px', textDecoration: 'none', fontWeight: '600', fontSize: '16px' }}>
+            <Link href="/signup" style={{ backgroundColor: 'white', color: '#2563EB', padding: '14px 32px', borderRadius: '6px', textDecoration: 'none', fontWeight: '600', fontSize: '16px' }}>
               Start Free Trial
-            </a>
+            </Link>
             <a href="https://calendar.app.google.com/calendar/u/0/r" style={{ backgroundColor: 'rgba(255,255,255,0.2)', color: 'white', padding: '14px 32px', borderRadius: '6px', textDecoration: 'none', fontWeight: '600', fontSize: '16px', border: '1px solid rgba(255,255,255,0.4)' }}>
               Book a Demo
             </a>

@@ -53,11 +53,7 @@ function TemplateEditor({ template, onSave, onReset, saving }) {
   const [previewing, setPreviewing] = useState(false);
   const [dirty, setDirty] = useState(false);
 
-  useEffect(() => {
-    setSubject(template.subject);
-    setBody(template.body);
-    setDirty(false);
-  }, [template.subject, template.body]);
+
 
   function handleSubjectChange(val) {
     setSubject(val);
@@ -500,7 +496,7 @@ export default function NotificationsClient({ settings: initialSettings, hasBusi
             <div className="space-y-2">
               {templates.map((t) => (
                 <TemplateEditor
-                  key={t.type}
+                  key={`${t.type}:${t.subject}:${t.body}`}
                   template={t}
                   onSave={saveTemplate}
                   onReset={resetTemplate}
@@ -524,7 +520,7 @@ export default function NotificationsClient({ settings: initialSettings, hasBusi
         <CardBody>
           <div className="rounded border border-zinc-200 bg-zinc-50 px-4 py-3">
             <p className="text-sm text-zinc-600">
-              In-app notifications are always enabled for all activity types. You'll see them in the notification bell when payments are received, invoices are viewed, and more.
+              In-app notifications are always enabled for all activity types. You&apos;ll see them in the notification bell when payments are received, invoices are viewed, and more.
             </p>
           </div>
         </CardBody>
