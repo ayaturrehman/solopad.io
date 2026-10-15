@@ -1,3 +1,4 @@
+import { isOutstandingInvoice } from "@/lib/invoice-status";
 import { getBusinessCurrency } from "@/lib/business-currency";
 import Link from "next/link";
 import {
@@ -259,7 +260,7 @@ function ProjectsTab({ contact, newProjectHref }) {
               .filter((invoice) => invoice.status === "paid")
               ;
             const unpaid = project.invoices
-              .filter((invoice) => invoice.status !== "paid" && invoice.status !== "cancelled")
+              .filter(isOutstandingInvoice)
               ;
 
             return (
@@ -353,7 +354,7 @@ export default async function ContactDetailPage({ params, searchParams }) {
 
   const totalOutstanding = contact.projects
     .flatMap((project) => project.invoices)
-    .filter((invoice) => invoice.status !== "paid" && invoice.status !== "cancelled")
+    .filter(isOutstandingInvoice)
     ;
 
   const companyAddress = [

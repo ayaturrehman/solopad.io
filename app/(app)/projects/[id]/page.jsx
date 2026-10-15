@@ -1,3 +1,4 @@
+import { isOutstandingInvoice } from "@/lib/invoice-status";
 
 import { redirect } from "next/navigation";
 import Link from "next/link";
@@ -355,8 +356,8 @@ function OverviewPanel({ project, tasks, files, invoices, proposals, contracts, 
         <StatCard
           label="Outstanding"
           value={formatCurrencyTotals(outstanding)}
-          note={invoices.filter((i) => i.status !== "paid" && i.status !== "cancelled").length
-            ? `${invoices.filter((i) => i.status !== "paid" && i.status !== "cancelled").length} unpaid invoices`
+          note={invoices.filter(isOutstandingInvoice).length
+            ? `${invoices.filter(isOutstandingInvoice).length} unpaid invoices`
             : "All invoices settled"}
           accent={outstanding.some(item => item.total > 0) ? "text-red-500" : undefined}
         />
@@ -514,7 +515,7 @@ function OverviewPanel({ project, tasks, files, invoices, proposals, contracts, 
 
 function DetailsPanel({ project, invoices, files, notes, totalLoggedSeconds, portalUrl }) {
   const paidInvoices = invoices.filter((invoice) => invoice.status === "paid");
-  const unpaidInvoices = invoices.filter((invoice) => invoice.status !== "paid" && invoice.status !== "cancelled");
+  const unpaidInvoices = invoices.filter(isOutstandingInvoice);
 
   return (
     <div className="grid gap-6 xl:grid-cols-2">
@@ -638,7 +639,7 @@ export default async function ProjectPage({ params, searchParams }) {
     // DB-level aggregate for outstanding instead of in-memory filter+reduce
     db.invoice.groupBy({
       by: ["currency"],
-      where: { projectId: id, status: { notIn: ["paid", "cancelled"] } },
+      where: { projectId: id, status: { notIn: ["paid", "cancelled", "draft"] } },
       _sum: { total: true },
     }),
     // DB-level aggregate for total logged time instead of in-memory reduce

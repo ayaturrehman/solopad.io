@@ -53,7 +53,7 @@ export default async function DashboardPage() {
     }),
     // DB-level aggregate for outstanding total instead of fetching 20 invoices
     db.invoice.aggregate({
-      where: { project: { userId }, status: { notIn: ["paid", "cancelled"] } },
+      where: { project: { userId }, status: { notIn: ["paid", "cancelled", "draft"] } },
       _sum: { total: true },
     }),
     // DB-level groupBy for project status counts instead of 4x .filter().length
@@ -77,7 +77,7 @@ export default async function DashboardPage() {
     // DB-level count for completed tasks
     db.task.count({ where: { userId, status: "done" } }),
     // DB-level count for open invoices
-    db.invoice.count({ where: { project: { userId }, status: { notIn: ["paid", "cancelled"] } } }),
+    db.invoice.count({ where: { project: { userId }, status: { notIn: ["paid", "cancelled", "draft"] } } }),
   ]);
 
   const currency = userWithBusiness?.business?.currency || "USD";
