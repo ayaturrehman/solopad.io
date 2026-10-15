@@ -864,7 +864,7 @@ test("project CRUD — Create and update project, verify tenant stamping", async
   });
 
   assert.equal(updateProject.status, 200);
-  assert.equal(updateProject.body.success, true);
+  assert.equal(updateProject.body.count, 1);
   const updated = await prisma.project.findUnique({ where: { id: projectId } });
   assert.equal(updated.title, "Tenant A Updated Project");
   assert.equal(updated.businessId, seed.businessA.id);
