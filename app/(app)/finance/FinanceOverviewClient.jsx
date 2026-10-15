@@ -1,6 +1,6 @@
 "use client";
 
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, formatCurrencyTotals } from "@/lib/utils";
 import { StatCard, StatCardGrid, RecentList } from "@/components/shared/StatCard";
 import MonthlyCashflowChart from "./MonthlyCashflowChart";
 import { Card } from "@/components/ui/Card";
@@ -8,10 +8,7 @@ import { Card } from "@/components/ui/Card";
 const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 export default function FinanceOverviewClient({
-  totalRevenue,
-  totalExpenses,
-  netIncome,
-  outstanding,
+  currencyTotals,
   monthlyRevenue,
   monthlyExpenses,
   maxBar,
@@ -20,11 +17,14 @@ export default function FinanceOverviewClient({
   paid,
   expenses,
 }) {
+  const totalLabel = key => currencyTotals[key].length
+    ? formatCurrencyTotals(currencyTotals[key])
+    : formatCurrency(0, currency);
   const kpis = [
-    { label: "Revenue",     value: formatCurrency(totalRevenue,  currency), color: "text-green-600" },
-    { label: "Expenses",    value: formatCurrency(totalExpenses, currency), color: "text-rose-500"  },
-    { label: "Net Income",  value: formatCurrency(netIncome,     currency), color: "text-zinc-900"  },
-    { label: "Outstanding", value: formatCurrency(outstanding,   currency), color: "text-amber-600" },
+    { label: "Revenue", value: totalLabel("revenue"), color: "text-green-600" },
+    { label: "Expenses", value: totalLabel("expenses"), color: "text-rose-500" },
+    { label: "Net Income", value: totalLabel("netIncome"), color: "text-zinc-900" },
+    { label: "Outstanding", value: totalLabel("outstanding"), color: "text-amber-600" },
   ];
 
   return (
@@ -39,7 +39,8 @@ export default function FinanceOverviewClient({
 
       {/* Cashflow chart */}
       <Card className="dash-fade-up px-4 py-4" style={{ animationDelay: "100ms" }}>
-        <h2 className="mb-5 font-semibold text-zinc-900">Monthly Cashflow</h2>
+        <h2 className="mb-5 font-semibold text-zinc-900">Monthly Cashflow · {currency}</h2>
+        <p className="mb-4 text-xs text-zinc-500">The chart shows {currency} only. Totals above keep each currency separate.</p>
         <MonthlyCashflowChart
           months={MONTH_NAMES}
           monthlyRevenue={monthlyRevenue}
@@ -66,7 +67,7 @@ export default function FinanceOverviewClient({
                 </p>
                 <p className="text-xs text-zinc-400">{inv.project?.contact?.name}</p>
               </div>
-              <span className="text-sm font-semibold text-zinc-700">{formatCurrency(inv.total, currency)}</span>
+              <span className="text-sm font-semibold text-zinc-700">{formatCurrency(inv.total, inv.currency || currency)}</span>
             </>
           )}
         />
@@ -85,7 +86,7 @@ export default function FinanceOverviewClient({
                 </p>
                 <p className="text-xs text-zinc-400">{inv.project?.contact?.name}</p>
               </div>
-              <span className="text-sm font-semibold text-green-700">{formatCurrency(inv.total, currency)}</span>
+              <span className="text-sm font-semibold text-green-700">{formatCurrency(inv.total, inv.currency || currency)}</span>
             </>
           )}
         />
