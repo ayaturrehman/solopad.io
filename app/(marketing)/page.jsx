@@ -1183,7 +1183,7 @@ export default function LandingPage() {
                         </li>
                       ))}
                     </ul>
-                    <Link href={plan.href} className={plan.highlight?"btn-primary":"btn-outline"} style={{ display:"block", textAlign:"center", justifyContent:"center" }}>
+                    <Link href={`${plan.href}&interval=${annual ? "yearly" : "monthly"}`} className={plan.highlight?"btn-primary":"btn-outline"} style={{ display:"block", textAlign:"center", justifyContent:"center" }}>
                       {plan.cta}
                     </Link>
                   </div>
