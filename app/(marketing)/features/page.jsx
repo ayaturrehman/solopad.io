@@ -430,6 +430,9 @@ export default function FeaturesPage() {
             className="feat-section"
             style={{ background: feat.bg }}
           >
+            {({ contracts: "contracts-e-sign", invoices: "invoicing", crm: "crm-contacts", finance: "finance-expenses" })[feat.id] && (
+              <span id={({ contracts: "contracts-e-sign", invoices: "invoicing", crm: "crm-contacts", finance: "finance-expenses" })[feat.id]} className="block scroll-mt-24" aria-hidden="true" />
+            )}
             <div className={`feat-inner${isReversed ? " feat-inner-reverse" : ""}`}>
               {/* Copy side */}
               <div>
