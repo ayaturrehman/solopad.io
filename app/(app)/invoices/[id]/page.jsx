@@ -9,6 +9,9 @@ import {
   Building2, Mail, Calendar, Hash, CreditCard
 } from "lucide-react";
 import { formatCurrency, formatDate } from "@/lib/utils";
+import BankPaymentForm from "./BankPaymentForm";
+import { bankDetailLines, bankPaymentReference } from "@/lib/bank-transfer";
+import { remainingInvoiceAmount } from "@/lib/invoice-receipts";
 import InvoiceActions from "./InvoiceActions";
 
 const STATUS_CONFIG = {
@@ -32,10 +35,12 @@ export default async function InvoiceDetailPage({ params }) {
       project: {
         select: {
           id: true, title: true, userId: true,
+          user: { select: { bankTransferEnabled: true, bankDetails: true } },
           contact: { select: { name: true, email: true, company: true } },
         },
       },
       paymentPlans: { orderBy: { createdAt: "asc" } },
+      payments: { where: { status: "paid" }, orderBy: { receivedAt: "desc" } },
     },
   });
 
@@ -62,6 +67,7 @@ export default async function InvoiceDetailPage({ params }) {
         <InvoiceActions invoice={{ id: invoice.id, status: invoice.status, projectId: invoice.project.id }} />
       </div>
 
+      <BankPaymentForm invoiceId={invoice.id} currency={invoice.currency} remaining={remainingInvoiceAmount(invoice)} enabled={invoice.project.user.bankTransferEnabled} status={invoice.status} milestones={invoice.paymentPlans} payments={invoice.payments} />
       {/* Invoice document */}
       <div className="overflow-hidden rounded border border-zinc-200 bg-white shadow-sm">
         <div className={`h-1.5 w-full ${invoice.status === "paid" ? "bg-green-400" : invoice.status === "overdue" ? "bg-red-400" : invoice.status === "sent" ? "bg-blue-400" : "bg-zinc-200"}`} />
@@ -262,6 +268,7 @@ export default async function InvoiceDetailPage({ params }) {
           )}
 
           {/* Notes */}
+          {invoice.project.user.bankTransferEnabled && invoice.project.user.bankDetails && <section className="mb-6 space-y-2 text-sm text-zinc-600"><h2 className="font-semibold text-zinc-900">Bank transfer</h2>{bankDetailLines(invoice.project.user.bankDetails).map(([label,value])=><p className="break-all" key={label}>{label}: {value}</p>)}<p className="break-all">Reference: {bankPaymentReference(invoice)}</p></section>}
           {invoice.notes && (
             <div className="mt-8 rounded bg-zinc-50 p-5">
               <p className="mb-1 text-[10px] font-semibold uppercase tracking-widest text-zinc-400">Notes</p>
