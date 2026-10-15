@@ -2,13 +2,13 @@
   "date": "2026-10-15",
   "branch": "fix/qa-audit",
   "base": "3e7b95647b55b54b5c6d1675a2cb03e22bf72abe",
-  "testedApplicationCommit": "f5be3eef37eeb292c2d7771ba4ff382551b60e4a",
+  "testedApplicationCommit": "c0f6c944bd383f4bf1f6736f82537c877e133b65",
   "beforeTag": "qa-before-audit-fixes-2026-10-15",
-  "afterTag": "qa-audit-fixes-tested-2026-10-15",
+  "afterTag": "qa-audit-fixes-tested-2026-10-15-v2",
   "deployment": "Not merged to main or deployed to production",
   "verification": {
     "unit": {
-      "passed": 105,
+      "passed": 108,
       "failed": 0
     },
     "regression": {
@@ -66,7 +66,8 @@
       "id": "F04",
       "fix": "Currency totals",
       "commits": [
-        "39fcf8694952ac6b588e472be59937c52f2fc548"
+        "39fcf8694952ac6b588e472be59937c52f2fc548",
+        "bdbf4d15d6011b825eb69e972ebca48c8d648d33"
       ]
     },
     {
@@ -184,6 +185,13 @@
       "fix": "Draft invoice privacy",
       "commits": [
         "e6787453ed773f0e65ecae79803c548df1bb311f"
+      ]
+    },
+    {
+      "id": "QA19",
+      "fix": "Exclude drafts from amounts due",
+      "commits": [
+        "c0f6c944bd383f4bf1f6736f82537c877e133b65"
       ]
     }
   ],
@@ -359,6 +367,18 @@
     {
       "sha": "f5be3eef37eeb292c2d7771ba4ff382551b60e4a",
       "subject": "Keep public booking text readable against its dark theme background"
+    },
+    {
+      "sha": "155cb732a1a034a09e3ea365f08883f4d572ba34",
+      "subject": "Record audited fixes verification and rollback commit map"
+    },
+    {
+      "sha": "bdbf4d15d6011b825eb69e972ebca48c8d648d33",
+      "subject": "Use the business currency for estimated contact values"
+    },
+    {
+      "sha": "c0f6c944bd383f4bf1f6736f82537c877e133b65",
+      "subject": "Exclude unissued draft invoices from outstanding balance metrics"
     }
   ]
 }
