@@ -441,7 +441,7 @@ export default function ContractBuilderClient({
                         {clauses.length > 1 && (
                           <button
                             type="button"
-                            onClick={() => removeClause(i)}
+                            aria-label="Remove clause" onClick={() => removeClause(i)}
                             className="inline-flex h-5 w-5 items-center justify-center rounded text-zinc-200 transition-colors hover:text-red-400"
                           >
                             <Trash2 className="h-3.5 w-3.5" />
