@@ -38,9 +38,9 @@ const FILE_TYPE_MAP = {
   pdf:  { icon: FileText, color: "bg-red-50 text-red-500" },
   doc:  { icon: FileText, color: "bg-blue-50 text-blue-500" },
   docx: { icon: FileText, color: "bg-blue-50 text-blue-500" },
-  xls:  { icon: FileSpreadsheet, color: "bg-green-50 text-green-600" },
-  xlsx: { icon: FileSpreadsheet, color: "bg-green-50 text-green-600" },
-  csv:  { icon: FileSpreadsheet, color: "bg-green-50 text-green-600" },
+  xls:  { icon: FileSpreadsheet, color: "bg-green-50 text-green-700 dark:text-green-400" },
+  xlsx: { icon: FileSpreadsheet, color: "bg-green-50 text-green-700 dark:text-green-400" },
+  csv:  { icon: FileSpreadsheet, color: "bg-green-50 text-green-700 dark:text-green-400" },
   png:  { icon: Image, color: "bg-purple-50 text-purple-500" },
   jpg:  { icon: Image, color: "bg-purple-50 text-purple-500" },
   jpeg: { icon: Image, color: "bg-purple-50 text-purple-500" },
@@ -145,7 +145,7 @@ function InvoiceCard({ invoice }) {
   const hasLineItems = lineItems.length > 0;
 
   return (
-    <div className={`rounded border ${isPaid ? "border-green-200 bg-green-50" : isCancelled ? "border-zinc-100 bg-zinc-50" : "border-zinc-200 bg-white"}`}>
+    <div className={`rounded border ${isPaid ? "border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950" : isCancelled ? "border-zinc-100 bg-zinc-50" : "border-zinc-200 bg-white"}`}>
       {/* Header row */}
       <div className="flex items-start justify-between gap-4 p-5">
         <div>
@@ -160,7 +160,7 @@ function InvoiceCard({ invoice }) {
           {hasLineItems && (
             <button
               onClick={() => setExpanded((v) => !v)}
-              className="mt-2 flex items-center gap-1 text-xs font-medium text-blue-600 hover:underline"
+              className="mt-2 flex items-center gap-1 min-h-8 text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
             >
               {expanded ? <><ChevronUp className="h-3 w-3" /> Hide details</> : <><ChevronDown className="h-3 w-3" /> View details</>}
             </button>
@@ -269,7 +269,7 @@ function InvoiceCard({ invoice }) {
       )}
       {isPaid && (
         <div className="border-t border-green-100 px-5 pb-4 pt-3">
-          <p className="flex items-center gap-1.5 text-sm font-medium text-green-600">
+          <p className="flex items-center gap-1.5 text-sm font-medium text-green-700 dark:text-green-400">
             <CheckCircle className="h-4 w-4" /> Payment received — thank you!
           </p>
         </div>
@@ -323,7 +323,7 @@ function MilestoneList({ milestones, invoiceId, currency }) {
           const isPaid = m.status === "paid";
           const isOverdue = !isPaid && m.dueDate && new Date(m.dueDate) < new Date();
           return (
-            <div key={m.id} className={`flex items-center justify-between rounded border p-3 ${isPaid ? "border-green-200 bg-green-50" : isOverdue ? "border-red-200 bg-red-50" : "border-zinc-200"}`}>
+            <div key={m.id} className={`flex items-center justify-between rounded border p-3 ${isPaid ? "border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950" : isOverdue ? "border-red-200 bg-red-50" : "border-zinc-200"}`}>
               <div>
                 <p className={`text-sm font-medium ${isPaid ? "text-green-700" : "text-zinc-900"}`}>
                   {isPaid && <CheckCircle className="mr-1 inline h-3.5 w-3.5" />}
@@ -336,7 +336,7 @@ function MilestoneList({ milestones, invoiceId, currency }) {
                 )}
               </div>
               <div className="flex items-center gap-3">
-                <span className={`text-sm font-semibold ${isPaid ? "text-green-600" : "text-zinc-900"}`}>
+                <span className={`text-sm font-semibold ${isPaid ? "text-green-700 dark:text-green-400" : "text-zinc-900"}`}>
                   {formatCurrency(m.amount, currency)}
                 </span>
                 {!isPaid && (
@@ -477,7 +477,7 @@ export default function ClientPortal({ project, files, comments: initialComments
               <span className="flex items-center gap-1.5"><Calendar className="h-4 w-4" />Due {formatDate(project.endDate)}</span>
             )}
             {paidInvoices.length > 0 && (
-              <span className="flex items-center gap-1.5 text-green-600">
+              <span className="flex items-center gap-1.5 text-green-700 dark:text-green-400">
                 <CheckCircle className="h-4 w-4" />{paidInvoices.length} invoice{paidInvoices.length > 1 ? "s" : ""} paid
               </span>
             )}
@@ -629,7 +629,7 @@ export default function ClientPortal({ project, files, comments: initialComments
                     </div>
                     <div className="flex justify-between py-2.5 text-sm">
                       <dt className="text-zinc-500">Paid</dt>
-                      <dd className="font-medium text-green-600">{formatCurrencyTotals(paidInvoices)}</dd>
+                      <dd className="font-medium text-green-700 dark:text-green-400">{formatCurrencyTotals(paidInvoices)}</dd>
                     </div>
                   </dl>
                   {unpaidInvoices.length > 0 && (
@@ -672,7 +672,7 @@ export default function ClientPortal({ project, files, comments: initialComments
                       <a
                         href={`/api/files/${file.projectId}/${encodeURIComponent(file.name)}`}
                         download={file.name}
-                        className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-blue-600 hover:underline"
+                        className="mt-2 inline-flex items-center gap-1 min-h-8 text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
                       >
                         <Download className="h-3 w-3" /> Download
                       </a>
@@ -794,7 +794,7 @@ export default function ClientPortal({ project, files, comments: initialComments
                       <div className="flex items-start gap-3">
                         <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded ${isSigned ? "bg-green-100" : "bg-zinc-100"}`}>
                           {isSigned
-                            ? <FileCheck2 className="h-5 w-5 text-green-600" />
+                            ? <FileCheck2 className="h-5 w-5 text-green-700 dark:text-green-400" />
                             : <FileSignature className="h-5 w-5 text-zinc-400" />}
                         </div>
                         <div>
@@ -825,7 +825,7 @@ export default function ClientPortal({ project, files, comments: initialComments
                         )}
                         {isSigned && (
                           <>
-                            <span className="flex items-center gap-1.5 text-sm text-green-600">
+                            <span className="flex items-center gap-1.5 text-sm text-green-700 dark:text-green-400">
                               <CheckCircle className="h-4 w-4" /> Signed
                             </span>
                             <a
