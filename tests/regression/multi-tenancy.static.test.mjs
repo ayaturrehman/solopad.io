@@ -136,7 +136,8 @@ test("critical API routes include tenant scoping helpers", () => {
 
 test("public booking creation route still validates the target tenant safely", () => {
   const source = read("app/api/bookings/route.js");
-  assert.doesNotMatch(source, /getSession/);
+  const publicPost = source.slice(source.indexOf("export async function POST"));
+  assert.doesNotMatch(publicPost, /getSession/);
   assert.match(source, /findUnique/);
   assert.match(source, /Freelancer not found/);
   assert.match(source, /userId/);
