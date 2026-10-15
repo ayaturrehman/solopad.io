@@ -63,6 +63,8 @@ export default function BookingForm({ userId, userName, rules, existingBookings 
     return rules.some((r) => r.dayOfWeek === date.getDay());
   }
 
+  const hasAvailableDay = cells.some(day => day && isDayAvailable(new Date(year, month, day)));
+  const displayTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const slots = selectedDate ? generateSlots(selectedDate, rules, existingBookings, duration) : [];
   const availableSlots = slots.filter((s) => s.available);
 
@@ -190,15 +192,17 @@ export default function BookingForm({ userId, userName, rules, existingBookings 
               <div className="mb-5 flex items-center justify-between">
                 <h3 className="text-base font-bold text-zinc-900">{MONTH_NAMES[month]} {year}</h3>
                 <div className="flex gap-1">
-                  <button type="button" onClick={prevMonth} className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-200 text-zinc-500 hover:bg-blue-50 hover:border-blue-200 hover:text-blue-600 transition-colors">
+                  <button type="button" aria-label="Previous month" onClick={prevMonth} className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-200 text-zinc-500 hover:bg-blue-50 hover:border-blue-200 hover:text-blue-600 transition-colors">
                     <ChevronLeft className="h-4 w-4" />
                   </button>
-                  <button type="button" onClick={nextMonth} className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-200 text-zinc-500 hover:bg-blue-50 hover:border-blue-200 hover:text-blue-600 transition-colors">
+                  <button type="button" aria-label="Next month" onClick={nextMonth} className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-200 text-zinc-500 hover:bg-blue-50 hover:border-blue-200 hover:text-blue-600 transition-colors">
                     <ChevronRight className="h-4 w-4" />
                   </button>
                 </div>
               </div>
 
+              {!hasAvailableDay && <p role="status" className="mb-4 rounded border border-zinc-200 bg-zinc-50 p-3 text-sm text-zinc-600">No booking dates are available this month. Try the next month, or contact {userName} directly to arrange a time.</p>}
+              <p className="mb-3 text-xs text-zinc-500">Times are shown in {displayTimezone}.</p>
               {/* Day labels */}
               <div className="mb-2 grid grid-cols-7 gap-1">
                 {DAY_LABELS.map((d) => (
@@ -247,7 +251,7 @@ export default function BookingForm({ userId, userName, rules, existingBookings 
                   <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-blue-50">
                     <Calendar className="h-7 w-7 text-blue-400" />
                   </div>
-                  <p className="text-sm font-medium text-zinc-600">Select a date to see available times</p>
+                  <p className="text-sm font-medium text-zinc-600">{hasAvailableDay ? "Select a date to see available times" : "No dates available. Contact the organiser to arrange a booking."}</p>
                   <p className="mt-1 text-xs text-zinc-400">Available days are highlighted on the calendar</p>
                 </div>
               ) : (
@@ -332,7 +336,7 @@ export default function BookingForm({ userId, userName, rules, existingBookings 
           </div>
         </div>
 
-        <p className="mt-6 text-center text-xs text-zinc-400">Powered by PortalKit</p>
+        <p className="mt-6 text-center text-xs text-zinc-400">Powered by SoloPad</p>
       </div>
     </div>
   );
