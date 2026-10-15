@@ -332,7 +332,7 @@ html:not([data-theme="dark"]) :is(.app-shell, .client-portal) .text-zinc-400 {
   outline-offset: 3px;
 }
 @media (max-width: 767px) {
-  :is(.app-shell, .client-portal) :is(input, select, textarea) {
+  :is(.app-shell, .client-portal) :is(input:not([type="checkbox"]):not([type="radio"]), select, textarea) {
     font-size: 16px;
     min-height: 44px;
   }
