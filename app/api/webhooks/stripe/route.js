@@ -31,6 +31,7 @@ export async function POST(req) {
   try {
     switch (event.type) {
       case "checkout.session.completed":
+      case "checkout.session.async_payment_succeeded":
         await handleCheckoutCompleted(event.data.object);
         break;
 
@@ -69,6 +70,9 @@ export async function POST(req) {
 
 // ─── checkout.session.completed ─────────────────────────────────
 async function handleCheckoutCompleted(session) {
+  // Delayed payment methods complete checkout before funds settle.
+  if (session.payment_status !== "paid") return;
+
   const { invoiceId, milestoneId } = session.metadata || {};
   if (!invoiceId) return;
 
