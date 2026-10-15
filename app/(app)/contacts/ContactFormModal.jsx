@@ -39,7 +39,7 @@ function TextareaField({ label, value, onChange, placeholder, rows = 4, error, r
         {label}
         {required ? <span className="ml-0.5 text-red-500">*</span> : null}
       </label>
-      <textarea
+      <textarea aria-label={label || "Notes"}
         value={value}
         onChange={onChange}
         rows={rows}
