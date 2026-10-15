@@ -556,29 +556,9 @@ See [freelancer payment setup, migrations, verification and rollback](docs/freel
 
 ### Invoice Payment Flow
 
-```
-Client clicks "Pay Now" on portal or invoice
-  → POST /api/invoices/checkout { invoiceId }
-  → Creates Stripe Checkout Session
-      mode: "payment"
-      automatic_payment_methods: { enabled: true }
-      line_items: mapped from invoice.lineItems
-      customer_email: project.clientEmail
-  → If freelancer has connected Stripe (stripeOnboarded = true):
-      payment_intent_data.transfer_data.destination = freelancer.stripeAccountId
-      application_fee_amount = 2% of total (platform fee to PortalKit)
-  → Returns { url: checkoutUrl }
-  → Client is redirected to Stripe-hosted checkout page
-  → On success: redirected to /payment/success?invoiceId=...
+A private portal token authorizes checkout for an invoice or milestone. Checkout locks the invoice, expires superseded payment links and charges only the remaining balance in currency minor units. Payments route to the connected freelancer account with the plan-based SoloPad platform fee.
 
-Stripe fires checkout.session.completed webhook
-  → POST /api/webhooks/stripe
-  → Verify signature with STRIPE_WEBHOOK_SECRET
-  → Find invoice by stripeSessionId
-  → Update invoice status to "paid", set paidAt
-  → Create Notification record for freelancer
-  → Send payment confirmation email via Resend
-```
+A verified paid Stripe webhook (or an exact paid-session lookup on return) records one receipt and updates the balance. Delayed payments remain pending until confirmed. Bank transfers use the same receipt history after the freelancer confirms funds arrived. Repeated requests and webhook deliveries do not credit a payment twice.
 
 ---
 

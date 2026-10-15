@@ -905,4 +905,33 @@ test("client portals never disclose or offer payment for draft invoices", async 
   assert.doesNotMatch(page.body, new RegExp(draft.id));
 });
 
+test("bank-only receipts retain partial balances, enforce ownership and cannot bypass receipt history", async () => {
+  const cookies = await login(seed.ownerA.email, "tenant-owner-pass");
+  const otherCookies = await login(seed.ownerB.email, "tenant-other-pass");
+  const settings = await jsonRequest("/api/settings/payments", { method: "PATCH", cookies, body: {
+    paymentMethods: ["card"], stripePaymentsEnabled: false, bankTransferEnabled: true,
+    bankDetails: { accountName: "Regression QA", sortCode: "12-34-56", accountNumber: "12345678" },
+  } });
+  assert.equal(settings.status, 200);
+  const invoice = await prisma.invoice.create({ data: { projectId: seed.projectA.id, status: "sent", currency: "GBP", total: 100, lineItems: "[]" } });
+  assert.equal(invoice.paymentReference.length, 18);
+  const receipt = { amount: 40, receivedAt: new Date().toISOString().slice(0,10), reference: "QA receipt", confirmed: true, idempotencyKey: "bank-regression-first" };
+  const path = `/api/invoices/${invoice.id}/payments`;
+  const first = await jsonRequest(path, { method: "POST", cookies, body: receipt });
+  assert.equal(first.status, 200); assert.equal(first.body.amountPaid, 40); assert.equal(first.body.status, "sent");
+  const repeat = await jsonRequest(path, { method: "POST", cookies, body: receipt });
+  assert.equal(repeat.status, 200); assert.equal(repeat.body.amountPaid, 40);
+  assert.equal((await jsonRequest(path, { method: "POST", cookies: otherCookies, body: receipt })).status, 404);
+  assert.equal((await jsonRequest(path, { method: "POST", body: receipt })).status, 401);
+  assert.equal((await jsonRequest(path, { method: "POST", cookies, body: { ...receipt, idempotencyKey: "bank-regression-overpay", amount: 61 } })).status, 409);
+  assert.equal((await jsonRequest(path, { method: "POST", cookies, body: { ...receipt, idempotencyKey: "bank-regression-unconfirmed", confirmed: false } })).status, 400);
+  assert.equal((await jsonRequest("/api/invoices", { method: "PATCH", cookies, body: { id: invoice.id, status: "paid" } })).status, 400);
+  assert.equal((await jsonRequest("/api/invoices", { method: "DELETE", cookies, body: { id: invoice.id } })).status, 409);
+  const online = await jsonRequest("/api/invoices/checkout", { method: "POST", body: { invoiceId: invoice.id, token: seed.projectA.portalToken } });
+  assert.equal(online.status, 409);
+  const final = await jsonRequest(path, { method: "POST", cookies, body: { ...receipt, amount: 60, idempotencyKey: "bank-regression-final" } });
+  assert.equal(final.status, 200); assert.equal(final.body.status, "paid"); assert.equal(final.body.amountPaid, 100); assert.ok(final.body.paidAt);
+  assert.equal(await prisma.invoicePayment.count({ where: { invoiceId: invoice.id } }), 2);
+});
+
 }
