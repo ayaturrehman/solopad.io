@@ -181,7 +181,7 @@ before(async () => {
     recursive: true,
     filter(source) {
       const base = path.basename(source);
-      return !["node_modules", ".git", ".next", "output"].includes(base);
+      return !["node_modules", ".git", ".next", "output", "work"].includes(base);
     },
   });
   await fs.symlink(path.join(root, "node_modules"), path.join(appDir, "node_modules"), "dir");
@@ -335,8 +335,6 @@ before(async () => {
       userId: ownerA.id,
       contactId: contactA.id,
       title: "Tenant A Project",
-      clientName: "Tenant A Client",
-      clientEmail: "client-a@example.com",
       status: "in_progress",
       stage: "kickoff",
       portalToken: "tenantAProj1",
@@ -349,8 +347,6 @@ before(async () => {
       userId: ownerB.id,
       contactId: contactB.id,
       title: "Tenant B Project",
-      clientName: "Tenant B Client",
-      clientEmail: "client-b@example.com",
       status: "in_progress",
       stage: "kickoff",
       portalToken: "tenantBProj1",
@@ -523,7 +519,7 @@ before(async () => {
   const port = 3400 + Math.floor(Math.random() * 200);
   baseUrl = `http://127.0.0.1:${port}`;
 
-  server = spawn("npx", ["next", "dev", "--webpack", "--port", String(port)], {
+  server = spawn(process.execPath, [path.join(root, "node_modules/next/dist/bin/next"), "dev", "--webpack", "--port", String(port)], {
     cwd: appDir,
     env: {
       ...process.env,
@@ -560,7 +556,7 @@ after(async () => {
     await prisma.$disconnect();
   }
   if (tmpDir) {
-    await fs.rm(tmpDir, { recursive: true, force: true });
+    await fs.rm(tmpDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 });
   }
 });
 
