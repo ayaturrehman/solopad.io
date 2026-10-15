@@ -176,7 +176,7 @@ function InvoiceCard({ invoice, paymentOptions, token }) {
             isCancelled ? "bg-zinc-100 text-zinc-500" :
                           "bg-amber-100 text-amber-700"
           }`}>
-            {isPaid ? "Paid" : isCancelled ? "Cancelled" : invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1).replaceAll("_", " ")}
+            {isPaid ? "Paid" : isCancelled ? "Cancelled" : receivedInvoiceAmount(invoice) > 0 && !isRefunded ? "Partially paid" : invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1).replaceAll("_", " ")}
           </span>
         </div>
       </div>

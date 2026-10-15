@@ -54,6 +54,7 @@ export async function PATCH(req, { params }) {
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
 
+  if (body.paidAt !== undefined || body.status === "paid") return NextResponse.json({ error: "Record a confirmed bank receipt or wait for Stripe confirmation to mark this invoice paid." }, { status: 400 });
   const filter = await getTenantFilter(session);
 
   const invoice = await db.invoice.findFirst({

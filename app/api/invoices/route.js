@@ -1,3 +1,4 @@
+import { PATCH as updateInvoice, DELETE as deleteInvoice } from "./[id]/route";
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { requirePermission } from "@/lib/permissions";
@@ -145,72 +146,17 @@ export async function POST(req) {
   }
 }
 
-export async function PATCH(req) { try {
-    const { session, error, status: permStatus } = await requirePermission("manage_invoices");
-    if (error) return NextResponse.json({ error }, { status: permStatus });
-
-    const { id, ...data } = await req.json();
-    if (!id) return NextResponse.json({ error: "Missing id" }, { status: 400 });
-
-    const filter = await getTenantFilter(session);
-
-    // Verify ownership
-    const invoice = await db.invoice.findFirst({
-      where: { id, project: filter },
-      include: { project: { select: { userId: true } } },
-    });
-    if (!invoice)
-      return NextResponse.json({ error: "Not found" }, { status: 404 });
-
-    const updated = await db.invoice.update({
-      where: { id },
-      data: {
-        ...(data.status !== undefined && { status: data.status }),
-        ...(data.paidAt !== undefined && { paidAt: data.paidAt ? new Date(data.paidAt) : null }),
-        ...(data.sentAt !== undefined && { sentAt: data.sentAt ? new Date(data.sentAt) : null }),
-        ...(data.notes !== undefined && { notes: data.notes }),
-        ...(data.dueDate !== undefined && { dueDate: data.dueDate ? new Date(data.dueDate) : null }),
-      },
-    });
-
-    revalidatePath("/dashboard");
-    revalidatePath("/finance");
-    revalidatePath("/calendar");
-
-    return NextResponse.json(updated);
-
-  } catch (err) {
-    console.error("[Invoices PATCH]", err);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
-  }
+// Legacy collection mutations share the locked payment-history safeguards.
+export async function PATCH(req) {
+  let body;
+  try { body = await req.json(); } catch { return NextResponse.json({ error: "Invalid request body" }, { status: 400 }); }
+  const { id, ...data } = body;
+  if (!id) return NextResponse.json({ error: "Missing id" }, { status: 400 });
+  return updateInvoice(new Request(req.url, { method: "PATCH", headers: req.headers, body: JSON.stringify(data) }), { params: Promise.resolve({ id }) });
 }
-
-export async function DELETE(req) { try {
-    const { session, error, status: permStatus } = await requirePermission("manage_invoices");
-    if (error) return NextResponse.json({ error }, { status: permStatus });
-
-    const { id } = await req.json();
-    if (!id) return NextResponse.json({ error: "Missing id" }, { status: 400 });
-
-    const filter = await getTenantFilter(session);
-
-    const invoice = await db.invoice.findFirst({
-      where: { id, project: filter },
-      include: { project: { select: { userId: true } } },
-    });
-    if (!invoice)
-      return NextResponse.json({ error: "Not found" }, { status: 404 });
-
-    await db.invoice.delete({ where: { id } });
-
-    revalidatePath("/dashboard");
-    revalidatePath("/finance");
-    revalidatePath("/calendar");
-
-    return NextResponse.json({ ok: true });
-
-  } catch (err) {
-    console.error("[Invoices DELETE]", err);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
-  }
+export async function DELETE(req) {
+  let body;
+  try { body = await req.json(); } catch { return NextResponse.json({ error: "Invalid request body" }, { status: 400 }); }
+  if (!body.id) return NextResponse.json({ error: "Missing id" }, { status: 400 });
+  return deleteInvoice(req, { params: Promise.resolve({ id: body.id }) });
 }

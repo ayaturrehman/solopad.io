@@ -55,7 +55,8 @@ export default async function InvoiceDetailPage({ params }) {
     lineItems = [];
   }
 
-  const status = STATUS_CONFIG[invoice.status] || STATUS_CONFIG.draft;
+  const baseStatus = STATUS_CONFIG[invoice.status] || STATUS_CONFIG.draft;
+  const status = invoice.amountPaid > 0 && remainingInvoiceAmount(invoice) > 0 && ["sent","viewed","overdue"].includes(invoice.status) ? { ...baseStatus, label: "Partially paid" } : baseStatus;
   const StatusIcon = status.icon;
 
   return (
