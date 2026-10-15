@@ -201,10 +201,10 @@ function BillingContent({ plan: initialPlan, billingStatus: initialBillingStatus
 
   return (
     <div className="space-y-6">
-      {billingParam === "success" && (
+      {billingParam === "success" && ["active", "trialing"].includes(billingStatus.status) && (
         <div className="flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
           <CheckCircle2 className="h-4 w-4 shrink-0" />
-          {postCheckoutSyncing ? "Payment authorised. Finishing subscription setup..." : "Subscription activated! Your plan has been upgraded."}
+          {postCheckoutSyncing ? "Checking subscription status…" : "Your subscription is ready."}
         </div>
       )}
       {billingParam === "cancelled" && (
@@ -225,7 +225,7 @@ function BillingContent({ plan: initialPlan, billingStatus: initialBillingStatus
             <div className="flex-1">
               <div className="flex items-center gap-2.5">
                 <h3 className="text-lg font-semibold text-zinc-900 capitalize">{plan} Plan</h3>
-                <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${isTrialing ? "bg-blue-100 text-blue-700" : planColors[plan]}`}>
+                <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${isTrialing ? "bg-blue-100 text-blue-700" : billingStatus.status === "past_due" ? "bg-amber-100 text-amber-800" : planColors[plan]}`}>
                   {isTrialing ? "Free trial" : billingStatus.status === "active" ? "Active" : billingStatus.status === "past_due" ? "Past due" : billingStatus.status === "canceled" ? "Cancelled" : billingStatus.status || "Active"}
                 </span>
               </div>
