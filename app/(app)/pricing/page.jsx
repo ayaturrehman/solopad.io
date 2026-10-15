@@ -69,7 +69,7 @@ export default function PricingPage() {
       <div className="mx-auto max-w-lg mb-8 rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 px-5 py-3 text-center">
         <div className="flex items-center justify-center gap-2 text-sm font-semibold text-blue-700">
           <Sparkles className="h-4 w-4" />
-          30-day free trial + 50% off for 6 months
+          30-day free trial. Discounts apply only with a valid promotion code.
         </div>
         <p className="mt-0.5 text-xs text-blue-500">Applied automatically at checkout</p>
       </div>

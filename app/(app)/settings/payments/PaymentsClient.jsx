@@ -128,7 +128,7 @@ function PaymentsContent({ stripe: initialStripe, paymentMethods: initialMethods
                   <li>You add your bank account details (takes 2 minutes)</li>
                   <li>Clients pay your invoices with card, Apple Pay, or Google Pay</li>
                   <li>Money is deposited to your bank within 2-3 business days</li>
-                  <li>Processing fee (2.9% + 30p) is deducted automatically</li>
+                  <li>Stripe processing fees depend on your account, payment method and currency. A plan-based SoloPad platform fee also applies (Starter 3%, Solo 2%, Pro 1%).</li>
                 </ol>
               </div>
               <a

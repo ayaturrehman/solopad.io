@@ -1101,9 +1101,9 @@ export default function LandingPage() {
             <div className="pk-reveal" style={{ textAlign:"center", marginBottom:40 }}>
               <p style={{ fontSize:12, fontWeight:700, color:C, textTransform:"uppercase", letterSpacing:1.5, marginBottom:12 }}>Pricing</p>
               <h2 style={{ fontSize:"clamp(28px, 3.5vw, 46px)", fontWeight:900, color:CDk, letterSpacing:"-0.8px" }}>Simple, honest pricing.</h2>
-              <p style={{ fontSize:16, color:CMute, marginTop:12 }}>No transaction fees. No hidden costs. Start from £5/mo.</p>
+              <p style={{ fontSize:16, color:CMute, marginTop:12 }}>Plans start at £5/mo. Client payments carry a platform fee (Starter 3%, Solo 2%, Pro 1%) plus Stripe processing fees.</p>
               <div style={{ marginTop:16, display:"inline-flex", alignItems:"center", gap:8, background:"#EFF6FF", border:`1px solid ${C}33`, borderRadius:100, padding:"6px 18px" }}>
-                <span style={{ fontSize:13, fontWeight:700, color:C }}>30-day free trial + 50% off for 6 months</span>
+                <span style={{ fontSize:13, fontWeight:700, color:C }}>30-day free trial · no card required to start</span>
               </div>
             </div>
 
@@ -1291,14 +1291,14 @@ export default function LandingPage() {
                 <div style={{ display:"flex", alignItems:"center", justifyContent:"center", marginBottom:24 }}>
                   <div style={{ display:"inline-flex", alignItems:"center", gap:8, background:"rgba(255,255,255,.15)", borderRadius:100, padding:"6px 16px" }}>
                     <Users size={13} color="#fff" />
-                    <span style={{ fontSize:13, fontWeight:600, color:"#fff" }}>Early access — free forever on one project</span>
+                    <span style={{ fontSize:13, fontWeight:600, color:"#fff" }}>Start with a 30-day free trial</span>
                   </div>
                 </div>
                 <h2 style={{ fontSize:"clamp(28px, 4vw, 52px)", fontWeight:600, color:"#fff", letterSpacing:"-0.025em", marginBottom:16, lineHeight:1.12 }}>
                   Ready to stop chasing?
                 </h2>
                 <p style={{ fontSize:17, color:"rgba(255,255,255,.8)", maxWidth:460, margin:"0 auto 36px", lineHeight:1.65 }}>
-                  Set up your freelance workspace in 10 minutes. Proposals, contracts, invoicing, CRM, and a client portal — free forever on one project.
+                  Set up your freelance workspace in 10 minutes. Proposals, contracts, invoicing, CRM, and a client portal — included in your 30-day trial.
                 </p>
                 <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:14, flexWrap:"wrap" }}>
                   <Link href="/signup" style={{ background:"#fff", color:C, borderRadius:12, padding:"14px 30px", fontSize:16, fontWeight:700, textDecoration:"none", display:"inline-flex", alignItems:"center", gap:8, boxShadow:"0 8px 28px rgba(0,0,0,.18)", transition:"transform .15s" }}>
