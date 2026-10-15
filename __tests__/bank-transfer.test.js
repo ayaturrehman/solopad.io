@@ -84,6 +84,7 @@ it("credits a Stripe receipt once across return-page and webhook retries", async
   const db = { $transaction: (fn) => fn(tx) };
   const session = {
     id: "cs_test",
+    payment_intent: "pi_receipt",
     payment_status: "paid",
     amount_total: 6000,
     currency: "gbp",
@@ -93,6 +94,7 @@ it("credits a Stripe receipt once across return-page and webhook retries", async
   await settleStripeReceipt(db, session);
   expect(invoice.amountPaid).toBe(100);
   expect(tx.invoice.update).toHaveBeenCalledTimes(1);
+  expect(tx.invoicePayment.update).toHaveBeenCalledWith(expect.objectContaining({data:expect.objectContaining({stripePaymentIntentId:"pi_receipt"})}));
 });
 it("rejects a paid session with the wrong currency or amount", async () => {
   const tx = {

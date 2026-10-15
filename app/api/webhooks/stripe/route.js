@@ -88,6 +88,7 @@ async function handleCheckoutCompleted(session) {
   const invoice = await settleStripeReceipt(db, session);
   if (!invoice) return;
 
+  const receivedAmount = session.amount_total / invoicePaymentAmount({ total: 1, currency: invoice.currency }).amount;
   // In-app notification
   if (invoice.project?.user?.id) {
     await db.notification.create({
@@ -96,7 +97,7 @@ async function handleCheckoutCompleted(session) {
         businessId: invoice.project.user.businessId,
         type: "invoice_paid",
         title: "Payment received",
-        body: `${invoice.project.contact?.name || "Client"} paid ${formatCurrency(session.amount_total / invoicePaymentAmount({total: 1, currency: invoice.currency}).amount, invoice.currency)} for "${invoice.project.title}"`,
+        body: `${invoice.project.contact?.name || "Client"} paid ${formatCurrency(receivedAmount, invoice.currency)} for "${invoice.project.title}"`,
         link: `/projects/${invoice.project.id}`,
       },
     });
@@ -110,7 +111,7 @@ async function handleCheckoutCompleted(session) {
       to: invoice.project.user.email,
       variables: {
         clientName: invoice.project.contact?.name || "Client",
-        amount: `${formatCurrency(invoice.total, invoice.currency)}`,
+        amount: `${formatCurrency(receivedAmount, invoice.currency)}`,
         projectTitle: invoice.project.title,
       },
     });
@@ -137,7 +138,7 @@ async function handleChargeRefunded(charge) {
   if (!paymentIntentId) return;
 
   const invoice = await db.invoice.findFirst({
-    where: { stripePaymentIntentId: paymentIntentId },
+    where: { OR: [{ stripePaymentIntentId: paymentIntentId }, { payments: { some: { stripePaymentIntentId: paymentIntentId } } }] },
     include: { project: { include: { user: true, contact: { select: { name: true } } } } },
   });
   if (!invoice) return;
@@ -188,7 +189,7 @@ async function handleDisputeCreated(dispute) {
   if (!paymentIntentId) return;
 
   const invoice = await db.invoice.findFirst({
-    where: { stripePaymentIntentId: paymentIntentId },
+    where: { OR: [{ stripePaymentIntentId: paymentIntentId }, { payments: { some: { stripePaymentIntentId: paymentIntentId } } }] },
     include: { project: { include: { user: true } } },
   });
   if (!invoice) return;

@@ -346,6 +346,7 @@ model InvoicePayment {
   recordedById    String?
   idempotencyKey  String   @unique
   stripeSessionId String?  @unique
+  stripePaymentIntentId String? @unique
   createdAt       DateTime @default(now())
 
   @@index([invoiceId, status])
