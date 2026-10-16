@@ -1,0 +1,77 @@
+<svg width="800" height="400" viewBox="0 0 800 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="800" height="400" fill="#FAF6EF"/>
+  
+  <!-- Step 1: Check Clause -->
+  <rect x="40" y="60" width="200" height="120" rx="12" fill="white" stroke="#E4DDD2" stroke-width="2"/>
+  <circle cx="80" cy="90" r="16" fill="#EFF6FF" stroke="#2563EB" stroke-width="2"/>
+  <text x="80" y="97" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#2563EB" text-anchor="middle">1</text>
+  <text x="140" y="100" font-family="Arial, sans-serif" font-size="16" font-weight="600" fill="#141B24">Check Termination</text>
+  <text x="140" y="122" font-family="Arial, sans-serif" font-size="16" font-weight="600" fill="#141B24">Clause</text>
+  <text x="140" y="150" font-family="Arial, sans-serif" font-size="13" fill="#5C6570">Notice period?</text>
+  <text x="140" y="167" font-family="Arial, sans-serif" font-size="13" fill="#5C6570">For cause allowed?</text>
+  
+  <!-- Arrow 1 -->
+  <line x1="240" y1="120" x2="280" y2="120" stroke="#2563EB" stroke-width="2" marker-end="url(#arrowhead)"/>
+  
+  <!-- Decision Diamond -->
+  <path d="M 380 70 L 440 120 L 380 170 L 320 120 Z" fill="#FFF7ED" stroke="#F97316" stroke-width="2"/>
+  <text x="380" y="118" font-family="Arial, sans-serif" font-size="14" font-weight="600" fill="#F97316" text-anchor="middle">For</text>
+  <text x="380" y="134" font-family="Arial, sans-serif" font-size="14" font-weight="600" fill="#F97316" text-anchor="middle">Convenience</text>
+  <text x="380" y="150" font-family="Arial, sans-serif" font-size="14" font-weight="600" fill="#F97316" text-anchor="middle">or Cause?</text>
+  
+  <!-- Path labels -->
+  <text x="380" y="50" font-family="Arial, sans-serif" font-size="12" fill="#5C6570" text-anchor="middle">Convenience</text>
+  <text x="380" y="200" font-family="Arial, sans-serif" font-size="12" fill="#5C6570" text-anchor="middle">For Cause</text>
+  
+  <!-- Arrow 2a - Convenience path (up and right) -->
+  <line x1="380" y1="70" x2="380" y2="40" stroke="#2563EB" stroke-width="2"/>
+  <line x1="380" y1="40" x2="480" y2="40" stroke="#2563EB" stroke-width="2"/>
+  <line x1="480" y1="40" x2="480" y2="60" stroke="#2563EB" stroke-width="2" marker-end="url(#arrowhead)"/>
+  
+  <!-- Arrow 2b - Cause path (down and right) -->
+  <line x1="380" y1="170" x2="380" y2="200" stroke="#DC2626" stroke-width="2"/>
+  <line x1="380" y1="200" x2="480" y2="200" stroke="#DC2626" stroke-width="2"/>
+  <line x1="480" y1="200" x2="480" y2="180" stroke="#DC2626" stroke-width="2" marker-end="url(#arrowhead-red)"/>
+  
+  <!-- Step 2: Send Notice -->
+  <rect x="400" y="60" width="200" height="120" rx="12" fill="white" stroke="#E4DDD2" stroke-width="2"/>
+  <circle cx="440" cy="90" r="16" fill="#EFF6FF" stroke="#2563EB" stroke-width="2"/>
+  <text x="440" y="97" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#2563EB" text-anchor="middle">2</text>
+  <text x="500" y="100" font-family="Arial, sans-serif" font-size="16" font-weight="600" fill="#141B24">Send Written</text>
+  <text x="500" y="122" font-family="Arial, sans-serif" font-size="16" font-weight="600" fill="#141B24">Notice</text>
+  <text x="500" y="150" font-family="Arial, sans-serif" font-size="13" fill="#5C6570">Email or post</text>
+  <text x="500" y="167" font-family="Arial, sans-serif" font-size="13" fill="#5C6570">State term. date</text>
+  
+  <!-- Arrow 3 -->
+  <line x1="600" y1="120" x2="640" y2="120" stroke="#2563EB" stroke-width="2" marker-end="url(#arrowhead)"/>
+  
+  <!-- Step 3: Final Invoice & Handover -->
+  <rect x="640" y="40" width="140" height="160" rx="12" fill="white" stroke="#E4DDD2" stroke-width="2"/>
+  <circle cx="680" cy="70" r="16" fill="#EFF6FF" stroke="#2563EB" stroke-width="2"/>
+  <text x="680" y="77" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#2563EB" text-anchor="middle">3</text>
+  <text x="710" y="80" font-family="Arial, sans-serif" font-size="16" font-weight="600" fill="#141B24">Final Invoice</text>
+  <text x="710" y="102" font-family="Arial, sans-serif" font-size="16" font-weight="600" fill="#141B24">& Handover</text>
+  <text x="710" y="130" font-family="Arial, sans-serif" font-size="13" fill="#5C6570">Work done</text>
+  <text x="710" y="147" font-family="Arial, sans-serif" font-size="13" fill="#5C6570">+ deposits</text>
+  <text x="710" y="164" font-family="Arial, sans-serif" font-size="13" fill="#5C6570">+ expenses</text>
+  <text x="710" y="181" font-family="Arial, sans-serif" font-size="13" fill="#5C6570">Files on payment</text>
+  
+  <!-- Warning Box: No PO = returned -->
+  <rect x="100" y="260" width="600" height="100" rx="12" fill="#FEF2F2" stroke="#DC2626" stroke-width="2"/>
+  <circle cx="130" cy="290" r="20" fill="#DC2626"/>
+  <text x="130" y="298" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="white" text-anchor="middle">!</text>
+  <text x="170" y="288" font-family="Arial, sans-serif" font-size="15" font-weight="600" fill="#DC2626">IP transfers on full payment (unless contract says otherwise)</text>
+  <text x="170" y="315" font-family="Arial, sans-serif" font-size="14" fill="#7F1D1D">Do not hand over files, logins, or source code until the final invoice is paid.</text>
+  <text x="170" y="340" font-family="Arial, sans-serif" font-size="14" fill="#7F1D1D">Client terminated? They still owe you for work done + any kill fees in the contract.</text>
+  
+  <!-- Arrow markers -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#2563EB"/>
+    </marker>
+    <marker id="arrowhead-red" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#DC2626"/>
+    </marker>
+  </defs>
+</svg>
