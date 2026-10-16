@@ -46,6 +46,8 @@ Baseline tag: `qa-before-bank-choices-2026-10-15` (commit `ac26b25`). Every feat
 
 ## Verification limits
 
-The local Stripe OAuth redirect was rejected because the new callback URL is not registered in the platform application. Positive callback/state/ownership/mode cases are covered by automated tests; full Stripe consent remains pending that configuration.
+Sandbox OAuth consent was verified end to end on 16 October 2026 after enabling Standard OAuth and registering the local callback in the SoloPad sandbox. The isolated QA runtime was also corrected to use the sandbox's Test client ID rather than the previously configured client ID. The existing SoloPad sandbox Standard account connected successfully. A GBP 12 test-card checkout routed to that account, charged the GBP 0.24 Solo plan platform fee, and a verified webhook marked the invoice paid. A duplicate webhook did not create another receipt. Starting onboarding again preserved the existing account.
+
+Before production rollout, separately verify the live Connect client ID, enable the intended live OAuth configuration and register the production callback. This verification changed sandbox settings only; no live Stripe settings or production database were changed.
 
 Bank transfers are manually reconciled; automated bank feeds and virtual bank accounts are not included. Stripe test-mode card checkout, mixed receipts, milestones, declines, cancellation and signed webhook replay are checked separately from OAuth consent. Wallet-specific flows and 3DS challenges are not newly certified by this change. Refund state is tracked; retained net revenue after partial refunds remains a separate accounting follow-up.
