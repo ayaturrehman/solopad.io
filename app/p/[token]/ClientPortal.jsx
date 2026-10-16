@@ -1,4 +1,6 @@
 "use client";
+import { bankDetailLines, bankPaymentReference } from "@/lib/bank-transfer";
+import { remainingInvoiceAmount, remainingMilestoneAmount, receivedInvoiceAmount } from "@/lib/invoice-receipts";
 
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
@@ -38,9 +40,9 @@ const FILE_TYPE_MAP = {
   pdf:  { icon: FileText, color: "bg-red-50 text-red-500" },
   doc:  { icon: FileText, color: "bg-blue-50 text-blue-500" },
   docx: { icon: FileText, color: "bg-blue-50 text-blue-500" },
-  xls:  { icon: FileSpreadsheet, color: "bg-green-50 text-green-600" },
-  xlsx: { icon: FileSpreadsheet, color: "bg-green-50 text-green-600" },
-  csv:  { icon: FileSpreadsheet, color: "bg-green-50 text-green-600" },
+  xls:  { icon: FileSpreadsheet, color: "bg-green-50 text-green-700 dark:text-green-400" },
+  xlsx: { icon: FileSpreadsheet, color: "bg-green-50 text-green-700 dark:text-green-400" },
+  csv:  { icon: FileSpreadsheet, color: "bg-green-50 text-green-700 dark:text-green-400" },
   png:  { icon: Image, color: "bg-purple-50 text-purple-500" },
   jpg:  { icon: Image, color: "bg-purple-50 text-purple-500" },
   jpeg: { icon: Image, color: "bg-purple-50 text-purple-500" },
@@ -90,7 +92,7 @@ function FileRow({ file }) {
   );
 }
 
-function InvoiceCard({ invoice }) {
+function InvoiceCard({ invoice, paymentOptions, token }) {
   const [loading, setLoading] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [error, setError] = useState(null);
@@ -102,7 +104,7 @@ function InvoiceCard({ invoice }) {
       const res = await fetch("/api/invoices/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ invoiceId: invoice.id }),
+        body: JSON.stringify({ invoiceId: invoice.id, token }),
       });
       const data = await res.json();
 
@@ -140,12 +142,13 @@ function InvoiceCard({ invoice }) {
 
   const isPaid = invoice.status === "paid";
   const isCancelled = invoice.status === "cancelled";
+  const isRefunded = ["refunded", "partially_refunded"].includes(invoice.status);
   const lineItems = Array.isArray(invoice.lineItems) ? invoice.lineItems : [];
   const subtotal = invoice.subtotal ?? lineItems.reduce((s, item) => s + invoiceLineAmounts(item).amount, 0);
   const hasLineItems = lineItems.length > 0;
 
   return (
-    <div className={`rounded border ${isPaid ? "border-green-200 bg-green-50" : isCancelled ? "border-zinc-100 bg-zinc-50" : "border-zinc-200 bg-white"}`}>
+    <div className={`rounded border ${isPaid ? "border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950" : isCancelled ? "border-zinc-100 bg-zinc-50" : "border-zinc-200 bg-white"}`}>
       {/* Header row */}
       <div className="flex items-start justify-between gap-4 p-5">
         <div>
@@ -160,7 +163,7 @@ function InvoiceCard({ invoice }) {
           {hasLineItems && (
             <button
               onClick={() => setExpanded((v) => !v)}
-              className="mt-2 flex items-center gap-1 text-xs font-medium text-blue-600 hover:underline"
+              className="mt-2 flex items-center gap-1 min-h-8 text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
             >
               {expanded ? <><ChevronUp className="h-3 w-3" /> Hide details</> : <><ChevronDown className="h-3 w-3" /> View details</>}
             </button>
@@ -173,7 +176,7 @@ function InvoiceCard({ invoice }) {
             isCancelled ? "bg-zinc-100 text-zinc-500" :
                           "bg-amber-100 text-amber-700"
           }`}>
-            {isPaid ? "Paid" : isCancelled ? "Cancelled" : invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
+            {isPaid ? "Paid" : isCancelled ? "Cancelled" : receivedInvoiceAmount(invoice) > 0 && !isRefunded ? "Partially paid" : invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1).replaceAll("_", " ")}
           </span>
         </div>
       </div>
@@ -241,16 +244,21 @@ function InvoiceCard({ invoice }) {
       )}
       </AnimatePresence>
 
+      {receivedInvoiceAmount(invoice) > 0 && !isPaid && !isRefunded && <p className="px-5 pb-4 text-sm text-zinc-600">Received {formatCurrency(receivedInvoiceAmount(invoice), invoice.currency)} · Remaining {formatCurrency(remainingInvoiceAmount(invoice), invoice.currency)}</p>}
+      {!isPaid && !isCancelled && !isRefunded && paymentOptions.bankDetails && <section className="space-y-3 px-5 pb-5" aria-label="Bank transfer details"><h3 className="text-sm font-semibold text-zinc-900">Pay by bank transfer</h3><dl className="grid gap-2 text-sm sm:grid-cols-2">{bankDetailLines(paymentOptions.bankDetails).map(([label,value])=><div key={label}><dt className="text-zinc-500">{label}</dt><dd className="break-all font-medium text-zinc-900">{value}</dd></div>)}</dl><p className="text-sm text-zinc-700">Reference: <strong className="break-all">{bankPaymentReference(invoice)}</strong></p><p className="text-sm text-zinc-500">Use this reference when transferring {formatCurrency(remainingInvoiceAmount(invoice), invoice.currency)}. Your invoice updates after the freelancer confirms receipt. For milestones, pay the amount shown for the milestone you are settling.</p></section>}
+      {!isPaid && !isCancelled && !isRefunded && !paymentOptions.online && !paymentOptions.bankDetails && <p className="px-5 pb-5 text-sm text-zinc-500">Contact the freelancer to arrange payment.</p>}
+      {invoice.payments?.length > 0 && <details className="px-5 pb-4 text-sm text-zinc-600"><summary className="cursor-pointer font-medium">Payment history</summary><ul className="mt-2 space-y-2">{invoice.payments.map(p=><li key={p.id}>{formatDate(p.receivedAt)} · {p.method === 'bank_transfer' ? 'Bank transfer' : 'Stripe'} · {formatCurrency(p.amount, invoice.currency)}</li>)}</ul></details>}
+
       {/* Milestone payments */}
       {invoice.paymentPlans?.length > 0 && !isCancelled && (
-        <MilestoneList milestones={invoice.paymentPlans} invoiceId={invoice.id} currency={invoice.currency} />
+        <MilestoneList milestones={invoice.paymentPlans} invoiceId={invoice.id} currency={invoice.currency} online={paymentOptions.online && !isRefunded && !isPaid} token={token} />
       )}
 
       {/* Pay button — only show for non-milestone invoices */}
-      {!isPaid && !isCancelled && (!invoice.paymentPlans || invoice.paymentPlans.length === 0) && (
+      {paymentOptions.online && !isPaid && !isCancelled && !isRefunded && (!invoice.paymentPlans || invoice.paymentPlans.length === 0) && (
         <div className="border-t border-zinc-100 px-5 pb-5 pt-4">
           {error && (
-            <div className="mb-3 flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+            <div className="mb-3 flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 dark:border-red-900 dark:bg-red-950 p-3 text-sm text-red-700">
               <svg className="mt-0.5 h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
               <span>{error}</span>
             </div>
@@ -262,14 +270,14 @@ function InvoiceCard({ invoice }) {
               </button>
             )}
             <button onClick={handlePay} disabled={loading} className="rounded bg-green-600 px-5 py-2 text-sm font-semibold text-white hover:bg-green-700 disabled:opacity-50 shadow-sm">
-              {loading ? "Redirecting…" : error ? "Try again" : `Pay ${formatCurrency(invoice.total, invoice.currency)}`}
+              {loading ? "Redirecting…" : error ? "Try again" : `Pay ${formatCurrency(remainingInvoiceAmount(invoice), invoice.currency)}`}
             </button>
           </div>
         </div>
       )}
       {isPaid && (
-        <div className="border-t border-green-100 px-5 pb-4 pt-3">
-          <p className="flex items-center gap-1.5 text-sm font-medium text-green-600">
+        <div className="border-t border-green-100 dark:border-green-900 px-5 pb-4 pt-3">
+          <p className="flex items-center gap-1.5 text-sm font-medium text-green-700 dark:text-green-400">
             <CheckCircle className="h-4 w-4" /> Payment received — thank you!
           </p>
         </div>
@@ -278,7 +286,7 @@ function InvoiceCard({ invoice }) {
   );
 }
 
-function MilestoneList({ milestones, invoiceId, currency }) {
+function MilestoneList({ milestones, invoiceId, currency, online, token }) {
   const [loadingId, setLoadingId] = useState(null);
   const [error, setError] = useState(null);
 
@@ -289,7 +297,7 @@ function MilestoneList({ milestones, invoiceId, currency }) {
       const res = await fetch(`/api/invoices/${invoiceId}/milestones/checkout`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ milestoneId }),
+        body: JSON.stringify({ milestoneId, token }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -316,30 +324,30 @@ function MilestoneList({ milestones, invoiceId, currency }) {
         Payment milestones ({paidCount}/{milestones.length} paid)
       </p>
       {error && (
-        <div className="mb-2 rounded border border-red-200 bg-red-50 p-2 text-xs text-red-700">{error}</div>
+        <div className="mb-2 rounded border border-red-200 bg-red-50 dark:border-red-900 dark:bg-red-950 p-2 text-xs text-red-700">{error}</div>
       )}
       <div className="space-y-2">
         {milestones.map((m) => {
           const isPaid = m.status === "paid";
           const isOverdue = !isPaid && m.dueDate && new Date(m.dueDate) < new Date();
           return (
-            <div key={m.id} className={`flex items-center justify-between rounded border p-3 ${isPaid ? "border-green-200 bg-green-50" : isOverdue ? "border-red-200 bg-red-50" : "border-zinc-200"}`}>
+            <div key={m.id} className={`flex items-center justify-between rounded border p-3 ${isPaid ? "border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950" : isOverdue ? "border-red-200 bg-red-50 dark:border-red-900 dark:bg-red-950" : "border-zinc-200"}`}>
               <div>
-                <p className={`text-sm font-medium ${isPaid ? "text-green-700" : "text-zinc-900"}`}>
+                <p className={`text-sm font-medium ${isPaid ? "text-green-700 dark:text-green-300" : "text-zinc-900"}`}>
                   {isPaid && <CheckCircle className="mr-1 inline h-3.5 w-3.5" />}
                   {m.label || "Milestone"}
                 </p>
                 {m.dueDate && (
-                  <p className={`text-xs ${isOverdue ? "text-red-500 font-medium" : "text-zinc-400"}`}>
+                  <p className={`text-xs ${isOverdue ? "text-red-600 dark:text-red-300 font-medium" : "text-zinc-400"}`}>
                     {isOverdue ? "Overdue — " : ""}Due {formatDate(m.dueDate)}
                   </p>
                 )}
               </div>
               <div className="flex items-center gap-3">
-                <span className={`text-sm font-semibold ${isPaid ? "text-green-600" : "text-zinc-900"}`}>
-                  {formatCurrency(m.amount, currency)}
+                <span className={`text-sm font-semibold ${isPaid ? "text-green-700 dark:text-green-400" : "text-zinc-900"}`}>
+                  {formatCurrency(isPaid ? m.amount : remainingMilestoneAmount(m), currency)}
                 </span>
-                {!isPaid && (
+                {online && !isPaid && (
                   <button
                     onClick={() => handlePayMilestone(m.id)}
                     disabled={loadingId === m.id}
@@ -357,7 +365,7 @@ function MilestoneList({ milestones, invoiceId, currency }) {
   );
 }
 
-export default function ClientPortal({ project, files, comments: initialComments, invoices, notes = [], contracts = [], proposals = [], initialTab = "overview" }) {
+export default function ClientPortal({ project, files, comments: initialComments, invoices, notes = [], contracts = [], proposals = [], initialTab = "overview", paymentOptions }) {
   const storedName = typeof window !== "undefined" ? localStorage.getItem("portalClientName") : "";
   const [clientName, setClientName] = useState(storedName || "");
   const [body, setBody] = useState("");
@@ -369,18 +377,10 @@ export default function ClientPortal({ project, files, comments: initialComments
   const messagesEndRef = useRef(null);
 
   const currentStep = STATUS_ORDER.indexOf(project.status);
-  const unpaidInvoices = invoices.filter((i) => i.status !== "paid" && i.status !== "cancelled");
+  const unpaidInvoices = invoices.filter((i) => !["paid", "cancelled", "refunded", "partially_refunded"].includes(i.status));
   const paidInvoices = invoices.filter((i) => i.status === "paid");
 
-  // Calculate outstanding amount — for milestone invoices, only count unpaid milestones
-  function getOutstandingAmount(inv) {
-    if (inv.paymentPlans?.length > 0) {
-      return inv.paymentPlans
-        .filter((m) => m.status !== "paid")
-        .reduce((s, m) => s + m.amount, 0);
-    }
-    return inv.total;
-  }
+  const getOutstandingAmount = remainingInvoiceAmount;
   const outstandingLabel = formatCurrencyTotals(unpaidInvoices.map(i => ({ currency: i.currency, total: getOutstandingAmount(i) })));
 
   // SSE — connect once on mount, receive new messages instantly
@@ -441,11 +441,12 @@ export default function ClientPortal({ project, files, comments: initialComments
   }
 
   return (
-    <div className="min-h-screen bg-zinc-50">
+    <div className="client-portal min-h-screen bg-zinc-50">
       {/* Header */}
       <header className="sticky top-0 z-30 border-b border-zinc-200 bg-white">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
-          <BrandLogo className="gap-0 opacity-90" markClassName="h-5 w-5" textClassName="text-base font-black text-zinc-700" />
+          <BrandLogo className="gap-0 dark:hidden" markClassName="h-5 w-5" />
+          <BrandLogo dark className="hidden gap-0 dark:flex" markClassName="h-5 w-5" />
           <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
             project.status === "complete"    ? "bg-green-100 text-green-700" :
             project.status === "in_review"   ? "bg-blue-100 text-blue-700" :
@@ -477,7 +478,7 @@ export default function ClientPortal({ project, files, comments: initialComments
               <span className="flex items-center gap-1.5"><Calendar className="h-4 w-4" />Due {formatDate(project.endDate)}</span>
             )}
             {paidInvoices.length > 0 && (
-              <span className="flex items-center gap-1.5 text-green-600">
+              <span className="flex items-center gap-1.5 text-green-700 dark:text-green-400">
                 <CheckCircle className="h-4 w-4" />{paidInvoices.length} invoice{paidInvoices.length > 1 ? "s" : ""} paid
               </span>
             )}
@@ -578,7 +579,7 @@ export default function ClientPortal({ project, files, comments: initialComments
               </div>
 
               {files.length > 0 && (
-                <div className="rounded border border-zinc-200 bg-white p-5">
+                <div className="surface-card rounded bg-white p-5">
                   <div className="mb-4 flex items-center justify-between">
                     <h2 className="font-semibold text-zinc-900">Recent files</h2>
                     <button onClick={() => setActiveTab("files")} className="text-xs text-zinc-400 hover:text-zinc-700">View all</button>
@@ -590,7 +591,7 @@ export default function ClientPortal({ project, files, comments: initialComments
               )}
 
               {messages.length > 0 && (
-                <div className="rounded border border-zinc-200 bg-white p-5">
+                <div className="surface-card rounded bg-white p-5">
                   <div className="mb-4 flex items-center justify-between">
                     <h2 className="font-semibold text-zinc-900">Latest message</h2>
                     <button onClick={() => setActiveTab("messages")} className="text-xs text-zinc-400 hover:text-zinc-700">View all</button>
@@ -616,7 +617,7 @@ export default function ClientPortal({ project, files, comments: initialComments
             {/* Sidebar */}
             <div className="space-y-5">
               {invoices.length > 0 && (
-                <div className="rounded border border-zinc-200 bg-white p-5">
+                <div className="surface-card rounded bg-white p-5">
                   <h2 className="mb-4 font-semibold text-zinc-900">Billing</h2>
                   <dl className="divide-y divide-zinc-100">
                     <div className="flex justify-between py-2.5 text-sm">
@@ -629,7 +630,7 @@ export default function ClientPortal({ project, files, comments: initialComments
                     </div>
                     <div className="flex justify-between py-2.5 text-sm">
                       <dt className="text-zinc-500">Paid</dt>
-                      <dd className="font-medium text-green-600">{formatCurrencyTotals(paidInvoices)}</dd>
+                      <dd className="font-medium text-green-700 dark:text-green-400">{formatCurrencyTotals(paidInvoices)}</dd>
                     </div>
                   </dl>
                   {unpaidInvoices.length > 0 && (
@@ -640,7 +641,7 @@ export default function ClientPortal({ project, files, comments: initialComments
                 </div>
               )}
 
-              <div className="rounded border border-zinc-200 bg-white p-5">
+              <div className="surface-card rounded bg-white p-5">
                 <h2 className="mb-1 font-semibold text-zinc-900">Got a question?</h2>
                 <p className="mb-3 text-xs text-zinc-400">Send a message and we&apos;ll get back to you.</p>
                 <button onClick={() => setActiveTab("messages")} className="flex w-full items-center justify-center gap-2 rounded border border-zinc-200 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50">
@@ -662,7 +663,7 @@ export default function ClientPortal({ project, files, comments: initialComments
             ) : (
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {files.map((file) => (
-                  <div key={file.id} className="flex items-start gap-3 rounded border border-zinc-200 bg-white p-4">
+                  <div key={file.id} className="surface-card flex items-start gap-3 rounded bg-white p-4">
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded bg-zinc-100">
                       <FileText className="h-5 w-5 text-zinc-400" />
                     </div>
@@ -672,7 +673,7 @@ export default function ClientPortal({ project, files, comments: initialComments
                       <a
                         href={`/api/files/${file.projectId}/${encodeURIComponent(file.name)}`}
                         download={file.name}
-                        className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-blue-600 hover:underline"
+                        className="mt-2 inline-flex items-center gap-1 min-h-8 text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
                       >
                         <Download className="h-3 w-3" /> Download
                       </a>
@@ -693,7 +694,7 @@ export default function ClientPortal({ project, files, comments: initialComments
                 const isExpanded = expandedNoteId === note.id;
                 const isLong = stripHtml(note.body).length > 300;
                 return (
-                  <div key={note.id} className="rounded border border-zinc-200 bg-white p-5">
+                  <div key={note.id} className="surface-card rounded bg-white p-5">
                     {note.title && <p className="mb-2 font-semibold text-zinc-900">{note.title}</p>}
                     <div
                       className={`prose prose-sm max-w-none text-sm text-zinc-600 ${!isExpanded && isLong ? "max-h-32 overflow-hidden" : ""}`}
@@ -716,7 +717,7 @@ export default function ClientPortal({ project, files, comments: initialComments
         {activeTab === "messages" && (
           <div className="mx-auto max-w-2xl">
             <h2 className="mb-5 text-lg font-semibold text-zinc-900">Messages</h2>
-            <div className="rounded border border-zinc-200 bg-white">
+            <div className="surface-card rounded bg-white">
               <div className="max-h-[480px] space-y-4 overflow-y-auto p-5 scrollbar-hide">
                 {messages.length === 0 && (
                   <p className="py-8 text-center text-sm text-zinc-400">No messages yet. Start the conversation below.</p>
@@ -789,12 +790,12 @@ export default function ClientPortal({ project, files, comments: initialComments
                   ? `/contracts/${contract.id}/sign/${contract.signingToken}`
                   : null;
                 return (
-                  <div key={contract.id} className="rounded border border-zinc-200 bg-white p-5">
+                  <div key={contract.id} className="surface-card rounded bg-white p-5">
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex items-start gap-3">
                         <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded ${isSigned ? "bg-green-100" : "bg-zinc-100"}`}>
                           {isSigned
-                            ? <FileCheck2 className="h-5 w-5 text-green-600" />
+                            ? <FileCheck2 className="h-5 w-5 text-green-700 dark:text-green-400" />
                             : <FileSignature className="h-5 w-5 text-zinc-400" />}
                         </div>
                         <div>
@@ -825,7 +826,7 @@ export default function ClientPortal({ project, files, comments: initialComments
                         )}
                         {isSigned && (
                           <>
-                            <span className="flex items-center gap-1.5 text-sm text-green-600">
+                            <span className="flex items-center gap-1.5 text-sm text-green-700 dark:text-green-400">
                               <CheckCircle className="h-4 w-4" /> Signed
                             </span>
                             <a
@@ -858,7 +859,7 @@ export default function ClientPortal({ project, files, comments: initialComments
                   declined: "bg-red-100 text-red-600",
                 };
                 return (
-                  <div key={proposal.id} className="rounded border border-zinc-200 bg-white p-5">
+                  <div key={proposal.id} className="surface-card rounded bg-white p-5">
                     <div className="flex items-start justify-between gap-4">
                       <div>
                         <p className="font-semibold text-zinc-900">{proposal.title}</p>
@@ -887,7 +888,7 @@ export default function ClientPortal({ project, files, comments: initialComments
           <div>
             <h2 className="mb-5 text-lg font-semibold text-zinc-900">Invoices</h2>
             <div className="space-y-4 max-w-xl">
-              {invoices.map((invoice) => <InvoiceCard key={invoice.id} invoice={invoice} />)}
+              {invoices.map((invoice) => <InvoiceCard key={invoice.id} invoice={invoice} paymentOptions={paymentOptions} token={project.portalToken} />)}
             </div>
           </div>
         )}

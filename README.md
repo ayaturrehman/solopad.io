@@ -548,61 +548,17 @@ draft → sent → paid
 
 ## Stripe Integration
 
-### Stripe Connect (Freelancer linking their account)
+### Freelancer payment choices
 
-Freelancers connect their own Stripe account so that invoice payments go directly to them.
+Settings → Payments supports Stripe payments, direct bank transfer, or both. New Stripe accounts use Express onboarding; existing Standard accounts use a user-bound OAuth flow. Direct bank transfers use saved bank details and unique invoice references, with confirmed partial receipts recorded by the freelancer.
 
-```
-Freelancer clicks "Connect with Stripe" in Settings
-  → GET /api/settings/stripe/connect
-  → Redirects to https://connect.stripe.com/oauth/v2/authorize
-    with client_id=STRIPE_CLIENT_ID, scope=read_write, state=userId, redirect_uri
-
-Stripe redirects to GET /api/settings/stripe/callback?code=...&state=userId
-  → POST https://connect.stripe.com/oauth/token  (raw fetch — SDK v20 removed oauth.token())
-  → Receives stripe_user_id (connected account ID)
-  → stripe.accounts.retrieve(accountId) — checks charges_enabled
-  → Saves stripeAccountId + stripeOnboarded to User record
-  → Redirects to /settings?stripe=connected
-```
-
-**Environment variables required**:
-```
-STRIPE_SECRET_KEY=sk_test_...    (PortalKit platform secret key)
-STRIPE_CLIENT_ID=ca_...          (PortalKit Connect client ID — from Stripe Dashboard → Connect → Settings)
-```
-
-**Redirect URI** must be registered in Stripe Dashboard → Connect → Settings → Redirects:
-```
-http://localhost:3000/api/settings/stripe/callback    (development)
-https://yourdomain.com/api/settings/stripe/callback   (production)
-```
+See [freelancer payment setup, migrations, verification and rollback](docs/freelancer-payment-choices.md). The OAuth callback is `/api/settings/stripe/oauth/callback` and must be registered in the matching Stripe Connect application. `STRIPE_CONNECT_CLIENT_ID` and the legacy `STRIPE_CLIENT_ID` environment variable are supported.
 
 ### Invoice Payment Flow
 
-```
-Client clicks "Pay Now" on portal or invoice
-  → POST /api/invoices/checkout { invoiceId }
-  → Creates Stripe Checkout Session
-      mode: "payment"
-      automatic_payment_methods: { enabled: true }
-      line_items: mapped from invoice.lineItems
-      customer_email: project.clientEmail
-  → If freelancer has connected Stripe (stripeOnboarded = true):
-      payment_intent_data.transfer_data.destination = freelancer.stripeAccountId
-      application_fee_amount = 2% of total (platform fee to PortalKit)
-  → Returns { url: checkoutUrl }
-  → Client is redirected to Stripe-hosted checkout page
-  → On success: redirected to /payment/success?invoiceId=...
+A private portal token authorizes checkout for an invoice or milestone. Checkout locks the invoice, expires superseded payment links and charges only the remaining balance in currency minor units. Payments route to the connected freelancer account with the plan-based SoloPad platform fee.
 
-Stripe fires checkout.session.completed webhook
-  → POST /api/webhooks/stripe
-  → Verify signature with STRIPE_WEBHOOK_SECRET
-  → Find invoice by stripeSessionId
-  → Update invoice status to "paid", set paidAt
-  → Create Notification record for freelancer
-  → Send payment confirmation email via Resend
-```
+A verified paid Stripe webhook (or an exact paid-session lookup on return) records one receipt and updates the balance. Delayed payments remain pending until confirmed. Bank transfers use the same receipt history after the freelancer confirms funds arrived. Repeated requests and webhook deliveries do not credit a payment twice.
 
 ---
 

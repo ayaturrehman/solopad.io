@@ -22,6 +22,7 @@ const STATUS_CONFIG = {
 
 function getDisplayStatus(inv) {
   if (inv.status === "paid") return "paid";
+  if (["sent","viewed","overdue"].includes(inv.status) && inv.amountPaid > 0) return "partially_paid";
   if (inv.paymentPlans?.length > 0) {
     const paidCount = inv.paymentPlans.filter((m) => m.status === "paid").length;
     if (paidCount > 0 && paidCount < inv.paymentPlans.length) return "partially_paid";
@@ -224,7 +225,7 @@ export default function InvoicesClient({ invoices }) {
                 </td>
                 <td className="px-5 py-4 text-right text-sm font-semibold text-zinc-900">
                   {formatCurrency(inv.total, inv.currency)}
-                  {displayStatus === "partially_paid" && (
+                  {displayStatus === "partially_paid" && inv.paymentPlans?.length > 0 && (
                     <p className="text-xs font-normal text-amber-600 mt-0.5">
                       {inv.paymentPlans.filter((m) => m.status === "paid").length}/{inv.paymentPlans.length} paid
                     </p>

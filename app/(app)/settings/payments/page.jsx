@@ -11,6 +11,9 @@ export default async function PaymentsPage() {
     where: { id: session.user.id },
     select: {
       paymentMethods: true,
+      stripePaymentsEnabled: true,
+      bankTransferEnabled: true,
+      bankDetails: true,
       stripeAccountId: true,
       stripeOnboarded: true,
     },
@@ -25,6 +28,9 @@ export default async function PaymentsPage() {
         onboarded: !!user.stripeOnboarded,
         accountId: user.stripeAccountId || null,
       }}
+      initialBank={{ enabled: user.bankTransferEnabled, details: user.bankDetails || {} }}
+      stripePaymentsEnabled={user.stripePaymentsEnabled}
+      existingStripeAvailable={!!(process.env.STRIPE_CONNECT_CLIENT_ID || process.env.STRIPE_CLIENT_ID)}
       paymentMethods={(user.paymentMethods || "card").split(",")}
     />
   );

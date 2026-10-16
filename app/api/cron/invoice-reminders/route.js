@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import { outstandingInvoiceAmount } from "@/lib/invoice-status";
+import { formatCurrency } from "@/lib/utils";
 import db from "@/lib/db";
 import { sendNotificationEmail } from "@/lib/email";
 
@@ -69,7 +71,7 @@ export async function POST(req) {
           variables: {
             clientName: project.contact.name || "there",
             invoiceNumber,
-            amount: `$${inv.total?.toFixed(2) || "0.00"}`,
+            amount: formatCurrency(outstandingInvoiceAmount(inv), inv.currency),
             dueDate: new Date(inv.dueDate).toLocaleDateString(),
             daysOverdue: String(daysOverdue),
             payLink: `${appUrl}/pay/${inv.id}`,

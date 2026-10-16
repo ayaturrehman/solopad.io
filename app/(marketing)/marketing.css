@@ -1,3 +1,9 @@
+/* Share the product brand family across marketing and application pages. */
+.mk {
+  --font-display: var(--font-kumbh-sans);
+  --font-body: var(--font-kumbh-sans);
+}
+
 /* SoloPad marketing — editorial type + layout system
    Display: Newsreader (serif)  |  Body/UI: Source Sans 3
    Skills: web-typography, web-design-guidelines, frontend-design */

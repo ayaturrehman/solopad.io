@@ -1,198 +1,277 @@
 "use client";
-
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { Suspense } from "react";
 import { Card, CardHeader, CardBody } from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
-import { AlertCircle, Check, CheckCircle2, CreditCard, Link2, Link2Off, Clock, Banknote } from "lucide-react";
-
-const PAYMENT_OPTIONS = [
-  { id: "card", label: "Credit / Debit Card", description: "Visa, Mastercard, Amex - includes Apple Pay & Google Pay", required: true },
-  { id: "paypal", label: "PayPal", description: "Let clients pay via their PayPal account", required: false },
-  { id: "klarna", label: "Klarna", description: "Buy now, pay later - clients split into instalments", required: false },
+import Input from "@/components/ui/Input";
+const fields = [
+  ["accountName", "Account holder name"],
+  ["bankName", "Bank name"],
+  ["sortCode", "Sort code"],
+  ["accountNumber", "Account number"],
+  ["iban", "IBAN"],
+  ["bic", "BIC / SWIFT"],
 ];
-
-function PaymentsContent({ stripe: initialStripe, paymentMethods: initialMethods }) {
-  const searchParams = useSearchParams();
-  const stripeParam = searchParams?.get("stripe");
-  const stripeMsg = searchParams?.get("msg");
-
+function PaymentsContent({
+  stripe: initialStripe,
+  paymentMethods,
+  initialBank,
+  stripePaymentsEnabled,
+  existingStripeAvailable,
+}) {
+  const query = useSearchParams();
   const [stripe, setStripe] = useState(initialStripe);
-  const [methods, setMethods] = useState(initialMethods);
-  const [savingPayments, setSavingPayments] = useState(false);
-  const [savedPayments, setSavedPayments] = useState(false);
-  const [disconnecting, setDisconnecting] = useState(false);
-
-  function toggleMethod(id) {
-    if (id === "card") return;
-    setMethods((prev) => (prev.includes(id) ? prev.filter((m) => m !== id) : [...prev, id]));
+  const [online, setOnline] = useState(stripePaymentsEnabled);
+  const [bank, setBank] = useState(initialBank.enabled);
+  const [details, setDetails] = useState(initialBank.details);
+  const [methods, setMethods] = useState(paymentMethods);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  const [saved, setSaved] = useState(false);
+  async function save(event) {
+    event.preventDefault();
+    setBusy(true);
+    setError("");
+    setSaved(false);
+    try {
+      const res = await fetch("/api/settings/payments", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          paymentMethods: methods,
+          stripePaymentsEnabled: online,
+          bankTransferEnabled: bank,
+          bankDetails: details,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok)
+        throw new Error(data.error || "Could not save payment settings.");
+      setSaved(true);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(false);
+    }
   }
-
-  async function savePayments() {
-    setSavingPayments(true);
-    await fetch("/api/settings/payments", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ paymentMethods: methods }),
-    });
-    setSavedPayments(true);
-    setSavingPayments(false);
-    setTimeout(() => setSavedPayments(false), 2000);
+  async function disconnect() {
+    if (
+      !confirm(
+        "Disconnect Stripe from SoloPad? Your Stripe account is kept. Saved bank transfer settings are kept.",
+      )
+    )
+      return;
+    setBusy(true);
+    setError("");
+    try {
+      const res = await fetch("/api/settings/stripe/disconnect", {
+        method: "POST",
+      });
+      const data = await res.json();
+      if (!res.ok)
+        throw new Error(data.error || "Could not disconnect Stripe.");
+      setStripe({ connected: false, onboarded: false });
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(false);
+    }
   }
-
-  async function disconnectStripe() {
-    if (!confirm("Disconnect your bank account? Clients will no longer be able to pay invoices until you reconnect.")) return;
-    setDisconnecting(true);
-    await fetch("/api/settings/stripe/disconnect", { method: "POST" });
-    setStripe({ connected: false, onboarded: false, accountId: null });
-    setDisconnecting(false);
+  function changed() {
+    setSaved(false);
   }
-
   return (
-    <div className="space-y-6">
-      {stripeParam === "connected" && (
-        <div className="flex items-center gap-2 rounded border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
-          <CheckCircle2 className="h-4 w-4 shrink-0" />
-          Bank account connected successfully. You can now receive payments.
-        </div>
+    <form onSubmit={save} onChange={changed} className="space-y-6">
+      <p className="text-sm text-zinc-500">
+        Accept online payments, bank transfers, or both. These settings apply to
+        client invoices. Your SoloPad subscription is separate.
+      </p>
+      {query.get("stripe") === "error" && (
+        <p role="alert" className="text-sm text-red-600">
+          Stripe connection could not be completed. Please retry or contact
+          support.
+        </p>
       )}
-      {stripeParam === "incomplete" && (
-        <div className="flex items-center gap-2 rounded border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
-          <Clock className="h-4 w-4 shrink-0" />
-          Setup incomplete. Click below to finish connecting your bank account.
-        </div>
+      {query.get("stripe") === "connected" && stripe.onboarded && (
+        <p role="status" className="text-sm text-green-700">
+          Stripe connected successfully.
+        </p>
       )}
-      {stripeParam === "error" && (
-        <div className="flex items-center gap-2 rounded border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-          <AlertCircle className="h-4 w-4 shrink-0" />
-          Connection failed{stripeMsg ? `: ${stripeMsg}` : ". Please try again."}
-        </div>
-      )}
-
-      {/* Payment Account */}
       <Card>
         <CardHeader>
-          <div className="flex items-center gap-2">
-            <Banknote className="h-4 w-4 text-zinc-500" />
-            <h2 className="font-semibold text-zinc-900">Get Paid</h2>
-          </div>
-          <p className="mt-0.5 text-xs text-zinc-400">
-            Connect your bank account to receive client payments. When a client pays an invoice, the money is deposited directly to your bank account within 2-3 business days.
+          <h2 className="font-semibold text-zinc-900">Stripe payments</h2>
+          <p className="mt-1 text-sm text-zinc-500">
+            Clients pay online. Verified Stripe payments automatically update
+            your invoices.
           </p>
         </CardHeader>
-        <CardBody>
-          {stripe.connected && stripe.onboarded ? (
+        <CardBody className="space-y-4">
+          <label className="flex items-center gap-3 text-sm font-medium text-zinc-900">
+            <input
+              type="checkbox"
+              checked={online}
+              onChange={(e) => setOnline(e.target.checked)}
+              className="h-4 w-4 accent-zinc-900"
+            />
+            Enable Stripe payments
+          </label>
+          {stripe.connected ? (
             <div className="space-y-3">
-              <div className="flex items-center gap-2 rounded border border-green-200 bg-green-50 px-3 py-2">
-                <div className="h-2 w-2 rounded-full bg-green-500" />
-                <span className="text-sm font-medium text-green-700">
-                  Connected and active — ready to receive payments
-                </span>
-              </div>
-              <div className="rounded border border-zinc-100 bg-zinc-50 px-3 py-2.5">
-                <p className="text-xs text-zinc-500">
-                  Client payments are processed securely via Stripe. Funds are deposited to your bank account within 2-3 business days after payment. A small platform fee is deducted based on your plan.
-                </p>
-              </div>
-              <Button variant="secondary" size="sm" onClick={disconnectStripe} loading={disconnecting}>
-                <Link2Off className="mr-1.5 h-3.5 w-3.5" /> Disconnect bank account
-              </Button>
-            </div>
-          ) : stripe.connected && !stripe.onboarded ? (
-            <div className="space-y-3">
-              <div className="flex items-center gap-2 rounded border border-amber-200 bg-amber-50 px-3 py-2">
-                <Clock className="h-4 w-4 text-amber-600" />
-                <span className="text-sm font-medium text-amber-700">
-                  Setup incomplete — finish adding your bank details
-                </span>
-              </div>
-              <p className="text-sm text-zinc-500">
-                You started the setup but didn&apos;t finish. Click below to complete adding your bank account details.
+              <p className="text-sm text-zinc-600">
+                {stripe.onboarded
+                  ? "Stripe connected and ready."
+                  : "Stripe setup is incomplete. Finish onboarding to accept online payments."}
               </p>
-              <a
-                href="/api/settings/stripe/connect"
-                className="inline-flex items-center gap-2 rounded bg-zinc-900 px-3 py-2 text-sm font-semibold text-white hover:bg-zinc-800"
-              >
-                <Link2 className="h-4 w-4" /> Complete setup
-              </a>
+              {!stripe.onboarded && (
+                <a
+                  href="/api/settings/stripe/connect"
+                  className="inline-block text-sm font-medium text-blue-600 hover:underline"
+                >
+                  Complete Stripe setup
+                </a>
+              )}
+              <div>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  onClick={disconnect}
+                  disabled={busy}
+                >
+                  Disconnect Stripe
+                </Button>
+              </div>
             </div>
           ) : (
             <div className="space-y-3">
-              <p className="text-sm text-zinc-500">
-                Connect your bank account to start accepting client payments. The setup takes about 2 minutes — you&apos;ll need your bank details and basic business information.
-              </p>
-              <div className="rounded border border-zinc-100 bg-zinc-50 px-3 py-2.5">
-                <p className="text-xs font-medium text-zinc-700 mb-1">How it works</p>
-                <ol className="text-xs text-zinc-500 space-y-1 list-decimal list-inside">
-                  <li>You add your bank account details (takes 2 minutes)</li>
-                  <li>Clients pay your invoices with card, Apple Pay, or Google Pay</li>
-                  <li>Money is deposited to your bank within 2-3 business days</li>
-                  <li>Stripe processing fees depend on your account, payment method and currency. A plan-based SoloPad platform fee also applies (Starter 3%, Solo 2%, Pro 1%).</li>
-                </ol>
+              <div className="flex flex-wrap gap-3">
+                <a
+                  href="/api/settings/stripe/connect"
+                  className="inline-flex items-center rounded bg-zinc-900 px-4 py-2 text-sm font-semibold text-white hover:bg-zinc-800"
+                >
+                  Set up Stripe payments
+                </a>
+                {existingStripeAvailable && (
+                  <a
+                    href="/api/settings/stripe/oauth"
+                    className="inline-flex items-center rounded border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50"
+                  >
+                    Connect existing Stripe account
+                  </a>
+                )}
               </div>
-              <a
-                href="/api/settings/stripe/connect"
-                className="inline-flex items-center gap-2 rounded bg-zinc-900 px-3 py-2 text-sm font-semibold text-white hover:bg-zinc-800"
-              >
-                <Link2 className="h-4 w-4" /> Connect bank account
-              </a>
+              {!existingStripeAvailable && (
+                <p className="text-sm text-zinc-500">
+                  Existing account connections need SoloPad support to finish
+                  the Stripe platform setup.
+                </p>
+              )}
             </div>
+          )}
+          <p className="text-sm text-zinc-500">
+            Stripe processing fees and your plan’s SoloPad platform fee apply.
+            Payout timing is determined by Stripe.
+          </p>
+          {online && (
+            <fieldset className="space-y-3">
+              <legend className="mb-2 text-sm font-medium text-zinc-700">
+                Online payment methods
+              </legend>
+              {[
+                ["card", "Card (includes eligible Apple Pay and Google Pay)"],
+                ["paypal", "PayPal"],
+                ["klarna", "Klarna"],
+              ].map(([id, label]) => (
+                <label
+                  key={id}
+                  className="flex items-center gap-3 text-sm text-zinc-700"
+                >
+                  <input
+                    type="checkbox"
+                    className="h-4 w-4 accent-zinc-900"
+                    checked={methods.includes(id)}
+                    disabled={id === "card"}
+                    onChange={() =>
+                      setMethods((prev) =>
+                        prev.includes(id)
+                          ? prev.filter((m) => m !== id)
+                          : [...prev, id],
+                      )
+                    }
+                  />
+                  {label}
+                </label>
+              ))}
+              <p className="text-xs text-zinc-500">
+                Availability depends on Stripe, your country and the invoice
+                currency.
+              </p>
+            </fieldset>
           )}
         </CardBody>
       </Card>
-
-      {/* Payment Methods */}
       <Card>
         <CardHeader>
-          <div className="flex items-center gap-2">
-            <CreditCard className="h-4 w-4 text-zinc-500" />
-            <h2 className="font-semibold text-zinc-900">Client Payment Methods</h2>
-          </div>
-          <p className="mt-0.5 text-xs text-zinc-400">Choose how clients can pay their invoices.</p>
+          <h2 className="font-semibold text-zinc-900">Direct bank transfer</h2>
+          <p className="mt-1 text-sm text-zinc-500">
+            Clients pay directly to your bank. Record the payment only after you
+            see the funds in your account.
+          </p>
         </CardHeader>
-        <CardBody className="space-y-3">
-          {!stripe.connected && (
-            <div className="flex items-start gap-2 rounded border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700">
-              <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-              Connect your bank account above before enabling payment methods.
-            </div>
+        <CardBody className="space-y-4">
+          <label className="flex items-center gap-3 text-sm font-medium text-zinc-900">
+            <input
+              type="checkbox"
+              checked={bank}
+              onChange={(e) => setBank(e.target.checked)}
+              className="h-4 w-4 accent-zinc-900"
+            />
+            Enable bank transfers
+          </label>
+          {bank && (
+            <>
+              <p className="text-sm text-zinc-500">
+                Enter UK sort code and account number, or an IBAN. These details
+                appear on invoices, PDFs and private client payment pages.
+              </p>
+              <div className="grid gap-4 sm:grid-cols-2">
+                {fields.map(([key, label]) => (
+                  <Input
+                    key={key}
+                    label={label}
+                    required={key === "accountName"}
+                    maxLength={150}
+                    value={details[key] || ""}
+                    onChange={(e) =>
+                      setDetails({ ...details, [key]: e.target.value })
+                    }
+                  />
+                ))}
+              </div>
+              <p className="text-sm text-zinc-500">
+                Bank transfers do not require Stripe. SoloPad does not deduct a
+                transaction fee from these transfers; bank fees may apply.
+              </p>
+            </>
           )}
-          {PAYMENT_OPTIONS.map((option) => {
-            const enabled = methods.includes(option.id);
-            return (
-              <label
-                key={option.id}
-                className={`flex cursor-pointer items-start gap-3 rounded border p-3.5 transition-colors ${
-                  enabled ? "border-zinc-900 bg-zinc-50" : "border-zinc-200 bg-white"
-                } ${option.required ? "cursor-default" : ""}`}
-              >
-                <input
-                  type="checkbox"
-                  checked={enabled}
-                  disabled={option.required}
-                  onChange={() => toggleMethod(option.id)}
-                  className="mt-0.5 h-4 w-4 rounded border-zinc-300 accent-zinc-900"
-                />
-                <div>
-                  <p className="text-sm font-medium text-zinc-900">
-                    {option.label}
-                    {option.required && <span className="ml-2 text-xs text-zinc-400">(required)</span>}
-                  </p>
-                  <p className="text-xs text-zinc-500">{option.description}</p>
-                </div>
-              </label>
-            );
-          })}
-          <Button size="sm" onClick={savePayments} loading={savingPayments}>
-            {savedPayments ? <><Check className="h-4 w-4" /> Saved</> : "Save payment methods"}
-          </Button>
         </CardBody>
       </Card>
-    </div>
+      {error && (
+        <p role="alert" className="text-sm text-red-600">
+          {error}
+        </p>
+      )}
+      {saved && (
+        <p role="status" className="text-sm text-green-700">
+          Payment settings saved.
+        </p>
+      )}
+      <Button type="submit" loading={busy}>
+        Save payment settings
+      </Button>
+    </form>
   );
 }
-
 export default function PaymentsClient(props) {
   return (
     <Suspense>

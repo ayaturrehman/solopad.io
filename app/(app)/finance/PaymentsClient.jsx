@@ -6,7 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 import CollectionPageHeader, { collectionPageHeaderPrimaryActionClassName } from "@/components/shared/CollectionPageHeader";
 import { CollectionDataTable, CollectionEmptyState } from "@/components/shared/CollectionDataTable";
-import { formatCurrency, formatDate } from "@/lib/utils";
+import { formatCurrency, formatDate, formatCurrencyTotals } from "@/lib/utils";
 
 const FILTERS = [
   { key: "all",       label: "All payments" },
@@ -61,7 +61,7 @@ export default function PaymentsClient({ payments, currency }) {
     return list;
   }, [payments, filterKey, query, thisYear, thisMonth]);
 
-  const total = filtered.reduce((s, p) => s + p.total, 0);
+  const totalLabel = formatCurrencyTotals(filtered.map(p=>({currency:p.currency || currency,total:p.total})));
   const headerLabel = FILTERS.find((f) => f.key === filterKey)?.label || "Payments";
 
   const columns = [
@@ -99,7 +99,7 @@ export default function PaymentsClient({ payments, currency }) {
       {filtered.length > 0 && (
         <div className="mb-3 rounded-lg border border-zinc-200 bg-zinc-50/60 px-5 py-3 flex items-center justify-between">
           <p className="text-xs text-zinc-500">{filtered.length} payment{filtered.length !== 1 ? "s" : ""}</p>
-          <p className="text-sm font-semibold text-green-700">{formatCurrency(total, currency)} collected</p>
+          <p className="text-sm font-semibold text-green-700">{totalLabel} collected</p>
         </div>
       )}
 
@@ -107,7 +107,7 @@ export default function PaymentsClient({ payments, currency }) {
         <CollectionEmptyState
           icon={CheckCircle2}
           title="No payments found"
-          description="Payments appear here when invoices are marked as paid."
+          description="Confirmed bank transfers and Stripe payments appear here, including partial receipts."
           className="border-dashed py-20"
         />
       ) : (
@@ -133,11 +133,11 @@ export default function PaymentsClient({ payments, currency }) {
                 {formatDate(inv.paidAt)}
               </td>
               <td className="px-5 py-4 text-right text-sm font-semibold text-green-700">
-                {formatCurrency(inv.total, currency)}
+                {formatCurrency(inv.total, inv.currency || currency)}
               </td>
               <td className="px-5 py-4 text-right">
                 <Link
-                  href={`/invoices/${inv.id}`}
+                  href={`/invoices/${inv.invoiceId || inv.id}`}
                   className="inline-flex items-center gap-1 text-xs text-zinc-400 opacity-0 transition-opacity group-hover:opacity-100 hover:text-zinc-700"
                 >
                   View <ArrowRight className="h-3.5 w-3.5" />

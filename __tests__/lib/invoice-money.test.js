@@ -1,0 +1,6 @@
+import {expect,it} from 'vitest';
+import {summarizeInvoiceMoney} from '@/lib/invoice-money';
+it('keeps GBP revenue and USD expenses separate without inventing an exchange rate',()=>{const result=summarizeInvoiceMoney([{status:'paid',currency:'GBP',total:50}],[{amount:42.5}],'USD');expect(result.revenue).toEqual([{currency:'GBP',total:50}]);expect(result.netIncome).toEqual([{currency:'GBP',total:50},{currency:'USD',total:-42.5}]);});
+it('counts paid milestones as revenue and only remaining milestones as due',()=>{const result=summarizeInvoiceMoney([{status:'sent',currency:'GBP',total:50,paymentPlans:[{amount:25,status:'paid'},{amount:25,status:'upcoming'}]}],[]);expect(result.revenue).toEqual([{currency:'GBP',total:25}]);expect(result.outstanding).toEqual([{currency:'GBP',total:25}]);});
+it('does not treat drafts, cancelled or refunded invoices as debt or revenue',()=>{const result=summarizeInvoiceMoney(['draft','cancelled','refunded','partially_refunded'].map(status=>({status,currency:'USD',total:2543.34})),[]);expect(result.revenue).toEqual([]);expect(result.outstanding).toEqual([]);});
+it('normalizes currency codes before grouping',()=>{expect(summarizeInvoiceMoney([{status:'sent',currency:'gbp',total:10},{status:'sent',currency:'GBP',total:20}],[]).outstanding).toEqual([{currency:'GBP',total:30}]);});

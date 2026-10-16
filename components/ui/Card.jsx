@@ -4,8 +4,8 @@ export function Card({ children, className, interactive = false, ...props }) {
   return (
     <div
       className={cn(
-        "rounded shadow-sm border border-zinc-50 bg-white",
-        interactive && "transition-all duration-200 hover:border-zinc-200 cursor-pointer",
+        "surface-card rounded bg-white",
+        interactive && "transition-shadow duration-200 hover:shadow-md cursor-pointer",
         className
       )}
       {...props}
@@ -17,7 +17,7 @@ export function Card({ children, className, interactive = false, ...props }) {
 
 export function CardHeader({ children, className }) {
   return (
-    <div className={cn("border-b border-zinc-100 px-6 py-4", className)}>
+    <div className={cn("px-6 pb-2 pt-5", className)}>
       {children}
     </div>
   );

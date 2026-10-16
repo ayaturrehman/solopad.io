@@ -14,6 +14,9 @@ export default async function PortalPage({ params, searchParams }) {
 
   if (!project) notFound();
 
+  const owner = await db.user.findUnique({ where: { id: project.userId }, select: { stripePaymentsEnabled: true, stripeAccountId: true, stripeOnboarded: true, bankTransferEnabled: true, bankDetails: true } });
+  const paymentOptions = { online: !!(owner?.stripePaymentsEnabled && owner?.stripeAccountId && owner?.stripeOnboarded), bankDetails: owner?.bankTransferEnabled ? owner.bankDetails : null };
+
   const isFirstView = project.viewCount === 0;
 
   await db.project.update({
@@ -41,7 +44,7 @@ export default async function PortalPage({ params, searchParams }) {
   const [files, comments, invoices, notes, contracts, proposals] = await Promise.all([
     db.file.findMany({ where: { projectId: project.id, visibleToClient: true }, orderBy: { createdAt: "desc" } }),
     db.comment.findMany({ where: { projectId: project.id }, orderBy: { createdAt: "asc" } }),
-    db.invoice.findMany({ where: { projectId: project.id, status: { not: "draft" } }, orderBy: { createdAt: "desc" }, include: { paymentPlans: { orderBy: { createdAt: "asc" } } } }),
+    db.invoice.findMany({ where: { projectId: project.id, status: { not: "draft" } }, orderBy: { createdAt: "desc" }, include: { paymentPlans: { orderBy: { createdAt: "asc" } }, payments: { where: { status: "paid" }, select: { id: true, amount: true, method: true, receivedAt: true, reference: true } } } }),
     db.note.findMany({ where: { projectId: project.id, visibleToClient: true }, orderBy: { createdAt: "desc" } }),
     db.contract.findMany({
       where: { projectId: project.id, status: { in: ["sent", "signed"] } },
@@ -64,6 +67,7 @@ export default async function PortalPage({ params, searchParams }) {
     <ClientPortal
       initialTab={(await searchParams)?.tab === "invoices" ? "invoices" : "overview"}
       project={project}
+      paymentOptions={paymentOptions}
       files={files}
       comments={comments}
       invoices={parsedInvoices}

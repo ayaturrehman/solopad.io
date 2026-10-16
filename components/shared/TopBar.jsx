@@ -270,7 +270,7 @@ export default function TopBar() {
                 <div className="flex items-center justify-between border-b border-zinc-100 px-3 py-2">
                   <span className="text-xs font-semibold text-zinc-900">Notifications</span>
                   {unread > 0 && (
-                    <button onClick={markAllRead} className="text-[10px] text-zinc-400 hover:text-zinc-700">
+                    <button onClick={markAllRead} className="text-xs text-zinc-400 hover:text-zinc-700">
                       Mark all read
                     </button>
                   )}
@@ -290,7 +290,7 @@ export default function TopBar() {
                       >
                         <div className="flex items-start justify-between gap-2">
                           <p className="text-xs font-medium text-zinc-800">{n.title}</p>
-                          <span className="shrink-0 text-[10px] text-zinc-400">{timeAgo(n.createdAt)}</span>
+                          <span className="shrink-0 text-xs text-zinc-400">{timeAgo(n.createdAt)}</span>
                         </div>
                         <p className="mt-0.5 text-[11px] text-zinc-500">{n.body}</p>
                       </button>
@@ -341,7 +341,7 @@ export default function TopBar() {
                 </div>
 
                 <div className="border-b border-zinc-100 p-2">
-                  <p className="px-2 pb-2 text-[10px] font-semibold uppercase tracking-wider text-zinc-400">Appearance</p>
+                  <p className="px-2 pb-2 text-xs font-semibold uppercase tracking-wider text-zinc-400">Appearance</p>
                   <div className="grid grid-cols-2 gap-2">
                     <button
                       type="button"

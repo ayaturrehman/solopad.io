@@ -82,7 +82,7 @@ export default function Navbar() {
           {navGroups.map((group, gi) => (
             <div key={group.label}>
               {gi > 0 && <div className="mb-2 mt-1 border-t border-white/10" />}
-              <p className="mb-1 px-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400">
+              <p className="mb-1 px-2 text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">
                 {group.label}
               </p>
               <div className="flex flex-col gap-px">
@@ -145,7 +145,7 @@ export default function Navbar() {
                 )}
               >
                 <Icon className={cn("h-5 w-5 shrink-0", active && "stroke-[2.2px]")} />
-                <span className={cn("text-[10px] font-medium truncate", active ? "text-zinc-900" : "text-zinc-400")}>
+                <span className={cn("text-xs font-medium truncate", active ? "text-zinc-900" : "text-zinc-400")}>
                   {label}
                 </span>
               </Link>
@@ -158,7 +158,7 @@ export default function Navbar() {
             className="flex flex-col items-center gap-0.5 px-2 py-2 rounded flex-1 text-zinc-400"
           >
             <Menu className="h-5 w-5" />
-            <span className="text-[10px] font-medium">More</span>
+            <span className="text-xs font-medium">More</span>
           </button>
         </div>
       </div>
@@ -192,7 +192,7 @@ export default function Navbar() {
             <nav className="flex-1 overflow-y-auto px-3 py-3 space-y-4">
               {navGroups.map((group) => (
                 <div key={group.label}>
-                  <p className="mb-1.5 px-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400">
+                  <p className="mb-1.5 px-2 text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">
                     {group.label}
                   </p>
                   <div className="flex flex-col gap-px">

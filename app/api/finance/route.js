@@ -1,3 +1,5 @@
+import { summarizeInvoiceMoney } from "@/lib/invoice-money";
+import { NON_OUTSTANDING_STATUSES } from "@/lib/invoice-status";
 import { NextResponse } from "next/server";
 import { requirePermission } from "@/lib/permissions";
 import { getTenantFilter } from "@/lib/tenant";
@@ -31,24 +33,29 @@ export async function GET(req) { try {
           status: "paid",
           paidAt: { gte: startDate, lte: endDate },
         },
-        include: { project: { select: { title: true, contact: { select: { name: true } } } } },
+        include: { paymentPlans: true, project: { select: { title: true, contact: { select: { name: true } } } } },
       }),
       db.invoice.findMany({
         where: {
           project: filter,
-          status: { not: "paid" },
+          status: { notIn: NON_OUTSTANDING_STATUSES },
         },
-        include: { project: { select: { title: true, contact: { select: { name: true } } } } },
+        include: { paymentPlans: true, project: { select: { title: true, contact: { select: { name: true } } } } },
       }),
     ]);
 
-    const totalRevenue = paidInvoices.reduce((s, inv) => s + inv.total, 0);
-    const totalExpenses = expenses.reduce((s, e) => s + e.amount, 0);
-    const totalOutstanding = unpaidInvoices
-      .filter((i) => i.status !== "cancelled" && i.status !== "draft")
-      .reduce((s, inv) => s + inv.total, 0);
+    const user = await db.user.findUnique({ where: { id: session.user.id }, select: { currency: true, business: { select: { currency: true } } } });
+    const currency = user?.business?.currency || user?.currency || "USD";
+    const totalsByCurrency = summarizeInvoiceMoney([...paidInvoices, ...unpaidInvoices], expenses, currency);
+    totalsByCurrency.outstanding = summarizeInvoiceMoney(unpaidInvoices, [], currency).outstanding;
+    const baseTotal = key => totalsByCurrency[key].find(item => item.currency === currency.toUpperCase())?.total || 0;
+    const totalRevenue = baseTotal("revenue");
+    const totalExpenses = baseTotal("expenses");
+    const totalOutstanding = baseTotal("outstanding");
 
     return NextResponse.json({
+      currency,
+      totalsByCurrency,
       revenue: totalRevenue,
       expenses: totalExpenses,
       netIncome: totalRevenue - totalExpenses,

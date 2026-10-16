@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { requireStripe } from "@/lib/stripe";
+import { formatCurrency } from "@/lib/utils";
+import { invoicePaymentAmount } from "@/lib/invoice-payment";
 import db from "@/lib/db";
+import { settleStripeReceipt } from "@/lib/invoice-receipts";
 import { sendNotificationEmail } from "@/lib/email";
 import { isEventProcessed, markEventProcessed } from "@/lib/webhook-events";
 
@@ -31,7 +34,13 @@ export async function POST(req) {
   try {
     switch (event.type) {
       case "checkout.session.completed":
+      case "checkout.session.async_payment_succeeded":
         await handleCheckoutCompleted(event.data.object);
+        break;
+
+      case "checkout.session.async_payment_failed":
+        await db.invoicePayment.updateMany({ where: { stripeSessionId: event.data.object.id, status: 'pending' }, data: { status: 'failed' } });
+        await handleCheckoutExpired(event.data.object);
         break;
 
       case "checkout.session.expired":
@@ -50,14 +59,19 @@ export async function POST(req) {
         await handleAccountUpdated(event.data.object);
         break;
 
+      case "account.application.deauthorized":
+        if (event.account) await db.user.updateMany({ where: { stripeAccountId: event.account }, data: { stripeAccountId: null, stripeOnboarded: false } });
+        break;
+
       default:
         // Unhandled event type — log and acknowledge
         console.log(`[Webhook] Unhandled event: ${event.type}`);
     }
   } catch (err) {
     console.error(`[Webhook] Error handling ${event.type}:`, err);
-    // Return 200 to prevent Stripe from retrying (we logged the error)
-    return NextResponse.json({ received: true, error: err.message });
+    // Let Stripe retry transient processing failures. Only successful events
+    // are recorded below.
+    return NextResponse.json({ error: "Webhook processing failed" }, { status: 500 });
   }
 
   // Record only after successful handling so failed events can be retried.
@@ -68,29 +82,13 @@ export async function POST(req) {
 
 // ─── checkout.session.completed ─────────────────────────────────
 async function handleCheckoutCompleted(session) {
-  const { invoiceId, milestoneId } = session.metadata || {};
-  if (!invoiceId) return;
+  // Delayed payment methods complete checkout before funds settle.
+  if (session.payment_status !== "paid") return;
 
-  // Handle milestone-specific payment
-  if (milestoneId) {
-    await handleMilestonePayment(invoiceId, milestoneId, session.payment_intent);
-    return;
-  }
+  const invoice = await settleStripeReceipt(db, session);
+  if (!invoice) return;
 
-  // Idempotency: skip if already paid
-  const existing = await db.invoice.findUnique({ where: { id: invoiceId }, select: { status: true } });
-  if (existing?.status === "paid") return;
-
-  const invoice = await db.invoice.update({
-    where: { id: invoiceId },
-    data: {
-      status: "paid",
-      paidAt: new Date(),
-      stripePaymentIntentId: session.payment_intent,
-    },
-    include: { project: { include: { user: true, contact: { select: { name: true } } } } },
-  });
-
+  const receivedAmount = session.amount_total / invoicePaymentAmount({ total: 1, currency: invoice.currency }).amount;
   // In-app notification
   if (invoice.project?.user?.id) {
     await db.notification.create({
@@ -99,7 +97,7 @@ async function handleCheckoutCompleted(session) {
         businessId: invoice.project.user.businessId,
         type: "invoice_paid",
         title: "Payment received",
-        body: `${invoice.project.contact?.name || "Client"} paid $${invoice.total.toFixed(2)} for "${invoice.project.title}"`,
+        body: `${invoice.project.contact?.name || "Client"} paid ${formatCurrency(receivedAmount, invoice.currency)} for "${invoice.project.title}"`,
         link: `/projects/${invoice.project.id}`,
       },
     });
@@ -113,7 +111,7 @@ async function handleCheckoutCompleted(session) {
       to: invoice.project.user.email,
       variables: {
         clientName: invoice.project.contact?.name || "Client",
-        amount: `$${invoice.total.toFixed(2)}`,
+        amount: `${formatCurrency(receivedAmount, invoice.currency)}`,
         projectTitle: invoice.project.title,
       },
     });
@@ -126,8 +124,9 @@ async function handleCheckoutExpired(session) {
   const { invoiceId } = session.metadata || {};
   if (!invoiceId) return;
 
+  await db.invoicePayment.updateMany({ where: { stripeSessionId: session.id, status: 'pending' }, data: { status: 'expired' } });
   await db.invoice.updateMany({
-    where: { id: invoiceId, status: { not: "paid" } },
+    where: { id: invoiceId, stripeSessionId: session.id, status: { not: "paid" } },
     data: { stripeSessionId: null },
   });
 }
@@ -139,13 +138,13 @@ async function handleChargeRefunded(charge) {
   if (!paymentIntentId) return;
 
   const invoice = await db.invoice.findFirst({
-    where: { stripePaymentIntentId: paymentIntentId },
+    where: { OR: [{ stripePaymentIntentId: paymentIntentId }, { payments: { some: { stripePaymentIntentId: paymentIntentId } } }] },
     include: { project: { include: { user: true, contact: { select: { name: true } } } } },
   });
   if (!invoice) return;
 
   const refundedAmountCents = charge.amount_refunded || 0;
-  const isFullRefund = refundedAmountCents >= Math.round(invoice.total * 100);
+  const isFullRefund = refundedAmountCents >= invoicePaymentAmount(invoice).amount;
 
   // Update invoice status
   await db.invoice.update({
@@ -155,14 +154,14 @@ async function handleChargeRefunded(charge) {
 
   // Notify freelancer
   if (invoice.project?.user?.id) {
-    const refundAmount = (refundedAmountCents / 100).toFixed(2);
+    const refundAmount = formatCurrency(refundedAmountCents * invoice.total / invoicePaymentAmount(invoice).amount, invoice.currency);
     await db.notification.create({
       data: {
         userId: invoice.project.user.id,
         businessId: invoice.project.user.businessId,
         type: "invoice_refunded",
         title: isFullRefund ? "Payment refunded" : "Partial refund processed",
-        body: `$${refundAmount} refunded for "${invoice.project.title}" — ${invoice.project.contact?.name || "Client"}`,
+        body: `${refundAmount} refunded for "${invoice.project.title}" — ${invoice.project.contact?.name || "Client"}`,
         link: `/projects/${invoice.project.id}`,
       },
     });
@@ -170,13 +169,13 @@ async function handleChargeRefunded(charge) {
 
   // Email notification (respects notification preferences)
   if (invoice.project?.user?.email) {
-    const refundAmount = (refundedAmountCents / 100).toFixed(2);
+    const refundAmount = formatCurrency(refundedAmountCents * invoice.total / invoicePaymentAmount(invoice).amount, invoice.currency);
     await sendNotificationEmail({
       businessId: invoice.project.user.businessId,
       type: "refund_processed",
       to: invoice.project.user.email,
       variables: {
-        amount: `$${refundAmount}`,
+        amount: refundAmount,
         projectTitle: invoice.project.title,
       },
     });
@@ -190,7 +189,7 @@ async function handleDisputeCreated(dispute) {
   if (!paymentIntentId) return;
 
   const invoice = await db.invoice.findFirst({
-    where: { stripePaymentIntentId: paymentIntentId },
+    where: { OR: [{ stripePaymentIntentId: paymentIntentId }, { payments: { some: { stripePaymentIntentId: paymentIntentId } } }] },
     include: { project: { include: { user: true } } },
   });
   if (!invoice) return;
@@ -203,7 +202,7 @@ async function handleDisputeCreated(dispute) {
         businessId: invoice.project.user.businessId,
         type: "invoice_disputed",
         title: "Payment disputed",
-        body: `A dispute was filed for $${invoice.total.toFixed(2)} on "${invoice.project.title}". Respond in Stripe Dashboard.`,
+        body: `A dispute was filed for ${formatCurrency(invoice.total, invoice.currency)} on "${invoice.project.title}". Respond in Stripe Dashboard.`,
         link: `/projects/${invoice.project.id}`,
       },
     });
@@ -216,7 +215,7 @@ async function handleDisputeCreated(dispute) {
       type: "dispute_alert",
       to: invoice.project.user.email,
       variables: {
-        amount: `$${invoice.total.toFixed(2)}`,
+        amount: `${formatCurrency(invoice.total, invoice.currency)}`,
         projectTitle: invoice.project.title,
       },
     });
@@ -234,7 +233,7 @@ async function handleAccountUpdated(account) {
   });
   if (!user) return;
 
-  const chargesEnabled = account.charges_enabled === true;
+  const chargesEnabled = account.charges_enabled === true && account.payouts_enabled === true;
 
   // Only update if status actually changed
   if (user.stripeOnboarded !== chargesEnabled) {
@@ -245,58 +244,3 @@ async function handleAccountUpdated(account) {
   }
 }
 
-// ─── Milestone payment ──────────────────────────────────────────
-// Mark a specific milestone as paid. If all milestones for the invoice
-// are now paid, auto-mark the parent invoice as paid.
-async function handleMilestonePayment(invoiceId, milestoneId, paymentIntentId) {
-  // Idempotency: skip if already paid
-  const existing = await db.paymentPlan.findUnique({ where: { id: milestoneId }, select: { status: true } });
-  if (existing?.status === "paid") return;
-
-  // Mark milestone as paid
-  await db.paymentPlan.update({
-    where: { id: milestoneId },
-    data: { status: "paid", paidAt: new Date() },
-  });
-
-  // Check if all milestones for this invoice are now paid
-  const allMilestones = await db.paymentPlan.findMany({
-    where: { invoiceId },
-    select: { status: true },
-  });
-
-  const allPaid = allMilestones.length > 0 && allMilestones.every((m) => m.status === "paid");
-
-  if (allPaid) {
-    await db.invoice.update({
-      where: { id: invoiceId },
-      data: {
-        status: "paid",
-        paidAt: new Date(),
-        stripePaymentIntentId: paymentIntentId,
-      },
-    });
-  }
-
-  // Fetch invoice for notification
-  const invoice = await db.invoice.findUnique({
-    where: { id: invoiceId },
-    include: { project: { include: { user: true, contact: { select: { name: true } } } } },
-  });
-
-  if (invoice?.project?.user?.id) {
-    const milestone = await db.paymentPlan.findUnique({ where: { id: milestoneId } });
-    await db.notification.create({
-      data: {
-        userId: invoice.project.user.id,
-        businessId: invoice.project.user.businessId,
-        type: "milestone_paid",
-        title: allPaid ? "All milestones paid!" : "Milestone payment received",
-        body: allPaid
-          ? `All payments completed for "${invoice.project.title}" — $${invoice.total.toFixed(2)} total`
-          : `${invoice.project.contact?.name || "Client"} paid $${(milestone?.amount || 0).toFixed(2)} milestone for "${invoice.project.title}"`,
-        link: `/projects/${invoice.project.id}`,
-      },
-    });
-  }
-}

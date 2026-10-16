@@ -132,7 +132,7 @@ function BillingContent({ plan: initialPlan, billingStatus: initialBillingStatus
   }, [billingParam, billingStatus]);
 
   const trialDaysLeft = getTrialDaysLeft(billingStatus?.subscription?.trialEnd);
-  const isTrialing = billingStatus?.status === "trialing" || trialDaysLeft > 0;
+  const isTrialing = billingStatus?.status === "trialing";
   const hasSubscription = !!billingStatus?.subscription;
   const planInfo = getPlan(plan);
   const isCurrentYearly = billingStatus?.interval === "yearly";
@@ -201,10 +201,10 @@ function BillingContent({ plan: initialPlan, billingStatus: initialBillingStatus
 
   return (
     <div className="space-y-6">
-      {billingParam === "success" && (
+      {billingParam === "success" && ["active", "trialing"].includes(billingStatus.status) && (
         <div className="flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
           <CheckCircle2 className="h-4 w-4 shrink-0" />
-          {postCheckoutSyncing ? "Payment authorised. Finishing subscription setup..." : "Subscription activated! Your plan has been upgraded."}
+          {postCheckoutSyncing ? "Checking subscription status…" : "Your subscription is ready."}
         </div>
       )}
       {billingParam === "cancelled" && (
@@ -221,11 +221,11 @@ function BillingContent({ plan: initialPlan, billingStatus: initialBillingStatus
         </CardHeader>
         <CardBody className="space-y-4">
           {/* Plan + Status row */}
-          <div className="flex items-start justify-between gap-4 rounded-lg border border-zinc-200 p-5">
+          <div className="surface-panel flex flex-col gap-4 rounded-lg p-5 sm:flex-row sm:items-start sm:justify-between">
             <div className="flex-1">
               <div className="flex items-center gap-2.5">
                 <h3 className="text-lg font-semibold text-zinc-900 capitalize">{plan} Plan</h3>
-                <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${isTrialing ? "bg-blue-100 text-blue-700" : planColors[plan]}`}>
+                <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${isTrialing ? "bg-blue-100 text-blue-700" : billingStatus.status === "past_due" ? "bg-amber-100 text-amber-800" : planColors[plan]}`}>
                   {isTrialing ? "Free trial" : billingStatus.status === "active" ? "Active" : billingStatus.status === "past_due" ? "Past due" : billingStatus.status === "canceled" ? "Cancelled" : billingStatus.status || "Active"}
                 </span>
               </div>
@@ -241,6 +241,12 @@ function BillingContent({ plan: initialPlan, billingStatus: initialBillingStatus
               </Button>
             )}
           </div>
+
+          {billingStatus.status === "past_due" && (
+            <div role="alert" className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+              Your latest payment failed. Open Manage subscription to update your card and pay the outstanding invoice.
+            </div>
+          )}
 
           {/* Trial banner */}
           {isTrialing && (
@@ -269,7 +275,7 @@ function BillingContent({ plan: initialPlan, billingStatus: initialBillingStatus
 
           {/* No subscription yet */}
           {!hasSubscription && !isTrialing && (
-            <div className="flex items-start gap-3 rounded-lg border border-zinc-200 bg-zinc-50 p-4">
+            <div className="flex items-start gap-3 rounded-lg bg-zinc-50 p-4">
               <Sparkles className="h-5 w-5 text-zinc-400 mt-0.5 shrink-0" />
               <div>
                 <p className="text-sm font-medium text-zinc-700">No active subscription</p>
@@ -300,7 +306,7 @@ function BillingContent({ plan: initialPlan, billingStatus: initialBillingStatus
           </CardHeader>
           <CardBody className="space-y-4">
             {billingData.paymentMethod && (
-              <div className="flex items-center justify-between rounded-lg border border-zinc-200 p-4">
+              <div className="surface-panel flex items-center justify-between rounded-lg p-4">
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-zinc-100">
                     <CreditCard className="h-5 w-5 text-zinc-500" />
@@ -315,7 +321,7 @@ function BillingContent({ plan: initialPlan, billingStatus: initialBillingStatus
             )}
 
             {billingData.upcoming && (
-              <div className="rounded-lg border border-zinc-200 p-4">
+              <div className="surface-panel rounded-lg p-4">
                 <p className="text-xs font-medium text-zinc-400 uppercase tracking-wide mb-1.5">Next charge</p>
                 <p className="text-sm font-semibold text-zinc-900">
                   {formatCurrency(billingData.upcoming.amount || 0, billingData.upcoming.currency)}
@@ -333,7 +339,7 @@ function BillingContent({ plan: initialPlan, billingStatus: initialBillingStatus
             {billingData.invoices?.length > 0 && (
               <div>
                 <p className="text-xs font-medium text-zinc-400 uppercase tracking-wide mb-2">Invoice history</p>
-                <div className="divide-y divide-zinc-100 rounded-lg border border-zinc-200">
+                <div className="divide-y divide-zinc-100 rounded-lg">
                   {billingData.invoices.map((inv) => (
                     <div key={inv.id} className="flex items-center justify-between px-4 py-3">
                       <div>

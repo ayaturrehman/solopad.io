@@ -46,14 +46,14 @@ export default function CollectionPageHeader({
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         {showFilter ? (
           <div className="relative">
-            <h1 className="text-lg font-bold tracking-tight">
+            <h1 className="text-2xl font-semibold tracking-tight">
             <button
               type="button"
               aria-expanded={filterOpen}
               onClick={onToggleFilter}
               className="inline-flex items-center justify-between gap-2 rounded px-1 py-1 text-left text-sm text-zinc-900 transition-colors hover:bg-zinc-50"
             >
-              <span className={cn("text-lg font-bold tracking-tight", titleClassName)}>{title}</span>
+              <span className={cn("text-2xl font-semibold tracking-tight", titleClassName)}>{title}</span>
               <ChevronDown
                 className={cn(
                   "h-5 w-5 text-blue-600 transition-transform",
@@ -119,7 +119,7 @@ export default function CollectionPageHeader({
           </div>
         ) : (
           <div className="inline-flex items-center">
-            <span className={cn("text-lg font-bold tracking-tight text-zinc-900", titleClassName)}>{title}</span>
+            <span className={cn("text-2xl font-semibold tracking-tight text-zinc-900", titleClassName)}>{title}</span>
           </div>
         )}
 

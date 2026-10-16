@@ -1,0 +1,16 @@
+import { beforeEach, expect, it, vi } from 'vitest';
+const m=vi.hoisted(()=>({invoice:vi.fn(),retrieve:vi.fn(),settle:vi.fn()}));
+vi.mock('@/lib/db',()=>({default:{invoice:{findUnique:m.invoice}}}));
+vi.mock('@/lib/stripe',()=>({requireStripe:()=>({checkout:{sessions:{retrieve:m.retrieve}}})}));
+vi.mock('@/lib/invoice-receipts',()=>({settleStripeReceipt:m.settle}));
+import {confirmInvoicePayment} from '@/lib/payment-confirmation';
+beforeEach(()=>{vi.resetAllMocks();m.invoice.mockResolvedValue({status:'sent',stripeSessionId:'cs_test',paymentPlans:[]});m.retrieve.mockResolvedValue({id:'cs_test',payment_status:'paid',metadata:{invoiceId:'invoice'}});});
+it('does not confirm a bare return URL or unknown invoice',async()=>{expect(await confirmInvoicePayment()).toBe(false);m.invoice.mockResolvedValue(null);expect(await confirmInvoicePayment('unknown')).toBe(false);});
+it('does not confirm unpaid Stripe sessions',async()=>{m.retrieve.mockResolvedValue({payment_status:'unpaid'});expect(await confirmInvoicePayment('invoice')).toBe(false);expect(m.settle).not.toHaveBeenCalled();});
+it('uses the same atomic settlement as webhooks',async()=>{expect(await confirmInvoicePayment('invoice')).toBe(true);expect(m.settle).toHaveBeenCalledWith(expect.anything(),expect.objectContaining({id:'cs_test'}));});
+it('rejects sessions belonging to another invoice',async()=>{expect(await confirmInvoicePayment('other')).toBe(false);expect(m.settle).not.toHaveBeenCalled();});
+it('uses persisted paid results without a Stripe request',async()=>{m.invoice.mockResolvedValue({status:'paid',paymentPlans:[]});expect(await confirmInvoicePayment('invoice')).toBe(true);expect(m.retrieve).not.toHaveBeenCalled();});
+it('does not report success during a Stripe outage',async()=>{m.retrieve.mockRejectedValue(new Error('Unavailable'));expect(await confirmInvoicePayment('invoice')).toBe(false);});
+it('verifies the exact milestone session',async()=>{m.invoice.mockResolvedValue({status:'sent',paymentPlans:[{id:'milestone',status:'upcoming'}]});m.retrieve.mockResolvedValue({payment_status:'paid',metadata:{invoiceId:'invoice',milestoneId:'milestone'}});expect(await confirmInvoicePayment('invoice','milestone','cs_exact')).toBe(true);expect(m.retrieve).toHaveBeenCalledWith('cs_exact');});
+it('rejects a milestone belonging to another invoice',async()=>{expect(await confirmInvoicePayment('invoice','other','cs_exact')).toBe(false);});
+it('does not confirm refunded invoices',async()=>{m.invoice.mockResolvedValue({status:'refunded'});expect(await confirmInvoicePayment('invoice')).toBe(false);});

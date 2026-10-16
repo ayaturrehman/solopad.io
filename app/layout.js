@@ -1,9 +1,15 @@
-import { Kumbh_Sans } from "next/font/google";
+import localFont from "next/font/local";
 import MarketingAnalytics from "@/components/shared/MarketingAnalytics";
 import SessionProvider from "@/components/shared/SessionProvider";
 import "./globals.css";
 
-const kumbhSans = Kumbh_Sans({ subsets: ["latin"], variable: "--font-kumbh-sans" });
+const kumbhSans = localFont({
+  src: "./fonts/KumbhSans-Variable.ttf",
+  weight: "100 900",
+  style: "normal",
+  display: "swap",
+  variable: "--font-kumbh-sans",
+});
 
 export const metadata = {
   title: {

@@ -1,19 +1,6 @@
-import { Newsreader, Source_Sans_3 } from "next/font/google";
 import MarketingNav from "@/components/marketing/MarketingNav";
 import MarketingFooter from "@/components/marketing/MarketingFooter";
 import "./marketing.css";
-
-const display = Newsreader({
-  subsets: ["latin"],
-  variable: "--font-display",
-  display: "swap",
-});
-
-const body = Source_Sans_3({
-  subsets: ["latin"],
-  variable: "--font-body",
-  display: "swap",
-});
 
 export const metadata = {
   description:
@@ -41,7 +28,7 @@ export const metadata = {
 
 export default function MarketingLayout({ children }) {
   return (
-    <div className={`${display.variable} ${body.variable} mk`}>
+    <div className="mk">
       <a href="#main-content" className="mk-skip">
         Skip to content
       </a>

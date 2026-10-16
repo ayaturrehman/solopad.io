@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
@@ -23,6 +24,12 @@ const settingsNav = [
 
 export default function SettingsLayout({ children }) {
   const pathname = usePathname();
+  const settingsNavRef = useRef(null);
+  useEffect(() => {
+    if (window.innerWidth < 1024) {
+      settingsNavRef.current?.querySelector('[aria-current="page"]')?.scrollIntoView({ block: "nearest", inline: "center" });
+    }
+  }, [pathname]);
 
   /* Full-screen mode for the template editor — hide the Settings chrome entirely */
   const isEditorFullscreen = /\/settings\/pdf-templates\/[^/]+\/edit/.test(pathname);
@@ -64,13 +71,14 @@ export default function SettingsLayout({ children }) {
 
       <div className="grid gap-6 lg:grid-cols-[220px_minmax(0,1fr)]">
         {/* Sidebar navigation */}
-        <nav className="space-y-1">
+        <nav ref={settingsNavRef} aria-label="Settings" className="flex gap-1 overflow-x-auto pb-2 lg:flex-col lg:gap-1 lg:overflow-visible lg:pb-0">
           {settingsNav.map(({ href, label, icon: Icon }) => (
             <Link
               key={href}
               href={href}
+              aria-current={isActive(href) ? "page" : undefined}
               className={cn(
-                "flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                "flex min-h-11 shrink-0 items-center gap-2.5 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium transition-colors",
                 isActive(href)
                   ? "bg-zinc-900 text-white"
                   : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"

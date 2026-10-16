@@ -21,27 +21,12 @@ export async function GET() {
 
     let accountId = user?.stripeAccountId;
 
-    // If there's an existing account, verify it's still valid and is Express type
+    // Preserve existing accounts, including Standard connections. A transient
+    // Stripe error must never clear the freelancer's saved account.
     if (accountId) {
-      try {
-        const existing = await stripe.accounts.retrieve(accountId);
-        // If it's a Standard account (from old OAuth flow), clear it and create Express
-        if (existing.type !== "express") {
-          console.log("[Stripe Connect] Clearing old Standard account, creating Express");
-          await db.user.update({
-            where: { id: session.user.id },
-            data: { stripeAccountId: null, stripeOnboarded: false },
-          });
-          accountId = null;
-        }
-      } catch (retrieveErr) {
-        // Account doesn't exist or was deleted — clear and recreate
-        console.log("[Stripe Connect] Old account invalid, creating new one:", retrieveErr.message);
-        await db.user.update({
-          where: { id: session.user.id },
-          data: { stripeAccountId: null, stripeOnboarded: false },
-        });
-        accountId = null;
+      const existing = await stripe.accounts.retrieve(accountId);
+      if (existing.type === "standard" && existing.charges_enabled && existing.payouts_enabled) {
+        return NextResponse.redirect(`${appUrl}/settings/payments?stripe=connected`);
       }
     }
 

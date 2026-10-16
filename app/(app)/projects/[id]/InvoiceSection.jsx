@@ -53,26 +53,20 @@ export default function InvoiceSection({ projectId, invoices }) {
 function InvoiceCard({ invoice, onRefresh }) {
   const [loading, setLoading] = useState(false);
 
-  async function markPaid() {
-    setLoading(true);
-    await fetch("/api/invoices", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: invoice.id, status: "paid", paidAt: new Date().toISOString() }),
-    });
-    setLoading(false);
-    onRefresh();
+  function markPaid() {
+    window.location.assign(`/invoices/${invoice.id}`);
   }
 
   async function deleteInvoice() {
     if (!confirm("Delete this invoice? This cannot be undone.")) return;
     setLoading(true);
-    await fetch("/api/invoices", {
+    const response = await fetch("/api/invoices", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id: invoice.id }),
     });
     setLoading(false);
+    if (!response.ok) { const data = await response.json().catch(()=>({})); alert(data.error || "Could not delete invoice."); return; }
     onRefresh();
   }
 
@@ -137,7 +131,7 @@ function InvoiceCard({ invoice, onRefresh }) {
             className="inline-flex items-center gap-1.5 rounded-md border border-zinc-200 px-2.5 py-1.5 text-xs font-medium text-zinc-700 hover:bg-zinc-50 disabled:opacity-50"
           >
             <CheckCircle2 className="h-3.5 w-3.5 text-green-600" />
-            Mark paid
+            Record payment
           </button>
         )}
         {!isPaid && (
