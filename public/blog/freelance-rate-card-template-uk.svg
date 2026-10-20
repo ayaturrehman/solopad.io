@@ -1,0 +1,60 @@
+<svg width="800" height="400" viewBox="0 0 800 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="800" height="400" fill="#FAF6EF"/>
+  
+  <!-- Rate Card Document -->
+  <rect x="240" y="40" width="320" height="320" rx="16" fill="white" stroke="#E4DDD2" stroke-width="3"/>
+  
+  <!-- Header -->
+  <rect x="260" y="60" width="280" height="60" rx="8" fill="#EFF6FF"/>
+  <text x="400" y="85" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#1E40AF" text-anchor="middle">Professional Rate Card</text>
+  <text x="400" y="108" font-family="Arial, sans-serif" font-size="13" fill="#3B82F6" text-anchor="middle">Northline Studio · 2026</text>
+  
+  <!-- Service Row 1: Day Rate -->
+  <rect x="260" y="135" width="280" height="50" rx="6" fill="#FEFCE8" stroke="#EAB308" stroke-width="1.5"/>
+  <text x="275" y="157" font-family="Arial, sans-serif" font-size="14" font-weight="600" fill="#854D0E">Day Rate</text>
+  <text x="275" y="175" font-family="Arial, sans-serif" font-size="12" fill="#A16207">8 hours · 2 revisions</text>
+  <text x="525" y="167" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#854D0E" text-anchor="end">£450</text>
+  
+  <!-- Service Row 2: Half Day -->
+  <rect x="260" y="195" width="280" height="50" rx="6" fill="#DCFCE7" stroke="#16A34A" stroke-width="1.5"/>
+  <text x="275" y="217" font-family="Arial, sans-serif" font-size="14" font-weight="600" fill="#14532D">Half Day</text>
+  <text x="275" y="235" font-family="Arial, sans-serif" font-size="12" fill="#166534">4 hours · 1 revision</text>
+  <text x="525" y="227" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#14532D" text-anchor="end">£250</text>
+  
+  <!-- Service Row 3: Fixed Project -->
+  <rect x="260" y="255" width="280" height="50" rx="6" fill="#F3E8FF" stroke="#9333EA" stroke-width="1.5"/>
+  <text x="275" y="277" font-family="Arial, sans-serif" font-size="14" font-weight="600" fill="#581C87">Fixed Project</text>
+  <text x="275" y="295" font-family="Arial, sans-serif" font-size="12" fill="#7C3AED">Logo design · from</text>
+  <text x="525" y="287" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#581C87" text-anchor="end">£800</text>
+  
+  <!-- VAT Line -->
+  <line x1="260" y1="315" x2="540" y2="315" stroke="#E4DDD2" stroke-width="2"/>
+  <text x="275" y="335" font-family="Arial, sans-serif" font-size="13" fill="#5C6570">+ VAT at 20%</text>
+  
+  <!-- Valid Until Tag -->
+  <rect x="440" y="325" width="100" height="25" rx="4" fill="#2563EB"/>
+  <text x="490" y="342" font-family="Arial, sans-serif" font-size="11" font-weight="600" fill="white" text-anchor="middle">Valid until</text>
+  <text x="490" y="355" font-family="Arial, sans-serif" font-size="9" fill="white" text-anchor="middle" opacity="0.9">30 Nov 2026</text>
+  
+  <!-- Checkmark Icons (left side) -->
+  <circle cx="75" cy="120" r="18" fill="#DCFCE7" stroke="#16A34A" stroke-width="2"/>
+  <path d="M68 120L73 125L83 113" stroke="#16A34A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <text x="105" y="127" font-family="Arial, sans-serif" font-size="13" fill="#166534">Clear pricing</text>
+  
+  <circle cx="75" cy="170" r="18" fill="#DCFCE7" stroke="#16A34A" stroke-width="2"/>
+  <path d="M68 170L73 175L83 163" stroke="#16A34A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <text x="105" y="177" font-family="Arial, sans-serif" font-size="13" fill="#166534">VAT shown</text>
+  
+  <circle cx="75" cy="220" r="18" fill="#DCFCE7" stroke="#16A34A" stroke-width="2"/>
+  <path d="M68 220L73 225L83 213" stroke="#16A34A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <text x="105" y="227" font-family="Arial, sans-serif" font-size="13" fill="#166534">What's included</text>
+  
+  <circle cx="75" cy="270" r="18" fill="#DCFCE7" stroke="#16A34A" stroke-width="2"/>
+  <path d="M68 270L73 275L83 263" stroke="#16A34A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <text x="105" y="277" font-family="Arial, sans-serif" font-size="13" fill="#166534">Valid date</text>
+  
+  <!-- Pound Symbol (right side) -->
+  <circle cx="725" cy="195" r="35" fill="#2563EB"/>
+  <text x="725" y="215" font-family="Arial, sans-serif" font-size="36" font-weight="700" fill="white" text-anchor="middle">£</text>
+</svg>
