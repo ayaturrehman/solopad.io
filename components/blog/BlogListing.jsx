@@ -119,7 +119,7 @@ export default function BlogListing({ posts }) {
               <article>
                 <h3>How we keep it current</h3>
                 <p>
-                  We test tools against live freelance work, compare published pricing, and update guides when plans change. Dates
+                  We compare published plan details, link to official sources, and review guides when plans change. Dates
                   on each article show when it was published.
                 </p>
               </article>

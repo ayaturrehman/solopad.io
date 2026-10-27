@@ -1,0 +1,64 @@
+{
+  "scope": {
+    "comparison_pages": [
+      "honeybook-alternative",
+      "dubsado-alternative",
+      "bonsai-alternative",
+      "moxie-alternative",
+      "plutio-alternative"
+    ],
+    "blog_posts": [
+      "best-freelance-management-software-2026",
+      "cheap-freelance-management-tool",
+      "freelance-time-tracking-software",
+      "ai-proposal-writer-freelance",
+      "how-to-write-a-freelance-proposal"
+    ]
+  },
+  "source_review_date": "2026-10-27",
+  "sources": [
+    "https://www.honeybook.com/pricing",
+    "https://www.dubsado.com/pricing",
+    "https://www.hellobonsai.com/pricing",
+    "https://www.withmoxie.com/pricing",
+    "https://www.plutio.com/pricing",
+    "https://toggl.com/pricing",
+    "https://clockify.me/pricing",
+    "https://www.getharvest.com/pricing",
+    "lib/plans.js",
+    "app/api/time-entries/route.js"
+  ],
+  "corrections": [
+    "Removed outdated competitor prices, free-plan descriptions and unsupported no-AI claims.",
+    "Clarified currencies, annual billing, seats, plan limits and client payment fees.",
+    "Used the application plan configuration for SoloPad pricing on comparison pages.",
+    "Removed unverified personal testing, conversion-rate and savings claims from the five refreshed posts.",
+    "Removed claims that SoloPad automatically turns time entries into invoices.",
+    "Added five AI-generated article covers with descriptive alt text, explicit dimensions and Next.js image optimisation."
+  ],
+  "date_policy": "All 39 articles retain their previous publishedAt and updatedAt values. Comparison source-check dates describe the factual review and do not change article dates.",
+  "image_assets": [
+    "public/blog/ai-proposal-writer-freelance-cover.png",
+    "public/blog/best-freelance-management-software-2026-cover.png",
+    "public/blog/cheap-freelance-management-tool-cover.png",
+    "public/blog/freelance-time-tracking-software-cover.png",
+    "public/blog/how-to-write-a-freelance-proposal-cover.png"
+  ],
+  "image_prompts": "docs/featured-image-prompts.json",
+  "verification": {
+    "production_build": "passed",
+    "unit_tests": 166,
+    "test_files": 23,
+    "public_sitemap_pages": 51,
+    "blog_pages": 39,
+    "article_date_fields_preserved": 39,
+    "optimised_640px_cover_sizes_bytes": [
+      31116,
+      27304,
+      19290,
+      27408,
+      21924
+    ],
+    "lint": "No errors; one pre-existing warning for the generic MDX img renderer."
+  }
+}

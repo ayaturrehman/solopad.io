@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { COMPARISONS } from "@/lib/comparisons";
 
 export const metadata = {
   title: "Compare SoloPad vs HoneyBook, Dubsado & More",
@@ -16,38 +17,9 @@ export const metadata = {
   robots: { index: true, follow: true },
 };
 
-const comparisons = [
-  {
-    slug: "honeybook-alternative",
-    name: "HoneyBook",
-    blurb:
-      "Compare HoneyBook and SoloPad on proposals, contracts, payments and the features included in each plan.",
-  },
-  {
-    slug: "dubsado-alternative",
-    name: "Dubsado",
-    blurb:
-      "Dubsado's workflow builder has a steep learning curve. Compare setup time, pricing, and core features side by side.",
-  },
-  {
-    slug: "bonsai-alternative",
-    name: "Bonsai",
-    blurb:
-      "Bonsai's Basic plan excludes invoicing and contracts. See what's actually included at each price tier.",
-  },
-  {
-    slug: "moxie-alternative",
-    name: "Moxie",
-    blurb:
-      "Moxie bundles community features most freelancers don't use. Compare the tools you'll actually open every day.",
-  },
-  {
-    slug: "plutio-alternative",
-    name: "Plutio",
-    blurb:
-      "Plutio is built for agencies with big teams. See how it stacks up for solo freelancers and small teams.",
-  },
-];
+const comparisons = Object.entries(COMPARISONS).map(([slug, item]) => ({
+  slug, name: item.name, blurb: item.summary,
+}));
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -140,13 +112,11 @@ export default function ComparePage() {
               actually fits how you work.
             </p>
             <p style={{ fontSize: 16, color: "var(--cp-muted)", margin: 0, lineHeight: 1.7, maxWidth: 720 }}>
-              Most freelancers end up juggling HoneyBook, Dubsado, Bonsai, Moxie, or Plutio —
-              then discovering invoicing is locked behind a higher tier, contracts need a
-              separate tool, or the monthly bill quietly climbs past £20–£50. SoloPad is built
-              as a flat-rate alternative: invoices, contracts, proposals, CRM, time tracking,
-              scheduling, and a client portal in one place, starting at £5/mo. Use the
-              comparisons below to see what you actually get for the money, and which tool
-              fits solo freelancers versus agencies.
+              Compare the plan that covers your actual workflow: proposals, contracts,
+              invoices, scheduling, time tracking and client access. Check billing intervals,
+              user charges and payment fees alongside the subscription. SoloPad starts at
+              £5/month; scheduling and time tracking require Solo or Pro. These comparisons
+              use published vendor plans and link to their official sources.
             </p>
           </div>
         </section>
@@ -237,7 +207,7 @@ export default function ComparePage() {
               Try SoloPad Free
             </h2>
             <p style={{ fontSize: 16, color: "var(--cp-muted)", margin: "0 0 28px 0", lineHeight: 1.6 }}>
-              30-day free trial. No credit card required. All features included at £5/mo.
+              30-day free trial. Plans from £5/month. Feature access and client payment fees vary by plan.
             </p>
             <Link
               href="/signup"

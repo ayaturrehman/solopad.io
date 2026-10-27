@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
 import Link from "next/link";
+import Image from "next/image";
 import { getPostBySlug, getAllSlugs, getRelatedPosts } from "@/lib/blog";
 import { getBlogIcon, BlogHeroIllustration } from "@/components/blog/BlogIcons";
 
@@ -22,7 +23,9 @@ export async function generateMetadata({ params }) {
   const { slug } = await params;
   const post = getPostBySlug(slug);
   if (!post) return {};
-  const socialImage = `https://www.solopad.io/blog/${post.slug}/social-image`;
+  const socialImage = post.coverImage
+    ? `https://www.solopad.io${post.coverImage}`
+    : `https://www.solopad.io/blog/${post.slug}/social-image`;
 
   return {
     title: post.metaTitle,
@@ -36,7 +39,7 @@ export async function generateMetadata({ params }) {
       publishedTime: post.publishedAt,
       modifiedTime: post.updatedAt,
       authors: [post.author],
-      images: [{ url: socialImage, width: 1200, height: 630, alt: post.title }],
+      images: [{ url: socialImage, width: post.coverImage ? post.coverWidth : 1200, height: post.coverImage ? post.coverHeight : 630, alt: post.coverAlt || post.title }],
     },
     twitter: {
       card: "summary_large_image",
@@ -103,7 +106,7 @@ export default async function BlogPostPage({ params }) {
           : { "@type": "Person", name: post.author === "Ayat" ? "Ayat Ur Rehman" : post.author, ...(post.author === "Ayat" && { url: "https://www.solopad.io/#founder" }) },
         publisher: { "@type": "Organization", name: "SoloPad", url: "https://www.solopad.io" },
         mainEntityOfPage: `https://www.solopad.io/blog/${post.slug}`,
-        image: `https://www.solopad.io/blog/${post.slug}/social-image`,
+        image: post.coverImage ? `https://www.solopad.io${post.coverImage}` : `https://www.solopad.io/blog/${post.slug}/social-image`,
       },
       {
         "@type": "BreadcrumbList",
@@ -433,6 +436,17 @@ export default async function BlogPostPage({ params }) {
         </div>
 
         {/* Post content */}
+        {post.coverImage && (
+          <Image
+            src={post.coverImage}
+            alt={post.coverAlt}
+            width={post.coverWidth}
+            height={post.coverHeight}
+            sizes="(max-width: 672px) calc(100vw - 48px), 624px"
+            className="bp-img"
+            style={{ display: "block", marginBottom: 36 }}
+          />
+        )}
         <article className="blog-post-content" style={{ marginBottom: 20 }}>
           <MDXRemote source={post.content} components={mdxComponents} options={mdxOptions} />
           {post.faq.length > 0 && (
