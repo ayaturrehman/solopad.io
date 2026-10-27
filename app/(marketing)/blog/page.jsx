@@ -3,7 +3,7 @@ import path from "path";
 import { getAllPosts } from "@/lib/blog";
 import BlogListing from "@/components/blog/BlogListing";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 
 const DESCRIPTION =

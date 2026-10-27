@@ -71,7 +71,7 @@ export default function RootLayout({ children }) {
                   "@type": "Organization",
                   name: "SoloPad",
                   url: "https://www.solopad.io",
-                  logo: "https://www.solopad.io/logo.png",
+                  logo: "https://www.solopad.io/logo.webp",
                   sameAs: [
                     "https://twitter.com/solopad_io",
                     "https://instagram.com/solopad.io"
@@ -88,7 +88,7 @@ export default function RootLayout({ children }) {
                     "@type": "Offer",
                     price: "5.00",
                     priceCurrency: "GBP",
-                    description: "Solo plan — starting at £5/mo"
+                    description: "Starter plan — starting at £5/mo"
                   },
                   description: "Freelance management software with invoices, contracts, proposals, CRM, scheduling, time tracking, client portal, and AI drafting.",
                   featureList: "Invoicing, Contracts, Proposals, CRM, Time Tracking, Scheduling, Client Portal, AI Drafting"

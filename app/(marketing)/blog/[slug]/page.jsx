@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
 import Link from "next/link";
-import { getPostBySlug, getAllSlugs, getAllPosts } from "@/lib/blog";
+import { getPostBySlug, getAllSlugs, getRelatedPosts } from "@/lib/blog";
 import { getBlogIcon, BlogHeroIllustration } from "@/components/blog/BlogIcons";
 
 const mdxOptions = {
@@ -11,6 +11,8 @@ const mdxOptions = {
     remarkPlugins: [remarkGfm],
   },
 };
+
+export const revalidate = 3600;
 
 export function generateStaticParams() {
   return getAllSlugs().map((slug) => ({ slug }));
@@ -20,6 +22,7 @@ export async function generateMetadata({ params }) {
   const { slug } = await params;
   const post = getPostBySlug(slug);
   if (!post) return {};
+  const socialImage = `https://www.solopad.io/blog/${post.slug}/social-image`;
 
   return {
     title: post.metaTitle,
@@ -31,13 +34,15 @@ export async function generateMetadata({ params }) {
       url: `https://www.solopad.io/blog/${post.slug}`,
       type: "article",
       publishedTime: post.publishedAt,
+      modifiedTime: post.updatedAt,
       authors: [post.author],
-      ...(post.ogImage && { images: [{ url: post.ogImage }] }),
+      images: [{ url: socialImage, width: 1200, height: 630, alt: post.title }],
     },
     twitter: {
       card: "summary_large_image",
       title: post.metaTitle,
       description: post.metaDescription,
+      images: [socialImage],
     },
   };
 }
@@ -82,8 +87,7 @@ export default async function BlogPostPage({ params }) {
   const post = getPostBySlug(slug);
   if (!post) notFound();
 
-  const allPosts = getAllPosts();
-  const related = allPosts.filter((p) => p.slug !== post.slug && p.category === post.category).slice(0, 3);
+  const related = getRelatedPosts(post);
 
   const schemaGraph = {
     "@context": "https://schema.org",
@@ -93,10 +97,13 @@ export default async function BlogPostPage({ params }) {
         headline: post.title,
         description: post.metaDescription,
         datePublished: post.publishedAt,
-        dateModified: post.publishedAt,
-        author: { "@type": "Person", name: post.author },
+        dateModified: post.updatedAt,
+        author: post.author === "SoloPad"
+          ? { "@type": "Organization", name: "SoloPad", url: "https://www.solopad.io" }
+          : { "@type": "Person", name: post.author === "Ayat" ? "Ayat Ur Rehman" : post.author, ...(post.author === "Ayat" && { url: "https://www.solopad.io/#founder" }) },
         publisher: { "@type": "Organization", name: "SoloPad", url: "https://www.solopad.io" },
         mainEntityOfPage: `https://www.solopad.io/blog/${post.slug}`,
+        image: `https://www.solopad.io/blog/${post.slug}/social-image`,
       },
       {
         "@type": "BreadcrumbList",
@@ -428,6 +435,17 @@ export default async function BlogPostPage({ params }) {
         {/* Post content */}
         <article className="blog-post-content" style={{ marginBottom: 20 }}>
           <MDXRemote source={post.content} components={mdxComponents} options={mdxOptions} />
+          {post.faq.length > 0 && (
+            <section aria-labelledby="post-faq-heading">
+              <h2 id="post-faq-heading" className="bp-h2">Frequently asked questions</h2>
+              {post.faq.map((item) => (
+                <div key={item.question}>
+                  <h3 className="bp-h3">{item.question}</h3>
+                  <p className="bp-p">{item.answer}</p>
+                </div>
+              ))}
+            </section>
+          )}
         </article>
 
         {/* Footer */}

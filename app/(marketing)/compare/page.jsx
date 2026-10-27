@@ -21,7 +21,7 @@ const comparisons = [
     slug: "honeybook-alternative",
     name: "HoneyBook",
     blurb:
-      "HoneyBook starts at $19/mo and adds fees as you grow. See why freelancers switch to SoloPad's flat £5/mo plan.",
+      "Compare HoneyBook and SoloPad on proposals, contracts, payments and the features included in each plan.",
   },
   {
     slug: "dubsado-alternative",
@@ -183,6 +183,18 @@ export default function ComparePage() {
             </div>
 
             <div style={{ marginTop: 64, maxWidth: 760 }}>
+              <h2 style={{ fontSize: 28, fontWeight: 700, color: "var(--cp-fg)", margin: "0 0 16px 0" }}>
+                HoneyBook vs Dubsado vs Bonsai
+              </h2>
+              <p style={{ fontSize: 16, color: "var(--cp-muted)", lineHeight: 1.7, margin: "0 0 32px 0" }}>
+                Choosing between HoneyBook, Dubsado and Bonsai? Our{" "}
+                <Link href="/blog/honeybook-vs-dubsado-vs-bonsai" style={{ color: "var(--cp-accent)", fontWeight: 600 }}>
+                  HoneyBook vs Dubsado vs Bonsai comparison
+                </Link>
+                {" "}covers their proposal, contract and invoicing workflows, with a feature checklist
+                to help you decide which fits your freelance business. Check current prices
+                with each provider before subscribing.
+              </p>
               <h2 style={{ fontSize: 28, fontWeight: 700, color: "var(--cp-fg)", margin: "0 0 16px 0" }}>
                 How to choose a freelance management tool
               </h2>

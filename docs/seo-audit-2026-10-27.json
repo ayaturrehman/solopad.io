@@ -1,0 +1,277 @@
+{
+  "review_date": "2026-10-27",
+  "site": "https://www.solopad.io",
+  "repository": {
+    "base_commit": "da5c33d",
+    "original_checkout_commits_behind_after_fetch": 163,
+    "existing_uncommitted_changes": "Preserved in original checkout; fixes made in a separate worktree."
+  },
+  "search_console": {
+    "source": "User-supplied Search Console performance export dated 2026-10-27",
+    "period_start": "2026-07-26",
+    "period_end": "2026-10-25",
+    "clicks": 2,
+    "impressions": 132,
+    "pages": [
+      {
+        "Top pages": "https://www.solopad.io/signup?plan=pro",
+        "Clicks": "2",
+        "Impressions": "22",
+        "CTR": "9.09%",
+        "Position": "11.55"
+      },
+      {
+        "Top pages": "https://solopad.io/",
+        "Clicks": "0",
+        "Impressions": "49",
+        "CTR": "0%",
+        "Position": "15.27"
+      },
+      {
+        "Top pages": "https://www.solopad.io/",
+        "Clicks": "0",
+        "Impressions": "41",
+        "CTR": "0%",
+        "Position": "9.9"
+      },
+      {
+        "Top pages": "https://www.solopad.io/compare",
+        "Clicks": "0",
+        "Impressions": "32",
+        "CTR": "0%",
+        "Position": "58.62"
+      },
+      {
+        "Top pages": "https://www.solopad.io/signup",
+        "Clicks": "0",
+        "Impressions": "12",
+        "CTR": "0%",
+        "Position": "4.42"
+      },
+      {
+        "Top pages": "https://www.solopad.io/privacy",
+        "Clicks": "0",
+        "Impressions": "11",
+        "CTR": "0%",
+        "Position": "4.64"
+      }
+    ],
+    "queries": [
+      {
+        "Top queries": "solopad",
+        "Clicks": "1",
+        "Impressions": "34",
+        "CTR": "2.94%",
+        "Position": "7.15"
+      },
+      {
+        "Top queries": "solo pad",
+        "Clicks": "0",
+        "Impressions": "18",
+        "CTR": "0%",
+        "Position": "9.5"
+      },
+      {
+        "Top queries": "dubsado vs honeybook",
+        "Clicks": "0",
+        "Impressions": "9",
+        "CTR": "0%",
+        "Position": "65.22"
+      },
+      {
+        "Top queries": "honeybook vs dubsado",
+        "Clicks": "0",
+        "Impressions": "6",
+        "CTR": "0%",
+        "Position": "71.67"
+      },
+      {
+        "Top queries": "honeybook or dubsado",
+        "Clicks": "0",
+        "Impressions": "3",
+        "CTR": "0%",
+        "Position": "78.33"
+      },
+      {
+        "Top queries": "solopat",
+        "Clicks": "0",
+        "Impressions": "2",
+        "CTR": "0%",
+        "Position": "9.5"
+      },
+      {
+        "Top queries": "bonsai vs honeybook",
+        "Clicks": "0",
+        "Impressions": "2",
+        "CTR": "0%",
+        "Position": "60.5"
+      },
+      {
+        "Top queries": "solpad",
+        "Clicks": "0",
+        "Impressions": "2",
+        "CTR": "0%",
+        "Position": "67"
+      },
+      {
+        "Top queries": "honeybook vs. dubsado",
+        "Clicks": "0",
+        "Impressions": "2",
+        "CTR": "0%",
+        "Position": "69"
+      },
+      {
+        "Top queries": "honeybook vs dubsado comparison 2025",
+        "Clicks": "0",
+        "Impressions": "2",
+        "CTR": "0%",
+        "Position": "70.5"
+      },
+      {
+        "Top queries": "proposal pad",
+        "Clicks": "0",
+        "Impressions": "2",
+        "CTR": "0%",
+        "Position": "91"
+      },
+      {
+        "Top queries": "\"dubsado\"",
+        "Clicks": "0",
+        "Impressions": "1",
+        "CTR": "0%",
+        "Position": "14"
+      },
+      {
+        "Top queries": "solopago",
+        "Clicks": "0",
+        "Impressions": "1",
+        "CTR": "0%",
+        "Position": "36"
+      },
+      {
+        "Top queries": "dubsado alternative",
+        "Clicks": "0",
+        "Impressions": "1",
+        "CTR": "0%",
+        "Position": "50"
+      },
+      {
+        "Top queries": "honeybook vs dubsado client flow management software workflow comparison",
+        "Clicks": "0",
+        "Impressions": "1",
+        "CTR": "0%",
+        "Position": "74"
+      },
+      {
+        "Top queries": "dubsado or honeybook",
+        "Clicks": "0",
+        "Impressions": "1",
+        "CTR": "0%",
+        "Position": "79"
+      },
+      {
+        "Top queries": "plateforme agree solo",
+        "Clicks": "0",
+        "Impressions": "1",
+        "CTR": "0%",
+        "Position": "88"
+      }
+    ],
+    "interpretation": "No blog URLs appear in this performance export. Performance data alone does not establish whether a URL is indexed."
+  },
+  "ubersuggest_audit": {
+    "source": "Ubersuggest site_audit and issue breakdowns",
+    "cached_crawl_date": "2026-10-24",
+    "health_score": 87,
+    "crawled_pages": 56,
+    "errors": 3,
+    "warnings": 34,
+    "recommendations": 0,
+    "issues": {
+      "long_titles": 30,
+      "short_titles": 3,
+      "low_word_count": 2,
+      "blocked_pages": 1,
+      "non_friendly_urls": 1
+    },
+    "triage": {
+      "blocked_login": "Intentional. Keep the account login out of search.",
+      "short_legal_titles": "Descriptive legal titles are suitable; avoid padding titles for a tool score.",
+      "thin_terms": "Do not add legal obligations or filler to satisfy a word-count threshold.",
+      "signup": "Noindex the signup form and its plan variants; remove it from the sitemap."
+    }
+  },
+  "ubersuggest_pagespeed": {
+    "source": "Ubersuggest pagespeed_audit for solopad.io",
+    "type": "Lab measurements; no field INP data returned",
+    "desktop": {
+      "lcp_seconds": 1.4,
+      "cls": 0,
+      "total_blocking_time_ms": 10
+    },
+    "mobile": {
+      "lcp_seconds": 5.6,
+      "cls": 0,
+      "total_blocking_time_ms": 121
+    },
+    "limitations": "Baseline before changes. Mobile LCP exceeds the good threshold. Redirect time is included for the apex-domain audit. No post-deployment speed improvement is claimed."
+  },
+  "independent_live_check": {
+    "sitemap_urls": 52,
+    "blog_urls": 39,
+    "http_failures": 0,
+    "missing_or_multiple_h1": 0,
+    "source": "Direct HTTP checks of all URLs in the live sitemap on review date."
+  },
+  "changes": [
+    "Shortened 32 blog metadata titles while preserving article headings and URLs.",
+    "Changed the blog listing to hourly revalidation instead of rendering on every request.",
+    "Applied the same published-date and draft rules to listings, article routes, static params and sitemap entries.",
+    "Ranked related articles by topic overlap before broad category and recency.",
+    "Used real article update dates for structured data and sitemap; removed synthetic current timestamps from static sitemap entries.",
+    "Removed signup from the sitemap and set noindex for signup and query variants.",
+    "Corrected the missing Organization logo URL and Starter plan name in SoftwareApplication schema.",
+    "Made homepage reveal content visible before hydration and preserved off-screen animation as an enhancement.",
+    "Added a direct comparison-article link from the comparison hub for the comparison queries appearing in Search Console.",
+    "Refreshed the HoneyBook vs Dubsado vs Bonsai article using dated official sources and an explicit publisher-interest disclosure.",
+    "Removed five nonexistent cover references and generated 1200x630 PNG social previews for articles.",
+    "Rendered frontmatter FAQs visibly in articles to match FAQ structured data."
+  ],
+  "ranking_priorities_after_release": [
+    {
+      "priority": 1,
+      "action": "Check Search Console Page indexing and URL Inspection for the blog index and representative UK invoice, contract and comparison articles. Verify sitemap processing for https://www.solopad.io/sitemap.xml.",
+      "reason": "The supplied performance export cannot distinguish undiscovered, excluded and indexed-but-unseen articles."
+    },
+    {
+      "priority": 2,
+      "action": "Refresh the remaining older competitor articles and dedicated comparison pages against official feature and pricing sources.",
+      "reason": "The main comparison article is refreshed in this patch; older pages still contain dated commercial claims and need a broader editorial pass."
+    },
+    {
+      "priority": 3,
+      "action": "Concentrate new editorial work on the existing UK invoicing, payment and contract clusters, with original worked examples and relevant links between articles.",
+      "reason": "The site already has 39 articles. Improve useful coverage and visibility rather than adding unrelated posts to meet a cadence."
+    },
+    {
+      "priority": 4,
+      "action": "Earn relevant links through real freelancer communities, partnerships and useful template references.",
+      "reason": "Technical hygiene alone does not establish authority. No backlinks or ranking gains were created or claimed in this patch."
+    },
+    {
+      "priority": 5,
+      "action": "Measure the deployed canonical www homepage on mobile and use field data when available. Inspect hosting redirects separately from application render delay.",
+      "reason": "The baseline audit includes apex redirects and does not provide field INP."
+    }
+  ],
+  "validation": {
+    "unit_tests": 166,
+    "test_files": 23,
+    "production_build": "passed",
+    "rendered_public_pages_checked": 51,
+    "blog_pages_checked": 39,
+    "png_social_previews_checked": 39,
+    "metadata_issues": 0,
+    "lint": "No errors; one existing Next.js warning for the generic MDX img renderer."
+  }
+}

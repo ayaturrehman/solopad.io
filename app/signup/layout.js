@@ -3,7 +3,7 @@ export const metadata = {
   description:
     "Create your free SoloPad account. Invoicing, contracts, proposals, CRM, and AI drafting — everything freelancers need. No credit card required.",
   alternates: { canonical: "https://www.solopad.io/signup" },
-  robots: { index: true, follow: true },
+  robots: { index: false, follow: true },
   openGraph: {
     title: "Sign Up Free — Start Your 30-Day Trial | SoloPad",
     description:

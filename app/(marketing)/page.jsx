@@ -31,18 +31,32 @@ const PRT = "#fcffbf8c";
 
 function useFadeIn() {
   useEffect(() => {
-    const els = document.querySelectorAll(".pk-reveal, .pk-reveal-left, .pk-reveal-right");
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !("IntersectionObserver" in window)) return;
+    // Render content visibly on the server. Only animate off-screen sections,
+    // so the hero never waits for hydration or an observer to paint.
+    const els = Array.from(document.querySelectorAll(".pk-reveal, .pk-reveal-left, .pk-reveal-right"))
+      .filter((el) => el.getBoundingClientRect().top >= window.innerHeight);
+    els.forEach((el) => el.classList.add("pk-pending"));
     const io = new IntersectionObserver(
-      (entries) => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add("pk-visible"); }),
+      (entries) => entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.remove("pk-pending");
+          io.unobserve(e.target);
+        }
+      }),
       { threshold: 0.1 }
     );
     els.forEach(el => io.observe(el));
-    return () => io.disconnect();
+    return () => {
+      io.disconnect();
+      els.forEach((el) => el.classList.remove("pk-pending"));
+    };
   }, []);
 }
 
 function useParallaxCards() {
   useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const cards = Array.from(document.querySelectorAll("[data-pk-parallax]"));
     if (cards.length === 0) return undefined;
 
@@ -221,11 +235,15 @@ export default function LandingPage() {
         .btn-outline:hover { border-color: ${C}; box-shadow: 0 2px 14px rgba(29,78,216,.12); }
 
         /* Animations */
-        .pk-reveal       { opacity:0; transform:translateY(30px); transition:opacity .7s ease, transform .7s ease; }
-        .pk-reveal-left  { opacity:0; transform:translateX(-36px); transition:opacity .75s ease, transform .75s ease; }
-        .pk-reveal-right { opacity:0; transform:translateX(36px); transition:opacity .75s ease, transform .75s ease; }
-        .pk-reveal.pk-visible, .pk-reveal-left.pk-visible, .pk-reveal-right.pk-visible { opacity:1; transform:none; }
+        .pk-reveal, .pk-reveal-left, .pk-reveal-right { opacity:1; transform:none; transition:opacity .7s ease, transform .7s ease; }
+        .pk-reveal.pk-pending       { opacity:0; transform:translateY(30px); }
+        .pk-reveal-left.pk-pending  { opacity:0; transform:translateX(-36px); }
+        .pk-reveal-right.pk-pending { opacity:0; transform:translateX(36px); }
         .pk-d1 { transition-delay:.1s; } .pk-d2 { transition-delay:.2s; } .pk-d3 { transition-delay:.3s; }
+        @media (prefers-reduced-motion: reduce) {
+          .pk-reveal, .pk-reveal-left, .pk-reveal-right { transition:none; }
+          .pk-float, .pk-ping { animation:none !important; }
+        }
 
         @keyframes pk-float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
         .pk-float { animation: pk-float 4.5s ease-in-out infinite; }
@@ -1090,7 +1108,7 @@ export default function LandingPage() {
         <section style={{ background:"#fff", padding:"120px 0" }}>
           <div className="pk-shell pk-section-stage" data-pk-section-drift>
             <div className="pk-reveal" style={{ textAlign:"center" }}>
-              <h2 style={{ fontSize:"clamp(26px, 3.4vw, 44px)", fontWeight:700, color:CDk, letterSpacing:"-0.8px" }}>Built by Ayat Ur Rehman, Doncaster.</h2>
+              <h2 id="founder" style={{ fontSize:"clamp(26px, 3.4vw, 44px)", fontWeight:700, color:CDk, letterSpacing:"-0.8px" }}>Built by Ayat Ur Rehman, Doncaster.</h2>
             </div>
           </div>
         </section>
